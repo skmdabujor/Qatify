@@ -94,15 +94,12 @@ async function main() {
   ]);
 
   const publicDir = path.join(__dirname, '..', 'public');
-  const appDir = path.join(__dirname, '..', 'app');
 
-  // Write SVG files
+  // Write SVG files (stored in public/ to avoid Next.js conflicting-public-file-page errors)
   fs.writeFileSync(path.join(publicDir, 'icon.svg'), svgContent, 'utf-8');
-  fs.writeFileSync(path.join(appDir, 'icon.svg'), svgContent, 'utf-8');
 
   // Write ICO files
   fs.writeFileSync(path.join(publicDir, 'favicon.ico'), icoBuf);
-  fs.writeFileSync(path.join(appDir, 'favicon.ico'), icoBuf);
 
   // Write PNG files
   fs.writeFileSync(path.join(publicDir, 'icon.png'), buf32);
@@ -110,9 +107,7 @@ async function main() {
   fs.writeFileSync(path.join(publicDir, 'icon-192.png'), buf192);
   fs.writeFileSync(path.join(publicDir, 'icon-512.png'), buf512);
 
-  fs.writeFileSync(path.join(appDir, 'apple-icon.png'), buf180);
-
-  console.log('Successfully generated all favicons & icons in public/ and app/!');
+  console.log('Successfully generated all favicons & icons in public/!');
 }
 
 main().catch(err => {
