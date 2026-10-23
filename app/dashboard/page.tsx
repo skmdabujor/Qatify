@@ -66,6 +66,9 @@ function DashboardContent() {
       : 'tracking'
   );
 
+  // Admin Active Tab Filter ('all' | 'analytics' | 'pipeline' | 'orders')
+  const [adminTab, setAdminTab] = useState<'all' | 'analytics' | 'pipeline' | 'orders'>('all');
+
   const {
     orders,
     activeOrder,
@@ -178,6 +181,7 @@ function DashboardContent() {
                 type="button"
                 onClick={() => setRole('customer')}
                 className={`${styles.rolePill} ${role === 'customer' ? styles.active : ''}`}
+                aria-pressed={role === 'customer'}
               >
                 Customer Account
               </button>
@@ -185,6 +189,7 @@ function DashboardContent() {
                 type="button"
                 onClick={() => setRole('admin')}
                 className={`${styles.rolePill} ${role === 'admin' ? styles.active : ''}`}
+                aria-pressed={role === 'admin'}
               >
                 Dropship Store Admin
               </button>
@@ -199,83 +204,122 @@ function DashboardContent() {
           ================================================================== */}
           <aside className={styles.darkSidebar}>
             {role === 'customer' ? (
-              <div className={styles.sidebarNav}>
+              <>
                 <div className={styles.userProfileMini}>
-                  <div className={styles.avatarCircle}>TA</div>
-                  <div className={styles.userInfo}>
-                    <span className={styles.userName}>Tariq Al-Mansoor</span>
-                    <span className={styles.userLocation}>Lusail, Qatar</span>
+                  <div className={styles.userProfileLeft}>
+                    <div className={styles.avatarCircle}>TA</div>
+                    <div className={styles.userInfo}>
+                      <span className={styles.userName}>Tariq Al-Mansoor</span>
+                      <span className={styles.userLocation}>Lusail, Qatar</span>
+                    </div>
+                  </div>
+                  <div className={styles.userStatusPill}>
+                    <span className={styles.statusDot} />
+                    <span>Verified Buyer</span>
                   </div>
                 </div>
 
-                <div className={styles.navGroupTitle}>Order Tracking</div>
-                <button
-                  type="button"
-                  onClick={() => setCustomerTab('tracking')}
-                  className={`${styles.navItem} ${customerTab === 'tracking' ? styles.active : ''}`}
-                >
-                  <Plane size={16} />
-                  <span>5-Stage Air Tracker</span>
-                </button>
+                <div className={styles.sidebarNav}>
+                  <div className={styles.navGroupTitle}>Order Tracking</div>
+                  <button
+                    type="button"
+                    onClick={() => setCustomerTab('tracking')}
+                    className={`${styles.navItem} ${customerTab === 'tracking' ? styles.active : ''}`}
+                  >
+                    <Plane size={16} />
+                    <span>5-Stage Air Tracker</span>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => setCustomerTab('orders')}
-                  className={`${styles.navItem} ${customerTab === 'orders' ? styles.active : ''}`}
-                >
-                  <Package size={16} />
-                  <span>My Orders ({orders.length})</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setCustomerTab('orders')}
+                    className={`${styles.navItem} ${customerTab === 'orders' ? styles.active : ''}`}
+                  >
+                    <Package size={16} />
+                    <span>My Orders ({orders.length})</span>
+                  </button>
 
-                <div className={styles.navGroupTitle}>Preferences</div>
-                <button
-                  type="button"
-                  onClick={() => setCustomerTab('addresses')}
-                  className={`${styles.navItem} ${customerTab === 'addresses' ? styles.active : ''}`}
-                >
-                  <MapPin size={16} />
-                  <span>Saved Qatar Addresses</span>
-                </button>
+                  <div className={styles.navGroupTitle}>Preferences</div>
+                  <button
+                    type="button"
+                    onClick={() => setCustomerTab('addresses')}
+                    className={`${styles.navItem} ${customerTab === 'addresses' ? styles.active : ''}`}
+                  >
+                    <MapPin size={16} />
+                    <span>Saved Qatar Addresses</span>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => setCustomerTab('wishlist')}
-                  className={`${styles.navItem} ${customerTab === 'wishlist' ? styles.active : ''}`}
-                >
-                  <Heart size={16} />
-                  <span>Saved Wishlist ({wishlist.length})</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setCustomerTab('wishlist')}
+                    className={`${styles.navItem} ${customerTab === 'wishlist' ? styles.active : ''}`}
+                  >
+                    <Heart size={16} />
+                    <span>Saved Wishlist ({wishlist.length})</span>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => setCustomerTab('support')}
-                  className={`${styles.navItem} ${customerTab === 'support' ? styles.active : ''}`}
-                >
-                  <Headphones size={16} />
-                  <span>Support & 14-Day Returns</span>
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    onClick={() => setCustomerTab('support')}
+                    className={`${styles.navItem} ${customerTab === 'support' ? styles.active : ''}`}
+                  >
+                    <Headphones size={16} />
+                    <span>Support & 14-Day Returns</span>
+                  </button>
+                </div>
+              </>
             ) : (
-              <div className={styles.sidebarNav}>
+              <>
                 <div className={styles.adminBadgeBlock}>
-                  <span className={styles.adminPill}>DROPSHIP ADMIN</span>
-                  <span className={styles.adminStoreName}>Qatify Qatar Hub</span>
+                  <div className={styles.adminBadgeLeft}>
+                    <span className={styles.adminPill}>DROPSHIP ADMIN</span>
+                    <span className={styles.adminStoreName}>Qatify Qatar Hub</span>
+                  </div>
+                  <div className={styles.adminLiveStatus}>
+                    <span className={styles.pulseGreenDot} />
+                    <span>Live Operations</span>
+                  </div>
                 </div>
 
-                <div className={styles.navGroupTitle}>Operations</div>
-                <div className={`${styles.navItem} ${styles.active}`}>
-                  <BarChart3 size={16} />
-                  <span>Store Analytics & KPI</span>
+                <div className={styles.sidebarNav}>
+                  <div className={styles.navGroupTitle}>Operations</div>
+                  <button
+                    type="button"
+                    onClick={() => setAdminTab('all')}
+                    className={`${styles.navItem} ${adminTab === 'all' ? styles.active : ''}`}
+                  >
+                    <SlidersHorizontal size={16} />
+                    <span>All Operations</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setAdminTab('analytics')}
+                    className={`${styles.navItem} ${adminTab === 'analytics' ? styles.active : ''}`}
+                  >
+                    <BarChart3 size={16} />
+                    <span>Store Analytics & KPI</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setAdminTab('pipeline')}
+                    className={`${styles.navItem} ${adminTab === 'pipeline' ? styles.active : ''}`}
+                  >
+                    <Truck size={16} />
+                    <span>Fulfillment Pipeline</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setAdminTab('orders')}
+                    className={`${styles.navItem} ${adminTab === 'orders' ? styles.active : ''}`}
+                  >
+                    <FileText size={16} />
+                    <span>Recent Orders (Qatar)</span>
+                  </button>
                 </div>
-                <div className={styles.navItem}>
-                  <Truck size={16} />
-                  <span>Fulfillment Pipeline</span>
-                </div>
-                <div className={styles.navItem}>
-                  <Users size={16} />
-                  <span>Qatar Customer Database</span>
-                </div>
-              </div>
+              </>
             )}
 
             <div className={styles.sidebarFooter}>
@@ -295,7 +339,13 @@ function DashboardContent() {
               <>
                 {/* 3 KPI Summary Cards */}
                 <div className={styles.kpiCardsRow}>
-                  <div className={styles.kpiCard}>
+                  <div
+                    className={`${styles.kpiCard} ${styles.kpiCardClickable}`}
+                    onClick={() => setCustomerTab('tracking')}
+                    role="button"
+                    tabIndex={0}
+                    title="View 5-Stage Air Tracker"
+                  >
                     <div className={styles.kpiIconWrapYellow}>
                       <Plane size={20} />
                     </div>
@@ -765,19 +815,24 @@ function DashboardContent() {
                     </p>
 
                     <div className={styles.supportChannelsGrid}>
-                      <div className={styles.channelCard}>
+                      <a href="tel:+97444928100" className={styles.channelCard}>
                         <Phone size={22} className={styles.channelIcon} />
                         <h4>Direct Doha Hotline</h4>
                         <p>+974 4492 8100</p>
-                        <span>8:00 AM – 11:00 PM (GMT+3)</span>
-                      </div>
+                        <span>8:00 AM – 11:00 PM (GMT+3) • Tap to Call</span>
+                      </a>
 
-                      <div className={styles.channelCard}>
+                      <a
+                        href="https://wa.me/97455128894"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.channelCard}
+                      >
                         <Headphones size={22} className={styles.channelIcon} />
                         <h4>WhatsApp Concierge</h4>
                         <p>+974 5512 8894</p>
-                        <span>Instant order tracking updates</span>
-                      </div>
+                        <span>Instant order tracking updates • Tap to Chat</span>
+                      </a>
                     </div>
 
                     <div className={styles.returnFormSection}>
@@ -834,148 +889,181 @@ function DashboardContent() {
             {role === 'admin' && (
               <div className={styles.adminWorkspace}>
                 {/* 4 Analytics KPI Cards */}
-                <div className={styles.adminKpiGrid}>
-                  <div className={styles.adminKpiCard}>
-                    <div className={styles.adminKpiTop}>
-                      <span className={styles.adminKpiTitle}>30-Day Gross Revenue</span>
-                      <DollarSign size={18} className={styles.greenIcon} />
+                {(adminTab === 'all' || adminTab === 'analytics') && (
+                  <div className={styles.adminKpiGrid}>
+                    <div className={styles.adminKpiCard}>
+                      <div className={styles.adminKpiTop}>
+                        <span className={styles.adminKpiTitle}>30-Day Gross Revenue</span>
+                        <DollarSign size={18} className={styles.greenIcon} />
+                      </div>
+                      <strong className={styles.adminKpiValue}>QAR 148,290</strong>
+                      <span className={styles.adminGrowthPill}>+18.4% vs last month</span>
                     </div>
-                    <strong className={styles.adminKpiValue}>QAR 148,290</strong>
-                    <span className={styles.adminGrowthPill}>+18.4% vs last month</span>
-                  </div>
 
-                  <div className={styles.adminKpiCard}>
-                    <div className={styles.adminKpiTop}>
-                      <span className={styles.adminKpiTitle}>Net Dropship Margin</span>
-                      <TrendingUp size={18} className={styles.yellowIcon} />
+                    <div className={styles.adminKpiCard}>
+                      <div className={styles.adminKpiTop}>
+                        <span className={styles.adminKpiTitle}>Net Dropship Margin</span>
+                        <TrendingUp size={18} className={styles.yellowIcon} />
+                      </div>
+                      <strong className={styles.adminKpiValue}>38.4% (QAR 56,943)</strong>
+                      <span className={styles.adminKpiSub}>Direct Factory Costing</span>
                     </div>
-                    <strong className={styles.adminKpiValue}>38.4% (QAR 56,943)</strong>
-                    <span className={styles.adminKpiSub}>Direct Factory Costing</span>
-                  </div>
 
-                  <div className={styles.adminKpiCard}>
-                    <div className={styles.adminKpiTop}>
-                      <span className={styles.adminKpiTitle}>Daily Volume (Qatar)</span>
-                      <Package size={18} className={styles.redIcon} />
+                    <div className={styles.adminKpiCard}>
+                      <div className={styles.adminKpiTop}>
+                        <span className={styles.adminKpiTitle}>Daily Volume (Qatar)</span>
+                        <Package size={18} className={styles.redIcon} />
+                      </div>
+                      <strong className={styles.adminKpiValue}>84 Orders Today</strong>
+                      <span className={styles.adminKpiSub}>Avg QAR 176.5 per basket</span>
                     </div>
-                    <strong className={styles.adminKpiValue}>84 Orders Today</strong>
-                    <span className={styles.adminKpiSub}>Avg QAR 176.5 per basket</span>
-                  </div>
 
-                  <div className={styles.adminKpiCard}>
-                    <div className={styles.adminKpiTop}>
-                      <span className={styles.adminKpiTitle}>Avg Air Transit Time</span>
-                      <Plane size={18} className={styles.blueIcon} />
+                    <div className={styles.adminKpiCard}>
+                      <div className={styles.adminKpiTop}>
+                        <span className={styles.adminKpiTitle}>Avg Air Transit Time</span>
+                        <Plane size={18} className={styles.blueIcon} />
+                      </div>
+                      <strong className={styles.adminKpiValue}>7.4 Days</strong>
+                      <span className={styles.adminKpiSub}>Hamad Airport Hub (DOH)</span>
                     </div>
-                    <strong className={styles.adminKpiValue}>7.4 Days</strong>
-                    <span className={styles.adminKpiSub}>Hamad Airport Hub (DOH)</span>
                   </div>
-                </div>
+                )}
 
                 {/* Fulfillment Pipeline Breakdown */}
-                <div className={styles.pipelineCard}>
-                  <h3 className={styles.pipelineTitle}>Qatar Dropship Fulfillment Pipeline</h3>
-                  <div className={styles.pipelineStagesRow}>
-                    <div className={styles.pipelineStage}>
-                      <div className={styles.pipelineCount}>14</div>
-                      <div className={styles.pipelineStageName}>Pending Dispatch</div>
-                      <span className={styles.pipelineStatusPill}>Supplier Pack</span>
-                    </div>
-                    <div className={styles.pipelineStage}>
-                      <div className={styles.pipelineCount}>48</div>
-                      <div className={styles.pipelineStageName}>In Air Transit</div>
-                      <span className={styles.pipelineStatusYellow}>Flight to DOH</span>
-                    </div>
-                    <div className={styles.pipelineStage}>
-                      <div className={styles.pipelineCount}>19</div>
-                      <div className={styles.pipelineStageName}>Qatar Customs</div>
-                      <span className={styles.pipelineStatusOrange}>Hamad Airport</span>
-                    </div>
-                    <div className={styles.pipelineStage}>
-                      <div className={styles.pipelineCount}>215</div>
-                      <div className={styles.pipelineStageName}>Delivered</div>
-                      <span className={styles.pipelineStatusGreen}>Doorstep Drops</span>
+                {(adminTab === 'all' || adminTab === 'pipeline') && (
+                  <div className={styles.pipelineCard}>
+                    <h3 className={styles.pipelineTitle}>Qatar Dropship Fulfillment Pipeline</h3>
+                    <div className={styles.pipelineStagesRow}>
+                      <div className={styles.pipelineStage}>
+                        <div className={styles.pipelineCount}>14</div>
+                        <div className={styles.pipelineStageName}>Pending Dispatch</div>
+                        <span className={styles.pipelineStatusPill}>Supplier Pack</span>
+                      </div>
+                      <div className={styles.pipelineStage}>
+                        <div className={styles.pipelineCount}>48</div>
+                        <div className={styles.pipelineStageName}>In Air Transit</div>
+                        <span className={styles.pipelineStatusYellow}>Flight to DOH</span>
+                      </div>
+                      <div className={styles.pipelineStage}>
+                        <div className={styles.pipelineCount}>19</div>
+                        <div className={styles.pipelineStageName}>Qatar Customs</div>
+                        <span className={styles.pipelineStatusOrange}>Hamad Airport</span>
+                      </div>
+                      <div className={styles.pipelineStage}>
+                        <div className={styles.pipelineCount}>215</div>
+                        <div className={styles.pipelineStageName}>Delivered</div>
+                        <span className={styles.pipelineStatusGreen}>Doorstep Drops</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 {/* Recent Store Orders Table */}
-                <div className={styles.adminTableCard}>
-                  <div className={styles.adminTableHeadRow}>
-                    <h3 className={styles.adminTableTitle}>Recent Cross-Border Orders (Qatar)</h3>
-                    <span className={styles.liveOrdersPill}>Live Feed</span>
-                  </div>
+                {(adminTab === 'all' || adminTab === 'orders') && (
+                  <div className={styles.adminTableCard}>
+                    <div className={styles.adminTableHeadRow}>
+                      <div>
+                        <h3 className={styles.adminTableTitle}>Recent Cross-Border Orders (Qatar)</h3>
+                        <span className={styles.mobileSwipeHint}>👉 Swipe table horizontally to inspect</span>
+                      </div>
+                      <span className={styles.liveOrdersPill}>Live Feed</span>
+                    </div>
 
-                  <div className={styles.tableResponsiveWrap}>
-                    <table className={styles.adminOrdersTable}>
-                      <thead>
-                        <tr>
-                          <th>Order Ref</th>
-                          <th>Customer & Zone</th>
-                          <th>Items</th>
-                          <th>Total QAR</th>
-                          <th>Carrier Tracking</th>
-                          <th>Status</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td><strong>QTF-78291-QA</strong></td>
-                          <td>Tariq Al-Mansoor (Lusail Zone 69)</td>
-                          <td>PulsePro ANC + Cable</td>
-                          <td className="price-qar">QAR 237</td>
-                          <td><code>QA-EXP-8849201</code></td>
-                          <td>
-                            <span className={styles.statusPillYellow}>Hamad Customs</span>
-                          </td>
-                          <td>
-                            <button className={styles.tableActionBtn}>Inspect</button>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td><strong>QTF-77402-QA</strong></td>
-                          <td>Jassim Al-Kuwari (Doha Zone 22)</td>
-                          <td>HyperCharge 100W GaN</td>
-                          <td className="price-qar">QAR 129</td>
-                          <td><code>QA-EXP-8740291</code></td>
-                          <td>
-                            <span className={styles.statusPillBlue}>In Air Transit</span>
-                          </td>
-                          <td>
-                            <button className={styles.tableActionBtn}>Inspect</button>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td><strong>QTF-76194-QA</strong></td>
-                          <td>Mohammed Al-Thani (Al Rayyan)</td>
-                          <td>Titan Ultra Smartwatch</td>
-                          <td className="price-qar">QAR 189</td>
-                          <td><code>QA-EXP-8629104</code></td>
-                          <td>
-                            <span className={styles.statusPillGreen}>Delivered</span>
-                          </td>
-                          <td>
-                            <button className={styles.tableActionBtn}>Inspect</button>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td><strong>QTF-75482-QA</strong></td>
-                          <td>Sara Al-Marri (Al Wakrah)</td>
-                          <td>PureGlow Flask + Stand</td>
-                          <td className="price-qar">QAR 148</td>
-                          <td><code>QA-EXP-8519402</code></td>
-                          <td>
-                            <span className={styles.statusPillRed}>Pack Inspection</span>
-                          </td>
-                          <td>
-                            <button className={styles.tableActionBtn}>Inspect</button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <div className={styles.tableResponsiveWrap}>
+                      <table className={styles.adminOrdersTable}>
+                        <thead>
+                          <tr>
+                            <th>Order Ref</th>
+                            <th>Customer & Zone</th>
+                            <th>Items</th>
+                            <th>Total QAR</th>
+                            <th>Carrier Tracking</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><strong>QTF-78291-QA</strong></td>
+                            <td>Tariq Al-Mansoor (Lusail Zone 69)</td>
+                            <td>PulsePro ANC + Cable</td>
+                            <td className="price-qar">QAR 237</td>
+                            <td><code>QA-EXP-8849201</code></td>
+                            <td>
+                              <span className={styles.statusPillYellow}>Hamad Customs</span>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                onClick={() => showToast('Order Inspected', 'Viewing customs manifest for QTF-78291-QA')}
+                                className={styles.tableActionBtn}
+                              >
+                                Inspect
+                              </button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><strong>QTF-77402-QA</strong></td>
+                            <td>Jassim Al-Kuwari (Doha Zone 22)</td>
+                            <td>HyperCharge 100W GaN</td>
+                            <td className="price-qar">QAR 129</td>
+                            <td><code>QA-EXP-8740291</code></td>
+                            <td>
+                              <span className={styles.statusPillBlue}>In Air Transit</span>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                onClick={() => showToast('Order Inspected', 'Viewing air cargo flight QR8402 manifest')}
+                                className={styles.tableActionBtn}
+                              >
+                                Inspect
+                              </button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><strong>QTF-76194-QA</strong></td>
+                            <td>Mohammed Al-Thani (Al Rayyan)</td>
+                            <td>Titan Ultra Smartwatch</td>
+                            <td className="price-qar">QAR 189</td>
+                            <td><code>QA-EXP-8629104</code></td>
+                            <td>
+                              <span className={styles.statusPillGreen}>Delivered</span>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                onClick={() => showToast('Order Inspected', 'Delivered to Al Rayyan residence.')}
+                                className={styles.tableActionBtn}
+                              >
+                                Inspect
+                              </button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><strong>QTF-75482-QA</strong></td>
+                            <td>Sara Al-Marri (Al Wakrah)</td>
+                            <td>PureGlow Flask + Stand</td>
+                            <td className="price-qar">QAR 148</td>
+                            <td><code>QA-EXP-8519402</code></td>
+                            <td>
+                              <span className={styles.statusPillRed}>Pack Inspection</span>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                onClick={() => showToast('Order Inspected', 'Barcode and voltage verification passed.')}
+                                className={styles.tableActionBtn}
+                              >
+                                Inspect
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
           </main>

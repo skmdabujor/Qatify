@@ -201,7 +201,6 @@ export default function ShopHomePage() {
                   {getCategoryIcon(cat.icon)}
                 </div>
                 <span className={styles.ribbonCatName}>{cat.name}</span>
-                <span className={styles.ribbonCatCount}>{cat.count} items</span>
               </Link>
             ))}
           </div>

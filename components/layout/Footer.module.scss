@@ -13,6 +13,10 @@
   border-top: 1px solid #27272a;
   border-bottom: 1px solid #1f1f24;
   padding: $space-6 0;
+
+  @include mobile {
+    padding: $space-4 0;
+  }
 }
 
 .trustGrid {

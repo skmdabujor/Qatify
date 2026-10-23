@@ -2,7 +2,11 @@
 @use '@/styles/mixins' as *;
 
 .checkoutPage {
-  padding: $space-4 0 $space-12 0;
+  padding: $space-4 0 $space-8 0;
+
+  @include mobile {
+    padding: $space-3 0 $space-4 0;
+  }
 }
 
 .breadcrumbNav {

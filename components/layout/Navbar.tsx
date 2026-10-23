@@ -305,7 +305,6 @@ export const Navbar: React.FC = () => {
                                 {getCategoryIcon(cat.icon, 15)}
                               </span>
                               <span className={styles.catMenuItemName}>{cat.name}</span>
-                              <span className={styles.catMenuItemCount}>{cat.count}</span>
                               {isSelected && (
                                 <Check size={14} className={styles.catActiveCheck} />
                               )}
@@ -498,7 +497,6 @@ export const Navbar: React.FC = () => {
                         className={styles.megaItem}
                       >
                         <span className={styles.megaItemName}>{cat.name}</span>
-                        <span className={styles.megaItemCount}>{cat.count} items</span>
                       </Link>
                     ))}
                   </div>
@@ -608,7 +606,6 @@ export const Navbar: React.FC = () => {
                       </span>
                       <span>{cat.name}</span>
                     </span>
-                    <span className={styles.catCountBadge}>{cat.count}</span>
                   </Link>
                 ))}
               </div>

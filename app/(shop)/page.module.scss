@@ -2,10 +2,10 @@
 @use '@/styles/mixins' as *;
 
 .homeContainer {
-  padding: 10px 0 $space-10 0;
+  padding: 10px 0 $space-6 0;
 
   @include mobile {
-    padding: 6px 0 $space-6 0;
+    padding: 6px 0 $space-4 0;
   }
 }
 
@@ -751,6 +751,12 @@
   font-size: 12px;
   font-weight: 700;
   color: $color-accent-red;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  @include mobile {
+    font-size: 11px;
+  }
 
   &:hover {
     text-decoration: underline;
@@ -890,13 +896,28 @@
 // =============================================================================
 .shelfSection {
   margin-bottom: $space-6;
+
+  @include mobile {
+    margin-bottom: $space-4;
+  }
+
+  &:last-of-type,
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .shelfHeaderRow {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
+  gap: 8px;
   margin-bottom: $space-3;
+
+  @include mobile {
+    margin-bottom: $space-2;
+    align-items: flex-end;
+  }
 }
 
 .shelfTitleGroup {
@@ -904,6 +925,14 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  min-width: 0;
+  flex: 1;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
 }
 
 .shelfTag {
@@ -918,6 +947,12 @@
   padding: 2px 6px;
   border-radius: $radius-xs;
   font-family: $font-mono;
+  white-space: nowrap;
+
+  @include mobile {
+    font-size: 9.5px;
+    padding: 1.5px 5px;
+  }
 }
 
 .shelfTagYellow {
@@ -932,6 +967,12 @@
   padding: 2px 6px;
   border-radius: $radius-xs;
   font-family: $font-mono;
+  white-space: nowrap;
+
+  @include mobile {
+    font-size: 9.5px;
+    padding: 1.5px 5px;
+  }
 }
 
 .shelfHeading {
@@ -939,6 +980,12 @@
   font-weight: 800;
   color: $color-ink-black;
   letter-spacing: -0.02em;
+  line-height: 1.2;
+
+  @include mobile {
+    font-size: 14.5px;
+    letter-spacing: -0.01em;
+  }
 }
 
 .viewMoreBtn {
@@ -951,7 +998,25 @@
   text-decoration: none;
   padding: 4px 8px;
   border-radius: $radius-xs;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: all $transition-fast;
+
+  span {
+    white-space: nowrap;
+  }
+
+  @include mobile {
+    font-size: 11.5px;
+    padding: 3px 6px;
+    gap: 3px;
+
+    svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+  }
 
   &:hover {
     color: $color-accent-red;
@@ -990,6 +1055,7 @@
 
   @include mobile {
     padding: $space-4;
+    margin-bottom: $space-4;
   }
 }
 

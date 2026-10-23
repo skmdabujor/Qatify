@@ -282,7 +282,6 @@ function ShopContent() {
                       onChange={() => setSelectedCategory('')}
                     />
                     <span className={styles.radioLabel}>All Categories</span>
-                    <span className={styles.radioCount}>{PRODUCTS.length}</span>
                   </label>
                   {CATEGORIES.map((cat) => (
                     <label key={cat.id} className={styles.radioOption}>
@@ -293,7 +292,6 @@ function ShopContent() {
                         onChange={() => setSelectedCategory(cat.slug)}
                       />
                       <span className={styles.radioLabel}>{cat.name}</span>
-                      <span className={styles.radioCount}>{cat.count}</span>
                     </label>
                   ))}
                 </div>
