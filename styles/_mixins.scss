@@ -36,6 +36,12 @@ $breakpoint-wide: 1440px;
   }
 }
 
+@mixin tablet-only {
+  @media (min-width: #{$breakpoint-mobile + 1}) and (max-width: #{$breakpoint-laptop}) {
+    @content;
+  }
+}
+
 @mixin laptop {
   @media (max-width: #{$breakpoint-laptop}) {
     @content;
@@ -63,6 +69,18 @@ $breakpoint-wide: 1440px;
 @mixin wide-up {
   @media (min-width: #{$breakpoint-wide}) {
     @content;
+  }
+}
+
+// Mobile smooth horizontal swipe container mixin
+@mixin touch-scroll-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -108,6 +126,7 @@ $breakpoint-wide: 1440px;
 @mixin line-clamp($lines: 2) {
   display: -webkit-box;
   -webkit-line-clamp: $lines;
+  line-clamp: $lines;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

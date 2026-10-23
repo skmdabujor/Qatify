@@ -276,6 +276,10 @@
   background-color: #050506;
   border-top: 1px solid #18181c;
   padding: 14px 0;
+
+  @include tablet {
+    padding-bottom: 72px; // Clear space for fixed mobile bottom app bar
+  }
 }
 
 .bottomInner {

@@ -211,7 +211,8 @@
   }
 
   @include mobile {
-    flex-direction: column;
+    padding: 12px 10px;
+    gap: 10px;
   }
 }
 
@@ -223,6 +224,11 @@
   overflow: hidden;
   border: 1px solid $color-border-subtle;
   flex-shrink: 0;
+
+  @include mobile {
+    width: 68px;
+    height: 68px;
+  }
 }
 
 .itemImage {
@@ -436,6 +442,10 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 
+  @include tablet {
+    grid-template-columns: 1fr;
+  }
+
   @include mobile {
     grid-template-columns: 1fr;
   }
@@ -496,6 +506,10 @@
 .summaryColumn {
   position: sticky;
   top: 90px;
+
+  @include laptop {
+    position: static;
+  }
 }
 
 .summaryCard {

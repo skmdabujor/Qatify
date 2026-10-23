@@ -30,19 +30,33 @@
       width: 220px;
       flex-shrink: 0;
 
+      @include tablet {
+        width: 150px;
+      }
+
       @include mobile {
-        width: 140px;
+        width: 110px;
       }
     }
 
     .content {
       flex: 1;
       padding: $space-4;
+
+      @include mobile {
+        padding: 8px 10px;
+      }
     }
 
     .title {
       font-size: 15px;
-      -webkit-line-clamp: 2;
+      @include line-clamp(2);
+
+      @include mobile {
+        font-size: 13px;
+        min-height: auto;
+        margin-bottom: 4px;
+      }
     }
 
     .listDescription {
@@ -52,6 +66,10 @@
       margin: 6px 0 10px 0;
       line-height: 1.4;
       @include line-clamp(2);
+
+      @include mobile {
+        display: none;
+      }
     }
   }
 
@@ -65,7 +83,7 @@
     }
     .title {
       font-size: 12px;
-      -webkit-line-clamp: 1;
+      @include line-clamp(1);
     }
   }
 }
@@ -194,6 +212,10 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+
+  @include mobile {
+    padding: 8px 8px 10px 8px;
+  }
 }
 
 .metaRow {
@@ -202,6 +224,11 @@
   justify-content: space-between;
   gap: 6px;
   margin-bottom: 4px;
+
+  @include mobile {
+    gap: 4px;
+    margin-bottom: 2px;
+  }
 }
 
 .brandName {
@@ -210,6 +237,7 @@
   color: $color-text-muted;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  @include text-truncate;
 }
 
 .ratingWrap {
@@ -217,6 +245,7 @@
   align-items: center;
   gap: 3px;
   font-size: 11px;
+  flex-shrink: 0;
 }
 
 .starIcon {
@@ -232,6 +261,10 @@
 .soldCount {
   color: $color-text-muted;
   font-size: 10.5px;
+
+  @include mobile {
+    display: none;
+  }
 }
 
 .titleLink {
@@ -251,6 +284,12 @@
   &:hover {
     color: $color-accent-red;
   }
+
+  @include mobile {
+    font-size: 12px;
+    min-height: 32px;
+    margin-bottom: 6px;
+  }
 }
 
 .listDescription {
@@ -261,15 +300,22 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 4px;
   margin-top: auto;
   margin-bottom: 8px;
+  flex-wrap: wrap;
+
+  @include mobile {
+    margin-bottom: 6px;
+    gap: 2px;
+  }
 }
 
 .priceBlock {
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 5px;
+  flex-wrap: wrap;
 }
 
 .priceQAR {
@@ -285,6 +331,10 @@
     margin-right: 2px;
     color: $color-accent-red;
   }
+
+  @include mobile {
+    font-size: 14.5px;
+  }
 }
 
 .originalPrice {
@@ -292,6 +342,10 @@
   font-family: $font-mono;
   color: $color-text-muted;
   text-decoration: line-through;
+
+  @include mobile {
+    font-size: 10.5px;
+  }
 }
 
 .airDeliveryPill {
@@ -306,6 +360,11 @@
   font-weight: 700;
   padding: 1px 6px;
   white-space: nowrap;
+
+  @include mobile {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
 }
 
 // Stock progress
@@ -315,6 +374,11 @@
   border: 1px solid #ffe4e6;
   border-radius: $radius-xs;
   padding: 5px 8px;
+
+  @include mobile {
+    margin-bottom: 6px;
+    padding: 4px 6px;
+  }
 }
 
 .stockTextRow {
@@ -323,6 +387,11 @@
   justify-content: space-between;
   font-size: 10.5px;
   margin-bottom: 4px;
+
+  @include mobile {
+    font-size: 9.5px;
+    margin-bottom: 3px;
+  }
 }
 
 .claimedText {
@@ -362,5 +431,11 @@
   font-size: 12px;
   gap: 6px;
   border-radius: $radius-xs;
+
+  @include mobile {
+    padding: 7px 6px;
+    font-size: 11px;
+    gap: 4px;
+  }
 }
 

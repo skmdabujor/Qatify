@@ -174,7 +174,7 @@ export const Footer: React.FC = () => {
             <div className={styles.newsletterCol}>
               <h5 className={styles.colTitle}>Qatar Deal Alerts</h5>
               <p className={styles.newsletterDesc}>
-                Subscribe to get early access to viral gadget drops, limited air batches, and flash sale discounts up to 50% off.
+                Subscribe to get early access to viral gadget drops, limited air batches, and exclusive discounts up to 50% off.
               </p>
 
               <form onSubmit={handleNewsletter} className={styles.newsletterForm}>

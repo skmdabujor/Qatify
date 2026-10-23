@@ -376,15 +376,8 @@ export const Navbar: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Action Icons: Flash Deals, Wishlist, Dashboard, Cart */}
+            {/* Right Action Icons: Wishlist, Dashboard, Cart */}
             <div className={styles.actionItems}>
-              {/* Flash Deals Button (Red Accent) */}
-              <Link href="/shop?flash=true" className={styles.flashDealsBtn}>
-                <Zap size={16} className={styles.flashIcon} />
-                <span className={styles.flashText}>Flash Deals</span>
-                <span className={styles.flashPulse} />
-              </Link>
-
               {/* Wishlist Quick Badge */}
               <Link
                 href="/dashboard?tab=wishlist"
@@ -432,6 +425,44 @@ export const Navbar: React.FC = () => {
                 </div>
               </button>
             </div>
+          </div>
+
+          {/* Dedicated Mobile & Tablet Quick Search Bar (< 768px) */}
+          <div className={styles.mobileSearchRow}>
+            <form onSubmit={handleSearchSubmit} className={styles.mobileSearchForm}>
+              <div className={styles.mobileSearchIconWrap}>
+                <Search size={16} />
+              </div>
+              <input
+                id="mobile-catalog-search-input"
+                type="text"
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
+                placeholder="Search 1,000+ tech gadgets, MagSafe in Qatar..."
+                className={styles.mobileSearchInput}
+                aria-label="Search catalog"
+              />
+              {localSearch && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLocalSearch('');
+                    setSearchQuery('');
+                  }}
+                  className={styles.mobileClearBtn}
+                  aria-label="Clear search text"
+                >
+                  <X size={14} />
+                </button>
+              )}
+              <button
+                type="submit"
+                className={styles.mobileSearchSubmitBtn}
+                aria-label="Submit search"
+              >
+                <Search size={16} />
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -534,14 +565,6 @@ export const Navbar: React.FC = () => {
               {/* Quick links */}
               <div className={styles.mobileLinksSection}>
                 <Link
-                  href="/shop?flash=true"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`${styles.mobileDrawerLink} ${styles.redAccent}`}
-                >
-                  <Zap size={16} />
-                  <span>Flash Deals (Up to 50% Off)</span>
-                </Link>
-                <Link
                   href="/shop?filter=under-99"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={styles.mobileDrawerLink}
@@ -579,7 +602,12 @@ export const Navbar: React.FC = () => {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={styles.mobileCategoryItem}
                   >
-                    <span>{cat.name}</span>
+                    <span className={styles.mobileCatItemLeft}>
+                      <span className={styles.mobileCatIcon}>
+                        {getCategoryIcon(cat.icon, 16)}
+                      </span>
+                      <span>{cat.name}</span>
+                    </span>
                     <span className={styles.catCountBadge}>{cat.count}</span>
                   </Link>
                 ))}

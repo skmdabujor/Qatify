@@ -1,0 +1,118 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.bottomBar {
+  display: none; // Hidden on desktop & wide tablets
+
+  @include tablet {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: $z-fixed;
+    background-color: rgba(10, 10, 12, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+.bottomInner {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  height: 56px;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.navItem {
+  @include button-reset;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #a1a1aa;
+  text-decoration: none;
+  gap: 3px;
+  position: relative;
+  transition: color $transition-fast, transform 100ms ease;
+  -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    transform: scale(0.92);
+  }
+
+  &.active {
+    color: $color-accent-yellow;
+
+    .navIcon {
+      color: $color-accent-yellow;
+    }
+
+    .navLabel {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 20px;
+      height: 3px;
+      background-color: $color-accent-yellow;
+      border-radius: $radius-full;
+      box-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
+    }
+  }
+}
+
+.navIcon {
+  color: inherit;
+  transition: color $transition-fast;
+}
+
+.navLabel {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: inherit;
+}
+
+.cartIconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cartBadge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background-color: $color-accent-red;
+  color: #ffffff;
+  font-size: 9.5px;
+  font-weight: 800;
+  min-width: 16px;
+  height: 16px;
+  border-radius: $radius-full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-mono;
+  border: 1.5px solid #0a0a0c;
+  box-shadow: 0 2px 4px rgba(225, 29, 72, 0.4);
+}
+
+.searchIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+

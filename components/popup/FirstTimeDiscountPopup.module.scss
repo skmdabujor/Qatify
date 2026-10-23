@@ -477,7 +477,7 @@
     box-shadow: 0 14px 28px -2px rgba(225, 29, 72, 0.5);
   }
 
-  @include mobile {
+  @include tablet {
     bottom: 74px; // Avoid mobile bottom app bar
     left: 16px;
     padding: 8px 14px;

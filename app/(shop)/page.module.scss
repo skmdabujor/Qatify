@@ -2,10 +2,10 @@
 @use '@/styles/mixins' as *;
 
 .homeContainer {
-  padding: $space-4 0 $space-10 0;
+  padding: 10px 0 $space-10 0;
 
   @include mobile {
-    padding: $space-2 0 $space-6 0;
+    padding: 6px 0 $space-6 0;
   }
 }
 
@@ -13,35 +13,44 @@
 // SECTION 1: HIGH-CONVERSION YELLOW STRIP BANNER (Daraz/E-Commerce Style)
 // =============================================================================
 .heroSection {
-  margin-bottom: $space-6;
+  margin-bottom: $space-5;
+
+  @include mobile {
+    margin-bottom: $space-4;
+  }
 }
 
 .yellowPromoStrip {
   position: relative;
   background: linear-gradient(180deg, #ffe53b 0%, #ffd000 55%, #ffb700 100%);
   border: 2px solid #f59e0b;
-  border-radius: 16px;
-  box-shadow: 0 6px 22px rgba(245, 158, 11, 0.28), inset 0 2px 0 rgba(255, 255, 255, 0.7);
-  padding: 14px 22px;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(245, 158, 11, 0.28), inset 0 2px 0 rgba(255, 255, 255, 0.7);
+  padding: 12px 18px;
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   overflow: hidden;
-  min-height: 130px;
+  min-height: 110px;
 
   @include laptop {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 16px;
-    padding: 16px;
+    padding: 10px 14px;
+    gap: 10px;
+    min-height: 100px;
+  }
+
+  @include tablet {
+    padding: 8px 12px;
+    gap: 8px;
+    min-height: 90px;
   }
 
   @include mobile {
-    flex-direction: column;
-    padding: 16px 12px;
-    gap: 14px;
-    text-align: center;
+    padding: 8px 10px;
+    gap: 6px;
+    min-height: 80px;
   }
 }
 
@@ -136,6 +145,41 @@
     border-bottom: 15px solid transparent;
     border-left: 5px solid #b91c1c;
   }
+
+  @include laptop {
+    padding: 6px 14px;
+  }
+
+  @include tablet {
+    padding: 4px 10px;
+    &::before {
+      border-top-width: 11px;
+      border-bottom-width: 11px;
+    }
+    &::after {
+      border-top-width: 11px;
+      border-bottom-width: 11px;
+    }
+  }
+
+  @include mobile {
+    padding: 3px 6px;
+    transform: skewX(-5deg);
+    &::before {
+      left: -4px;
+      width: 4px;
+      border-right-width: 4px;
+      border-top-width: 9px;
+      border-bottom-width: 9px;
+    }
+    &::after {
+      right: -4px;
+      width: 4px;
+      border-left-width: 4px;
+      border-top-width: 9px;
+      border-bottom-width: 9px;
+    }
+  }
 }
 
 .ribbonMainText {
@@ -149,8 +193,18 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
   white-space: nowrap;
 
+  @include laptop {
+    font-size: 16px;
+  }
+
+  @include tablet {
+    font-size: 13px;
+  }
+
   @include mobile {
-    font-size: 18px;
+    font-size: 10.5px;
+    transform: skewX(5deg);
+    letter-spacing: 0.01em;
   }
 }
 
@@ -170,6 +224,30 @@
     letter-spacing: 0.05em;
     white-space: nowrap;
   }
+
+  @include laptop {
+    padding: 2px 10px;
+    span {
+      font-size: 10px;
+    }
+  }
+
+  @include tablet {
+    margin-top: 3px;
+    padding: 2px 7px;
+    span {
+      font-size: 8.5px;
+    }
+  }
+
+  @include mobile {
+    margin-top: 2px;
+    padding: 1px 4px;
+    span {
+      font-size: 7px;
+      letter-spacing: 0.02em;
+    }
+  }
 }
 
 // Block 2: Value Badges
@@ -180,6 +258,14 @@
   flex-direction: column;
   gap: 6px;
   flex-shrink: 0;
+
+  @include tablet {
+    gap: 4px;
+  }
+
+  @include mobile {
+    gap: 2px;
+  }
 }
 
 .discountTicket {
@@ -191,6 +277,19 @@
   padding: 3px 8px;
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+
+  @include tablet {
+    padding: 2px 5px;
+    gap: 4px;
+    border-radius: 4px;
+  }
+
+  @include mobile {
+    padding: 1px 3px;
+    gap: 2px;
+    border-width: 1px;
+    border-radius: 3px;
+  }
 }
 
 .ticketPercent {
@@ -204,6 +303,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @include tablet {
+    width: 14px;
+    height: 14px;
+    font-size: 8px;
+  }
+
+  @include mobile {
+    width: 11px;
+    height: 11px;
+    font-size: 6.5px;
+  }
 }
 
 .ticketText {
@@ -217,6 +328,14 @@
   font-weight: 800;
   color: #78350f;
   letter-spacing: 0.04em;
+
+  @include tablet {
+    font-size: 7px;
+  }
+
+  @include mobile {
+    font-size: 5.5px;
+  }
 }
 
 .ticketValue {
@@ -226,6 +345,14 @@
   color: #dc2626;
   letter-spacing: -0.02em;
   white-space: nowrap;
+
+  @include tablet {
+    font-size: 10.5px;
+  }
+
+  @include mobile {
+    font-size: 8px;
+  }
 }
 
 .freeDeliveryBadge {
@@ -236,6 +363,10 @@
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(4, 120, 87, 0.25);
+
+  @include mobile {
+    border-radius: 3px;
+  }
 }
 
 .freeDeliveryPill {
@@ -245,6 +376,16 @@
   font-weight: 900;
   padding: 3px 6px;
   display: inline-block;
+
+  @include tablet {
+    font-size: 7.5px;
+    padding: 2px 4px;
+  }
+
+  @include mobile {
+    font-size: 6px;
+    padding: 1px 3px;
+  }
 }
 
 .freeDeliveryText {
@@ -254,6 +395,16 @@
   padding: 3px 8px;
   letter-spacing: 0.02em;
   white-space: nowrap;
+
+  @include tablet {
+    font-size: 9px;
+    padding: 2px 5px;
+  }
+
+  @include mobile {
+    font-size: 7px;
+    padding: 1px 4px;
+  }
 }
 
 // Block 3: Product Cluster (Overlapping Gadgets)
@@ -282,18 +433,59 @@
     transform: scale(1.1);
     z-index: 3;
   }
+
+  @include laptop {
+    width: 48px;
+    height: 48px;
+  }
+
+  @include tablet {
+    width: 36px;
+    height: 36px;
+    border-width: 1.5px;
+  }
+
+  @include mobile {
+    width: 26px;
+    height: 26px;
+    border-width: 1px;
+  }
 }
 
 .productItemLeft {
   margin-right: -14px;
   z-index: 1;
   transform: rotate(-6deg);
+
+  @include laptop {
+    margin-right: -11px;
+  }
+
+  @include tablet {
+    margin-right: -8px;
+  }
+
+  @include mobile {
+    margin-right: -6px;
+  }
 }
 
 .productItemRight {
   margin-left: -14px;
   z-index: 1;
   transform: rotate(6deg);
+
+  @include laptop {
+    margin-left: -11px;
+  }
+
+  @include tablet {
+    margin-left: -8px;
+  }
+
+  @include mobile {
+    margin-left: -6px;
+  }
 }
 
 .productItemCenter {
@@ -310,6 +502,23 @@
 
   &:hover {
     transform: scale(1.1);
+  }
+
+  @include laptop {
+    width: 62px;
+    height: 62px;
+  }
+
+  @include tablet {
+    width: 46px;
+    height: 46px;
+    border-width: 2px;
+  }
+
+  @include mobile {
+    width: 34px;
+    height: 34px;
+    border-width: 1.5px;
   }
 }
 
@@ -348,8 +557,28 @@
      0 4px 8px rgba(185, 28, 28, 0.4);
   white-space: nowrap;
 
-  @include mobile {
+  @include laptop {
     font-size: 22px;
+  }
+
+  @include tablet {
+    font-size: 15px;
+    text-shadow:
+      -1px -1px 0 #ea580c,
+       1px -1px 0 #ea580c,
+      -1px  1px 0 #ea580c,
+       1px  1px 0 #ea580c,
+       0 2px 4px rgba(185, 28, 28, 0.4);
+  }
+
+  @include mobile {
+    font-size: 10.5px;
+    text-shadow:
+      -1px -1px 0 #ea580c,
+       1px -1px 0 #ea580c,
+      -1px  1px 0 #ea580c,
+       1px  1px 0 #ea580c,
+       0 2px 4px rgba(185, 28, 28, 0.4);
   }
 }
 
@@ -361,6 +590,24 @@
     -2px  2px 0 #dc2626,
      2px  2px 0 #dc2626,
      0 4px 8px rgba(185, 28, 28, 0.45);
+
+  @include tablet {
+    text-shadow:
+      -1px -1px 0 #dc2626,
+       1px -1px 0 #dc2626,
+      -1px  1px 0 #dc2626,
+       1px  1px 0 #dc2626,
+       0 2px 4px rgba(185, 28, 28, 0.45);
+  }
+
+  @include mobile {
+    text-shadow:
+      -1px -1px 0 #dc2626,
+       1px -1px 0 #dc2626,
+      -1px  1px 0 #dc2626,
+       1px  1px 0 #dc2626,
+       0 2px 4px rgba(185, 28, 28, 0.45);
+  }
 }
 
 // Block 5: Single Pill CTA Button ("SHOP NOW >")
@@ -383,6 +630,23 @@
   box-shadow: 0 4px 14px rgba(127, 29, 29, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
   transition: all $transition-fast;
 
+  @include laptop {
+    padding: 7px 10px 7px 16px;
+    gap: 6px;
+  }
+
+  @include tablet {
+    padding: 5px 8px 5px 12px;
+    gap: 4px;
+    border-width: 1.5px;
+  }
+
+  @include mobile {
+    padding: 3.5px 6px 3.5px 8px;
+    gap: 3px;
+    border-width: 1px;
+  }
+
   &:hover {
     background: linear-gradient(180deg, #b91c1c 0%, #991b1b 100%);
     transform: translateY(-2px) scale(1.03);
@@ -402,18 +666,49 @@
   letter-spacing: 0.04em;
   color: #ffffff;
   white-space: nowrap;
+
+  @include laptop {
+    font-size: 13px;
+  }
+
+  @include tablet {
+    font-size: 10.5px;
+  }
+
+  @include mobile {
+    font-size: 8px;
+    letter-spacing: 0.02em;
+  }
 }
 
 .btnArrowCircle {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background-color: #ffffff;
-  color: #7f1d1d;
+  background: #ffffff;
+  color: #991b1b;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+
+  @include tablet {
+    width: 16px;
+    height: 16px;
+    svg {
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  @include mobile {
+    width: 13px;
+    height: 13px;
+    svg {
+      width: 8px;
+      height: 8px;
+    }
+  }
 }
 
 // =============================================================================
@@ -467,13 +762,18 @@
   grid-template-columns: repeat(5, 1fr);
   gap: 10px;
 
-  @include laptop {
-    grid-template-columns: repeat(3, 1fr);
+  @media (min-width: 769px) and (max-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 
   @include mobile {
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    gap: 6px;
   }
 }
 
@@ -487,6 +787,11 @@
   gap: 10px;
   text-decoration: none;
   transition: all $transition-fast;
+
+  @include mobile {
+    padding: 8px 10px;
+    gap: 8px;
+  }
 
   &:hover {
     border-color: $color-accent-red;
@@ -514,6 +819,11 @@
   justify-content: center;
   flex-shrink: 0;
   transition: all $transition-fast;
+
+  @include mobile {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 .ribbonCatName {
@@ -522,12 +832,20 @@
   font-weight: 700;
   color: $color-ink-black;
   @include text-truncate;
+
+  @include mobile {
+    font-size: 11.5px;
+  }
 }
 
 .ribbonCatCount {
   font-size: 10.5px;
   font-family: $font-mono;
   color: $color-text-muted;
+
+  @include mobile {
+    display: none;
+  }
 }
 
 // =============================================================================
@@ -566,134 +884,6 @@
   border-radius: $radius-md;
 }
 
-// =============================================================================
-// SECTION 3: "FANTASTIC FLASH DEALS" COUNTDOWN SECTION
-// =============================================================================
-.flashDealsSection {
-  background-color: #ffffff;
-  border: 1px solid $color-border-subtle;
-  border-radius: $radius-md;
-  padding: $space-4;
-  margin-bottom: $space-6;
-  box-shadow: $shadow-sm;
-}
-
-.flashHeaderRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: $space-4;
-  padding-bottom: 12px;
-  border-bottom: 1px solid $color-border-subtle;
-
-  @include mobile {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-}
-
-.flashTitleGroup {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.flashBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background-color: $color-accent-red;
-  color: #ffffff;
-  font-family: $font-heading;
-  font-weight: 900;
-  font-size: 11.5px;
-  padding: 4px 8px;
-  border-radius: $radius-xs;
-  letter-spacing: 0.02em;
-}
-
-.flashHeading {
-  font-size: 18px;
-  font-weight: 800;
-  color: $color-ink-black;
-}
-
-.timerWrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: $color-ink-black;
-  padding: 4px 10px;
-  border-radius: $radius-sm;
-}
-
-.timerLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  color: #a1a1aa;
-  text-transform: uppercase;
-}
-
-.timerPills {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.timeBox {
-  display: flex;
-  align-items: baseline;
-  gap: 2px;
-  background-color: #1a1a20;
-  border: 1px solid #2e2e38;
-  padding: 2px 6px;
-  border-radius: $radius-xs;
-}
-
-.timeNum {
-  font-family: $font-mono;
-  font-size: 13.5px;
-  font-weight: 800;
-  color: $color-accent-yellow;
-}
-
-.timeUnit {
-  font-size: 8.5px;
-  font-weight: 700;
-  color: #a1a1aa;
-}
-
-.timeColon {
-  font-family: $font-mono;
-  font-weight: 800;
-  color: $color-accent-yellow;
-  font-size: 12px;
-}
-
-// 5-Column Dense Grid
-.flashGrid5Col {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-
-  @include laptop {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  @include tablet {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @include mobile {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
-}
 
 // =============================================================================
 // SHELF SECTIONS (Trending, Under 99, Best Sellers)
@@ -797,6 +987,10 @@
   padding: $space-6;
   color: #ffffff;
   margin-bottom: $space-6;
+
+  @include mobile {
+    padding: $space-4;
+  }
 }
 
 .airCargoInner {
@@ -807,6 +1001,7 @@
 
   @include tablet {
     grid-template-columns: 1fr;
+    gap: $space-4;
   }
 }
 
@@ -830,6 +1025,10 @@
   color: #ffffff;
   line-height: 1.25;
   margin-bottom: 8px;
+
+  @include mobile {
+    font-size: 18px;
+  }
 }
 
 .cargoDesc {

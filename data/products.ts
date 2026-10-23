@@ -53,7 +53,7 @@ export const PRODUCTS: Product[] = [
     isBestSeller: true,
     isUnder99: false,
     isNewArrival: false,
-    badge: 'FLASH SALE',
+    badge: 'HOT DEAL',
     images: [
       'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80',
       'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=800&auto=format&fit=crop&q=80',
@@ -71,7 +71,7 @@ export const PRODUCTS: Product[] = [
       ],
     },
     volumeDiscounts: [
-      { quantity: 1, pricePerUnitQAR: 149, savingsText: 'Regular Flash Price' },
+      { quantity: 1, pricePerUnitQAR: 149, savingsText: 'Standard Deal Price' },
       { quantity: 2, pricePerUnitQAR: 135, savingsText: 'Save QAR 28 (Best For Gifts)' },
       { quantity: 3, pricePerUnitQAR: 122, savingsText: 'Save QAR 81 (Free Priority Shipping)' },
     ],

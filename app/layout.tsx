@@ -10,6 +10,7 @@ import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/components/cart/CartDrawer';
 import { ToastContainer } from '@/components/ui/Toast';
 import { ChatWidget } from '@/components/chat/ChatWidget';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 
 export const metadata: Metadata = {
   title: 'Qatify — Qatar’s Direct Air Dropship Electronics & Trending Gadgets',
@@ -62,6 +63,7 @@ export default function RootLayout({
           <ChatWidget />
           <main>{children}</main>
           <Footer />
+          <MobileBottomNav />
         </ShopProvider>
       </body>
     </html>

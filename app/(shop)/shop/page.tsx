@@ -34,7 +34,6 @@ function ShopContent() {
   // URL query params initialization
   const initialCategory = searchParams.get('cat') || '';
   const initialSearch = searchParams.get('q') || '';
-  const initialFlash = searchParams.get('flash') === 'true';
   const initialFilter = searchParams.get('filter') || '';
   const initialSort = (searchParams.get('sort') as SortOption) || 'trending';
 
@@ -50,7 +49,6 @@ function ShopContent() {
   );
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [minRating, setMinRating] = useState<number>(0);
-  const [flashOnly, setFlashOnly] = useState<boolean>(initialFlash);
   const [inStockOnly, setInStockOnly] = useState<boolean>(false);
   const [minDiscount, setMinDiscount] = useState<number>(0);
   const [sortBy, setSortBy] = useState<SortOption>(initialSort);
@@ -71,7 +69,6 @@ function ShopContent() {
     setSelectedPriceTier('all');
     setSelectedBrands([]);
     setMinRating(0);
-    setFlashOnly(false);
     setInStockOnly(false);
     setMinDiscount(0);
     setSortBy('trending');
@@ -112,11 +109,6 @@ function ShopContent() {
         return false;
       }
 
-      // Flash deals only
-      if (flashOnly && !product.isFlashDeal) {
-        return false;
-      }
-
       // In stock only
       if (inStockOnly && !product.inStock) {
         return false;
@@ -151,7 +143,6 @@ function ShopContent() {
     selectedPriceTier,
     selectedBrands,
     minRating,
-    flashOnly,
     inStockOnly,
     minDiscount,
     sortBy,
@@ -163,7 +154,6 @@ function ShopContent() {
     (selectedPriceTier !== 'all' ? 1 : 0) +
     selectedBrands.length +
     (minRating > 0 ? 1 : 0) +
-    (flashOnly ? 1 : 0) +
     (inStockOnly ? 1 : 0) +
     (minDiscount > 0 ? 1 : 0) +
     (searchQuery ? 1 : 0);
@@ -180,8 +170,6 @@ function ShopContent() {
             <h1 className={styles.catalogHeading}>
               {selectedCategory
                 ? CATEGORIES.find((c) => c.slug === selectedCategory)?.name || 'Catalog'
-                : flashOnly
-                ? '⚡ Fantastic Flash Deals'
                 : 'Qatar Dropship Catalog'}
             </h1>
             <p className={styles.catalogDesc}>
@@ -232,17 +220,19 @@ function ShopContent() {
           >
             QAR 200+
           </button>
-          <button
-            type="button"
-            onClick={() => setFlashOnly(!flashOnly)}
-            className={`${styles.flashTogglePill} ${flashOnly ? styles.active : ''}`}
-          >
-            ⚡ Flash Deals Only
-          </button>
         </div>
 
         {/* Main Catalog Workspace: Sidebar + Products */}
         <div className={styles.catalogLayout}>
+          {/* Backdrop for Mobile / Tablet Filter Drawer */}
+          {isMobileFiltersOpen && (
+            <div
+              className={styles.mobileBackdrop}
+              onClick={() => setIsMobileFiltersOpen(false)}
+              aria-hidden="true"
+            />
+          )}
+
           {/* =================================================================
               SIDEBAR FILTERS (Sticky Desktop, Sheet on Mobile)
           ================================================================== */}
@@ -512,17 +502,6 @@ function ShopContent() {
                     </button>
                   </span>
                 )}
-                {flashOnly && (
-                  <span className={styles.filterTag}>
-                    Flash Deals
-                    <button
-                      onClick={() => setFlashOnly(false)}
-                      aria-label="Remove flash deal filter"
-                    >
-                      <X size={12} />
-                    </button>
-                  </span>
-                )}
                 {searchQuery && (
                   <span className={styles.filterTag}>
                     Search: &quot;{searchQuery}&quot;
@@ -574,7 +553,6 @@ function ShopContent() {
                     key={product.id}
                     product={product}
                     variant={viewMode}
-                    showStockBar={flashOnly || product.isFlashDeal}
                   />
                 ))}
               </div>

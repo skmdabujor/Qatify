@@ -2,14 +2,13 @@
 
 // =============================================================================
 // Qatify — Homepage (High-Density Regional Qatar Dropshipping Storefront)
-// 3-Col Hero + 2-Row Category Ribbon + 5-Col Flash Deals Grid + Curated Shelves
+// 3-Col Hero + 2-Row Category Ribbon + Curated Shelves
 // =============================================================================
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import {
   Zap,
-  Clock,
   ArrowRight,
   Plane,
   ShieldCheck,
@@ -65,33 +64,8 @@ const getCategoryIcon = (iconName: string) => {
 };
 
 export default function ShopHomePage() {
-  // Flash deal countdown timer (hours, minutes, seconds)
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 8,
-    minutes: 42,
-    seconds: 19,
-  });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
-        } else if (prev.minutes > 0) {
-          return { ...prev, minutes: 59, seconds: 59 };
-        } else if (prev.hours > 0) {
-          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        } else {
-          return { hours: 12, minutes: 0, seconds: 0 };
-        }
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   // Filtered product slices
-  const flashDealProducts = PRODUCTS.filter((p) => p.isFlashDeal).slice(0, 5);
-  const trendingProducts = PRODUCTS.filter((p) => p.isTrending).slice(0, 4);
+  const trendingProducts = PRODUCTS.filter((p) => p.isTrending).slice(0, 8);
   const under99Products = PRODUCTS.filter((p) => p.isUnder99).slice(0, 4);
   const bestSellerProducts = PRODUCTS.filter((p) => p.isBestSeller).slice(0, 4);
 
@@ -254,62 +228,6 @@ export default function ShopHomePage() {
               />
             </picture>
           </Link>
-        </section>
-
-        {/* ===================================================================
-            SECTION 3: "FANTASTIC FLASH DEALS" COUNTDOWN SECTION (5-Column Grid)
-        ==================================================================== */}
-        <section className={styles.flashDealsSection}>
-          <div className={styles.flashHeaderRow}>
-            <div className={styles.flashTitleGroup}>
-              <div className={styles.flashBadge}>
-                <Zap size={16} />
-                <span>FANTASTIC FLASH DEALS</span>
-              </div>
-              <h2 className={styles.flashHeading}>Limited Air Batch Deals</h2>
-            </div>
-
-            {/* JetBrains Mono Countdown Timer */}
-            <div className={styles.timerWrapper}>
-              <span className={styles.timerLabel}>
-                <Clock size={14} />
-                <span>Deals End In:</span>
-              </span>
-              <div className={styles.timerPills}>
-                <div className={styles.timeBox}>
-                  <span className={styles.timeNum}>
-                    {String(timeLeft.hours).padStart(2, '0')}
-                  </span>
-                  <span className={styles.timeUnit}>HRS</span>
-                </div>
-                <span className={styles.timeColon}>:</span>
-                <div className={styles.timeBox}>
-                  <span className={styles.timeNum}>
-                    {String(timeLeft.minutes).padStart(2, '0')}
-                  </span>
-                  <span className={styles.timeUnit}>MIN</span>
-                </div>
-                <span className={styles.timeColon}>:</span>
-                <div className={styles.timeBox}>
-                  <span className={styles.timeNum}>
-                    {String(timeLeft.seconds).padStart(2, '0')}
-                  </span>
-                  <span className={styles.timeUnit}>SEC</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 5-Column Dense Grid */}
-          <div className={styles.flashGrid5Col}>
-            {flashDealProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                showStockBar={true}
-              />
-            ))}
-          </div>
         </section>
 
         {/* ===================================================================

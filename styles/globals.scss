@@ -62,6 +62,10 @@ body {
 
 main {
   flex: 1;
+
+  @include tablet {
+    padding-bottom: 68px; // Clear space for mobile bottom app bar
+  }
 }
 
 h1,

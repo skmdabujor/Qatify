@@ -398,9 +398,9 @@ export const ChatWidget: React.FC = () => {
         timestamp: time,
         actions: [
           {
-            label: '⚡ Shop Flash Deals Now',
+            label: '🛍️ Explore Qatar Catalog',
             actionType: 'link',
-            url: '/shop?flash=true',
+            url: '/shop',
           },
         ],
       };

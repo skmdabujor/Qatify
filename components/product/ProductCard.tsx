@@ -149,8 +149,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
 
-        {/* Flash Stock Progress Bar (Optional) */}
-        {(showStockBar || product.isFlashDeal) && (
+        {/* Stock Progress Bar (Optional) */}
+        {showStockBar && (
           <div className={styles.stockProgressWrap}>
             <div className={styles.stockTextRow}>
               <span className={styles.claimedText}>

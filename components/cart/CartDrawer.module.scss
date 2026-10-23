@@ -21,6 +21,10 @@
   flex-direction: column;
   box-shadow: $shadow-xl;
   animation: slideLeft 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  @include mobile {
+    width: 100vw;
+  }
 }
 
 @keyframes fadeIn {
@@ -350,6 +354,7 @@
   border-top: 1px solid $color-border-subtle;
   background-color: #ffffff;
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
+  padding-bottom: calc(#{$space-4} + env(safe-area-inset-bottom, 0px));
 }
 
 .promoForm {
