@@ -1,0 +1,737 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.cartPage {
+  padding: $space-4 0 $space-12 0;
+}
+
+.breadcrumbNav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: $color-text-muted;
+  margin-bottom: $space-4;
+}
+
+.crumbLink {
+  color: $color-text-secondary;
+  &:hover {
+    color: $color-accent-red;
+  }
+}
+
+.crumbChevron {
+  color: #a1a1aa;
+}
+
+.currentCrumb {
+  color: $color-ink-black;
+  font-weight: 600;
+}
+
+.cartHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-4;
+  padding-bottom: 12px;
+  border-bottom: 1px solid $color-border-subtle;
+}
+
+.headerTitleWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cartHeading {
+  font-size: 22px;
+  font-weight: 900;
+  color: $color-ink-black;
+  letter-spacing: -0.02em;
+}
+
+.cartCountPill {
+  background-color: $color-surface-muted;
+  color: $color-text-secondary;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: $radius-full;
+}
+
+.clearCartBtn {
+  background: none;
+  border: none;
+  color: $color-text-muted;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    color: $color-accent-red;
+    text-decoration: underline;
+  }
+}
+
+// Empty Cart
+.emptyCartCard {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 80px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: $shadow-sm;
+}
+
+.emptyIconCircle {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background-color: $color-surface-muted;
+  color: $color-text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.emptyTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: $color-ink-black;
+  margin-bottom: 6px;
+}
+
+.emptyDesc {
+  font-size: 13px;
+  color: $color-text-secondary;
+  max-width: 380px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.startShoppingBtn {
+  @include btn-primary-red;
+  padding: 12px 24px;
+  font-size: 14px;
+  gap: 8px;
+}
+
+// Cart Layout
+.cartLayout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: $space-6;
+  align-items: start;
+
+  @include laptop {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Left Column
+.itemsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.shippingAlertCard {
+  background-color: #fefce8;
+  border: 1px solid #fef08a;
+  border-radius: $radius-md;
+  padding: 12px 16px;
+}
+
+.alertContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.alertIcon {
+  color: #ca8a04;
+  margin-top: 2px;
+}
+
+.alertTextWrap {
+  flex: 1;
+}
+
+.freeUnlocked {
+  font-size: 12.5px;
+  color: #15803d;
+  margin-bottom: 6px;
+}
+
+.freeNeeded {
+  font-size: 12.5px;
+  color: #854d0e;
+  margin-bottom: 6px;
+}
+
+.progressTrack {
+  height: 6px;
+  background-color: #fef08a;
+  border-radius: $radius-full;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-accent-yellow-dark, $color-accent-red);
+  border-radius: $radius-full;
+  transition: width 300ms ease;
+}
+
+// Items List
+.cartItemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cartItemRow {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 14px;
+  display: flex;
+  gap: 14px;
+  box-shadow: $shadow-xs;
+  transition: border-color $transition-fast;
+
+  &:hover {
+    border-color: $color-border-medium;
+  }
+
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+.itemImageWrap {
+  width: 96px;
+  height: 96px;
+  border-radius: $radius-sm;
+  background-color: $color-surface-muted;
+  overflow: hidden;
+  border: 1px solid $color-border-subtle;
+  flex-shrink: 0;
+}
+
+.itemImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.itemMainCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.itemHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.itemBrandAndTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.itemBrand {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.itemTitleLink {
+  text-decoration: none;
+}
+
+.itemTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: $color-ink-black;
+  line-height: 1.35;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-accent-red;
+  }
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  color: $color-text-muted;
+  padding: 4px;
+  cursor: pointer;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-accent-red;
+  }
+}
+
+.itemVariants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.variantBadge {
+  font-size: 11px;
+  background-color: $color-surface-muted;
+  color: $color-text-secondary;
+  padding: 2px 7px;
+  border-radius: $radius-xs;
+  font-weight: 600;
+}
+
+.itemDeliveryNotice {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #854d0e;
+  background-color: #fefce8;
+  border: 1px solid #fef08a;
+  padding: 2px 8px;
+  border-radius: $radius-xs;
+  width: fit-content;
+}
+
+.planeNoticeIcon {
+  color: #ca8a04;
+}
+
+.itemFooterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid #f4f4f5;
+  padding-top: 8px;
+  flex-wrap: wrap;
+}
+
+.priceCol {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.unitPrice {
+  font-size: 15px;
+  font-weight: 800;
+  font-family: $font-mono;
+  color: $color-ink-black;
+}
+
+.originalPrice {
+  font-size: 11.5px;
+  color: $color-text-muted;
+  text-decoration: line-through;
+  font-family: $font-mono;
+}
+
+.stepperAndSave {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-xs;
+  background-color: #ffffff;
+}
+
+.stepBtn {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: $color-ink-black;
+
+  &:hover {
+    background-color: $color-surface-muted;
+  }
+}
+
+.stepQty {
+  font-family: $font-mono;
+  font-size: 12.5px;
+  font-weight: 800;
+  padding: 0 8px;
+}
+
+.saveForLaterBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  font-size: 11px;
+  color: $color-text-secondary;
+  cursor: pointer;
+
+  &:hover {
+    color: $color-accent-red;
+  }
+}
+
+.lineItemTotal {
+  font-size: 12px;
+  color: $color-text-secondary;
+
+  strong {
+    font-size: 15px;
+    color: $color-accent-red;
+  }
+}
+
+// Upsell Section
+.upsellSection {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 14px 16px;
+}
+
+.upsellHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: $color-ink-black;
+  margin-bottom: 12px;
+
+  svg {
+    color: $color-accent-red;
+  }
+}
+
+.upsellGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.upsellCard {
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-sm;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #fafafa;
+}
+
+.upsellImg {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: $radius-xs;
+}
+
+.upsellInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.upsellTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: $color-ink-black;
+  @include text-truncate;
+}
+
+.upsellPrice {
+  font-size: 11.5px;
+  font-family: $font-mono;
+  font-weight: 800;
+  color: $color-accent-red;
+}
+
+.quickAddBtn {
+  background-color: $color-ink-black;
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: $radius-xs;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $color-accent-red;
+  }
+}
+
+// Right Column: Summary Card
+.summaryColumn {
+  position: sticky;
+  top: 90px;
+}
+
+.summaryCard {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 18px;
+  box-shadow: $shadow-sm;
+}
+
+.summaryTitle {
+  font-size: 16px;
+  font-weight: 800;
+  color: $color-ink-black;
+  margin-bottom: 14px;
+  border-bottom: 1px solid $color-border-subtle;
+  padding-bottom: 10px;
+}
+
+.couponForm {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.couponInputWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: $color-surface-muted;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-xs;
+  padding: 6px 10px;
+
+  &:focus-within {
+    border-color: $color-ink-black;
+    background-color: #ffffff;
+  }
+}
+
+.couponTagIcon {
+  color: $color-text-muted;
+}
+
+.couponInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 12px;
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.couponBtn {
+  background-color: $color-ink-black;
+  color: #ffffff;
+  border: none;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: $radius-xs;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #27272a;
+  }
+}
+
+.couponSuccessNotice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  padding: 4px 10px;
+  border-radius: $radius-xs;
+  font-size: 11px;
+  margin-bottom: 12px;
+}
+
+.removeCouponAction {
+  background: none;
+  border: none;
+  color: #047857;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 10.5px;
+}
+
+.summaryRowsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.summaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: $color-text-secondary;
+}
+
+.shippingLabelCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.shippingNotice {
+  font-size: 10.5px;
+  color: $color-text-muted;
+}
+
+.freeText {
+  color: #15803d;
+  font-weight: 800;
+}
+
+.discountRow {
+  color: $color-accent-red;
+  font-weight: 700;
+}
+
+.grandTotalRow {
+  border-top: 1px solid $color-border-subtle;
+  padding-top: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  color: $color-ink-black;
+}
+
+.grandTotalValue {
+  font-size: 20px;
+  font-family: $font-mono;
+  color: $color-accent-red;
+}
+
+.checkoutSubmitBtn {
+  @include btn-primary-red;
+  width: 100%;
+  padding: 13px;
+  font-size: 14px;
+  gap: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
+}
+
+.continueShoppingLink {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-text-secondary;
+  text-decoration: none;
+  margin-bottom: 16px;
+
+  &:hover {
+    color: $color-ink-black;
+    text-decoration: underline;
+  }
+}
+
+.summaryTrustBox {
+  border-top: 1px solid #f4f4f5;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trustRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: $color-text-muted;
+
+  svg {
+    color: #10b981;
+    flex-shrink: 0;
+  }
+}
+
+.cartChatSupportCard {
+  margin-top: 14px;
+  background-color: #f8fafc;
+  border: 1px dashed $color-border-subtle;
+  border-radius: $radius-sm;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cartChatText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+
+  strong {
+    font-size: 11.5px;
+    color: $color-ink-black;
+  }
+
+  span {
+    font-size: 10.5px;
+    color: $color-text-muted;
+  }
+}
+
+.cartChatBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #0a0a0c;
+  color: #ffffff;
+  border: none;
+  border-radius: $radius-full;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all $transition-fast;
+
+  svg {
+    color: $color-accent-yellow;
+  }
+
+  &:hover {
+    background-color: $color-accent-red;
+    transform: scale(1.03);
+  }
+}
+

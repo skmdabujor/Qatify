@@ -1,0 +1,675 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.shopPage {
+  padding: $space-4 0 $space-10 0;
+}
+
+// Header Banner
+.headerBanner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-4;
+  margin-bottom: $space-4;
+  padding-bottom: $space-3;
+  border-bottom: 1px solid $color-border-subtle;
+
+  @include tablet {
+    flex-direction: column;
+  }
+}
+
+.headerInfo {
+  max-width: 720px;
+}
+
+.breadcrumb {
+  font-size: 11.5px;
+  color: $color-text-muted;
+  text-transform: capitalize;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.catalogHeading {
+  font-size: 24px;
+  font-weight: 900;
+  color: $color-ink-black;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+
+  @include mobile {
+    font-size: 20px;
+  }
+}
+
+.catalogDesc {
+  font-size: 12.5px;
+  color: $color-text-secondary;
+  line-height: 1.45;
+}
+
+.quickQatarAssurance {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #fefce8;
+  color: #854d0e;
+  border: 1px solid #fef08a;
+  padding: 6px 12px;
+  border-radius: $radius-sm;
+  font-size: 11.5px;
+  font-weight: 700;
+  flex-shrink: 0;
+
+  svg {
+    color: #ca8a04;
+  }
+}
+
+// Quick Price Tier Filter Pills
+.quickPillsStrip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 10px;
+  margin-bottom: $space-4;
+  @include custom-scrollbar;
+}
+
+.pricePill {
+  @include button-reset;
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  color: $color-ink-black;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: $radius-full;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: $color-ink-black;
+  }
+
+  &.active {
+    background-color: $color-ink-black;
+    color: #ffffff;
+    border-color: $color-ink-black;
+  }
+}
+
+.flashTogglePill {
+  @include button-reset;
+  background-color: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: $color-accent-red;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: $radius-full;
+  transition: all $transition-fast;
+
+  &:hover {
+    background-color: $color-accent-red;
+    color: #ffffff;
+  }
+
+  &.active {
+    background-color: $color-accent-red;
+    color: #ffffff;
+    border-color: $color-accent-red;
+    box-shadow: 0 2px 8px rgba(225, 29, 72, 0.3);
+  }
+}
+
+// Layout: Sidebar + Workspace
+.catalogLayout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: $space-4;
+  align-items: start;
+
+  @include laptop {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Faceted Sidebar
+.filterSidebar {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  overflow: hidden;
+  position: sticky;
+  top: 90px;
+
+  @include laptop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: $z-modal;
+    border-radius: 0;
+    display: none;
+    flex-direction: column;
+
+    &.mobileOpen {
+      display: flex;
+    }
+  }
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background-color: $color-surface-muted;
+  border-bottom: 1px solid $color-border-subtle;
+}
+
+.sidebarTitleWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: $color-ink-black;
+  letter-spacing: 0.03em;
+}
+
+.filterCountBadge {
+  background-color: $color-accent-red;
+  color: #ffffff;
+  font-size: 10px;
+  font-family: $font-mono;
+  padding: 1px 5px;
+  border-radius: $radius-full;
+}
+
+.resetBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  color: $color-accent-red;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.mobileCloseBtn {
+  display: none;
+  background: none;
+  border: none;
+  color: $color-ink-black;
+  cursor: pointer;
+
+  @include laptop {
+    display: block;
+  }
+}
+
+.sidebarBody {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+
+  @include laptop {
+    flex: 1;
+    overflow-y: auto;
+  }
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid #f4f4f5;
+  padding-bottom: 12px;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.filterGroupTitle {
+  font-size: 12px;
+  font-weight: 800;
+  color: $color-ink-black;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.categoryRadioList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  @include custom-scrollbar;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: $color-ink-black;
+  cursor: pointer;
+
+  input {
+    cursor: pointer;
+    accent-color: $color-accent-red;
+  }
+}
+
+.radioLabel {
+  flex: 1;
+}
+
+.radioCount {
+  font-size: 10.5px;
+  font-family: $font-mono;
+  color: $color-text-muted;
+}
+
+.checkboxList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.checkboxOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: $color-ink-black;
+  cursor: pointer;
+
+  input {
+    cursor: pointer;
+    accent-color: $color-accent-red;
+  }
+}
+
+.checkLabel {
+  font-weight: 500;
+}
+
+.ratingOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ratingFilterBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: $color-surface-muted;
+  border: 1px solid transparent;
+  padding: 5px 8px;
+  border-radius: $radius-xs;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: $color-border-medium;
+  }
+
+  &.active {
+    background-color: #fefce8;
+    border-color: #fef08a;
+    color: #854d0e;
+    font-weight: 700;
+  }
+}
+
+.discountPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.discountFilterBtn {
+  background-color: $color-surface-muted;
+  border: 1px solid transparent;
+  padding: 4px 8px;
+  border-radius: $radius-xs;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $color-border-medium;
+  }
+
+  &.active {
+    background-color: #fff1f2;
+    border-color: #fecdd3;
+    color: $color-accent-red;
+    font-weight: 700;
+  }
+}
+
+.switchRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.switchLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-ink-black;
+}
+
+.toggleInput {
+  accent-color: $color-accent-red;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+.mobileApplyFooter {
+  display: none;
+  padding: 12px 14px;
+  border-top: 1px solid $color-border-subtle;
+  background-color: #ffffff;
+
+  @include laptop {
+    display: block;
+  }
+}
+
+.applyFiltersBtn {
+  @include btn-primary-red;
+  width: 100%;
+  padding: 12px;
+  font-size: 13.5px;
+}
+
+// Products Catalog Workspace
+.productsWorkspace {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.catalogToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 8px 14px;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+}
+
+.toolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobileFilterToggle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  background-color: $color-ink-black;
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: $radius-xs;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+
+  @include laptop {
+    display: inline-flex;
+  }
+}
+
+.filterCountMini {
+  background-color: $color-accent-red;
+  color: #ffffff;
+  font-size: 10px;
+  font-family: $font-mono;
+  padding: 1px 5px;
+  border-radius: $radius-full;
+}
+
+.resultCount {
+  font-size: 12.5px;
+  color: $color-text-secondary;
+
+  strong {
+    color: $color-ink-black;
+  }
+}
+
+.toolbarRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  @include mobile {
+    justify-content: space-between;
+  }
+}
+
+.sortWrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sortLabel {
+  font-size: 12px;
+  color: $color-text-secondary;
+  font-weight: 600;
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.sortSelectWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sortSelect {
+  appearance: none;
+  background-color: $color-surface-muted;
+  border: 1px solid $color-border-subtle;
+  padding: 5px 24px 5px 10px;
+  border-radius: $radius-xs;
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-ink-black;
+  cursor: pointer;
+  outline: none;
+
+  &:focus {
+    border-color: $color-accent-red;
+  }
+}
+
+.sortChevron {
+  position: absolute;
+  right: 6px;
+  pointer-events: none;
+  color: $color-text-secondary;
+}
+
+.viewModeToggle {
+  display: flex;
+  align-items: center;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-xs;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.viewBtn {
+  background: none;
+  border: none;
+  padding: 5px 8px;
+  color: $color-text-muted;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-fast;
+
+  &.active {
+    background-color: $color-ink-black;
+    color: #ffffff;
+  }
+}
+
+// Active Filter Tags Strip
+.activeFilterTagsStrip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-sm;
+  padding: 6px 12px;
+}
+
+.activeTagTitle {
+  font-size: 11px;
+  font-weight: 800;
+  color: $color-text-muted;
+  text-transform: uppercase;
+}
+
+.filterTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: $color-surface-muted;
+  border: 1px solid $color-border-subtle;
+  padding: 2px 7px;
+  border-radius: $radius-xs;
+  font-size: 11px;
+  font-weight: 600;
+  color: $color-ink-black;
+
+  button {
+    background: none;
+    border: none;
+    color: $color-text-muted;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      color: $color-accent-red;
+    }
+  }
+}
+
+.clearAllFiltersBtn {
+  background: none;
+  border: none;
+  font-size: 11px;
+  font-weight: 700;
+  color: $color-accent-red;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 4px;
+}
+
+// Grids
+.productsGrid4Col {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+
+  @include desktop {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+.productsListCol {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+// No Results State
+.noResultsBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.noResultsIcon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.noResultsTitle {
+  font-size: 16px;
+  font-weight: 800;
+  color: $color-ink-black;
+  margin-bottom: 6px;
+}
+
+.noResultsDesc {
+  font-size: 12.5px;
+  color: $color-text-secondary;
+  margin-bottom: 16px;
+  max-width: 340px;
+}
+
+.resetCatalogBtn {
+  @include btn-primary-red;
+  padding: 8px 18px;
+  font-size: 12.5px;
+}
+

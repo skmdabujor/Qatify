@@ -1,0 +1,514 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 10, 12, 0.65);
+  backdrop-filter: blur(2px);
+  z-index: $z-drawer;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 200ms ease;
+}
+
+.drawer {
+  width: 440px;
+  max-width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: $shadow-xl;
+  animation: slideLeft 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideLeft {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+// Header
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-4;
+  border-bottom: 1px solid $color-border-subtle;
+  background-color: #ffffff;
+}
+
+.headerTitleWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerIcon {
+  color: $color-accent-red;
+}
+
+.headerTitle {
+  font-size: 16px;
+  font-weight: 800;
+  color: $color-ink-black;
+  margin: 0;
+}
+
+.itemCountBadge {
+  font-size: 13px;
+  font-family: $font-mono;
+  color: $color-text-secondary;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: $color-text-muted;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: $radius-xs;
+  transition: color $transition-fast, background-color $transition-fast;
+
+  &:hover {
+    color: $color-ink-black;
+    background-color: $color-surface-muted;
+  }
+}
+
+// Free Delivery Progress
+.shippingBarWrap {
+  background-color: #fbfbfb;
+  padding: 10px 16px;
+  border-bottom: 1px solid $color-border-subtle;
+}
+
+.shippingBarStatus {
+  font-size: 12px;
+  color: $color-ink-black;
+  margin-bottom: 6px;
+
+  .unlockedText {
+    color: #15803d;
+    font-weight: 700;
+  }
+}
+
+.progressBarTrack {
+  height: 6px;
+  background-color: #e4e4e7;
+  border-radius: $radius-full;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-accent-yellow, $color-accent-red);
+  border-radius: $radius-full;
+  transition: width 300ms ease;
+}
+
+// 6-10 Days Delivery Preview Strip
+.deliveryEstimateStrip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #fefce8;
+  color: #854d0e;
+  border-bottom: 1px solid #fef08a;
+  padding: 8px 16px;
+  font-size: 11.5px;
+}
+
+.planeIcon {
+  color: #ca8a04;
+  flex-shrink: 0;
+}
+
+.deliveryEstimateText {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  strong {
+    font-weight: 700;
+    color: #713f12;
+  }
+}
+
+// Items List
+.itemsList {
+  flex: 1;
+  overflow-y: auto;
+  padding: $space-3 $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  @include custom-scrollbar;
+}
+
+.cartItemCard {
+  display: flex;
+  gap: $space-3;
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  transition: border-color $transition-fast;
+
+  &:hover {
+    border-color: $color-border-medium;
+  }
+}
+
+.itemImageWrap {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  border-radius: $radius-sm;
+  background-color: $color-surface-muted;
+  overflow: hidden;
+  border: 1px solid $color-border-subtle;
+}
+
+.itemImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.itemDetails {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.itemHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.itemTitle {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: $color-ink-black;
+  line-height: 1.35;
+  @include line-clamp(2);
+  text-decoration: none;
+
+  &:hover {
+    color: $color-accent-red;
+  }
+}
+
+.itemDeleteBtn {
+  background: none;
+  border: none;
+  color: $color-text-muted;
+  padding: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-accent-red;
+  }
+}
+
+.variantBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 4px 0;
+}
+
+.variantBadge {
+  font-size: 10.5px;
+  background-color: $color-surface-muted;
+  color: $color-text-secondary;
+  padding: 1px 6px;
+  border-radius: $radius-xs;
+  font-weight: 500;
+}
+
+.itemFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.priceWrap {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.unitPrice {
+  font-size: 13.5px;
+  font-weight: 800;
+  font-family: $font-mono;
+  color: $color-ink-black;
+}
+
+.originalPrice {
+  font-size: 11px;
+  font-family: $font-mono;
+  color: $color-text-muted;
+  text-decoration: line-through;
+}
+
+.qtyStepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-xs;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.qtyBtn {
+  background: none;
+  border: none;
+  padding: 3px 7px;
+  cursor: pointer;
+  color: $color-ink-black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: $color-surface-muted;
+  }
+}
+
+.qtyNumber {
+  font-size: 12px;
+  font-family: $font-mono;
+  font-weight: 700;
+  padding: 0 6px;
+  min-width: 20px;
+  text-align: center;
+}
+
+// Empty State
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.emptyIconCircle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: $color-surface-muted;
+  color: $color-text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.emptyTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: $color-ink-black;
+  margin-bottom: 6px;
+}
+
+.emptyDesc {
+  font-size: 12.5px;
+  color: $color-text-secondary;
+  max-width: 280px;
+  line-height: 1.45;
+  margin-bottom: 20px;
+}
+
+.continueShopBtn {
+  @include btn-primary-red;
+  padding: 10px 20px;
+  font-size: 13px;
+}
+
+// Footer
+.footer {
+  padding: $space-4;
+  border-top: 1px solid $color-border-subtle;
+  background-color: #ffffff;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.promoForm {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.promoInputWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-xs;
+  padding: 6px 10px;
+  background-color: $color-surface-muted;
+
+  &:focus-within {
+    border-color: $color-ink-black;
+    background-color: #ffffff;
+  }
+}
+
+.tagIcon {
+  color: $color-text-muted;
+}
+
+.promoInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 12px;
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.applyBtn {
+  background-color: $color-ink-black;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 14px;
+  border-radius: $radius-xs;
+  border: none;
+  cursor: pointer;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: #27272a;
+  }
+}
+
+.couponSuccessPill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  padding: 4px 10px;
+  border-radius: $radius-xs;
+  font-size: 11px;
+  margin-bottom: 10px;
+}
+
+.removeCouponBtn {
+  background: none;
+  border: none;
+  color: #047857;
+  font-size: 10.5px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.summaryLines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.summaryLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: $color-text-secondary;
+}
+
+.freeTag {
+  background-color: #dcfce7;
+  color: #15803d;
+  font-weight: 800;
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: $radius-xs;
+  margin-left: 6px;
+}
+
+.discountLine {
+  color: $color-accent-red;
+  font-weight: 600;
+}
+
+.totalLine {
+  border-top: 1px solid $color-border-subtle;
+  padding-top: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: $color-ink-black;
+}
+
+.totalValue {
+  font-size: 17px;
+  font-family: $font-mono;
+  color: $color-accent-red;
+}
+
+.ctaButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkoutBtn {
+  @include btn-primary-red;
+  width: 100%;
+  padding: 12px;
+  font-size: 13.5px;
+  gap: 8px;
+}
+
+.viewCartBtn {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-ink-black;
+  text-decoration: none;
+  padding: 6px;
+
+  &:hover {
+    color: $color-accent-red;
+    text-decoration: underline;
+  }
+}
+
+.assuranceNote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: $color-text-muted;
+
+  svg {
+    color: $color-success;
+  }
+}
+

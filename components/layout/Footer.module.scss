@@ -1,0 +1,320 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.footer {
+  background-color: $color-ink-black;
+  color: #d4d4d8;
+  margin-top: auto;
+}
+
+// 1. TRUST STRIP
+.trustStrip {
+  background-color: #121216;
+  border-top: 1px solid #27272a;
+  border-bottom: 1px solid #1f1f24;
+  padding: $space-6 0;
+}
+
+.trustGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $space-4;
+
+  @include laptop {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: $space-3;
+  }
+}
+
+.trustCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: $radius-md;
+}
+
+.trustIconWrap {
+  color: $color-accent-yellow;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.trustContent {
+  flex: 1;
+}
+
+.trustTitle {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 3px;
+  font-family: $font-heading;
+}
+
+.trustDesc {
+  font-size: 11.5px;
+  color: #a1a1aa;
+  line-height: 1.4;
+}
+
+// 2. MAIN FOOTER
+.mainFooter {
+  padding: $space-10 0 $space-8 0;
+
+  @include mobile {
+    padding: $space-6 0;
+  }
+}
+
+.footerGrid {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 1fr 1.6fr;
+  gap: $space-8;
+
+  @include laptop {
+    grid-template-columns: 1fr 1fr;
+    gap: $space-6;
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: $space-6;
+  }
+}
+
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.brandBio {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #a1a1aa;
+  margin-top: 4px;
+}
+
+.contactDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.contactRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #d4d4d8;
+
+  svg {
+    color: $color-accent-yellow;
+    flex-shrink: 0;
+  }
+}
+
+.chatFooterBtn {
+  background: none;
+  border: none;
+  color: $color-accent-yellow;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+}
+
+.linksCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.colTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: $space-4;
+  letter-spacing: -0.01em;
+  position: relative;
+  display: inline-block;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 24px;
+    height: 2px;
+    background-color: $color-accent-red;
+  }
+}
+
+.linksList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+
+  li a,
+  li button,
+  .linkButton {
+    font-size: 12.5px;
+    color: #a1a1aa;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: color $transition-fast, transform $transition-fast;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    &:hover {
+      color: #ffffff;
+      transform: translateX(3px);
+    }
+  }
+}
+
+.newsletterCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.newsletterDesc {
+  font-size: 12.5px;
+  color: #a1a1aa;
+  line-height: 1.5;
+  margin-top: 6px;
+  margin-bottom: 12px;
+}
+
+.newsletterForm {
+  display: flex;
+  align-items: stretch;
+  background-color: #1a1a20;
+  border: 1px solid #2e2e38;
+  border-radius: $radius-sm;
+  overflow: hidden;
+  margin-bottom: 12px;
+
+  &:focus-within {
+    border-color: $color-accent-red;
+  }
+}
+
+.newsletterInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: #ffffff;
+  outline: none;
+
+  &::placeholder {
+    color: #71717a;
+  }
+}
+
+.newsletterSubmit {
+  background-color: $color-accent-red;
+  color: #ffffff;
+  border: none;
+  padding: 0 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: $color-accent-red-hover;
+  }
+}
+
+.deliveryBadgeMini {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(250, 204, 21, 0.08);
+  border: 1px solid rgba(250, 204, 21, 0.2);
+  padding: 6px 10px;
+  border-radius: $radius-xs;
+  font-size: 11.5px;
+  color: #e4e4e7;
+
+  .yellowSpark {
+    color: $color-accent-yellow;
+  }
+
+  strong {
+    color: $color-accent-yellow;
+  }
+}
+
+// 3. BOTTOM UTILITY
+.bottomBar {
+  background-color: #050506;
+  border-top: 1px solid #18181c;
+  padding: 14px 0;
+}
+
+.bottomInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+
+  @include tablet {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+}
+
+.copyrightText {
+  font-size: 11.5px;
+  color: #71717a;
+
+  strong {
+    color: #a1a1aa;
+  }
+}
+
+.paymentMethods {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.payBadge {
+  background-color: #18181c;
+  border: 1px solid #27272a;
+  color: #d4d4d8;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: $radius-xs;
+  letter-spacing: -0.01em;
+}
+

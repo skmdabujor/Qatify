@@ -1,0 +1,1449 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.dashboardPage {
+  padding: $space-4 0 $space-12 0;
+}
+
+// Top Control Bar
+.topControlBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  margin-bottom: $space-6;
+  padding-bottom: 16px;
+  border-bottom: 1px solid $color-border-subtle;
+
+  @include laptop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.dashboardTitleBlock {
+  max-width: 600px;
+}
+
+.dashboardHeading {
+  font-size: 24px;
+  font-weight: 900;
+  color: $color-ink-black;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+
+  @include mobile {
+    font-size: 20px;
+  }
+}
+
+.dashboardSubheading {
+  font-size: 13px;
+  color: $color-text-secondary;
+  line-height: 1.4;
+}
+
+.roleSwitcherWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  padding: 4px 8px;
+  border-radius: $radius-full;
+  box-shadow: $shadow-xs;
+}
+
+.switcherLabel {
+  font-size: 11px;
+  font-weight: 800;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  margin-left: 6px;
+}
+
+.rolePillsGroup {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rolePill {
+  @include button-reset;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: $radius-full;
+  color: $color-text-secondary;
+  transition: all $transition-fast;
+
+  &:hover {
+    color: $color-ink-black;
+  }
+
+  &.active {
+    background-color: $color-ink-black;
+    color: #ffffff;
+    box-shadow: $shadow-xs;
+  }
+}
+
+// Shell: Sidebar + Workspace
+.dashboardShell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: $space-6;
+  align-items: start;
+
+  @include laptop {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Collapsible Dark Sidebar (#0A0A0C)
+.darkSidebar {
+  background-color: $color-ink-black;
+  color: #ffffff;
+  border-radius: $radius-md;
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 520px;
+  box-shadow: $shadow-md;
+  border: 1px solid #1c1c22;
+  position: sticky;
+  top: 90px;
+
+  @include laptop {
+    position: static;
+    min-height: auto;
+  }
+}
+
+.sidebarNav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.userProfileMini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background-color: #16161a;
+  border-radius: $radius-sm;
+  margin-bottom: 12px;
+  border: 1px solid #27272a;
+}
+
+.avatarCircle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: $color-accent-red;
+  color: #ffffff;
+  font-family: $font-heading;
+  font-weight: 800;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.userName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.userLocation {
+  font-size: 11px;
+  color: #a1a1aa;
+}
+
+.adminBadgeBlock {
+  padding: 8px 10px;
+  background-color: #16161a;
+  border-radius: $radius-sm;
+  margin-bottom: 12px;
+  border: 1px solid #27272a;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.adminPill {
+  font-family: $font-mono;
+  font-size: 9.5px;
+  font-weight: 800;
+  color: $color-accent-yellow;
+}
+
+.adminStoreName {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.navGroupTitle {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #71717a;
+  letter-spacing: 0.05em;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  padding-left: 8px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: $radius-xs;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #d4d4d8;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all $transition-fast;
+
+  &:hover {
+    color: #ffffff;
+    background-color: #1a1a20;
+  }
+
+  &.active {
+    background-color: $color-accent-red;
+    color: #ffffff;
+    font-weight: 700;
+  }
+}
+
+.sidebarFooter {
+  border-top: 1px solid #27272a;
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.supportTag {
+  font-size: 11px;
+  color: $color-accent-yellow;
+  font-weight: 700;
+}
+
+.hubId {
+  font-size: 10px;
+  font-family: $font-mono;
+  color: #71717a;
+}
+
+// Workspace Canvas (#F8F9FA)
+.workspace {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+// KPI Cards Row
+.kpiCardsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-4;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: $space-3;
+  }
+}
+
+.kpiCard {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: $shadow-xs;
+
+  &.kpiCardClickable {
+    cursor: pointer;
+    transition: border-color $transition-fast, box-shadow $transition-fast, transform $transition-fast;
+
+    &:hover {
+      border-color: #cbd5e1;
+      box-shadow: $shadow-sm;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+.kpiIconWrapYellow {
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-sm;
+  background-color: #fefce8;
+  color: #ca8a04;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kpiIconWrapRed {
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-sm;
+  background-color: #fff1f2;
+  color: $color-accent-red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kpiIconWrapDark {
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-sm;
+  background-color: $color-surface-muted;
+  color: $color-ink-black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kpiContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpiLabel {
+  font-size: 11.5px;
+  color: $color-text-secondary;
+  font-weight: 600;
+}
+
+.kpiValue {
+  font-size: 18px;
+  font-weight: 900;
+  color: $color-ink-black;
+  line-height: 1.2;
+}
+
+.kpiSub {
+  font-size: 11px;
+  color: $color-text-muted;
+}
+
+// Tab Content Card
+.tabContentCard {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: $space-6;
+  box-shadow: $shadow-xs;
+
+  @include mobile {
+    padding: $space-4;
+  }
+}
+
+.cardHeading {
+  font-size: 18px;
+  font-weight: 800;
+  color: $color-ink-black;
+  margin-bottom: 2px;
+}
+
+.cardSub {
+  font-size: 12.5px;
+  color: $color-text-secondary;
+  margin-bottom: 18px;
+}
+
+// 5-Stage Tracker Header
+.trackerSearchHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-4;
+  margin-bottom: 18px;
+
+  @include tablet {
+    flex-direction: column;
+  }
+}
+
+.trackerSearchForm {
+  display: flex;
+  align-items: stretch;
+  background-color: $color-surface-muted;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-xs;
+  overflow: hidden;
+
+  &:focus-within {
+    border-color: $color-ink-black;
+    background-color: #ffffff;
+  }
+}
+
+.trackerSearchInput {
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-family: $font-mono;
+  outline: none;
+  width: 190px;
+}
+
+.trackerSearchBtn {
+  background-color: $color-ink-black;
+  color: #ffffff;
+  border: none;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.activeShipmentBanner {
+  background: linear-gradient(135deg, #121216 0%, #1c1c24 100%);
+  border-radius: $radius-sm;
+  padding: 16px 20px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  margin-bottom: 24px;
+  border: 1px solid #27272a;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.shipmentMetaBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.shipmentTag {
+  font-family: $font-mono;
+  font-size: 10px;
+  font-weight: 800;
+  color: $color-accent-yellow;
+}
+
+.shipmentTrackingCode {
+  font-family: $font-mono;
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+
+.shipmentRef {
+  font-size: 11.5px;
+  color: #a1a1aa;
+}
+
+.shipmentEtaBlock {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+
+  @include mobile {
+    text-align: left;
+  }
+}
+
+.etaLabel {
+  font-size: 11px;
+  color: #a1a1aa;
+}
+
+.etaDates {
+  font-size: 15px;
+  font-weight: 800;
+  color: $color-accent-yellow;
+}
+
+.etaLocation {
+  font-size: 11px;
+  color: #e4e4e7;
+}
+
+// 5-Stage Timeline Nodes
+.fiveStageTimeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 10px 0;
+}
+
+.timelineNodeRow {
+  display: flex;
+  gap: 16px;
+
+  &.done {
+    .nodeCircle {
+      background-color: #10b981;
+      color: #ffffff;
+      border-color: #10b981;
+    }
+    .nodeLine {
+      background-color: #10b981;
+    }
+    .nodeTitle {
+      color: $color-ink-black;
+    }
+  }
+
+  &.current {
+    .nodeCircle {
+      background-color: $color-ink-black;
+      color: $color-accent-yellow;
+      border-color: $color-accent-yellow;
+      box-shadow: 0 0 10px rgba(250, 204, 21, 0.7);
+    }
+    .nodeTitle {
+      color: $color-accent-red;
+      font-weight: 800;
+    }
+  }
+}
+
+.nodeColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.nodeCircle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #d4d4d8;
+  background-color: #ffffff;
+  color: $color-text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  font-family: $font-mono;
+  z-index: 2;
+}
+
+.pulsePlane {
+  animation: pulse 1.5s infinite;
+}
+
+.nodeLine {
+  width: 2px;
+  flex: 1;
+  min-height: 40px;
+  background-color: #e4e4e7;
+  margin-top: 4px;
+}
+
+.nodeDetails {
+  flex: 1;
+  background-color: $color-surface-muted;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-sm;
+  padding: 12px 14px;
+}
+
+.nodeTopLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.nodeTitle {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: $color-ink-black;
+}
+
+.nodeDate {
+  font-family: $font-mono;
+  font-size: 11px;
+  color: $color-text-muted;
+}
+
+.nodeDesc {
+  font-size: 12px;
+  color: $color-text-secondary;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.nodeLocation {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: $color-text-muted;
+
+  svg {
+    color: $color-accent-red;
+  }
+}
+
+// Orders Tab
+.ordersList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.orderListItem {
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-sm;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.orderHeaderStrip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background-color: $color-surface-muted;
+  border-bottom: 1px solid $color-border-subtle;
+}
+
+.orderNumberWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-family: $font-mono;
+
+  strong {
+    color: $color-ink-black;
+  }
+}
+
+.orderDate {
+  font-size: 11px;
+  color: $color-text-muted;
+}
+
+.orderStatusBadge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: $radius-full;
+
+  &.delivered {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+
+  &.inTransit {
+    background-color: #fefce8;
+    color: #854d0e;
+    border: 1px solid #fef08a;
+  }
+}
+
+.orderItemsPreview {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.orderThumbWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.orderThumbImg {
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: $radius-xs;
+  border: 1px solid $color-border-subtle;
+}
+
+.orderItemInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.orderItemTitle {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: $color-ink-black;
+}
+
+.orderItemQty {
+  font-size: 11px;
+  color: $color-text-muted;
+}
+
+.orderFooterStrip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-top: 1px solid #f4f4f5;
+  background-color: #fafafa;
+}
+
+.orderTotalWrap {
+  font-size: 13px;
+  color: $color-text-secondary;
+}
+
+.trackOrderAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: $color-ink-black;
+  color: #ffffff;
+  padding: 5px 12px;
+  border-radius: $radius-xs;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: $color-accent-red;
+  }
+}
+
+// Addresses Tab
+.addressHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.addNewAddrBtn {
+  @include btn-primary-red;
+  padding: 8px 14px;
+  font-size: 12px;
+  gap: 6px;
+}
+
+.addressesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.addressCard {
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-sm;
+  padding: 14px;
+  background-color: #fafafa;
+}
+
+.addressCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.addrRecipient {
+  font-size: 14px;
+  color: $color-ink-black;
+}
+
+.defaultPill {
+  background-color: $color-ink-black;
+  color: #ffffff;
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: $radius-xs;
+}
+
+.addrPhone {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: $color-text-muted;
+  margin-bottom: 8px;
+}
+
+.addrDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12px;
+  color: $color-text-secondary;
+}
+
+// Wishlist Header
+.wishlistHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.wishlistCountBadge {
+  font-family: $font-mono;
+  font-size: 11px;
+  font-weight: 700;
+  color: $color-ink-black;
+  background-color: $color-surface-muted;
+  border: 1px solid $color-border-subtle;
+  padding: 4px 10px;
+  border-radius: $radius-full;
+  white-space: nowrap;
+}
+
+// Wishlist Grid
+.wishlistGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.wishlistItemCard {
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-sm;
+  padding: 12px;
+  background-color: #ffffff;
+  display: flex;
+  gap: 10px;
+  position: relative;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    border-color: #d4d4d8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+}
+
+.wishlistImgLink {
+  display: block;
+  flex-shrink: 0;
+}
+
+.wishlistImg {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: $radius-xs;
+  background-color: $color-surface-muted;
+  transition: transform $transition-fast;
+
+  &:hover {
+    transform: scale(1.04);
+  }
+}
+
+.wishlistBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  gap: 6px;
+}
+
+.wishlistTitleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.wishlistTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-ink-black;
+  text-decoration: none;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.35;
+  @include line-clamp(2);
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-accent-red;
+  }
+}
+
+.removeWishlistBtn {
+  background: transparent;
+  border: none;
+  color: $color-text-muted;
+  padding: 3px;
+  border-radius: $radius-xs;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all $transition-fast;
+
+  &:hover {
+    color: $color-accent-red;
+    background-color: rgba(225, 29, 72, 0.08);
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.wishlistPrice {
+  font-family: $font-mono;
+  font-size: 13px;
+  font-weight: 800;
+  color: $color-accent-red;
+}
+
+.wishlistBottomActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.moveToCartBtn {
+  flex: 1;
+  background-color: $color-ink-black;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 8px;
+  border-radius: $radius-xs;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: $color-accent-red;
+  }
+}
+
+// Empty Wishlist State
+.emptyWishlistState {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: $color-surface-muted;
+  border-radius: $radius-sm;
+  border: 1px dashed $color-border-subtle;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: $color-ink-black;
+    margin: 0;
+  }
+
+  p {
+    font-size: 13px;
+    color: $color-text-secondary;
+    max-width: 420px;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.emptyWishlistIconWrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: rgba(225, 29, 72, 0.08);
+  color: $color-accent-red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
+.emptyWishlistBtn {
+  margin-top: 6px;
+  display: inline-block;
+  background-color: $color-ink-black;
+  color: #ffffff;
+  padding: 8px 18px;
+  border-radius: $radius-xs;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: $color-accent-red;
+  }
+}
+
+// Support Tab
+.supportChannelsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.channelCard {
+  background-color: $color-surface-muted;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-sm;
+  padding: 16px;
+
+  h4 {
+    font-size: 14px;
+    margin-top: 6px;
+  }
+
+  p {
+    font-size: 15px;
+    font-weight: 800;
+    color: $color-accent-red;
+    font-family: $font-mono;
+    margin: 2px 0;
+  }
+
+  span {
+    font-size: 11px;
+    color: $color-text-muted;
+  }
+}
+
+.channelIcon {
+  color: $color-accent-red;
+}
+
+.returnFormSection {
+  border-top: 1px solid $color-border-subtle;
+  padding-top: 18px;
+}
+
+.returnFormTitle {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: $color-ink-black;
+  margin-bottom: 12px;
+}
+
+.returnForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 480px;
+}
+
+.submitClaimBtn {
+  @include btn-primary-red;
+  padding: 10px 16px;
+  font-size: 13px;
+  align-self: flex-start;
+}
+
+// Modal
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 10, 12, 0.6);
+  z-index: $z-modal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modalCard {
+  width: 100%;
+  max-width: 480px;
+  background-color: #ffffff;
+  border-radius: $radius-md;
+  padding: 24px;
+  box-shadow: $shadow-xl;
+}
+
+.modalTitle {
+  font-size: 16px;
+  font-weight: 800;
+  color: $color-ink-black;
+  margin-bottom: 16px;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modalField {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: $color-ink-black;
+  }
+
+  input,
+  select,
+  textarea {
+    border: 1px solid $color-border-subtle;
+    border-radius: $radius-xs;
+    padding: 7px 10px;
+    font-size: 12.5px;
+    outline: none;
+
+    &:focus {
+      border-color: $color-ink-black;
+    }
+  }
+}
+
+.modalActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.cancelModalBtn {
+  background: none;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: $color-text-secondary;
+  cursor: pointer;
+}
+
+.saveModalBtn {
+  @include btn-primary-red;
+  padding: 8px 16px;
+  font-size: 12.5px;
+}
+
+// =============================================================================
+// ADMIN VIEW STYLES
+// =============================================================================
+.adminWorkspace {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.adminKpiGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+
+  @include laptop {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.adminKpiCard {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.adminKpiTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.adminKpiTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+}
+
+.adminKpiValue {
+  font-size: 18px;
+  font-weight: 900;
+  font-family: $font-mono;
+  color: $color-ink-black;
+}
+
+.adminGrowthPill {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.adminKpiSub {
+  font-size: 10.5px;
+  color: $color-text-muted;
+}
+
+.greenIcon { color: #10b981; }
+.yellowIcon { color: #ca8a04; }
+.redIcon { color: $color-accent-red; }
+.blueIcon { color: #0284c7; }
+
+// Pipeline Card
+.pipelineCard {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 18px;
+}
+
+.pipelineTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: $color-ink-black;
+  margin-bottom: 14px;
+}
+
+.pipelineStagesRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.pipelineStage {
+  background-color: $color-surface-muted;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-sm;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.pipelineCount {
+  font-family: $font-mono;
+  font-size: 24px;
+  font-weight: 900;
+  color: $color-ink-black;
+}
+
+.pipelineStageName {
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-ink-black;
+}
+
+.pipelineStatusPill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: $radius-xs;
+  background-color: #e4e4e7;
+  color: #3f3f46;
+}
+
+.pipelineStatusYellow {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: $radius-xs;
+  background-color: #fefce8;
+  color: #854d0e;
+  border: 1px solid #fef08a;
+}
+
+.pipelineStatusOrange {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: $radius-xs;
+  background-color: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #ffedd5;
+}
+
+.pipelineStatusGreen {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: $radius-xs;
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+// Admin Orders Table Card
+.adminTableCard {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 18px;
+}
+
+.adminTableHeadRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.adminTableTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: $color-ink-black;
+}
+
+.liveOrdersPill {
+  background-color: #fff1f2;
+  color: $color-accent-red;
+  border: 1px solid #fecdd3;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: $radius-full;
+}
+
+.tableResponsiveWrap {
+  overflow-x: auto;
+}
+
+.adminOrdersTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+
+  th {
+    text-align: left;
+    padding: 8px 10px;
+    background-color: $color-surface-muted;
+    font-weight: 700;
+    color: $color-text-secondary;
+    border-bottom: 1px solid $color-border-subtle;
+  }
+
+  td {
+    padding: 10px;
+    border-bottom: 1px solid #f4f4f5;
+    color: $color-ink-black;
+  }
+}
+
+.statusPillYellow {
+  background-color: #fefce8;
+  color: #854d0e;
+  border: 1px solid #fef08a;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: $radius-xs;
+}
+
+.statusPillBlue {
+  background-color: #f0f9ff;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: $radius-xs;
+}
+
+.statusPillGreen {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: $radius-xs;
+}
+
+.statusPillRed {
+  background-color: #fff1f2;
+  color: $color-accent-red;
+  border: 1px solid #fecdd3;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: $radius-xs;
+}
+
+.tableActionBtn {
+  background-color: $color-surface-muted;
+  border: 1px solid $color-border-subtle;
+  padding: 3px 8px;
+  border-radius: $radius-xs;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $color-ink-black;
+    color: #ffffff;
+  }
+}
+

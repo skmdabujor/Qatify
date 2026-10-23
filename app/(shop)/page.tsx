@@ -1,0 +1,464 @@
+'use client';
+
+// =============================================================================
+// Qatify — Homepage (High-Density Regional Qatar Dropshipping Storefront)
+// 3-Col Hero + 2-Row Category Ribbon + 5-Col Flash Deals Grid + Curated Shelves
+// =============================================================================
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import {
+  Zap,
+  Clock,
+  ArrowRight,
+  Plane,
+  ShieldCheck,
+  CreditCard,
+  RotateCcw,
+  Sparkles,
+  Smartphone,
+  Watch,
+  Headphones,
+  BatteryCharging,
+  Car,
+  Gamepad2,
+  Camera,
+  Home,
+  Laptop,
+  Cable,
+  Flame,
+  CheckCircle2,
+  ChevronRight,
+  TrendingUp,
+} from 'lucide-react';
+import { ProductCard } from '@/components/product/ProductCard';
+import { FirstTimeDiscountPopup } from '@/components/popup/FirstTimeDiscountPopup';
+import { PRODUCTS, CATEGORIES } from '@/data/products';
+import styles from './page.module.scss';
+
+// Category icon mapper helper
+const getCategoryIcon = (iconName: string) => {
+  switch (iconName) {
+    case 'Smartphone':
+      return <Smartphone size={16} />;
+    case 'Watch':
+      return <Watch size={16} />;
+    case 'Headphones':
+      return <Headphones size={16} />;
+    case 'Zap':
+      return <BatteryCharging size={16} />;
+    case 'Car':
+      return <Car size={16} />;
+    case 'Gamepad2':
+      return <Gamepad2 size={16} />;
+    case 'Camera':
+      return <Camera size={16} />;
+    case 'Home':
+      return <Home size={16} />;
+    case 'Laptop':
+      return <Laptop size={16} />;
+    case 'Cable':
+      return <Cable size={16} />;
+    default:
+      return <Sparkles size={16} />;
+  }
+};
+
+export default function ShopHomePage() {
+  // Flash deal countdown timer (hours, minutes, seconds)
+  const [timeLeft, setTimeLeft] = useState({
+    hours: 8,
+    minutes: 42,
+    seconds: 19,
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 };
+        } else if (prev.minutes > 0) {
+          return { ...prev, minutes: 59, seconds: 59 };
+        } else if (prev.hours > 0) {
+          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        } else {
+          return { hours: 12, minutes: 0, seconds: 0 };
+        }
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Filtered product slices
+  const flashDealProducts = PRODUCTS.filter((p) => p.isFlashDeal).slice(0, 5);
+  const trendingProducts = PRODUCTS.filter((p) => p.isTrending).slice(0, 4);
+  const under99Products = PRODUCTS.filter((p) => p.isUnder99).slice(0, 4);
+  const bestSellerProducts = PRODUCTS.filter((p) => p.isBestSeller).slice(0, 4);
+
+  return (
+    <div className={styles.homeContainer}>
+      <div className="container">
+        {/* ===================================================================
+            SECTION 1: HIGH-CONVERSION YELLOW STRIP BANNER (Daraz/E-Commerce Style)
+            - Vibrant Golden-Yellow Canvas with Confetti
+            - Left: 3D Angled "PAYDAY SALE" Ribbon with Date Pill
+            - Center-Left: Promo Badges ("UP TO 50% OFF" + "FREE DELIVERY")
+            - Center: Featured Tech Product Cluster (Earbuds, GaN Charger, Smartwatch)
+            - Center-Right: Bold 3D "SALE IS LIVE NOW" Typography
+            - Right: Single High-Impact Crimson Pill Button ("SHOP NOW >")
+        ==================================================================== */}
+        <section className={styles.heroSection}>
+          <div className={styles.yellowPromoStrip}>
+            {/* Background Confetti Accents */}
+            <span className={`${styles.confetti} ${styles.confetti1}`} />
+            <span className={`${styles.confetti} ${styles.confetti2}`} />
+            <span className={`${styles.confetti} ${styles.confetti3}`} />
+            <span className={`${styles.confetti} ${styles.confetti4}`} />
+            <span className={`${styles.confetti} ${styles.confetti5}`} />
+
+            {/* Block 1: Angled Campaign Ribbon */}
+            <div className={styles.ribbonBlock}>
+              <div className={styles.ribbonShape}>
+                <span className={styles.ribbonMainText}>PAYDAY SALE</span>
+              </div>
+              <div className={styles.ribbonDatePill}>
+                <span>23 - 31 OCTOBER</span>
+              </div>
+            </div>
+
+            {/* Block 2: Value Badges (% OFF & FREE DELIVERY) */}
+            <div className={styles.offersBlock}>
+              <div className={styles.discountTicket}>
+                <span className={styles.ticketPercent}>%</span>
+                <div className={styles.ticketText}>
+                  <span className={styles.ticketLabel}>UP TO</span>
+                  <span className={styles.ticketValue}>50% OFF</span>
+                </div>
+              </div>
+              <div className={styles.freeDeliveryBadge}>
+                <span className={styles.freeDeliveryPill}>FREE</span>
+                <span className={styles.freeDeliveryText}>DELIVERY</span>
+              </div>
+            </div>
+
+            {/* Block 3: Center Product Cluster (Earbuds + GaN Charger + Smartwatch) */}
+            <div className={styles.productClusterBlock}>
+              <div className={styles.productItemLeft} title={PRODUCTS[1].title}>
+                <img
+                  src={PRODUCTS[1].images[0] || '/placeholder.svg'}
+                  alt={PRODUCTS[1].title}
+                  className={styles.clusterImg}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.src.endsWith('/placeholder.svg')) {
+                      target.src = '/placeholder.svg';
+                    }
+                  }}
+                />
+              </div>
+              <div className={styles.productItemCenter} title={PRODUCTS[0].title}>
+                <img
+                  src={PRODUCTS[0].images[0] || '/placeholder.svg'}
+                  alt={PRODUCTS[0].title}
+                  className={styles.clusterImgMain}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.src.endsWith('/placeholder.svg')) {
+                      target.src = '/placeholder.svg';
+                    }
+                  }}
+                />
+              </div>
+              <div className={styles.productItemRight} title={PRODUCTS[2].title}>
+                <img
+                  src={PRODUCTS[2].images[0] || '/placeholder.svg'}
+                  alt={PRODUCTS[2].title}
+                  className={styles.clusterImg}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.src.endsWith('/placeholder.svg')) {
+                      target.src = '/placeholder.svg';
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Block 4: "SALE IS LIVE NOW" Big Bold Typography */}
+            <div className={styles.titleLiveBlock}>
+              <span className={styles.titleLine1}>SALE IS</span>
+              <span className={styles.titleLine2}>LIVE NOW</span>
+            </div>
+
+            {/* Block 5: Single Pill CTA Button ("SHOP NOW >") */}
+            <div className={styles.ctaButtonBlock}>
+              <Link href="/shop" className={styles.shopNowPillBtn}>
+                <span className={styles.btnText}>SHOP NOW</span>
+                <span className={styles.btnArrowCircle}>
+                  <ChevronRight size={14} strokeWidth={3.5} />
+                </span>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================================================================
+            SECTION 2: COMPACT 2-ROW CATEGORY RIBBON (High-Density Quick Filters)
+        ==================================================================== */}
+        <section className={styles.categoryRibbonSection}>
+          <div className={styles.sectionHeaderCompact}>
+            <div className={styles.sectionTitleBlock}>
+              <h2 className={styles.sectionTitle}>Shop by Popular Category</h2>
+              <span className={styles.sectionSub}>Instant filtered discovery</span>
+            </div>
+            <Link href="/shop" className={styles.viewAllTextLink}>
+              View All 10 Categories →
+            </Link>
+          </div>
+
+          <div className={styles.categoryGridRibbon}>
+            {CATEGORIES.map((cat) => (
+              <Link
+                key={cat.id}
+                href={`/shop?cat=${cat.slug}`}
+                className={styles.categoryRibbonCard}
+              >
+                <div className={styles.ribbonIconCircle}>
+                  {getCategoryIcon(cat.icon)}
+                </div>
+                <span className={styles.ribbonCatName}>{cat.name}</span>
+                <span className={styles.ribbonCatCount}>{cat.count} items</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* ===================================================================
+            SECTION 2.5: PROMOTIONAL SALE IMAGE BANNER (Single Clickable Image)
+        ==================================================================== */}
+        <section className={styles.promoImageBannerSection}>
+          <Link
+            href="/shop?sale=true"
+            className={styles.promoBannerLink}
+            aria-label="Explore Mid-Season Mega Sale on Trending Tech"
+          >
+            <picture>
+              <source srcSet="/banners/sale-promo-banner.webp" type="image/webp" />
+              <img
+                src="/banners/sale-promo-banner.png"
+                alt="Mega Tech Sale - Up to 60% Off Trending Gadgets"
+                className={styles.promoBannerImg}
+                width={1200}
+                height={260}
+                loading="lazy"
+              />
+            </picture>
+          </Link>
+        </section>
+
+        {/* ===================================================================
+            SECTION 3: "FANTASTIC FLASH DEALS" COUNTDOWN SECTION (5-Column Grid)
+        ==================================================================== */}
+        <section className={styles.flashDealsSection}>
+          <div className={styles.flashHeaderRow}>
+            <div className={styles.flashTitleGroup}>
+              <div className={styles.flashBadge}>
+                <Zap size={16} />
+                <span>FANTASTIC FLASH DEALS</span>
+              </div>
+              <h2 className={styles.flashHeading}>Limited Air Batch Deals</h2>
+            </div>
+
+            {/* JetBrains Mono Countdown Timer */}
+            <div className={styles.timerWrapper}>
+              <span className={styles.timerLabel}>
+                <Clock size={14} />
+                <span>Deals End In:</span>
+              </span>
+              <div className={styles.timerPills}>
+                <div className={styles.timeBox}>
+                  <span className={styles.timeNum}>
+                    {String(timeLeft.hours).padStart(2, '0')}
+                  </span>
+                  <span className={styles.timeUnit}>HRS</span>
+                </div>
+                <span className={styles.timeColon}>:</span>
+                <div className={styles.timeBox}>
+                  <span className={styles.timeNum}>
+                    {String(timeLeft.minutes).padStart(2, '0')}
+                  </span>
+                  <span className={styles.timeUnit}>MIN</span>
+                </div>
+                <span className={styles.timeColon}>:</span>
+                <div className={styles.timeBox}>
+                  <span className={styles.timeNum}>
+                    {String(timeLeft.seconds).padStart(2, '0')}
+                  </span>
+                  <span className={styles.timeUnit}>SEC</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 5-Column Dense Grid */}
+          <div className={styles.flashGrid5Col}>
+            {flashDealProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                showStockBar={true}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* ===================================================================
+            SECTION 4: TRENDING IN DOHA THIS WEEK (Dense 4-Column Shelf)
+        ==================================================================== */}
+        <section className={styles.shelfSection}>
+          <div className={styles.shelfHeaderRow}>
+            <div className={styles.shelfTitleGroup}>
+              <div className={styles.shelfTag}>
+                <TrendingUp size={14} />
+                <span>POPULAR IN QATAR</span>
+              </div>
+              <h2 className={styles.shelfHeading}>Trending in Doha This Week</h2>
+            </div>
+            <Link href="/shop?sort=trending" className={styles.viewMoreBtn}>
+              <span>View All Trending</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+
+          <div className={styles.shelfGrid4Col}>
+            {trendingProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+
+        {/* ===================================================================
+            SECTION 5: MID-PAGE PROMOTIONAL AIR CARGO BANNER
+        ==================================================================== */}
+        <section className={styles.airCargoPromoBanner}>
+          <div className={styles.airCargoInner}>
+            <div className={styles.airCargoContent}>
+              <span className={styles.cargoPill}>✈️ CROSS-BORDER DROPSHIP LOGISTICS</span>
+              <h3 className={styles.cargoTitle}>
+                Direct Air Express from Global Hubs to Hamad International
+              </h3>
+              <p className={styles.cargoDesc}>
+                We bypass expensive retail markups by shipping directly via tracked air cargo. Every order is inspected at our export center before boarding daily flights to Qatar.
+              </p>
+              <div className={styles.cargoPerks}>
+                <div className={styles.cargoPerk}>
+                  <CheckCircle2 size={15} />
+                  <span>Doha, Lusail, Al Rayyan & Al Wakrah</span>
+                </div>
+                <div className={styles.cargoPerk}>
+                  <CheckCircle2 size={15} />
+                  <span>Doorstep delivery in 6–10 business days</span>
+                </div>
+                <div className={styles.cargoPerk}>
+                  <CheckCircle2 size={15} />
+                  <span>Live tracking with Qatar customs updates</span>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.cargoTrackingWidget}>
+              <div className={styles.trackingMockHeader}>
+                <Plane size={16} />
+                <span>Live Route Simulation</span>
+              </div>
+              <div className={styles.trackingSteps}>
+                <div className={styles.trackingStep}>
+                  <div className={`${styles.stepDot} ${styles.done}`} />
+                  <div className={styles.stepInfo}>
+                    <strong>Export Hub (Shenzhen)</strong>
+                    <span>Quality Checked & Packed</span>
+                  </div>
+                </div>
+                <div className={styles.trackingStep}>
+                  <div className={`${styles.stepDot} ${styles.done}`} />
+                  <div className={styles.stepInfo}>
+                    <strong>Direct Air Freight</strong>
+                    <span>Daily Flight to DOH Airport</span>
+                  </div>
+                </div>
+                <div className={styles.trackingStep}>
+                  <div className={`${styles.stepDot} ${styles.current}`} />
+                  <div className={styles.stepInfo}>
+                    <strong>Hamad Int’l Customs</strong>
+                    <span>Electronic Clearance</span>
+                  </div>
+                </div>
+                <div className={styles.trackingStep}>
+                  <div className={styles.stepDot} />
+                  <div className={styles.stepInfo}>
+                    <strong>Qatar Doorstep</strong>
+                    <span>Delivered in 6–10 Days</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================================================================
+            SECTION 6: BEST-SELLING SMART ACCESSORIES & UNDER QAR 99
+        ==================================================================== */}
+        <section className={styles.shelfSection}>
+          <div className={styles.shelfHeaderRow}>
+            <div className={styles.shelfTitleGroup}>
+              <div className={styles.shelfTagYellow}>
+                <Sparkles size={14} />
+                <span>POCKET-FRIENDLY FINDS</span>
+              </div>
+              <h2 className={styles.shelfHeading}>Super Deals Under QAR 99</h2>
+            </div>
+            <Link href="/shop?filter=under-99" className={styles.viewMoreBtn}>
+              <span>View All Under 99</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+
+          <div className={styles.shelfGrid4Col}>
+            {under99Products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+
+        {/* ===================================================================
+            SECTION 7: BEST SELLERS SHELF
+        ==================================================================== */}
+        <section className={styles.shelfSection}>
+          <div className={styles.shelfHeaderRow}>
+            <div className={styles.shelfTitleGroup}>
+              <div className={styles.shelfTag}>
+                <Flame size={14} />
+                <span>TOP RATED BY CUSTOMERS</span>
+              </div>
+              <h2 className={styles.shelfHeading}>Best-Selling Flagships</h2>
+            </div>
+            <Link href="/shop?sort=rating" className={styles.viewMoreBtn}>
+              <span>View Top Rated</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+
+          <div className={styles.shelfGrid4Col}>
+            {bestSellerProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {/* First-Time Visitor Signup 10% Discount Popup Modal */}
+      <FirstTimeDiscountPopup />
+    </div>
+  );
+}
+

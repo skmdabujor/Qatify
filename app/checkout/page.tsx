@@ -1,0 +1,757 @@
+'use client';
+
+// =============================================================================
+// Qatify — Multi-Step Checkout Page (`/checkout`)
+// Step 1: Qatar National Address | Step 2: Air Shipping | Step 3: Payment
+// =============================================================================
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import {
+  ShieldCheck,
+  Plane,
+  CreditCard,
+  Banknote,
+  CheckCircle2,
+  Lock,
+  ChevronRight,
+  ArrowRight,
+  MapPin,
+  Building,
+  Phone,
+  User,
+  Sparkles,
+  MessageCircle,
+} from 'lucide-react';
+import { useShop } from '@/context/ShopContext';
+import { QATAR_MUNICIPALITIES, SHIPPING_METHODS } from '@/data/products';
+import { QatarAddress, ShippingMethod, Order } from '@/types/product';
+import styles from './page.module.scss';
+
+// Feature Flag: Cash on Delivery status (Set to true to re-enable COD on checkout)
+const IS_COD_ENABLED = false;
+
+export default function CheckoutPage() {
+  const router = useRouter();
+  const {
+    cart,
+    cartSubtotal,
+    isFreeShipping,
+    savedAddresses,
+    addAddress,
+    createOrder,
+    showToast,
+    openChat,
+  } = useShop();
+
+  // Steps state: 1 = Address, 2 = Shipping, 3 = Payment
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
+
+  // Address State (Qatar National Address format)
+  const defaultAddr = savedAddresses[0] || {
+    fullName: 'Tariq Al-Mansoor',
+    phone: '+974 5512 8894',
+    municipality: 'Lusail City (مدينة لوسيل)',
+    zoneNumber: 'Zone 69',
+    streetNumber: 'Street 312',
+    buildingNumber: 'Building 18',
+    unitNumber: 'Apt 402',
+    landmark: 'Fox Hills North, Near Crescent Park',
+  };
+
+  const [address, setAddress] = useState<QatarAddress>({
+    fullName: defaultAddr.fullName,
+    phone: defaultAddr.phone,
+    municipality: defaultAddr.municipality,
+    zoneNumber: defaultAddr.zoneNumber,
+    streetNumber: defaultAddr.streetNumber,
+    buildingNumber: defaultAddr.buildingNumber,
+    unitNumber: defaultAddr.unitNumber || '',
+    landmark: defaultAddr.landmark || '',
+  });
+
+  const [saveAddressForFuture, setSaveAddressForFuture] = useState(true);
+
+  // Shipping Method
+  const [selectedShipping, setSelectedShipping] = useState<ShippingMethod>(
+    SHIPPING_METHODS[0]
+  );
+
+  // Payment Method
+  const [paymentMethod, setPaymentMethod] = useState<'apple_pay' | 'credit_card' | 'cash_on_delivery'>('apple_pay');
+
+  // Credit card mock inputs
+  const [cardData, setCardData] = useState({
+    cardNumber: '4111 2222 3333 4444',
+    cardName: 'TARIQ AL MANSOOR',
+    expiry: '09/28',
+    cvv: '884',
+  });
+
+  // Success state / placed order
+  const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
+
+  // Calculations
+  const shippingCost =
+    selectedShipping.id === 'standard-air' && isFreeShipping
+      ? 0
+      : selectedShipping.priceQAR;
+  const grandTotal = cartSubtotal + shippingCost;
+
+  // Handle address submit -> move to step 2
+  const handleAddressSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!address.fullName || !address.phone || !address.zoneNumber || !address.streetNumber || !address.buildingNumber) {
+      showToast('Incomplete Address', 'Please fill in all Qatar National Address fields.', 'warning');
+      return;
+    }
+    if (saveAddressForFuture) {
+      addAddress(address);
+    }
+    setCurrentStep(2);
+  };
+
+  // Handle shipping submit -> move to step 3
+  const handleShippingSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCurrentStep(3);
+  };
+
+  // Handle final order placement
+  const handlePlaceOrder = () => {
+    if (cart.length === 0) {
+      showToast('Cart is Empty', 'Please add items before placing an order.', 'warning');
+      router.push('/shop');
+      return;
+    }
+
+    const newOrder = createOrder({
+      items: cart,
+      subtotalQAR: cartSubtotal,
+      shippingQAR: shippingCost,
+      discountQAR: 0,
+      totalQAR: grandTotal,
+      address,
+      shippingMethod: selectedShipping,
+      paymentMethod,
+      estimatedDeliveryWindow: '6–10 Business Days to Qatar',
+    });
+
+    setConfirmedOrder(newOrder);
+  };
+
+  // If order was successfully created, render celebration state
+  if (confirmedOrder) {
+    return (
+      <div className={styles.orderSuccessPage}>
+        <div className="container">
+          <div className={styles.successCard}>
+            <div className={styles.successIconCircle}>
+              <CheckCircle2 size={54} />
+            </div>
+
+            <span className={styles.successPill}>ORDER CONFIRMED & VERIFIED</span>
+            <h1 className={styles.successHeading}>Shukran! Your Order is Placed</h1>
+            <p className={styles.successSub}>
+              We are routing your items to our international air logistics hub. You will receive step-by-step SMS updates with live Qatar customs tracking.
+            </p>
+
+            <div className={styles.orderMetadataBox}>
+              <div className={styles.metaRow}>
+                <span className={styles.metaLabel}>Order Number</span>
+                <strong className={styles.metaValueMono}>{confirmedOrder.orderNumber}</strong>
+              </div>
+              <div className={styles.metaRow}>
+                <span className={styles.metaLabel}>Air Express Tracking</span>
+                <strong className={styles.trackingNumberHighlight}>
+                  {confirmedOrder.trackingNumber}
+                </strong>
+              </div>
+              <div className={styles.metaRow}>
+                <span className={styles.metaLabel}>Delivery Destination</span>
+                <span className={styles.metaValue}>
+                  {confirmedOrder.address.municipality}, {confirmedOrder.address.zoneNumber}, {confirmedOrder.address.buildingNumber}
+                </span>
+              </div>
+              <div className={styles.metaRow}>
+                <span className={styles.metaLabel}>Estimated Arrival</span>
+                <strong className={styles.metaValue}>
+                  6–10 Business Days via Hamad Int’l Airport (DOH)
+                </strong>
+              </div>
+              <div className={styles.metaRow}>
+                <span className={styles.metaLabel}>Total Paid</span>
+                <strong className={styles.metaValuePrice}>
+                  QAR {confirmedOrder.totalQAR.toLocaleString()}
+                </strong>
+              </div>
+            </div>
+
+            <div className={styles.successCtaRow}>
+              <Link href="/dashboard" className={styles.trackShipmentBtn}>
+                <Plane size={16} />
+                <span>Track International Shipment</span>
+              </Link>
+              <Link href="/shop" className={styles.backHomeBtn}>
+                Continue Shopping
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.checkoutPage}>
+      <div className="container">
+        {/* Header Breadcrumb */}
+        <nav className={styles.breadcrumbNav}>
+          <Link href="/cart" className={styles.crumbLink}>Cart</Link>
+          <ChevronRight size={13} className={styles.crumbChevron} />
+          <span className={styles.currentCrumb}>Qatar Direct Air Checkout</span>
+        </nav>
+
+        {/* 3-Step Visual Progress Bar */}
+        <div className={styles.stepsProgressBar}>
+          <button
+            type="button"
+            onClick={() => setCurrentStep(1)}
+            className={`${styles.stepIndicator} ${currentStep >= 1 ? styles.active : ''}`}
+          >
+            <div className={styles.stepNum}>1</div>
+            <div className={styles.stepLabelCol}>
+              <span className={styles.stepTitle}>Qatar Address</span>
+              <span className={styles.stepDesc}>Zone, Street & Building</span>
+            </div>
+          </button>
+
+          <div className={`${styles.stepConnector} ${currentStep >= 2 ? styles.active : ''}`} />
+
+          <button
+            type="button"
+            onClick={() => currentStep > 2 && setCurrentStep(2)}
+            className={`${styles.stepIndicator} ${currentStep >= 2 ? styles.active : ''}`}
+          >
+            <div className={styles.stepNum}>2</div>
+            <div className={styles.stepLabelCol}>
+              <span className={styles.stepTitle}>Air Freight</span>
+              <span className={styles.stepDesc}>6–10 Days Tracked</span>
+            </div>
+          </button>
+
+          <div className={`${styles.stepConnector} ${currentStep >= 3 ? styles.active : ''}`} />
+
+          <div className={`${styles.stepIndicator} ${currentStep === 3 ? styles.active : ''}`}>
+            <div className={styles.stepNum}>3</div>
+            <div className={styles.stepLabelCol}>
+              <span className={styles.stepTitle}>Payment</span>
+              <span className={styles.stepDesc}>
+                {IS_COD_ENABLED ? 'Apple Pay / Card / COD' : 'Apple Pay / Card'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Main 2-Column Layout: Form (Left) & Order Summary (Right) */}
+        <div className={styles.checkoutLayout}>
+          {/* Form Column */}
+          <div className={styles.formColumn}>
+            {/* ===============================================================
+                STEP 1: QATAR NATIONAL ADDRESS FORM
+            ================================================================ */}
+            {currentStep === 1 && (
+              <form onSubmit={handleAddressSubmit} className={styles.stepFormCard}>
+                <div className={styles.formCardHeader}>
+                  <MapPin size={20} className={styles.headerIconRed} />
+                  <div>
+                    <h2 className={styles.formCardTitle}>1. Qatar Delivery Address</h2>
+                    <p className={styles.formCardSub}>
+                      Follows standard Qatar National Address format for accurate doorstep delivery.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Quick saved addresses selection pills */}
+                {savedAddresses.length > 0 && (
+                  <div className={styles.savedAddressesBar}>
+                    <span className={styles.savedBarLabel}>Quick Select:</span>
+                    {savedAddresses.map((addr, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setAddress(addr)}
+                        className={styles.savedAddrPill}
+                      >
+                        {addr.municipality.split(' ')[0]} - {addr.zoneNumber}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <div className={styles.formGrid}>
+                  {/* Full Name */}
+                  <div className={styles.formGroup}>
+                    <label className={styles.fieldLabel}>
+                      Full Name <span className={styles.req}>*</span>
+                    </label>
+                    <div className={styles.inputWithIcon}>
+                      <User size={15} className={styles.fieldIcon} />
+                      <input
+                        type="text"
+                        required
+                        value={address.fullName}
+                        onChange={(e) => setAddress({ ...address, fullName: e.target.value })}
+                        placeholder="e.g. Tariq Al-Mansoor"
+                        className={styles.textInput}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Phone with +974 prefix */}
+                  <div className={styles.formGroup}>
+                    <label className={styles.fieldLabel}>
+                      Qatar Mobile Number <span className={styles.req}>*</span>
+                    </label>
+                    <div className={styles.inputWithIcon}>
+                      <Phone size={15} className={styles.fieldIcon} />
+                      <input
+                        type="tel"
+                        required
+                        value={address.phone}
+                        onChange={(e) => setAddress({ ...address, phone: e.target.value })}
+                        placeholder="+974 5512 8894"
+                        className={styles.textInput}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Municipality Selection */}
+                  <div className={styles.formGroupFull}>
+                    <label className={styles.fieldLabel}>
+                      Municipality (البلدية) <span className={styles.req}>*</span>
+                    </label>
+                    <select
+                      value={address.municipality}
+                      onChange={(e) => setAddress({ ...address, municipality: e.target.value })}
+                      className={styles.selectInput}
+                    >
+                      {QATAR_MUNICIPALITIES.map((mun) => (
+                        <option key={mun.code} value={mun.name}>
+                          {mun.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Qatar National Address: Zone, Street, Building */}
+                  <div className={styles.formGroup}>
+                    <label className={styles.fieldLabel}>
+                      Zone Number (رقم المنطقة) <span className={styles.req}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={address.zoneNumber}
+                      onChange={(e) => setAddress({ ...address, zoneNumber: e.target.value })}
+                      placeholder="e.g. Zone 69 or Zone 24"
+                      className={styles.textInput}
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.fieldLabel}>
+                      Street Number (رقم الشارع) <span className={styles.req}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={address.streetNumber}
+                      onChange={(e) => setAddress({ ...address, streetNumber: e.target.value })}
+                      placeholder="e.g. Street 312"
+                      className={styles.textInput}
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.fieldLabel}>
+                      Building Number (رقم المبنى) <span className={styles.req}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={address.buildingNumber}
+                      onChange={(e) => setAddress({ ...address, buildingNumber: e.target.value })}
+                      placeholder="e.g. Building 18"
+                      className={styles.textInput}
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.fieldLabel}>Unit / Apartment No.</label>
+                    <input
+                      type="text"
+                      value={address.unitNumber}
+                      onChange={(e) => setAddress({ ...address, unitNumber: e.target.value })}
+                      placeholder="e.g. Apt 402"
+                      className={styles.textInput}
+                    />
+                  </div>
+
+                  <div className={styles.formGroupFull}>
+                    <label className={styles.fieldLabel}>Nearby Landmark / Area Details</label>
+                    <input
+                      type="text"
+                      value={address.landmark}
+                      onChange={(e) => setAddress({ ...address, landmark: e.target.value })}
+                      placeholder="e.g. Fox Hills North, Near Crescent Park / Al Meera"
+                      className={styles.textInput}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.checkboxRow}>
+                  <label className={styles.checkLabel}>
+                    <input
+                      type="checkbox"
+                      checked={saveAddressForFuture}
+                      onChange={(e) => setSaveAddressForFuture(e.target.checked)}
+                      className={styles.customCheck}
+                    />
+                    <span>Save this address for future 1-click orders in Qatar</span>
+                  </label>
+                </div>
+
+                <button type="submit" className={styles.continueStepBtn}>
+                  <span>Continue to Air Shipping Options</span>
+                  <ArrowRight size={16} />
+                </button>
+              </form>
+            )}
+
+            {/* ===============================================================
+                STEP 2: AIR SHIPPING OPTIONS
+            ================================================================ */}
+            {currentStep === 2 && (
+              <form onSubmit={handleShippingSubmit} className={styles.stepFormCard}>
+                <div className={styles.formCardHeader}>
+                  <Plane size={20} className={styles.headerIconRed} />
+                  <div>
+                    <h2 className={styles.formCardTitle}>2. Choose Air Shipping Method</h2>
+                    <p className={styles.formCardSub}>
+                      Direct air cargo destined for Hamad International Airport (DOH) with tracked electronic customs clearance.
+                    </p>
+                  </div>
+                </div>
+
+                <div className={styles.shippingOptionsList}>
+                  {SHIPPING_METHODS.map((method) => {
+                    const isSelected = selectedShipping.id === method.id;
+                    const priceDisplay =
+                      method.id === 'standard-air' && isFreeShipping
+                        ? 'FREE (Over QAR 150)'
+                        : `QAR ${method.priceQAR}`;
+
+                    return (
+                      <div
+                        key={method.id}
+                        onClick={() => setSelectedShipping(method)}
+                        className={`${styles.shippingMethodCard} ${
+                          isSelected ? styles.selectedMethod : ''
+                        }`}
+                      >
+                        <div className={styles.methodRadioCol}>
+                          <input
+                            type="radio"
+                            name="shippingMethod"
+                            checked={isSelected}
+                            onChange={() => setSelectedShipping(method)}
+                          />
+                        </div>
+
+                        <div className={styles.methodInfoCol}>
+                          <div className={styles.methodTop}>
+                            <strong className={styles.methodName}>{method.name}</strong>
+                            <span className={styles.methodBadge}>{method.badge}</span>
+                          </div>
+                          <p className={styles.methodDesc}>{method.description}</p>
+                          <span className={styles.methodDuration}>
+                            ⏱️ Estimated Delivery: <strong>{method.duration}</strong>
+                          </span>
+                        </div>
+
+                        <div className={styles.methodPriceCol}>
+                          <span className={styles.methodPriceText}>{priceDisplay}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className={styles.stepButtonRow}>
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(1)}
+                    className={styles.backStepBtn}
+                  >
+                    ← Edit Address
+                  </button>
+                  <button type="submit" className={styles.continueStepBtn}>
+                    <span>Proceed to Payment</span>
+                    <ArrowRight size={16} />
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* ===============================================================
+                STEP 3: PAYMENT METHOD SELECTOR UI
+            ================================================================ */}
+            {currentStep === 3 && (
+              <div className={styles.stepFormCard}>
+                <div className={styles.formCardHeader}>
+                  <Lock size={20} className={styles.headerIconRed} />
+                  <div>
+                    <h2 className={styles.formCardTitle}>3. Select Secure Payment Method</h2>
+                    <p className={styles.formCardSub}>
+                      All transactions are 256-bit encrypted and processed in Qatari Riyal (QAR).
+                    </p>
+                  </div>
+                </div>
+
+                {/* Payment Option Tabs */}
+                <div className={styles.paymentMethodTabs}>
+                  {/* Apple Pay */}
+                  <div
+                    onClick={() => setPaymentMethod('apple_pay')}
+                    className={`${styles.payOptionCard} ${
+                      paymentMethod === 'apple_pay' ? styles.activePay : ''
+                    }`}
+                  >
+                    <div className={styles.payOptionHeader}>
+                      <input
+                        type="radio"
+                        name="payMethod"
+                        checked={paymentMethod === 'apple_pay'}
+                        onChange={() => setPaymentMethod('apple_pay')}
+                      />
+                      <span className={styles.payOptionName}>Apple Pay</span>
+                      <span className={styles.recommendedPill}>RECOMMENDED IN QATAR</span>
+                    </div>
+                    <p className={styles.payOptionSub}>
+                      Pay instantly with Touch ID or Face ID using your Apple devices.
+                    </p>
+                  </div>
+
+                  {/* Credit / Debit Card */}
+                  <div
+                    onClick={() => setPaymentMethod('credit_card')}
+                    className={`${styles.payOptionCard} ${
+                      paymentMethod === 'credit_card' ? styles.activePay : ''
+                    }`}
+                  >
+                    <div className={styles.payOptionHeader}>
+                      <input
+                        type="radio"
+                        name="payMethod"
+                        checked={paymentMethod === 'credit_card'}
+                        onChange={() => setPaymentMethod('credit_card')}
+                      />
+                      <span className={styles.payOptionName}>Credit / Debit Card</span>
+                      <span className={styles.cardLogos}>Visa • Mastercard • CBQ • QNB</span>
+                    </div>
+                    <p className={styles.payOptionSub}>
+                      Secure payment with local Qatari banks or international credit cards.
+                    </p>
+
+                    {paymentMethod === 'credit_card' && (
+                      <div className={styles.mockCardForm} onClick={(e) => e.stopPropagation()}>
+                        <div className={styles.formGroupFull}>
+                          <label className={styles.fieldLabel}>Cardholder Name</label>
+                          <input
+                            type="text"
+                            value={cardData.cardName}
+                            onChange={(e) => setCardData({ ...cardData, cardName: e.target.value })}
+                            className={styles.textInput}
+                          />
+                        </div>
+
+                        <div className={styles.formGroupFull}>
+                          <label className={styles.fieldLabel}>Card Number</label>
+                          <input
+                            type="text"
+                            value={cardData.cardNumber}
+                            onChange={(e) => setCardData({ ...cardData, cardNumber: e.target.value })}
+                            className={styles.textInput}
+                          />
+                        </div>
+
+                        <div className={styles.formGroup}>
+                          <label className={styles.fieldLabel}>Expiry Date</label>
+                          <input
+                            type="text"
+                            value={cardData.expiry}
+                            onChange={(e) => setCardData({ ...cardData, expiry: e.target.value })}
+                            className={styles.textInput}
+                          />
+                        </div>
+
+                        <div className={styles.formGroup}>
+                          <label className={styles.fieldLabel}>CVV / CVC</label>
+                          <input
+                            type="password"
+                            maxLength={4}
+                            value={cardData.cvv}
+                            onChange={(e) => setCardData({ ...cardData, cvv: e.target.value })}
+                            className={styles.textInput}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Cash on Delivery (COD) - Conditionally rendered when enabled */}
+                  {IS_COD_ENABLED && (
+                    <div
+                      onClick={() => setPaymentMethod('cash_on_delivery')}
+                      className={`${styles.payOptionCard} ${
+                        paymentMethod === 'cash_on_delivery' ? styles.activePay : ''
+                      }`}
+                    >
+                      <div className={styles.payOptionHeader}>
+                        <input
+                          type="radio"
+                          name="payMethod"
+                          checked={paymentMethod === 'cash_on_delivery'}
+                          onChange={() => setPaymentMethod('cash_on_delivery')}
+                        />
+                        <span className={styles.payOptionName}>Cash on Delivery (COD)</span>
+                        <span className={styles.codPill}>ALL QATAR ZONES</span>
+                      </div>
+                      <p className={styles.payOptionSub}>
+                        Pay in cash (QAR) directly to the delivery courier upon doorstep package handover.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.stepButtonRow}>
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(2)}
+                    className={styles.backStepBtn}
+                  >
+                    ← Edit Shipping
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handlePlaceOrder}
+                    className={styles.confirmOrderBtn}
+                  >
+                    <Lock size={16} />
+                    <span>Confirm & Place Qatar Order (QAR {grandTotal.toLocaleString()})</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Order Review Summary */}
+          <div className={styles.summaryColumn}>
+            <div className={styles.summaryCard}>
+              <h3 className={styles.summaryTitle}>Order Review</h3>
+
+              {/* Items List */}
+              <div className={styles.summaryItemsList}>
+                {cart.map((item) => (
+                  <div key={item.id} className={styles.summaryItem}>
+                    <img
+                      src={item.product.images[0] || '/placeholder.svg'}
+                      alt={item.product.title}
+                      className={styles.summaryItemImg}
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (!target.src.endsWith('/placeholder.svg')) {
+                          target.src = '/placeholder.svg';
+                        }
+                      }}
+                    />
+                    <div className={styles.summaryItemInfo}>
+                      <h4 className={styles.summaryItemTitle}>{item.product.title}</h4>
+                      <div className={styles.summaryItemMeta}>
+                        <span>Qty: {item.quantity}</span>
+                        {item.selectedColor && <span> • {item.selectedColor}</span>}
+                      </div>
+                    </div>
+                    <div className={styles.summaryItemPrice}>
+                      QAR {item.product.priceQAR * item.quantity}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Breakdown */}
+              <div className={styles.summaryCalculations}>
+                <div className={styles.calcRow}>
+                  <span>Subtotal</span>
+                  <span className="price-qar">QAR {cartSubtotal.toLocaleString()}</span>
+                </div>
+
+                <div className={styles.calcRow}>
+                  <div className={styles.calcLabelCol}>
+                    <span>{selectedShipping.name}</span>
+                    <span className={styles.calcSub}>{selectedShipping.duration}</span>
+                  </div>
+                  <span className="price-qar">
+                    {shippingCost === 0 ? (
+                      <strong className={styles.freeGreen}>FREE</strong>
+                    ) : (
+                      `QAR ${shippingCost}`
+                    )}
+                  </span>
+                </div>
+
+                <div className={`${styles.calcRow} ${styles.grandTotal}`}>
+                  <span>Total Amount</span>
+                  <span className={styles.grandPrice}>
+                    QAR {grandTotal.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Delivery Guarantee Pill */}
+              <div className={styles.checkoutGuarantees}>
+                <div className={styles.guaranteeItem}>
+                  <ShieldCheck size={16} />
+                  <span>100% Pre-Dispatch Quality Check</span>
+                </div>
+                <div className={styles.guaranteeItem}>
+                  <Plane size={16} />
+                  <span>Direct Air Flight to Hamad Airport</span>
+                </div>
+              </div>
+
+              {/* Checkout Live Support Card */}
+              <div className={styles.checkoutHelpCard}>
+                <div className={styles.checkoutHelpText}>
+                  <span>Need assistance with your order?</span>
+                  <strong>Chat live with our Doha checkout team</strong>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => openChat('I need assistance with checkout and payment in Qatar.')}
+                  className={styles.checkoutChatBtn}
+                >
+                  <MessageCircle size={14} />
+                  <span>Chat With Us</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+

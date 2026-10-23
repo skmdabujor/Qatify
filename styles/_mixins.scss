@@ -1,0 +1,249 @@
+// =============================================================================
+// Qatify — SCSS Mixins & Responsive Helpers
+// =============================================================================
+
+@use 'variables' as *;
+
+// --- RESPONSIVE BREAKPOINTS ---
+$breakpoint-mobile: 480px;
+$breakpoint-phablet: 640px;
+$breakpoint-tablet: 768px;
+$breakpoint-laptop: 1024px;
+$breakpoint-desktop: 1280px;
+$breakpoint-wide: 1440px;
+
+@mixin mobile {
+  @media (max-width: #{$breakpoint-mobile}) {
+    @content;
+  }
+}
+
+@mixin phablet {
+  @media (max-width: #{$breakpoint-phablet}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (max-width: #{$breakpoint-tablet}) {
+    @content;
+  }
+}
+
+@mixin tablet-up {
+  @media (min-width: #{$breakpoint-tablet + 1}) {
+    @content;
+  }
+}
+
+@mixin laptop {
+  @media (max-width: #{$breakpoint-laptop}) {
+    @content;
+  }
+}
+
+@mixin laptop-up {
+  @media (min-width: #{$breakpoint-laptop + 1}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (max-width: #{$breakpoint-desktop}) {
+    @content;
+  }
+}
+
+@mixin desktop-up {
+  @media (min-width: #{$breakpoint-desktop + 1}) {
+    @content;
+  }
+}
+
+@mixin wide-up {
+  @media (min-width: #{$breakpoint-wide}) {
+    @content;
+  }
+}
+
+// --- CONTAINER & LAYOUT ---
+@mixin container {
+  width: 100%;
+  max-width: 1380px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: $space-4;
+  padding-right: $space-4;
+
+  @include mobile {
+    padding-left: $space-3;
+    padding-right: $space-3;
+  }
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-align {
+  display: flex;
+  align-items: center;
+}
+
+// --- TYPOGRAPHY UTILITIES ---
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin line-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// --- COMPACT CARD MIXIN (Medium-High Density) ---
+@mixin dense-card {
+  background-color: $color-surface-card;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  transition: transform $transition-fast, box-shadow $transition-fast, border-color $transition-fast;
+
+  &:hover {
+    border-color: $color-border-medium;
+    box-shadow: $shadow-md;
+  }
+}
+
+// --- BUTTON STATES ---
+@mixin button-reset {
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  text-decoration: none;
+}
+
+@mixin btn-primary-red {
+  @include button-reset;
+  background-color: $color-accent-red;
+  color: #ffffff;
+  font-weight: 700;
+  font-family: $font-heading;
+  border-radius: $radius-sm;
+  transition: background-color $transition-fast, transform 100ms ease, box-shadow $transition-fast;
+
+  &:hover {
+    background-color: $color-accent-red-hover;
+    box-shadow: 0 4px 12px $color-accent-red-glow;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
+@mixin btn-secondary-black {
+  @include button-reset;
+  background-color: $color-ink-black;
+  color: #ffffff;
+  font-weight: 700;
+  font-family: $font-heading;
+  border-radius: $radius-sm;
+  transition: background-color $transition-fast, transform 100ms ease;
+
+  &:hover {
+    background-color: #27272a;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+@mixin btn-accent-yellow {
+  @include button-reset;
+  background-color: $color-accent-yellow;
+  color: $color-ink-black;
+  font-weight: 800;
+  font-family: $font-heading;
+  border-radius: $radius-sm;
+  transition: background-color $transition-fast, transform 100ms ease;
+
+  &:hover {
+    background-color: $color-accent-yellow-dark;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// --- BADGES ---
+@mixin badge-discount {
+  background-color: $color-accent-red;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  padding: 2px 7px;
+  border-radius: $radius-xs;
+  font-family: $font-mono;
+  text-transform: uppercase;
+}
+
+@mixin badge-delivery {
+  background-color: $color-accent-yellow-bg;
+  color: #854d0e;
+  border: 1px solid #fde047;
+  font-weight: 700;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: $radius-full;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+// --- CUSTOM SCROLLBAR ---
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+
+    &:hover {
+      background: #a8a8a8;
+    }
+  }
+}
+

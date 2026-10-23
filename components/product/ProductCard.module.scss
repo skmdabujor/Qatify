@@ -1,0 +1,366 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.card {
+  position: relative;
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform $transition-fast, box-shadow $transition-fast, border-color $transition-fast;
+
+  &:hover {
+    border-color: $color-border-medium;
+    box-shadow: $shadow-card-hover;
+    transform: translateY(-2px);
+
+    .productImageHover {
+      opacity: 1;
+    }
+  }
+
+  // List view variant
+  &.list {
+    flex-direction: row;
+    align-items: center;
+
+    .imageLink {
+      width: 220px;
+      flex-shrink: 0;
+
+      @include mobile {
+        width: 140px;
+      }
+    }
+
+    .content {
+      flex: 1;
+      padding: $space-4;
+    }
+
+    .title {
+      font-size: 15px;
+      -webkit-line-clamp: 2;
+    }
+
+    .listDescription {
+      display: block;
+      font-size: 12.5px;
+      color: $color-text-secondary;
+      margin: 6px 0 10px 0;
+      line-height: 1.4;
+      @include line-clamp(2);
+    }
+  }
+
+  // Compact variant
+  &.compact {
+    .imageWrapper {
+      padding-top: 85%;
+    }
+    .content {
+      padding: 8px 10px;
+    }
+    .title {
+      font-size: 12px;
+      -webkit-line-clamp: 1;
+    }
+  }
+}
+
+// Top overlay
+.topBar {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.badgesCol {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.discountBadge {
+  @include badge-discount;
+  box-shadow: 0 2px 4px rgba(225, 29, 72, 0.3);
+  pointer-events: auto;
+}
+
+.customBadge {
+  background-color: $color-ink-black;
+  color: #ffffff;
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: $radius-xs;
+  letter-spacing: 0.03em;
+  font-family: $font-mono;
+  text-transform: uppercase;
+  pointer-events: auto;
+}
+
+.quickActions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: auto;
+}
+
+.actionBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-full;
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  border: 1px solid $color-border-subtle;
+  color: $color-text-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: $shadow-xs;
+  transition: transform $transition-fast, color $transition-fast, background-color $transition-fast;
+
+  &:hover {
+    color: $color-accent-red;
+    transform: scale(1.1);
+    background-color: #ffffff;
+  }
+
+  &.activeWish {
+    color: $color-accent-red;
+    background-color: #fff1f2;
+    border-color: #fecdd3;
+  }
+
+  &.activeCompare {
+    color: $color-ink-black;
+    background-color: #fef9c3;
+    border-color: #fde047;
+  }
+}
+
+// Image stage
+.imageLink {
+  display: block;
+  width: 100%;
+  background-color: #f8f9fa;
+  position: relative;
+  overflow: hidden;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 100%; // 1:1 Aspect ratio
+  background-color: #fafafa;
+}
+
+.productImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 300ms ease;
+}
+
+.productImageHover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+
+.card:hover .productImage {
+  transform: scale(1.03);
+}
+
+// Content
+.content {
+  padding: 10px 12px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.brandName {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ratingWrap {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+}
+
+.starIcon {
+  color: $color-accent-yellow-dark;
+}
+
+.ratingScore {
+  font-weight: 700;
+  color: $color-ink-black;
+  font-family: $font-mono;
+}
+
+.soldCount {
+  color: $color-text-muted;
+  font-size: 10.5px;
+}
+
+.titleLink {
+  text-decoration: none;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 700;
+  color: $color-ink-black;
+  line-height: 1.35;
+  margin-bottom: 8px;
+  @include line-clamp(2);
+  min-height: 35px;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-accent-red;
+  }
+}
+
+.listDescription {
+  display: none;
+}
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: auto;
+  margin-bottom: 8px;
+}
+
+.priceBlock {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.priceQAR {
+  font-size: 16px;
+  font-weight: 800;
+  font-family: $font-mono;
+  color: $color-ink-black;
+  letter-spacing: -0.02em;
+
+  .currency {
+    font-size: 11px;
+    font-weight: 800;
+    margin-right: 2px;
+    color: $color-accent-red;
+  }
+}
+
+.originalPrice {
+  font-size: 11.5px;
+  font-family: $font-mono;
+  color: $color-text-muted;
+  text-decoration: line-through;
+}
+
+.airDeliveryPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background-color: #fefce8;
+  color: #854d0e;
+  border: 1px solid #fef08a;
+  border-radius: $radius-full;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+// Stock progress
+.stockProgressWrap {
+  margin-bottom: 10px;
+  background-color: #fff1f2;
+  border: 1px solid #ffe4e6;
+  border-radius: $radius-xs;
+  padding: 5px 8px;
+}
+
+.stockTextRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10.5px;
+  margin-bottom: 4px;
+}
+
+.claimedText {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: $color-accent-red;
+}
+
+.flameIcon {
+  color: $color-accent-red;
+}
+
+.airBatchTag {
+  color: $color-text-muted;
+  font-size: 10px;
+}
+
+.stockBarTrack {
+  height: 4px;
+  background-color: #fecdd3;
+  border-radius: $radius-full;
+  overflow: hidden;
+}
+
+.stockBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-accent-yellow, $color-accent-red);
+  border-radius: $radius-full;
+}
+
+// Button
+.addToCartBtn {
+  @include btn-primary-red;
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 12px;
+  gap: 6px;
+  border-radius: $radius-xs;
+}
+

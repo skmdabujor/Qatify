@@ -1,0 +1,927 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.homeContainer {
+  padding: $space-4 0 $space-10 0;
+
+  @include mobile {
+    padding: $space-2 0 $space-6 0;
+  }
+}
+
+// =============================================================================
+// SECTION 1: HIGH-CONVERSION YELLOW STRIP BANNER (Daraz/E-Commerce Style)
+// =============================================================================
+.heroSection {
+  margin-bottom: $space-6;
+}
+
+.yellowPromoStrip {
+  position: relative;
+  background: linear-gradient(180deg, #ffe53b 0%, #ffd000 55%, #ffb700 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 16px;
+  box-shadow: 0 6px 22px rgba(245, 158, 11, 0.28), inset 0 2px 0 rgba(255, 255, 255, 0.7);
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  overflow: hidden;
+  min-height: 130px;
+
+  @include laptop {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  @include mobile {
+    flex-direction: column;
+    padding: 16px 12px;
+    gap: 14px;
+    text-align: center;
+  }
+}
+
+// Festive background confetti
+.confetti {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 1px;
+  opacity: 0.85;
+}
+
+.confetti1 {
+  width: 9px;
+  height: 9px;
+  background-color: #10b981;
+  top: 12px;
+  left: 14%;
+  transform: rotate(25deg);
+}
+
+.confetti2 {
+  width: 7px;
+  height: 11px;
+  background-color: #f97316;
+  bottom: 12px;
+  left: 7%;
+  transform: rotate(-15deg);
+}
+
+.confetti3 {
+  width: 11px;
+  height: 7px;
+  background-color: #06b6d4;
+  top: 14px;
+  left: 49%;
+  transform: rotate(40deg);
+}
+
+.confetti4 {
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  bottom: 12px;
+  left: 76%;
+  transform: rotate(20deg);
+}
+
+.confetti5 {
+  width: 10px;
+  height: 10px;
+  background-color: #10b981;
+  top: 16px;
+  right: 17%;
+  transform: rotate(-30deg);
+}
+
+// Block 1: Angled Campaign Ribbon
+.ribbonBlock {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ribbonShape {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+  padding: 8px 18px;
+  position: relative;
+  transform: skewX(-8deg);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(185, 28, 28, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+  }
+  &::before {
+    left: -5px;
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-right: 5px solid #b91c1c;
+  }
+  &::after {
+    right: -5px;
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-left: 5px solid #b91c1c;
+  }
+}
+
+.ribbonMainText {
+  display: block;
+  transform: skewX(8deg);
+  font-family: $font-heading;
+  font-size: 20px;
+  font-weight: 900;
+  color: #fde047;
+  letter-spacing: 0.03em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+
+  @include mobile {
+    font-size: 18px;
+  }
+}
+
+.ribbonDatePill {
+  margin-top: 5px;
+  background: linear-gradient(180deg, #991b1b 0%, #7f1d1d 100%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 3px 12px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+
+  span {
+    font-family: $font-mono;
+    font-size: 11px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+}
+
+// Block 2: Value Badges
+.offersBlock {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.discountTicket {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1.5px dashed #f97316;
+  padding: 3px 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.ticketPercent {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 900;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ticketText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.ticketLabel {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #78350f;
+  letter-spacing: 0.04em;
+}
+
+.ticketValue {
+  font-family: $font-heading;
+  font-size: 13px;
+  font-weight: 900;
+  color: #dc2626;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.freeDeliveryBadge {
+  display: inline-flex;
+  align-items: center;
+  background-color: #047857;
+  color: #ffffff;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(4, 120, 87, 0.25);
+}
+
+.freeDeliveryPill {
+  background-color: #ffffff;
+  color: #047857;
+  font-size: 9px;
+  font-weight: 900;
+  padding: 3px 6px;
+  display: inline-block;
+}
+
+.freeDeliveryText {
+  font-family: $font-heading;
+  font-size: 11.5px;
+  font-weight: 900;
+  padding: 3px 8px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+// Block 3: Product Cluster (Overlapping Gadgets)
+.productClusterBlock {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.productItemLeft,
+.productItemRight {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #ffffff;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: transform $transition-fast;
+
+  &:hover {
+    transform: scale(1.1);
+    z-index: 3;
+  }
+}
+
+.productItemLeft {
+  margin-right: -14px;
+  z-index: 1;
+  transform: rotate(-6deg);
+}
+
+.productItemRight {
+  margin-left: -14px;
+  z-index: 1;
+  transform: rotate(6deg);
+}
+
+.productItemCenter {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #ffffff;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  z-index: 2;
+  flex-shrink: 0;
+  transition: transform $transition-fast;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.clusterImg,
+.clusterImgMain {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+// Block 4: "SALE IS LIVE NOW" Big Bold Typography
+.titleLiveBlock {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.titleLine1,
+.titleLine2 {
+  font-family: $font-heading;
+  font-size: 28px;
+  font-weight: 950;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  text-shadow:
+    -2px -2px 0 #ea580c,
+     2px -2px 0 #ea580c,
+    -2px  2px 0 #ea580c,
+     2px  2px 0 #ea580c,
+     0 4px 8px rgba(185, 28, 28, 0.4);
+  white-space: nowrap;
+
+  @include mobile {
+    font-size: 22px;
+  }
+}
+
+.titleLine2 {
+  color: #ffffff;
+  text-shadow:
+    -2px -2px 0 #dc2626,
+     2px -2px 0 #dc2626,
+    -2px  2px 0 #dc2626,
+     2px  2px 0 #dc2626,
+     0 4px 8px rgba(185, 28, 28, 0.45);
+}
+
+// Block 5: Single Pill CTA Button ("SHOP NOW >")
+.ctaButtonBlock {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.shopNowPillBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(180deg, #991b1b 0%, #7f1d1d 100%);
+  color: #ffffff;
+  text-decoration: none;
+  padding: 9px 12px 9px 20px;
+  border-radius: 9999px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 4px 14px rgba(127, 29, 29, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: all $transition-fast;
+
+  &:hover {
+    background: linear-gradient(180deg, #b91c1c 0%, #991b1b 100%);
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(127, 29, 29, 0.55);
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.btnText {
+  font-family: $font-heading;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.btnArrowCircle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: #7f1d1d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+// =============================================================================
+// SECTION 2: COMPACT 2-ROW CATEGORY RIBBON
+// =============================================================================
+.categoryRibbonSection {
+  margin-bottom: $space-6;
+}
+
+.sectionHeaderCompact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-3;
+}
+
+.sectionTitleBlock {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.sectionTitle {
+  font-size: 17px;
+  font-weight: 800;
+  color: $color-ink-black;
+  letter-spacing: -0.02em;
+}
+
+.sectionSub {
+  font-size: 12px;
+  color: $color-text-muted;
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.viewAllTextLink {
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-accent-red;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.categoryGridRibbon {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+
+  @include laptop {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+.categoryRibbonCard {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-sm;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: $color-accent-red;
+    box-shadow: $shadow-sm;
+    transform: translateY(-1px);
+
+    .ribbonIconCircle {
+      background-color: $color-accent-red;
+      color: #ffffff;
+    }
+    .ribbonCatName {
+      color: $color-accent-red;
+    }
+  }
+}
+
+.ribbonIconCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-full;
+  background-color: $color-surface-muted;
+  color: $color-ink-black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all $transition-fast;
+}
+
+.ribbonCatName {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-ink-black;
+  @include text-truncate;
+}
+
+.ribbonCatCount {
+  font-size: 10.5px;
+  font-family: $font-mono;
+  color: $color-text-muted;
+}
+
+// =============================================================================
+// SECTION 2.5: PROMOTIONAL SALE IMAGE BANNER (Single Clickable Image)
+// =============================================================================
+.promoImageBannerSection {
+  margin-bottom: $space-6;
+  width: 100%;
+}
+
+.promoBannerLink {
+  display: block;
+  width: 100%;
+  border-radius: $radius-md;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid $color-border-subtle;
+  transition: transform $transition-fast, box-shadow $transition-fast, border-color $transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(225, 29, 72, 0.12);
+    border-color: rgba(225, 29, 72, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.promoBannerImg {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: $radius-md;
+}
+
+// =============================================================================
+// SECTION 3: "FANTASTIC FLASH DEALS" COUNTDOWN SECTION
+// =============================================================================
+.flashDealsSection {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: $space-4;
+  margin-bottom: $space-6;
+  box-shadow: $shadow-sm;
+}
+
+.flashHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-4;
+  padding-bottom: 12px;
+  border-bottom: 1px solid $color-border-subtle;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+.flashTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.flashBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: $color-accent-red;
+  color: #ffffff;
+  font-family: $font-heading;
+  font-weight: 900;
+  font-size: 11.5px;
+  padding: 4px 8px;
+  border-radius: $radius-xs;
+  letter-spacing: 0.02em;
+}
+
+.flashHeading {
+  font-size: 18px;
+  font-weight: 800;
+  color: $color-ink-black;
+}
+
+.timerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: $color-ink-black;
+  padding: 4px 10px;
+  border-radius: $radius-sm;
+}
+
+.timerLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #a1a1aa;
+  text-transform: uppercase;
+}
+
+.timerPills {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.timeBox {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  background-color: #1a1a20;
+  border: 1px solid #2e2e38;
+  padding: 2px 6px;
+  border-radius: $radius-xs;
+}
+
+.timeNum {
+  font-family: $font-mono;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: $color-accent-yellow;
+}
+
+.timeUnit {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #a1a1aa;
+}
+
+.timeColon {
+  font-family: $font-mono;
+  font-weight: 800;
+  color: $color-accent-yellow;
+  font-size: 12px;
+}
+
+// 5-Column Dense Grid
+.flashGrid5Col {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+
+  @include laptop {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+// =============================================================================
+// SHELF SECTIONS (Trending, Under 99, Best Sellers)
+// =============================================================================
+.shelfSection {
+  margin-bottom: $space-6;
+}
+
+.shelfHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-3;
+}
+
+.shelfTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.shelfTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #fff1f2;
+  color: $color-accent-red;
+  border: 1px solid #fecdd3;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: $radius-xs;
+  font-family: $font-mono;
+}
+
+.shelfTagYellow {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: $color-accent-yellow-bg;
+  color: #854d0e;
+  border: 1px solid #fef08a;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: $radius-xs;
+  font-family: $font-mono;
+}
+
+.shelfHeading {
+  font-size: 18px;
+  font-weight: 800;
+  color: $color-ink-black;
+  letter-spacing: -0.02em;
+}
+
+.viewMoreBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: $color-ink-black;
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: $radius-xs;
+  transition: all $transition-fast;
+
+  &:hover {
+    color: $color-accent-red;
+  }
+}
+
+.shelfGrid4Col {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+
+  @include laptop {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+// =============================================================================
+// MID-PAGE PROMOTIONAL AIR CARGO BANNER
+// =============================================================================
+.airCargoPromoBanner {
+  background: linear-gradient(135deg, #121216 0%, #1a1a22 100%);
+  border: 1px solid #27272a;
+  border-radius: $radius-md;
+  padding: $space-6;
+  color: #ffffff;
+  margin-bottom: $space-6;
+}
+
+.airCargoInner {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: $space-6;
+  align-items: center;
+
+  @include tablet {
+    grid-template-columns: 1fr;
+  }
+}
+
+.airCargoContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.cargoPill {
+  font-family: $font-mono;
+  font-size: 11px;
+  font-weight: 800;
+  color: $color-accent-yellow;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.cargoTitle {
+  font-size: 22px;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+
+.cargoDesc {
+  font-size: 13px;
+  color: #a1a1aa;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.cargoPerks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cargoPerk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #e4e4e7;
+
+  svg {
+    color: $color-accent-yellow;
+    flex-shrink: 0;
+  }
+}
+
+.cargoTrackingWidget {
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: $radius-md;
+  padding: $space-4;
+}
+
+.trackingMockHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-accent-yellow;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
+}
+
+.trackingSteps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.trackingStep {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.stepDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #3f3f46;
+  margin-top: 3px;
+  flex-shrink: 0;
+
+  &.done {
+    background-color: #10b981;
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+  }
+
+  &.current {
+    background-color: $color-accent-yellow;
+    box-shadow: 0 0 8px rgba(250, 204, 21, 0.7);
+    animation: pulse 1.5s infinite;
+  }
+}
+
+.stepInfo {
+  display: flex;
+  flex-direction: column;
+
+  strong {
+    font-size: 12px;
+    color: #ffffff;
+  }
+
+  span {
+    font-size: 11px;
+    color: #a1a1aa;
+  }
+}
+

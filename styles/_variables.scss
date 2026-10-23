@@ -1,0 +1,104 @@
+// =============================================================================
+// Qatify — SCSS Design System Variables & Tokens
+// Governed by the Strict 60/30/10 Color Rule & High-Density Regional Retail UX
+// =============================================================================
+
+// --- 60% DOMINANT BASE (Clean White, Canvas & Deep Obsidian Black) ---
+$color-bg-primary: #ffffff;
+$color-bg-canvas: #f8f9fa;
+$color-bg-alt: #fafafa;
+$color-ink-black: #0a0a0c;
+$color-ink-deep: #121216;
+$color-ink-text: #18181b;
+
+// --- 30% SECONDARY CONTAINERS & SURFACES (Monochrome Neutrals & Soft Tints) ---
+$color-surface-card: #ffffff;
+$color-surface-muted: #f1f3f5;
+$color-surface-elevated: #ffffff;
+$color-surface-dark: #16161a;
+$color-surface-dark-card: #1e1e24;
+$color-surface-dark-hover: #26262e;
+
+// Borders & Dividers
+$color-border-subtle: #e4e4e7;
+$color-border-light: #f4f4f5;
+$color-border-medium: #d4d4d8;
+$color-border-dark: #27272a;
+
+// Typography Neutrals
+$color-text-primary: #0a0a0c;
+$color-text-secondary: #52525b;
+$color-text-muted: #71717a;
+$color-text-inverse: #ffffff;
+$color-text-inverse-muted: #a1a1aa;
+
+// --- 10% HIGH-ENERGY ACCENTS (Qatify Red & Electric Solar Yellow) ---
+$color-accent-red: #e11d48;
+$color-accent-red-hover: #be123c;
+$color-accent-red-light: #ffe4e6;
+$color-accent-red-glow: rgba(225, 29, 72, 0.2);
+
+$color-accent-yellow: #facc15;
+$color-accent-yellow-dark: #eab308;
+$color-accent-yellow-tint: #fef9c3;
+$color-accent-yellow-bg: #fffbeb;
+$color-accent-yellow-glow: rgba(250, 204, 21, 0.25);
+
+// Functional Status & Badge Colors
+$color-success: #10b981;
+$color-success-bg: #ecfdf5;
+$color-warning: #f59e0b;
+$color-warning-bg: #fffbeb;
+$color-info: #0284c7;
+$color-info-bg: #f0f9ff;
+
+// --- SPACING SCALE (4px Base Grid for Medium-High Information Density) ---
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 20px;
+$space-6: 24px;
+$space-7: 28px;
+$space-8: 32px;
+$space-10: 40px;
+$space-12: 48px;
+$space-16: 64px;
+
+// --- BORDER RADIUS ---
+$radius-xs: 4px;
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 10px;
+$radius-xl: 14px;
+$radius-2xl: 18px;
+$radius-full: 9999px;
+
+// --- SHADOWS ---
+$shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+$shadow-card-hover: 0 10px 25px -5px rgba(10, 10, 12, 0.12), 0 8px 10px -6px rgba(10, 10, 12, 0.06);
+
+// --- TYPOGRAPHY FAMILIES ---
+$font-heading: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+// --- Z-INDEX LAYERS ---
+$z-dropdown: 1000;
+$z-sticky: 1020;
+$z-fixed: 1030;
+$z-modal-backdrop: 1040;
+$z-modal: 1050;
+$z-drawer: 1060;
+$z-toast: 1070;
+$z-tooltip: 1080;
+
+// --- TRANSITIONS ---
+$transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-normal: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
