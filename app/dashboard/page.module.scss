@@ -3,6 +3,9 @@
 
 .dashboardPage {
   padding: $space-4 0 $space-8 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 
   @include tablet {
     padding: $space-3 0 calc(76px + env(safe-area-inset-bottom, 16px)) 0;
@@ -18,6 +21,9 @@
   margin-bottom: $space-6;
   padding-bottom: 16px;
   border-bottom: 1px solid $color-border-subtle;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   @include laptop {
     flex-direction: column;
@@ -30,6 +36,8 @@
 
 .dashboardTitleBlock {
   max-width: 600px;
+  width: 100%;
+  min-width: 0;
 }
 
 .dashboardHeading {
@@ -38,6 +46,7 @@
   color: $color-ink-black;
   letter-spacing: -0.02em;
   margin-bottom: 4px;
+  word-break: break-word;
 
   @include mobile {
     font-size: 19px;
@@ -49,6 +58,7 @@
   font-size: 13px;
   color: $color-text-secondary;
   line-height: 1.4;
+  word-break: break-word;
 
   @include mobile {
     font-size: 12px;
@@ -65,8 +75,9 @@
   border-radius: $radius-full;
   box-shadow: $shadow-xs;
   flex-shrink: 0;
+  max-width: 100%;
 
-  @include mobile {
+  @include tablet {
     width: 100%;
     flex-direction: column;
     align-items: stretch;
@@ -83,7 +94,7 @@
   text-transform: uppercase;
   margin-left: 6px;
 
-  @include mobile {
+  @include tablet {
     margin-left: 0;
     text-align: center;
     font-size: 10px;
@@ -95,8 +106,9 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  max-width: 100%;
 
-  @include mobile {
+  @include tablet {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4px;
@@ -115,10 +127,12 @@
   text-align: center;
   white-space: nowrap;
 
-  @include mobile {
+  @include tablet {
     padding: 8px 6px;
-    font-size: 11.5px;
+    font-size: 11px;
     border-radius: $radius-xs;
+    white-space: normal;
+    line-height: 1.25;
   }
 
   &:hover {
@@ -135,12 +149,15 @@
 // Shell: Sidebar + Workspace
 .dashboardShell {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 240px minmax(0, 1fr);
   gap: $space-6;
   align-items: start;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   @include laptop {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: $space-4;
   }
 }
@@ -159,6 +176,9 @@
   border: 1px solid #1c1c22;
   position: sticky;
   top: 90px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   @include laptop {
     position: static;
@@ -166,6 +186,7 @@
     padding: 12px;
     gap: 12px;
     border-radius: $radius-sm;
+    overflow: hidden;
   }
 }
 
@@ -179,6 +200,8 @@
   border-radius: $radius-sm;
   margin-bottom: 12px;
   border: 1px solid #27272a;
+  min-width: 0;
+  max-width: 100%;
 
   @include laptop {
     margin-bottom: 0;
@@ -191,6 +214,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
 }
 
 .avatarCircle {
@@ -211,12 +235,16 @@
 .userInfo {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .userName {
   font-size: 13px;
   font-weight: 700;
   color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .userLocation {
@@ -257,6 +285,8 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
+  max-width: 100%;
 
   @include laptop {
     margin-bottom: 0;
@@ -271,6 +301,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .adminPill {
@@ -331,6 +362,9 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   @include laptop {
     flex-direction: row;
@@ -339,6 +373,7 @@
     padding: 4px 2px 8px 2px;
     gap: 8px;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
     scrollbar-width: none;
     &::-webkit-scrollbar {
       display: none;
@@ -369,6 +404,12 @@
     background-color: #16161a;
     border: 1px solid #27272a;
     border-radius: $radius-full;
+  }
+
+  @include mobile {
+    padding: 6px 12px;
+    font-size: 11.5px;
+    gap: 6px;
   }
 
   &:hover {
@@ -413,6 +454,13 @@
   display: flex;
   flex-direction: column;
   gap: $space-6;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  @include mobile {
+    gap: $space-4;
+  }
 }
 
 // KPI Cards Row
@@ -420,6 +468,9 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: $space-4;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   @include tablet {
     grid-template-columns: 1fr;
@@ -440,6 +491,8 @@
   align-items: center;
   gap: 14px;
   box-shadow: $shadow-xs;
+  min-width: 0;
+  max-width: 100%;
 
   @include mobile {
     padding: 12px 14px;
@@ -513,6 +566,7 @@
 .kpiContent {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .kpiLabel {
@@ -540,6 +594,10 @@
   border-radius: $radius-md;
   padding: $space-6;
   box-shadow: $shadow-xs;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 
   @include mobile {
     padding: 14px 12px;
@@ -552,12 +610,18 @@
   font-weight: 800;
   color: $color-ink-black;
   margin-bottom: 2px;
+  word-break: break-word;
+
+  @include mobile {
+    font-size: 16px;
+  }
 }
 
 .cardSub {
   font-size: 12.5px;
   color: $color-text-secondary;
   margin-bottom: 18px;
+  word-break: break-word;
 
   @include mobile {
     font-size: 12px;
@@ -572,6 +636,9 @@
   justify-content: space-between;
   gap: $space-4;
   margin-bottom: 18px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   @include tablet {
     flex-direction: column;
@@ -587,6 +654,7 @@
   border: 1px solid $color-border-subtle;
   border-radius: $radius-xs;
   overflow: hidden;
+  max-width: 100%;
 
   @include tablet {
     width: 100%;
@@ -606,6 +674,7 @@
   font-family: $font-mono;
   outline: none;
   width: 190px;
+  min-width: 0;
 
   @include tablet {
     width: 100%;
@@ -639,8 +708,11 @@
   gap: $space-4;
   margin-bottom: 24px;
   border: 1px solid #27272a;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
-  @include mobile {
+  @include tablet {
     flex-direction: column;
     align-items: flex-start;
     padding: 14px 16px;
@@ -653,6 +725,8 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .shipmentTag {
@@ -669,23 +743,27 @@
   color: #ffffff;
   letter-spacing: 0.02em;
   word-break: break-all;
+  overflow-wrap: anywhere;
 
   @include mobile {
-    font-size: 16px;
+    font-size: 15px;
   }
 }
 
 .shipmentRef {
   font-size: 11.5px;
   color: #a1a1aa;
+  word-break: break-word;
 }
 
 .shipmentEtaBlock {
   display: flex;
   flex-direction: column;
   text-align: right;
+  min-width: 0;
+  max-width: 100%;
 
-  @include mobile {
+  @include tablet {
     text-align: left;
     width: 100%;
     padding-top: 10px;
@@ -715,6 +793,9 @@
   flex-direction: column;
   gap: 16px;
   padding: 10px 0;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   @include mobile {
     gap: 12px;
@@ -725,6 +806,9 @@
 .timelineNodeRow {
   display: flex;
   gap: 16px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   @include mobile {
     gap: 10px;
@@ -763,6 +847,7 @@
   flex-direction: column;
   align-items: center;
   position: relative;
+  flex-shrink: 0;
 }
 
 .nodeCircle {
@@ -779,6 +864,7 @@
   font-weight: 800;
   font-family: $font-mono;
   z-index: 2;
+  flex-shrink: 0;
 
   @include mobile {
     width: 26px;
@@ -802,10 +888,13 @@
 .nodeDetails {
   flex: 1;
   min-width: 0;
+  max-width: 100%;
   background-color: $color-surface-muted;
   border: 1px solid $color-border-subtle;
   border-radius: $radius-sm;
   padding: 12px 14px;
+  word-break: break-word;
+  overflow-wrap: break-word;
 
   @include mobile {
     padding: 10px 12px;
@@ -819,7 +908,7 @@
   gap: 8px;
   margin-bottom: 4px;
 
-  @include mobile {
+  @include tablet {
     flex-direction: column;
     align-items: flex-start;
     gap: 2px;
@@ -831,6 +920,7 @@
   font-weight: 700;
   color: $color-ink-black;
   line-height: 1.35;
+  word-break: break-word;
 
   @include mobile {
     font-size: 13px;
@@ -843,6 +933,10 @@
   color: $color-text-muted;
   white-space: nowrap;
 
+  @include tablet {
+    white-space: normal;
+  }
+
   @include mobile {
     font-size: 10.5px;
   }
@@ -853,6 +947,7 @@
   color: $color-text-secondary;
   line-height: 1.4;
   margin-bottom: 6px;
+  word-break: break-word;
 
   @include mobile {
     font-size: 11.5px;
@@ -866,9 +961,12 @@
   font-size: 11px;
   font-weight: 600;
   color: $color-text-muted;
+  word-break: break-word;
+  flex-wrap: wrap;
 
   svg {
     color: $color-accent-red;
+    flex-shrink: 0;
   }
 }
 
@@ -877,6 +975,8 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  width: 100%;
+  min-width: 0;
 }
 
 .orderListItem {
@@ -884,6 +984,8 @@
   border-radius: $radius-sm;
   background-color: #ffffff;
   overflow: hidden;
+  width: 100%;
+  min-width: 0;
 }
 
 .orderHeaderStrip {
@@ -893,10 +995,12 @@
   padding: 10px 14px;
   background-color: $color-surface-muted;
   border-bottom: 1px solid $color-border-subtle;
+  gap: 8px;
 
   @include mobile {
     padding: 8px 12px;
     gap: 6px;
+    flex-wrap: wrap;
   }
 }
 
@@ -906,9 +1010,12 @@
   gap: 8px;
   font-size: 13px;
   font-family: $font-mono;
+  flex-wrap: wrap;
+  min-width: 0;
 
   strong {
     color: $color-ink-black;
+    word-break: break-all;
   }
 }
 
@@ -922,6 +1029,7 @@
   font-weight: 800;
   padding: 2px 8px;
   border-radius: $radius-full;
+  flex-shrink: 0;
 
   &.delivered {
     background-color: #ecfdf5;
@@ -941,12 +1049,15 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
+  min-width: 0;
 }
 
 .orderThumbWrap {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
 }
 
 .orderThumbImg {
@@ -955,17 +1066,20 @@
   object-fit: cover;
   border-radius: $radius-xs;
   border: 1px solid $color-border-subtle;
+  flex-shrink: 0;
 }
 
 .orderItemInfo {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .orderItemTitle {
   font-size: 12.5px;
   font-weight: 700;
   color: $color-ink-black;
+  word-break: break-word;
 }
 
 .orderItemQty {
@@ -1049,8 +1163,10 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 14px;
+  width: 100%;
+  min-width: 0;
 
-  @include mobile {
+  @include tablet {
     grid-template-columns: 1fr;
   }
 }
@@ -1060,6 +1176,8 @@
   border-radius: $radius-sm;
   padding: 14px;
   background-color: #fafafa;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .addressCardTop {
@@ -1126,12 +1244,14 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
+  width: 100%;
+  min-width: 0;
 
-  @include tablet {
+  @include laptop {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @include mobile {
+  @include tablet {
     grid-template-columns: 1fr;
   }
 }
@@ -1144,6 +1264,8 @@
   display: flex;
   gap: 10px;
   position: relative;
+  min-width: 0;
+  max-width: 100%;
   transition: border-color $transition-fast, box-shadow $transition-fast;
 
   &:hover {
@@ -1194,6 +1316,7 @@
   flex: 1;
   min-width: 0;
   line-height: 1.35;
+  word-break: break-word;
   @include line-clamp(2);
   transition: color $transition-fast;
 
@@ -1319,8 +1442,10 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 14px;
   margin-bottom: 24px;
+  width: 100%;
+  min-width: 0;
 
-  @include mobile {
+  @include tablet {
     grid-template-columns: 1fr;
   }
 }
@@ -1334,6 +1459,8 @@
   color: inherit;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  word-break: break-word;
   transition: all $transition-fast;
 
   &:hover {
@@ -1358,6 +1485,7 @@
     color: $color-accent-red;
     font-family: $font-mono;
     margin: 2px 0;
+    word-break: break-all;
   }
 
   span {
@@ -1387,6 +1515,7 @@
   flex-direction: column;
   gap: 12px;
   max-width: 480px;
+  width: 100%;
 }
 
 .submitClaimBtn {
@@ -1412,6 +1541,8 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 
   @include mobile {
     padding: 12px;
@@ -1428,6 +1559,7 @@
   border-radius: $radius-md;
   padding: 24px;
   box-shadow: $shadow-xl;
+  box-sizing: border-box;
 
   @include mobile {
     padding: 18px 16px;
@@ -1523,6 +1655,9 @@
   display: flex;
   flex-direction: column;
   gap: $space-6;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   @include mobile {
     gap: $space-4;
@@ -1533,6 +1668,9 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   @include laptop {
     grid-template-columns: repeat(2, 1fr);
@@ -1623,6 +1761,9 @@
   border: 1px solid $color-border-subtle;
   border-radius: $radius-md;
   padding: 18px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   @include mobile {
     padding: 14px 12px;
@@ -1646,10 +1787,17 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   @include tablet {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
+  }
+
+  @media (max-width: 380px) {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1663,6 +1811,8 @@
   align-items: center;
   text-align: center;
   gap: 4px;
+  min-width: 0;
+  max-width: 100%;
 
   @include mobile {
     padding: 10px 8px;
@@ -1735,6 +1885,10 @@
   border: 1px solid $color-border-subtle;
   border-radius: $radius-md;
   padding: 18px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 
   @include mobile {
     padding: 14px 12px;
@@ -1773,15 +1927,17 @@
 
 .tableResponsiveWrap {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 4px;
+  overscroll-behavior-x: contain;
+  padding-bottom: 6px;
   @include custom-scrollbar;
 }
 
 .adminOrdersTable {
   width: 100%;
-  min-width: 660px;
+  min-width: 600px;
   border-collapse: collapse;
   font-size: 12px;
 

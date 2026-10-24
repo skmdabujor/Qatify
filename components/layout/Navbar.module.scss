@@ -8,6 +8,7 @@
   background-color: $color-bg-primary;
   box-shadow: $shadow-sm;
   width: 100%;
+  max-width: 100%;
 }
 
 // 1. TOP UTILITY BAR
@@ -846,6 +847,9 @@
   justify-content: space-between;
   gap: $space-3;
   height: 40px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 
   @include mobile {
     height: 38px;
@@ -1003,6 +1007,7 @@
   white-space: nowrap;
   flex: 1;
   min-width: 0;
+  overscroll-behavior-x: contain;
 
   @include laptop {
     gap: 12px;
