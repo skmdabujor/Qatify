@@ -8,6 +8,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useMutation, useAction } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import {
   ShieldCheck,
   Plane,
@@ -41,9 +43,14 @@ export default function CheckoutPage() {
     savedAddresses,
     addAddress,
     createOrder,
+    clearCart,
     showToast,
     openChat,
   } = useShop();
+
+  const createConvexOrder = useMutation(api.orders.createOrder);
+  const createPolarCheckout = useAction(api.polar.createCheckoutSession);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Steps state: 1 = Address, 2 = Shipping, 3 = Payment
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
@@ -119,26 +126,89 @@ export default function CheckoutPage() {
   };
 
   // Handle final order placement
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     if (cart.length === 0) {
       showToast('Cart is Empty', 'Please add items before placing an order.', 'warning');
       router.push('/shop');
       return;
     }
 
-    const newOrder = createOrder({
-      items: cart,
-      subtotalQAR: cartSubtotal,
-      shippingQAR: shippingCost,
-      discountQAR: 0,
-      totalQAR: grandTotal,
-      address,
-      shippingMethod: selectedShipping,
-      paymentMethod,
-      estimatedDeliveryWindow: '6–10 Business Days to Qatar',
-    });
+    try {
+      setIsSubmitting(true);
 
-    setConfirmedOrder(newOrder);
+      const itemsPayload = cart.map((item) => ({
+        productId: item.product.id,
+        title: item.product.title,
+        slug: item.product.slug,
+        priceQAR: item.product.priceQAR,
+        quantity: item.quantity,
+        image: item.product.images[0] || '/placeholder.svg',
+        selectedColor: item.selectedColor,
+        selectedOption: item.selectedOption,
+      }));
+
+      // 1. Create persistent order in Convex database
+      const orderResult = await createConvexOrder({
+        items: itemsPayload,
+        address: {
+          fullName: address.fullName,
+          phone: address.phone,
+          municipality: address.municipality,
+          zoneNumber: address.zoneNumber,
+          streetNumber: address.streetNumber,
+          buildingNumber: address.buildingNumber,
+          unitNumber: address.unitNumber || undefined,
+          landmark: address.landmark || undefined,
+        },
+        shippingMethod: {
+          id: selectedShipping.id,
+          name: selectedShipping.name,
+          badge: selectedShipping.badge,
+          duration: selectedShipping.duration,
+          priceQAR: selectedShipping.priceQAR,
+          description: selectedShipping.description,
+        },
+        paymentMethod: paymentMethod === 'cash_on_delivery' ? 'cash_on_delivery' : 'polar',
+      });
+
+      // 2. Also save into local ShopContext
+      createOrder({
+        items: cart,
+        subtotalQAR: cartSubtotal,
+        shippingQAR: shippingCost,
+        discountQAR: 0,
+        totalQAR: grandTotal,
+        address,
+        shippingMethod: selectedShipping,
+        paymentMethod,
+        estimatedDeliveryWindow: '6–10 Business Days to Qatar',
+      });
+
+      // 3. Clear cart
+      clearCart();
+
+      // 4. If Cash on Delivery, route to confirmation
+      if (paymentMethod === 'cash_on_delivery') {
+        router.push(`/checkout/success?orderNumber=${orderResult.orderNumber}&method=cod`);
+        return;
+      }
+
+      // 5. Digital checkout: Create Polar checkout session
+      const session = await createPolarCheckout({
+        orderId: orderResult.orderId,
+      });
+
+      if (session?.checkoutUrl) {
+        window.location.href = session.checkoutUrl;
+      } else {
+        router.push(`/checkout/success?orderNumber=${orderResult.orderNumber}`);
+      }
+    } catch (err) {
+      console.error('Checkout error:', err);
+      showToast('Checkout Failed', 'Could not process order. Please try again.', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // If order was successfully created, render celebration state
@@ -647,10 +717,19 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     onClick={handlePlaceOrder}
+                    disabled={isSubmitting}
                     className={styles.confirmOrderBtn}
+                    style={{
+                      opacity: isSubmitting ? 0.75 : 1,
+                      cursor: isSubmitting ? 'wait' : 'pointer',
+                    }}
                   >
                     <Lock size={16} />
-                    <span>Confirm & Place Qatar Order (QAR {grandTotal.toLocaleString()})</span>
+                    <span>
+                      {isSubmitting
+                        ? 'Connecting to Polar Gateway...'
+                        : `Confirm & Place Qatar Order (QAR ${grandTotal.toLocaleString()})`}
+                    </span>
                   </button>
                 </div>
               </div>

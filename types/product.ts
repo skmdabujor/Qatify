@@ -147,3 +147,29 @@ export interface FilterState {
   sortBy: SortOption;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string;
+  count: number;
+}
+
+export function toCategory(doc: any): Category {
+  return {
+    id: doc.id || doc.categoryId || doc._id,
+    name: doc.name,
+    slug: doc.slug,
+    icon: doc.icon,
+    count: doc.count,
+  };
+}
+
+export function toProduct(doc: any): Product {
+  return {
+    ...doc,
+    id: doc.productId || doc.id || doc._id,
+  };
+}
+
+

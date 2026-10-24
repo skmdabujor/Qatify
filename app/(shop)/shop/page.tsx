@@ -7,6 +7,8 @@
 
 import React, { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import {
   Filter,
   Grid3X3,
@@ -22,7 +24,7 @@ import {
 } from 'lucide-react';
 import { ProductCard } from '@/components/product/ProductCard';
 import { PRODUCTS, CATEGORIES } from '@/data/products';
-import { Product, SortOption } from '@/types/product';
+import { Product, SortOption, toProduct, toCategory } from '@/types/product';
 import styles from './page.module.scss';
 
 // Brands available in mock data
@@ -74,9 +76,24 @@ function ShopContent() {
     setSortBy('trending');
   };
 
+  // Live Convex queries
+  const liveProducts = useQuery(api.products.list, {
+    categorySlug: selectedCategory || undefined,
+    limit: 100,
+  });
+  const liveCategories = useQuery(api.categories.list, { limit: 20 });
+
+  const allProducts = liveProducts && liveProducts.length > 0
+    ? liveProducts.map(toProduct)
+    : PRODUCTS;
+
+  const categories = liveCategories && liveCategories.length > 0
+    ? liveCategories.map(toCategory)
+    : CATEGORIES;
+
   // Filter & Sort Logic
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((product) => {
+    return allProducts.filter((product) => {
       // Category filter
       if (selectedCategory && product.categorySlug !== selectedCategory) {
         return false;
@@ -283,7 +300,7 @@ function ShopContent() {
                     />
                     <span className={styles.radioLabel}>All Categories</span>
                   </label>
-                  {CATEGORIES.map((cat) => (
+                  {categories.map((cat) => (
                     <label key={cat.id} className={styles.radioOption}>
                       <input
                         type="radio"

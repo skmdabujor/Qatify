@@ -5,9 +5,11 @@
 // Role Switcher: Customer View (5-Stage Air Shipment Tracker) vs Admin View (Analytics)
 // =============================================================================
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import {
   Package,
   Plane,
@@ -81,11 +83,58 @@ function DashboardContent() {
     showToast,
   } = useShop();
 
+  const orderFromUrl = searchParams.get('order') || '';
+  const liveOrders = useQuery(api.orders.listRecentOrders, { limit: 50 });
+  const updateStatus = useMutation(api.orders.updateOrderStatus);
+
+  // Combine live Convex orders with fallback mock orders
+  const displayOrders: any[] =
+    liveOrders && liveOrders.length > 0
+      ? liveOrders.map((o) => ({
+          ...o,
+          id: o._id,
+        }))
+      : orders;
+
+  // Dynamic KPIs from actual database orders
+  const totalRevenue = displayOrders.reduce((sum, o) => sum + (o.totalQAR || 0), 0);
+  const pendingDispatchCount = displayOrders.filter((o) => o.status === 'Order Confirmed').length;
+  const inAirTransitCount = displayOrders.filter((o) => o.status === 'Air Hub Transit').length;
+  const customsCount = displayOrders.filter((o) => o.status === 'Qatar Customs (DOH)').length;
+  const deliveredCount = displayOrders.filter((o) => o.status === 'Delivered').length;
+
   // Tracking search input
-  const [trackingSearch, setTrackingSearch] = useState('');
-  const [selectedOrder, setSelectedOrder] = useState<Order>(
-    activeOrder || orders[0]
+  const [trackingSearch, setTrackingSearch] = useState(orderFromUrl);
+  const [selectedOrder, setSelectedOrder] = useState<any>(
+    activeOrder || orders[0] || null
   );
+
+  // Auto-sync selected order from URL or active list
+  useEffect(() => {
+    if (orderFromUrl && displayOrders.length > 0) {
+      const match = displayOrders.find(
+        (o) =>
+          o.orderNumber.toLowerCase() === orderFromUrl.toLowerCase() ||
+          o.trackingNumber.toLowerCase() === orderFromUrl.toLowerCase()
+      );
+      if (match) {
+        setSelectedOrder(match);
+        return;
+      }
+    }
+    if (!selectedOrder && displayOrders.length > 0) {
+      setSelectedOrder(displayOrders[0]);
+    } else if (selectedOrder && liveOrders && liveOrders.length > 0) {
+      const updated = liveOrders.find((o) => o.orderNumber === selectedOrder.orderNumber);
+      if (
+        updated &&
+        (updated.status !== selectedOrder.status ||
+          (updated as any).paymentStatus !== (selectedOrder as any).paymentStatus)
+      ) {
+        setSelectedOrder({ ...updated, id: updated._id });
+      }
+    }
+  }, [orderFromUrl, displayOrders, selectedOrder, liveOrders]);
 
   // Address Modal State
   const [isAddAddressOpen, setIsAddAddressOpen] = useState(false);
@@ -111,17 +160,18 @@ function DashboardContent() {
     e.preventDefault();
     if (!trackingSearch.trim()) return;
 
-    const found = orders.find(
+    const term = trackingSearch.trim().toLowerCase();
+    const found = displayOrders.find(
       (o) =>
-        o.trackingNumber.toLowerCase() === trackingSearch.trim().toLowerCase() ||
-        o.orderNumber.toLowerCase() === trackingSearch.trim().toLowerCase()
+        o.trackingNumber.toLowerCase() === term ||
+        o.orderNumber.toLowerCase() === term
     );
 
     if (found) {
       setSelectedOrder(found);
       showToast('Shipment Located! 📦', `Tracking ref: ${found.trackingNumber}`);
     } else {
-      showToast('Shipment Not Found', 'Check tracking code or try QA-EXP-8849201', 'warning');
+      showToast('Shipment Not Found', 'Check tracking code or try your Order Ref', 'warning');
     }
   };
 
@@ -414,72 +464,80 @@ function DashboardContent() {
                       </form>
                     </div>
 
-                    {/* Active Shipment Card */}
-                    <div className={styles.activeShipmentBanner}>
-                      <div className={styles.shipmentMetaBlock}>
-                        <span className={styles.shipmentTag}>LIVE AIR EXPRESS</span>
-                        <h3 className={styles.shipmentTrackingCode}>
-                          {selectedOrder.trackingNumber}
-                        </h3>
-                        <span className={styles.shipmentRef}>
-                          Order Ref: {selectedOrder.orderNumber} • Placed on {selectedOrder.date}
-                        </span>
-                      </div>
-
-                      <div className={styles.shipmentEtaBlock}>
-                        <span className={styles.etaLabel}>Target Qatar Arrival:</span>
-                        <strong className={styles.etaDates}>
-                          {selectedOrder.estimatedDeliveryWindow}
-                        </strong>
-                        <span className={styles.etaLocation}>
-                          Destination: {selectedOrder.address.municipality}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* 5-STAGE PROGRESS TIMELINE */}
-                    <div className={styles.fiveStageTimeline}>
-                      {selectedOrder.timeline.map((step, idx) => {
-                        const isDone = step.completed;
-                        const isCurrent = step.current;
-
-                        return (
-                          <div
-                            key={step.stage}
-                            className={`${styles.timelineNodeRow} ${
-                              isDone ? styles.done : isCurrent ? styles.current : ''
-                            }`}
-                          >
-                            <div className={styles.nodeColumn}>
-                              <div className={styles.nodeCircle}>
-                                {isDone ? (
-                                  <CheckCircle2 size={16} />
-                                ) : isCurrent ? (
-                                  <Plane size={15} className={styles.pulsePlane} />
-                                ) : (
-                                  <span className={styles.stageIndex}>{idx + 1}</span>
-                                )}
-                              </div>
-                              {idx < selectedOrder.timeline.length - 1 && (
-                                <div className={styles.nodeLine} />
-                              )}
-                            </div>
-
-                            <div className={styles.nodeDetails}>
-                              <div className={styles.nodeTopLine}>
-                                <h4 className={styles.nodeTitle}>{step.title}</h4>
-                                <span className={styles.nodeDate}>{step.date}</span>
-                              </div>
-                              <p className={styles.nodeDesc}>{step.description}</p>
-                              <div className={styles.nodeLocation}>
-                                <MapPin size={12} />
-                                <span>{step.location}</span>
-                              </div>
-                            </div>
+                    {selectedOrder ? (
+                      <>
+                        {/* Active Shipment Card */}
+                        <div className={styles.activeShipmentBanner}>
+                          <div className={styles.shipmentMetaBlock}>
+                            <span className={styles.shipmentTag}>LIVE AIR EXPRESS</span>
+                            <h3 className={styles.shipmentTrackingCode}>
+                              {selectedOrder.trackingNumber}
+                            </h3>
+                            <span className={styles.shipmentRef}>
+                              Order Ref: {selectedOrder.orderNumber} • Placed on {selectedOrder.date}
+                            </span>
                           </div>
-                        );
-                      })}
-                    </div>
+
+                          <div className={styles.shipmentEtaBlock}>
+                            <span className={styles.etaLabel}>Target Qatar Arrival:</span>
+                            <strong className={styles.etaDates}>
+                              {selectedOrder.estimatedDeliveryWindow}
+                            </strong>
+                            <span className={styles.etaLocation}>
+                              Destination: {selectedOrder.address?.municipality || 'Qatar'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* 5-STAGE PROGRESS TIMELINE */}
+                        <div className={styles.fiveStageTimeline}>
+                          {selectedOrder.timeline?.map((step: any, idx: number) => {
+                            const isDone = step.completed;
+                            const isCurrent = step.current;
+
+                            return (
+                              <div
+                                key={step.stage}
+                                className={`${styles.timelineNodeRow} ${
+                                  isDone ? styles.done : isCurrent ? styles.current : ''
+                                }`}
+                              >
+                                <div className={styles.nodeColumn}>
+                                  <div className={styles.nodeCircle}>
+                                    {isDone ? (
+                                      <CheckCircle2 size={16} />
+                                    ) : isCurrent ? (
+                                      <Plane size={15} className={styles.pulsePlane} />
+                                    ) : (
+                                      <span className={styles.stageIndex}>{idx + 1}</span>
+                                    )}
+                                  </div>
+                                  {idx < selectedOrder.timeline.length - 1 && (
+                                    <div className={styles.nodeLine} />
+                                  )}
+                                </div>
+
+                                <div className={styles.nodeDetails}>
+                                  <div className={styles.nodeTopLine}>
+                                    <h4 className={styles.nodeTitle}>{step.title}</h4>
+                                    <span className={styles.nodeDate}>{step.date}</span>
+                                  </div>
+                                  <p className={styles.nodeDesc}>{step.description}</p>
+                                  <div className={styles.nodeLocation}>
+                                    <MapPin size={12} />
+                                    <span>{step.location}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    ) : (
+                      <div className={styles.activeShipmentBanner} style={{ textAlign: 'center', padding: '40px 20px' }}>
+                        <p>No active shipment selected. Search by your order reference (QA-XXXXXX) or tracking code above.</p>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -492,8 +550,8 @@ function DashboardContent() {
                     </p>
 
                     <div className={styles.ordersList}>
-                      {orders.map((ord) => (
-                        <div key={ord.id} className={styles.orderListItem}>
+                      {displayOrders.map((ord) => (
+                        <div key={ord.id || ord.orderNumber} className={styles.orderListItem}>
                           <div className={styles.orderHeaderStrip}>
                             <div className={styles.orderNumberWrap}>
                               <strong>{ord.orderNumber}</strong>
@@ -511,29 +569,34 @@ function DashboardContent() {
                           </div>
 
                           <div className={styles.orderItemsPreview}>
-                            {ord.items.map((item, idx) => (
-                              <div key={idx} className={styles.orderThumbWrap}>
-                                <img
-                                  src={item.product.images[0] || '/placeholder.svg'}
-                                  alt={item.product.title}
-                                  className={styles.orderThumbImg}
-                                  onError={(e) => {
-                                    const target = e.currentTarget;
-                                    if (!target.src.endsWith('/placeholder.svg')) {
-                                      target.src = '/placeholder.svg';
-                                    }
-                                  }}
-                                />
-                                <div className={styles.orderItemInfo}>
-                                  <span className={styles.orderItemTitle}>
-                                    {item.product.title}
-                                  </span>
-                                  <span className={styles.orderItemQty}>
-                                    Qty: {item.quantity} • QAR {item.product.priceQAR}
-                                  </span>
+                            {ord.items.map((item: any, idx: number) => {
+                              const imgUrl = item.image || item.product?.images?.[0] || '/placeholder.svg';
+                              const itemTitle = item.title || item.product?.title || 'Qatar Tech Item';
+                              const itemPrice = item.priceQAR || item.product?.priceQAR || 0;
+                              return (
+                                <div key={idx} className={styles.orderThumbWrap}>
+                                  <img
+                                    src={imgUrl}
+                                    alt={itemTitle}
+                                    className={styles.orderThumbImg}
+                                    onError={(e) => {
+                                      const target = e.currentTarget;
+                                      if (!target.src.endsWith('/placeholder.svg')) {
+                                        target.src = '/placeholder.svg';
+                                      }
+                                    }}
+                                  />
+                                  <div className={styles.orderItemInfo}>
+                                    <span className={styles.orderItemTitle}>
+                                      {itemTitle}
+                                    </span>
+                                    <span className={styles.orderItemQty}>
+                                      Qty: {item.quantity} • QAR {itemPrice}
+                                    </span>
+                                  </div>
                                 </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
 
                           <div className={styles.orderFooterStrip}>
@@ -896,8 +959,8 @@ function DashboardContent() {
                         <span className={styles.adminKpiTitle}>30-Day Gross Revenue</span>
                         <DollarSign size={18} className={styles.greenIcon} />
                       </div>
-                      <strong className={styles.adminKpiValue}>QAR 148,290</strong>
-                      <span className={styles.adminGrowthPill}>+18.4% vs last month</span>
+                      <strong className={styles.adminKpiValue}>QAR {totalRevenue.toLocaleString()}</strong>
+                      <span className={styles.adminGrowthPill}>Live Database Volume</span>
                     </div>
 
                     <div className={styles.adminKpiCard}>
@@ -905,7 +968,7 @@ function DashboardContent() {
                         <span className={styles.adminKpiTitle}>Net Dropship Margin</span>
                         <TrendingUp size={18} className={styles.yellowIcon} />
                       </div>
-                      <strong className={styles.adminKpiValue}>38.4% (QAR 56,943)</strong>
+                      <strong className={styles.adminKpiValue}>38.4% (Est. QAR {Math.round(totalRevenue * 0.384).toLocaleString()})</strong>
                       <span className={styles.adminKpiSub}>Direct Factory Costing</span>
                     </div>
 
@@ -914,7 +977,7 @@ function DashboardContent() {
                         <span className={styles.adminKpiTitle}>Daily Volume (Qatar)</span>
                         <Package size={18} className={styles.redIcon} />
                       </div>
-                      <strong className={styles.adminKpiValue}>84 Orders Today</strong>
+                      <strong className={styles.adminKpiValue}>{displayOrders.length} Orders In System</strong>
                       <span className={styles.adminKpiSub}>Avg QAR 176.5 per basket</span>
                     </div>
 
@@ -935,22 +998,22 @@ function DashboardContent() {
                     <h3 className={styles.pipelineTitle}>Qatar Dropship Fulfillment Pipeline</h3>
                     <div className={styles.pipelineStagesRow}>
                       <div className={styles.pipelineStage}>
-                        <div className={styles.pipelineCount}>14</div>
+                        <div className={styles.pipelineCount}>{pendingDispatchCount}</div>
                         <div className={styles.pipelineStageName}>Pending Dispatch</div>
                         <span className={styles.pipelineStatusPill}>Supplier Pack</span>
                       </div>
                       <div className={styles.pipelineStage}>
-                        <div className={styles.pipelineCount}>48</div>
+                        <div className={styles.pipelineCount}>{inAirTransitCount}</div>
                         <div className={styles.pipelineStageName}>In Air Transit</div>
                         <span className={styles.pipelineStatusYellow}>Flight to DOH</span>
                       </div>
                       <div className={styles.pipelineStage}>
-                        <div className={styles.pipelineCount}>19</div>
+                        <div className={styles.pipelineCount}>{customsCount}</div>
                         <div className={styles.pipelineStageName}>Qatar Customs</div>
                         <span className={styles.pipelineStatusOrange}>Hamad Airport</span>
                       </div>
                       <div className={styles.pipelineStage}>
-                        <div className={styles.pipelineCount}>215</div>
+                        <div className={styles.pipelineCount}>{deliveredCount}</div>
                         <div className={styles.pipelineStageName}>Delivered</div>
                         <span className={styles.pipelineStatusGreen}>Doorstep Drops</span>
                       </div>
@@ -983,82 +1046,80 @@ function DashboardContent() {
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td><strong>QTF-78291-QA</strong></td>
-                            <td>Tariq Al-Mansoor (Lusail Zone 69)</td>
-                            <td>PulsePro ANC + Cable</td>
-                            <td className="price-qar">QAR 237</td>
-                            <td><code>QA-EXP-8849201</code></td>
-                            <td>
-                              <span className={styles.statusPillYellow}>Hamad Customs</span>
-                            </td>
-                            <td>
-                              <button
-                                type="button"
-                                onClick={() => showToast('Order Inspected', 'Viewing customs manifest for QTF-78291-QA')}
-                                className={styles.tableActionBtn}
-                              >
-                                Inspect
-                              </button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td><strong>QTF-77402-QA</strong></td>
-                            <td>Jassim Al-Kuwari (Doha Zone 22)</td>
-                            <td>HyperCharge 100W GaN</td>
-                            <td className="price-qar">QAR 129</td>
-                            <td><code>QA-EXP-8740291</code></td>
-                            <td>
-                              <span className={styles.statusPillBlue}>In Air Transit</span>
-                            </td>
-                            <td>
-                              <button
-                                type="button"
-                                onClick={() => showToast('Order Inspected', 'Viewing air cargo flight QR8402 manifest')}
-                                className={styles.tableActionBtn}
-                              >
-                                Inspect
-                              </button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td><strong>QTF-76194-QA</strong></td>
-                            <td>Mohammed Al-Thani (Al Rayyan)</td>
-                            <td>Titan Ultra Smartwatch</td>
-                            <td className="price-qar">QAR 189</td>
-                            <td><code>QA-EXP-8629104</code></td>
-                            <td>
-                              <span className={styles.statusPillGreen}>Delivered</span>
-                            </td>
-                            <td>
-                              <button
-                                type="button"
-                                onClick={() => showToast('Order Inspected', 'Delivered to Al Rayyan residence.')}
-                                className={styles.tableActionBtn}
-                              >
-                                Inspect
-                              </button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td><strong>QTF-75482-QA</strong></td>
-                            <td>Sara Al-Marri (Al Wakrah)</td>
-                            <td>PureGlow Flask + Stand</td>
-                            <td className="price-qar">QAR 148</td>
-                            <td><code>QA-EXP-8519402</code></td>
-                            <td>
-                              <span className={styles.statusPillRed}>Pack Inspection</span>
-                            </td>
-                            <td>
-                              <button
-                                type="button"
-                                onClick={() => showToast('Order Inspected', 'Barcode and voltage verification passed.')}
-                                className={styles.tableActionBtn}
-                              >
-                                Inspect
-                              </button>
-                            </td>
-                          </tr>
+                          {displayOrders.map((ord: any) => {
+                            const isLive = Boolean(ord._id);
+                            const customerName = ord.address?.fullName || 'Qatar Customer';
+                            const municipality = ord.address?.municipality || 'Qatar';
+                            const itemsText = ord.items?.[0]?.title
+                              ? ord.items[0].title.slice(0, 20) + '...'
+                              : ord.items?.[0]?.product?.title?.slice(0, 20) + '...';
+
+                            return (
+                              <tr key={ord._id || ord.id || ord.orderNumber}>
+                                <td><strong>{ord.orderNumber}</strong></td>
+                                <td>{customerName} ({municipality})</td>
+                                <td>{ord.items?.length || 1} items ({itemsText})</td>
+                                <td className="price-qar">QAR {ord.totalQAR?.toLocaleString()}</td>
+                                <td><code>{ord.trackingNumber}</code></td>
+                                <td>
+                                  <span className={
+                                    ord.status === 'Delivered'
+                                      ? styles.statusPillGreen
+                                      : ord.status === 'Qatar Customs (DOH)'
+                                      ? styles.statusPillYellow
+                                      : styles.statusPillBlue
+                                  }>
+                                    {ord.status}
+                                  </span>
+                                </td>
+                                <td>
+                                  {isLive ? (
+                                    <select
+                                      value={ord.status}
+                                      onChange={async (e) => {
+                                        const newStatus = e.target.value as any;
+                                        try {
+                                          await updateStatus({ orderId: ord._id, status: newStatus });
+                                          showToast('Status Updated! ✈️', `${ord.orderNumber} is now: ${newStatus}`, 'success');
+                                        } catch (err) {
+                                          console.error(err);
+                                          showToast('Update Failed', 'Could not update status.', 'error');
+                                        }
+                                      }}
+                                      className={styles.tableActionBtn}
+                                      style={{
+                                        cursor: 'pointer',
+                                        padding: '4px 6px',
+                                        fontSize: '11px',
+                                        borderRadius: '4px',
+                                        background: '#ffffff',
+                                        border: '1px solid #d4d4d8',
+                                      }}
+                                    >
+                                      <option value="Order Confirmed">Order Confirmed</option>
+                                      <option value="Air Hub Transit">Air Hub Transit</option>
+                                      <option value="Qatar Customs (DOH)">Customs (DOH)</option>
+                                      <option value="Out for Delivery">Out for Delivery</option>
+                                      <option value="Delivered">Delivered</option>
+                                      <option value="Cancelled">Cancelled</option>
+                                    </select>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedOrder(ord);
+                                        setRole('customer');
+                                        setCustomerTab('tracking');
+                                      }}
+                                      className={styles.tableActionBtn}
+                                    >
+                                      Track
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>

@@ -4,6 +4,7 @@
 
 import type { Metadata } from 'next';
 import '@/styles/globals.scss';
+import { ConvexClientProvider } from '@/components/providers/ConvexClientProvider';
 import { ShopProvider } from '@/context/ShopContext';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -56,15 +57,17 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ShopProvider>
-          <Navbar />
-          <CartDrawer />
-          <ToastContainer />
-          <ChatWidget />
-          <main>{children}</main>
-          <Footer />
-          <MobileBottomNav />
-        </ShopProvider>
+        <ConvexClientProvider>
+          <ShopProvider>
+            <Navbar />
+            <CartDrawer />
+            <ToastContainer />
+            <ChatWidget />
+            <main>{children}</main>
+            <Footer />
+            <MobileBottomNav />
+          </ShopProvider>
+        </ConvexClientProvider>
       </body>
     </html>
   );

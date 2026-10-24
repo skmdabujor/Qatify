@@ -5,9 +5,12 @@
 // Gallery + Buy Box + Volume Discounts + Interactive 6-10 Day Qatar Timeline
 // =============================================================================
 
-import React, { useState, use } from 'react';
+import React, { useState, use, useEffect } from 'react';
 import Link from 'next/link';
 import { notFound, useRouter } from 'next/navigation';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { toProduct } from '@/types/product';
 import {
   Star,
   Heart,
@@ -43,23 +46,33 @@ export default function ProductDetailPage({
   const { slug } = use(params);
   const { addToCart, toggleWishlist, isInWishlist, showToast, openChat } = useShop();
 
-  const product = PRODUCTS.find((p) => p.slug === slug);
-
-  if (!product) {
-    notFound();
-  }
+  const liveProduct = useQuery(api.products.getBySlug, { slug });
+  const fallbackProduct = PRODUCTS.find((p) => p.slug === slug);
+  const product = liveProduct ? toProduct(liveProduct) : fallbackProduct;
 
   // Gallery active image
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   // Variant selections
   const [selectedColor, setSelectedColor] = useState(
-    product.variants?.colors?.[0]?.name || ''
+    product?.variants?.colors?.[0]?.name || ''
   );
   const [selectedOption, setSelectedOption] = useState(
-    product.variants?.options?.[0]?.values?.[0] || ''
+    product?.variants?.options?.[0]?.values?.[0] || ''
   );
   const [quantity, setQuantity] = useState(1);
+
+  // Sync variants when live product arrives
+  useEffect(() => {
+    if (product) {
+      if (!selectedColor && product.variants?.colors?.[0]?.name) {
+        setSelectedColor(product.variants.colors[0].name);
+      }
+      if (!selectedOption && product.variants?.options?.[0]?.values?.[0]) {
+        setSelectedOption(product.variants.options[0].values[0]);
+      }
+    }
+  }, [product]);
 
   // Municipality selector for 6-10 day dynamic timeline
   const [selectedMunicipality, setSelectedMunicipality] = useState(
@@ -68,6 +81,32 @@ export default function ProductDetailPage({
 
   // Active information tab
   const [activeTab, setActiveTab] = useState<'specs' | 'contents' | 'shipping' | 'reviews'>('specs');
+
+  // Related products from Convex or mock fallback
+  const liveRelated = useQuery(api.products.list, {
+    categorySlug: product?.categorySlug,
+    limit: 6,
+  });
+
+  const relatedProducts = (
+    liveRelated && liveRelated.length > 0
+      ? liveRelated.filter((p) => (p.productId || p._id) !== product?.id).map(toProduct)
+      : PRODUCTS.filter((p) => product && p.id !== product.id && p.categorySlug === product.categorySlug)
+  ).slice(0, 4);
+
+  if (liveProduct === null && !fallbackProduct) {
+    notFound();
+  }
+
+  if (!product) {
+    return (
+      <div className={styles.productDetailPage}>
+        <div className="container" style={{ padding: '80px 20px', textAlign: 'center' }}>
+          <p>Loading product details from Qatar hub...</p>
+        </div>
+      </div>
+    );
+  }
 
   const isFavorited = isInWishlist(product.id);
 
@@ -107,11 +146,6 @@ export default function ProductDetailPage({
       showToast('Link Copied! 🔗', 'Product URL copied to clipboard.');
     }
   };
-
-  // Related products from same category or random
-  const relatedProducts = PRODUCTS.filter(
-    (p) => p.id !== product.id && p.categorySlug === product.categorySlug
-  ).slice(0, 4);
 
   return (
     <div className={styles.productDetailPage}>

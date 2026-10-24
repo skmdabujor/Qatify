@@ -7,6 +7,8 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import {
   Zap,
   ArrowRight,
@@ -33,6 +35,7 @@ import {
 import { ProductCard } from '@/components/product/ProductCard';
 import { FirstTimeDiscountPopup } from '@/components/popup/FirstTimeDiscountPopup';
 import { PRODUCTS, CATEGORIES } from '@/data/products';
+import { toProduct, toCategory } from '@/types/product';
 import styles from './page.module.scss';
 
 // Category icon mapper helper
@@ -64,10 +67,25 @@ const getCategoryIcon = (iconName: string) => {
 };
 
 export default function ShopHomePage() {
-  // Filtered product slices
-  const trendingProducts = PRODUCTS.filter((p) => p.isTrending).slice(0, 8);
-  const under99Products = PRODUCTS.filter((p) => p.isUnder99).slice(0, 4);
-  const bestSellerProducts = PRODUCTS.filter((p) => p.isBestSeller).slice(0, 4);
+  // Real-time Convex database queries
+  const liveCategories = useQuery(api.categories.list, { limit: 12 });
+  const liveTrending = useQuery(api.products.getTrending, { limit: 8 });
+  const liveUnder99 = useQuery(api.products.getUnder99, { limit: 4 });
+  const liveBestSellers = useQuery(api.products.getBestSellers, { limit: 4 });
+
+  // Use live data with fallback to mock data while hydrating/loading
+  const categories = liveCategories && liveCategories.length > 0
+    ? liveCategories.map(toCategory)
+    : CATEGORIES;
+  const trendingProducts = liveTrending && liveTrending.length > 0
+    ? liveTrending.map(toProduct)
+    : PRODUCTS.filter((p) => p.isTrending).slice(0, 8);
+  const under99Products = liveUnder99 && liveUnder99.length > 0
+    ? liveUnder99.map(toProduct)
+    : PRODUCTS.filter((p) => p.isUnder99).slice(0, 4);
+  const bestSellerProducts = liveBestSellers && liveBestSellers.length > 0
+    ? liveBestSellers.map(toProduct)
+    : PRODUCTS.filter((p) => p.isBestSeller).slice(0, 4);
 
   return (
     <div className={styles.homeContainer}>
@@ -191,7 +209,7 @@ export default function ShopHomePage() {
           </div>
 
           <div className={styles.categoryGridRibbon}>
-            {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <Link
                 key={cat.id}
                 href={`/shop?cat=${cat.slug}`}
