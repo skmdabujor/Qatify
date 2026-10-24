@@ -21,6 +21,9 @@ interface ShopContextType {
   cart: CartItem[];
   cartCount: number;
   cartSubtotal: number;
+  appliedCoupon: string | null;
+  appliedDiscountQAR: number;
+  setCoupon: (code: string | null, discount?: number) => void;
   freeShippingThreshold: number;
   freeShippingRemaining: number;
   isFreeShipping: boolean;
@@ -108,6 +111,13 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   // Cart
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [appliedDiscountQAR, setAppliedDiscountQAR] = useState(0);
+
+  const setCoupon = (code: string | null, discount = 0) => {
+    setAppliedCoupon(code);
+    setAppliedDiscountQAR(discount);
+  };
 
   // Wishlist & Compare
   const [wishlist, setWishlist] = useState<Product[]>([]);
@@ -441,6 +451,9 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         cart,
         cartCount,
         cartSubtotal,
+        appliedCoupon,
+        appliedDiscountQAR,
+        setCoupon,
         freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
         freeShippingRemaining,
         isFreeShipping,

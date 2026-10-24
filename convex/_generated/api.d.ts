@@ -9,6 +9,8 @@
  */
 
 import type * as categories from "../categories.js";
+import type * as coupons from "../coupons.js";
+import type * as emails from "../emails.js";
 import type * as http from "../http.js";
 import type * as orders from "../orders.js";
 import type * as polar from "../polar.js";
@@ -22,6 +24,8 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   categories: typeof categories;
+  coupons: typeof coupons;
+  emails: typeof emails;
   http: typeof http;
   orders: typeof orders;
   polar: typeof polar;

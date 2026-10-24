@@ -39,6 +39,8 @@ export default function CheckoutPage() {
   const {
     cart,
     cartSubtotal,
+    appliedCoupon,
+    appliedDiscountQAR,
     isFreeShipping,
     savedAddresses,
     addAddress,
@@ -104,7 +106,7 @@ export default function CheckoutPage() {
     selectedShipping.id === 'standard-air' && isFreeShipping
       ? 0
       : selectedShipping.priceQAR;
-  const grandTotal = cartSubtotal + shippingCost;
+  const grandTotal = Math.max(0, cartSubtotal + shippingCost - (appliedDiscountQAR || 0));
 
   // Handle address submit -> move to step 2
   const handleAddressSubmit = (e: React.FormEvent) => {
@@ -150,9 +152,11 @@ export default function CheckoutPage() {
       // 1. Create persistent order in Convex database
       const orderResult = await createConvexOrder({
         items: itemsPayload,
+        couponCode: appliedCoupon || undefined,
         address: {
           fullName: address.fullName,
           phone: address.phone,
+          email: (address as any).email || undefined,
           municipality: address.municipality,
           zoneNumber: address.zoneNumber,
           streetNumber: address.streetNumber,
@@ -176,7 +180,7 @@ export default function CheckoutPage() {
         items: cart,
         subtotalQAR: cartSubtotal,
         shippingQAR: shippingCost,
-        discountQAR: 0,
+        discountQAR: appliedDiscountQAR || 0,
         totalQAR: grandTotal,
         address,
         shippingMethod: selectedShipping,

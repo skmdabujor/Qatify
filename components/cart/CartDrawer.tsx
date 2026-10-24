@@ -8,6 +8,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useConvex } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import {
   X,
   Plus,
@@ -35,10 +37,14 @@ export const CartDrawer: React.FC = () => {
     updateQuantity,
     removeFromCart,
     showToast,
+    appliedCoupon,
+    appliedDiscountQAR,
+    setCoupon,
   } = useShop();
 
+  const convex = useConvex();
   const [couponCode, setCouponCode] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [isValidating, setIsValidating] = useState(false);
 
   if (!isCartOpen) return null;
 
@@ -62,18 +68,34 @@ export const CartDrawer: React.FC = () => {
     Math.round((cartSubtotal / freeShippingThreshold) * 100)
   );
 
-  const discountAmount = appliedCoupon ? Math.round(cartSubtotal * 0.1) : 0;
+  const discountAmount = appliedDiscountQAR || 0;
   const shippingFee = isFreeShipping || cart.length === 0 ? 0 : 20;
   const grandTotal = Math.max(0, cartSubtotal - discountAmount + shippingFee);
 
-  const handleApplyCoupon = (e: React.FormEvent) => {
+  const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
     const code = couponCode.trim().toUpperCase();
-    if (code === 'QATAR10' || code === 'QATIFY10' || code === 'WELCOME10') {
-      setAppliedCoupon(code);
-      showToast('Promo Code Applied! 🏷️', '10% discount applied to your order.');
-    } else {
-      showToast('Invalid Code', 'Try promo code "WELCOME10" or "QATAR10" for 10% off.', 'warning');
+    if (!code) return;
+
+    setIsValidating(true);
+    try {
+      const res = await convex.query(api.coupons.validateCoupon, {
+        code,
+        subtotalQAR: cartSubtotal,
+      });
+
+      if (res.isValid && res.code) {
+        setCoupon(res.code, res.discountQAR);
+        showToast('Promo Code Applied! 🏷️', res.message, 'success');
+        setCouponCode('');
+      } else {
+        showToast('Coupon Not Applied', res.message, 'warning');
+      }
+    } catch (err) {
+      console.error('Coupon validation error:', err);
+      showToast('Validation Error', 'Could not verify promo code.', 'error');
+    } finally {
+      setIsValidating(false);
     }
   };
 
@@ -256,10 +278,10 @@ export const CartDrawer: React.FC = () => {
 
             {appliedCoupon && (
               <div className={styles.couponSuccessPill}>
-                <span>Code <strong>{appliedCoupon}</strong> active (-10%)</span>
+                <span>Code <strong>{appliedCoupon}</strong> active (-QAR {discountAmount})</span>
                 <button
                   type="button"
-                  onClick={() => setAppliedCoupon(null)}
+                  onClick={() => setCoupon(null, 0)}
                   className={styles.removeCouponBtn}
                 >
                   Remove

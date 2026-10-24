@@ -73,13 +73,18 @@ export default defineSchema({
     }),
     polarProductId: v.optional(v.string()),
   })
+    .index("by_productId", ["productId"])
     .index("by_slug", ["slug"])
     .index("by_categorySlug", ["categorySlug"])
     .index("by_isFlashDeal", ["isFlashDeal"])
     .index("by_isTrending", ["isTrending"])
     .index("by_isBestSeller", ["isBestSeller"])
     .index("by_isUnder99", ["isUnder99"])
-    .index("by_brand", ["brand"]),
+    .index("by_brand", ["brand"])
+    .searchIndex("search_products", {
+      searchField: "title",
+      filterFields: ["categorySlug", "brand"],
+    }),
 
   // 2. Categories Table
   categories: defineTable({
@@ -110,9 +115,13 @@ export default defineSchema({
     shippingQAR: v.number(),
     discountQAR: v.number(),
     totalQAR: v.number(),
+    couponCode: v.optional(v.string()),
+    customerEmail: v.optional(v.string()),
+    customerPhone: v.optional(v.string()),
     address: v.object({
       fullName: v.string(),
       phone: v.string(),
+      email: v.optional(v.string()),
       municipality: v.string(),
       zoneNumber: v.string(),
       streetNumber: v.string(),
@@ -167,6 +176,22 @@ export default defineSchema({
     .index("by_orderNumber", ["orderNumber"])
     .index("by_trackingNumber", ["trackingNumber"])
     .index("by_polarCheckoutId", ["polarCheckoutId"])
-    .index("by_status", ["status"]),
+    .index("by_status", ["status"])
+    .index("by_customerEmail", ["customerEmail"])
+    .index("by_customerPhone", ["customerPhone"]),
+
+  // 4. Coupons & Promo Codes Table
+  coupons: defineTable({
+    code: v.string(), // uppercase promo code like 'WELCOME10', 'QATAR50'
+    discountType: v.union(v.literal("percentage"), v.literal("fixed")),
+    discountValue: v.number(), // percentage discount (e.g. 10%) or flat QAR discount (e.g. 25 QAR)
+    minOrderQAR: v.number(), // minimum order subtotal required to apply
+    maxDiscountQAR: v.optional(v.number()), // cap on percentage discounts
+    maxUses: v.optional(v.number()), // maximum redemptions allowed
+    usedCount: v.number(), // current redemption count
+    expiryDate: v.optional(v.string()), // expiration date (YYYY-MM-DD)
+    isActive: v.boolean(), // can be toggled by admin
+    description: v.optional(v.string()),
+  }).index("by_code", ["code"]),
 });
 

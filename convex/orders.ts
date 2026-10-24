@@ -1,8 +1,47 @@
 import { v } from "convex/values";
-import { query, mutation, internalMutation, internalQuery } from "./_generated/server";
+import { query, mutation, internalMutation, internalQuery, MutationCtx } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
+import { internal } from "./_generated/api";
 
-// 1. Customer places an order (or initiates checkout)
+// Helper: Deduct stock percentage and increment sold count for purchased items
+async function deductStockForItems(
+  ctx: MutationCtx,
+  items: Array<{ productId: string; quantity: number }>
+) {
+  for (const item of items) {
+    let product = await ctx.db
+      .query("products")
+      .withIndex("by_productId", (q) => q.eq("productId", item.productId))
+      .first();
+
+    if (!product) {
+      product = await ctx.db
+        .query("products")
+        .withIndex("by_slug", (q) => q.eq("slug", item.productId))
+        .first();
+    }
+
+    if (product) {
+      const newSoldCount = (product.soldCount ?? 0) + item.quantity;
+      const currentStockPercent = product.stockPercent ?? 100;
+      // Deduct stock percent (approx 2% per unit, minimum 0%)
+      const newStockPercent = Math.max(0, currentStockPercent - item.quantity * 2);
+      const inStock = newStockPercent > 0;
+
+      await ctx.db.patch(product._id, {
+        soldCount: newSoldCount,
+        stockPercent: newStockPercent,
+        inStock,
+      });
+
+      console.log(
+        `[Inventory] Deducted stock for ${product.productId}: soldCount=${newSoldCount}, stockPercent=${newStockPercent}%, inStock=${inStock}`
+      );
+    }
+  }
+}
+
+// 1. Customer places an order (with server-side price validation & stock checks)
 export const createOrder = mutation({
   args: {
     items: v.array(
@@ -20,6 +59,7 @@ export const createOrder = mutation({
     address: v.object({
       fullName: v.string(),
       phone: v.string(),
+      email: v.optional(v.string()),
       municipality: v.string(),
       zoneNumber: v.string(),
       streetNumber: v.string(),
@@ -41,18 +81,125 @@ export const createOrder = mutation({
       v.literal("cash_on_delivery"),
       v.literal("polar")
     ),
+    couponCode: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Calculate subtotal from items
-    const subtotalQAR = args.items.reduce(
-      (sum, item) => sum + item.priceQAR * item.quantity,
-      0
-    );
+    // Server-side Price Validation & Stock Availability Check
+    const verifiedItems: Array<{
+      productId: string;
+      title: string;
+      slug: string;
+      priceQAR: number;
+      quantity: number;
+      image: string;
+      selectedColor?: string;
+      selectedOption?: string;
+    }> = [];
+
+    let calculatedSubtotal = 0;
+
+    for (const item of args.items) {
+      if (item.quantity <= 0) {
+        throw new Error("Item quantity must be at least 1");
+      }
+
+      // Look up authoritative product from database
+      let product = await ctx.db
+        .query("products")
+        .withIndex("by_productId", (q) => q.eq("productId", item.productId))
+        .first();
+
+      if (!product) {
+        product = await ctx.db
+          .query("products")
+          .withIndex("by_slug", (q) => q.eq("slug", item.slug || item.productId))
+          .first();
+      }
+
+      if (!product) {
+        throw new Error(`Product not found: ${item.title || item.productId}`);
+      }
+
+      if (!product.inStock) {
+        throw new Error(`Product "${product.title}" is currently out of stock`);
+      }
+
+      // 1. Authoritative base unit price directly from database
+      let verifiedUnitPrice = product.priceQAR;
+
+      // 2. Volume discount verification from database
+      if (product.volumeDiscounts && product.volumeDiscounts.length > 0) {
+        const sortedTiers = [...product.volumeDiscounts].sort(
+          (a, b) => b.quantity - a.quantity
+        );
+        const matchedTier = sortedTiers.find((tier) => item.quantity >= tier.quantity);
+        if (matchedTier) {
+          verifiedUnitPrice = matchedTier.pricePerUnitQAR;
+        }
+      }
+
+      // 3. Option pricing addon if applicable (e.g. "(+QAR 25)")
+      if (item.selectedOption) {
+        const match = item.selectedOption.match(/\(\+QAR\s*(\d+)\)/i);
+        if (match) {
+          verifiedUnitPrice += parseInt(match[1], 10);
+        }
+      }
+
+      calculatedSubtotal += verifiedUnitPrice * item.quantity;
+
+      verifiedItems.push({
+        productId: product.productId,
+        title: product.title,
+        slug: product.slug,
+        priceQAR: verifiedUnitPrice,
+        quantity: item.quantity,
+        image: product.images[0] || item.image || "",
+        selectedColor: item.selectedColor,
+        selectedOption: item.selectedOption,
+      });
+    }
+
+    // Validate and apply coupon discount if provided
+    let discountQAR = 0;
+    let appliedCouponCode: string | undefined = undefined;
+
+    if (args.couponCode) {
+      const cleanCode = args.couponCode.trim().toUpperCase();
+      const coupon = await ctx.db
+        .query("coupons")
+        .withIndex("by_code", (q) => q.eq("code", cleanCode))
+        .first();
+
+      if (coupon && coupon.isActive) {
+        const today = new Date().toISOString().slice(0, 10);
+        const notExpired = !coupon.expiryDate || today <= coupon.expiryDate;
+        const withinUses = !coupon.maxUses || coupon.usedCount < coupon.maxUses;
+        const meetsMinSpend = calculatedSubtotal >= coupon.minOrderQAR;
+
+        if (notExpired && withinUses && meetsMinSpend) {
+          if (coupon.discountType === "percentage") {
+            discountQAR = Math.round((calculatedSubtotal * coupon.discountValue) / 100);
+            if (coupon.maxDiscountQAR) {
+              discountQAR = Math.min(discountQAR, coupon.maxDiscountQAR);
+            }
+          } else {
+            discountQAR = Math.min(coupon.discountValue, calculatedSubtotal);
+          }
+          appliedCouponCode = coupon.code;
+
+          // Increment coupon used count
+          await ctx.db.patch(coupon._id, {
+            usedCount: coupon.usedCount + 1,
+          });
+        }
+      }
+    }
 
     // Free delivery in Qatar if subtotal >= 150 QAR, otherwise shippingMethod price
+    const subtotalQAR = calculatedSubtotal;
     const shippingQAR = subtotalQAR >= 150 ? 0 : args.shippingMethod.priceQAR;
-    const discountQAR = 0;
-    const totalQAR = subtotalQAR + shippingQAR - discountQAR;
+    const totalQAR = Math.max(0, subtotalQAR + shippingQAR - discountQAR);
 
     // Generate unique order number (QA-XXXXXX)
     const randomSuffix = Math.floor(100000 + Math.random() * 900000);
@@ -73,11 +220,14 @@ export const createOrder = mutation({
     const orderId = await ctx.db.insert("orders", {
       orderNumber,
       date: dateStr,
-      items: args.items,
+      items: verifiedItems,
       subtotalQAR,
       shippingQAR,
       discountQAR,
       totalQAR,
+      couponCode: appliedCouponCode,
+      customerEmail: args.address.email?.toLowerCase(),
+      customerPhone: args.address.phone,
       address: args.address,
       shippingMethod: args.shippingMethod,
       paymentMethod: args.paymentMethod,
@@ -130,6 +280,14 @@ export const createOrder = mutation({
       ],
     });
 
+    // For Cash on Delivery, deduct stock and schedule email immediately upon placement
+    if (args.paymentMethod === "cash_on_delivery") {
+      await deductStockForItems(ctx, verifiedItems);
+      await ctx.scheduler.runAfter(0, internal.emails.sendOrderConfirmationEmail, {
+        orderId,
+      });
+    }
+
     return { orderId, orderNumber, trackingNumber, totalQAR };
   },
 });
@@ -171,18 +329,39 @@ export const markOrderAsPaid = internalMutation({
   args: {
     polarCheckoutId: v.string(),
     polarOrderId: v.string(),
+    orderNumber: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const order = await ctx.db
-      .query("orders")
-      .withIndex("by_polarCheckoutId", (q) =>
-        q.eq("polarCheckoutId", args.polarCheckoutId)
-      )
-      .first();
+    let order = null;
+
+    if (args.polarCheckoutId) {
+      order = await ctx.db
+        .query("orders")
+        .withIndex("by_polarCheckoutId", (q) =>
+          q.eq("polarCheckoutId", args.polarCheckoutId)
+        )
+        .first();
+    }
+
+    if (!order && args.orderNumber) {
+      order = await ctx.db
+        .query("orders")
+        .withIndex("by_orderNumber", (q) =>
+          q.eq("orderNumber", args.orderNumber!)
+        )
+        .first();
+    }
 
     if (!order) {
-      console.warn(`Order not found for polarCheckoutId: ${args.polarCheckoutId}`);
+      console.warn(
+        `Order not found for polarCheckoutId: ${args.polarCheckoutId}, orderNumber: ${args.orderNumber}`
+      );
       return null;
+    }
+
+    // Deduct inventory stock if not already deducted
+    if (order.paymentStatus !== "paid") {
+      await deductStockForItems(ctx, order.items);
     }
 
     const updatedTimeline = order.timeline.map((step) => {
@@ -207,8 +386,13 @@ export const markOrderAsPaid = internalMutation({
     await ctx.db.patch(order._id, {
       paymentStatus: "paid",
       status: "Air Hub Transit",
-      polarOrderId: args.polarOrderId,
+      polarOrderId: args.polarOrderId || order.polarOrderId,
       timeline: updatedTimeline,
+    });
+
+    // Schedule order confirmation email
+    await ctx.scheduler.runAfter(0, internal.emails.sendOrderConfirmationEmail, {
+      orderId: order._id,
     });
 
     return order._id;
@@ -227,6 +411,9 @@ export const confirmSimulatedPayment = mutation({
     if (!order) return null;
 
     if (order.paymentStatus !== "paid") {
+      // Deduct inventory stock for simulated payment
+      await deductStockForItems(ctx, order.items);
+
       const updatedTimeline = order.timeline.map((step) => {
         if (step.stage === "Order Confirmed") {
           return {
@@ -334,6 +521,38 @@ export const updateOrderStatus = mutation({
     });
 
     return { success: true };
+  },
+});
+
+// 10. Privacy-Scoped Customer Query: Get orders by customer email or phone
+export const getOrdersByCustomer = query({
+  args: {
+    email: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const takeCount = args.limit ?? 20;
+
+    if (args.email) {
+      const cleanEmail = args.email.trim().toLowerCase();
+      return await ctx.db
+        .query("orders")
+        .withIndex("by_customerEmail", (q) => q.eq("customerEmail", cleanEmail))
+        .order("desc")
+        .take(takeCount);
+    }
+
+    if (args.phone) {
+      const cleanPhone = args.phone.trim();
+      return await ctx.db
+        .query("orders")
+        .withIndex("by_customerPhone", (q) => q.eq("customerPhone", cleanPhone))
+        .order("desc")
+        .take(takeCount);
+    }
+
+    return [];
   },
 });
 
