@@ -1,7 +1,8 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { assertAdminAccess } from "./adminAuth";
 
-// 1. Submit a customer support or product inquiry
+// 1. Submit a customer support or product inquiry (Public Mutation)
 export const submitInquiry = mutation({
   args: {
     name: v.string(),
@@ -33,20 +34,18 @@ export const submitInquiry = mutation({
   },
 });
 
-// 2. Admin: List customer inquiries (bounded)
+// 2. Admin: List customer inquiries (Protected)
 export const listInquiries = query({
   args: {
+    adminEmail: v.optional(v.string()),
+    adminKey: v.optional(v.string()),
     status: v.optional(
       v.union(v.literal("new"), v.literal("in_progress"), v.literal("resolved"))
     ),
     limit: v.optional(v.number()),
-    adminKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const expectedKey = process.env.ADMIN_SECRET_KEY;
-    if (expectedKey && args.adminKey !== expectedKey) {
-      throw new Error("Unauthorized access");
-    }
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
 
     const takeCount = args.limit ?? 50;
 
@@ -62,18 +61,16 @@ export const listInquiries = query({
   },
 });
 
-// 3. Admin: Update inquiry status
+// 3. Admin: Update inquiry status (Protected)
 export const updateInquiryStatus = mutation({
   args: {
+    adminEmail: v.optional(v.string()),
+    adminKey: v.optional(v.string()),
     inquiryId: v.id("inquiries"),
     status: v.union(v.literal("new"), v.literal("in_progress"), v.literal("resolved")),
-    adminKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const expectedKey = process.env.ADMIN_SECRET_KEY;
-    if (expectedKey && args.adminKey !== expectedKey) {
-      throw new Error("Unauthorized");
-    }
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
 
     const item = await ctx.db.get(args.inquiryId);
     if (!item) throw new Error("Inquiry not found");
@@ -82,4 +79,3 @@ export const updateInquiryStatus = mutation({
     return { success: true };
   },
 });
-

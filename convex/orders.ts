@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { query, mutation, internalMutation, internalQuery, MutationCtx } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
+import { assertAdminAccess } from "./adminAuth";
 
 // Helper: Deduct stock percentage and increment sold count for purchased items
 async function deductStockForItems(
@@ -399,61 +400,22 @@ export const markOrderAsPaid = internalMutation({
   },
 });
 
-// Helper: Validate admin secret if set in environment
-function assertAdmin(adminKey?: string) {
-  const expected = process.env.ADMIN_SECRET_KEY;
-  if (expected && adminKey !== expected) {
-    throw new Error("Unauthorized: Invalid Admin Secret");
-  }
-}
-
-// Helper: Validate admin secret if set in environment or verify email against Convex admins table
-async function assertAdminAccess(
-  ctx: MutationCtx,
-  adminKey?: string,
-  adminEmail?: string
-) {
-  const expected = process.env.ADMIN_SECRET_KEY;
-  if (expected && adminKey === expected) {
-    return;
-  }
-
-  if (adminEmail) {
-    const normalized = adminEmail.trim().toLowerCase();
-    const admin = await ctx.db
-      .query("admins")
-      .withIndex("by_email", (q) => q.eq("email", normalized))
-      .first();
-    if (admin) return;
-  }
-
-  // If there are no admins configured yet, permit for initial development
-  const totalAdmins = await ctx.db.query("admins").take(1);
-  if (totalAdmins.length === 0) {
-    return;
-  }
-
-  if (expected || adminEmail) {
-    throw new Error("Unauthorized: Invalid Admin credentials or email not registered in Convex.");
-  }
-}
-
-// 6. Public Mutation: Confirm simulated payment (strictly for dev testing only)
+// 6. Mutation: Confirm simulated payment (strictly for non-production development testing)
 export const confirmSimulatedPayment = mutation({
   args: {
     orderNumber: v.string(),
+    adminEmail: v.optional(v.string()),
     adminKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     // Strictly prevent simulated payment exploit in live production
     if (process.env.POLAR_ENVIRONMENT === "production") {
-      const expected = process.env.ADMIN_SECRET_KEY;
-      if (!expected || args.adminKey !== expected) {
-        throw new Error(
-          "Simulated payments are strictly disabled in production. Payments must go through live Polar Gateway."
-        );
-      }
+      throw new Error(
+        "Simulated payments are strictly disabled in production mode. Orders must be paid via Polar Gateway."
+      );
     }
+
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
 
     const order = await ctx.db
       .query("orders")
@@ -496,14 +458,15 @@ export const confirmSimulatedPayment = mutation({
   },
 });
 
-// 7. Protected Query: List recent orders (for dashboard and admin preview)
+// 7. Protected Query: List recent orders (Admin only)
 export const listRecentOrders = query({
   args: {
-    limit: v.optional(v.number()),
+    adminEmail: v.optional(v.string()),
     adminKey: v.optional(v.string()),
+    limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    assertAdmin(args.adminKey);
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
     const takeCount = args.limit ?? 50;
     return await ctx.db.query("orders").order("desc").take(takeCount);
   },
@@ -542,11 +505,11 @@ export const updateOrderStatus = mutation({
       v.literal("Delivered"),
       v.literal("Cancelled")
     ),
-    adminKey: v.optional(v.string()),
     adminEmail: v.optional(v.string()),
+    adminKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await assertAdminAccess(ctx, args.adminKey, args.adminEmail);
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
     const order = await ctx.db.get(args.orderId);
     if (!order) throw new Error("Order not found");
 

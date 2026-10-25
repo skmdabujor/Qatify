@@ -28,7 +28,6 @@ import styles from '../page.module.scss';
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get('orderNumber') || '';
-  const isSimulated = searchParams.get('simulated') === 'true';
   const method = searchParams.get('method') || '';
   const { clearCart } = useShop();
 
@@ -36,24 +35,10 @@ function CheckoutSuccessContent() {
     orderNumber: orderNumber || 'QA-000000',
   });
 
-  const confirmSimulated = useMutation(api.orders.confirmSimulatedPayment);
-  const [hasConfirmed, setHasConfirmed] = useState(false);
-
   // Clear cart upon arriving at success page
   useEffect(() => {
     clearCart();
   }, [clearCart]);
-
-  // If in simulated mode, trigger payment confirmation mutation in Convex
-  useEffect(() => {
-    if (isSimulated && orderNumber && !hasConfirmed && order && order.paymentStatus !== 'paid') {
-      confirmSimulated({ orderNumber })
-        .then(() => {
-          setHasConfirmed(true);
-        })
-        .catch((err) => console.error('Simulated payment error:', err));
-    }
-  }, [isSimulated, orderNumber, hasConfirmed, order, confirmSimulated]);
 
   if (!orderNumber) {
     return (

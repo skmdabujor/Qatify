@@ -13,32 +13,33 @@ http.route({
       const rawBody = await req.text();
       const webhookSecret = process.env.POLAR_WEBHOOK_SECRET;
 
-      // 1. Verify Standard Webhooks signature if POLAR_WEBHOOK_SECRET is configured
-      if (webhookSecret) {
-        const webhookId = req.headers.get("webhook-id");
-        const webhookTimestamp = req.headers.get("webhook-timestamp");
-        const webhookSignature = req.headers.get("webhook-signature");
-
-        if (!webhookId || !webhookTimestamp || !webhookSignature) {
-          console.error("[Polar Webhook] Missing signature headers");
-          return new Response("Missing webhook signature headers", { status: 400 });
-        }
-
-        try {
-          const wh = new Webhook(webhookSecret);
-          wh.verify(rawBody, {
-            "webhook-id": webhookId,
-            "webhook-timestamp": webhookTimestamp,
-            "webhook-signature": webhookSignature,
-          });
-        } catch (verifyErr) {
-          console.error("[Polar Webhook] Signature verification failed:", verifyErr);
-          return new Response("Invalid webhook signature", { status: 401 });
-        }
-      } else {
-        console.warn(
-          "[Polar Webhook] POLAR_WEBHOOK_SECRET is not configured in Convex environment. Skipping signature verification in dev mode."
+      // 1. Strictly verify Standard Webhooks signature
+      if (!webhookSecret) {
+        console.error(
+          "[Polar Webhook] POLAR_WEBHOOK_SECRET is not configured in Convex environment."
         );
+        return new Response("Webhook secret not configured on server", { status: 500 });
+      }
+
+      const webhookId = req.headers.get("webhook-id");
+      const webhookTimestamp = req.headers.get("webhook-timestamp");
+      const webhookSignature = req.headers.get("webhook-signature");
+
+      if (!webhookId || !webhookTimestamp || !webhookSignature) {
+        console.error("[Polar Webhook] Missing signature headers");
+        return new Response("Missing webhook signature headers", { status: 400 });
+      }
+
+      try {
+        const wh = new Webhook(webhookSecret);
+        wh.verify(rawBody, {
+          "webhook-id": webhookId,
+          "webhook-timestamp": webhookTimestamp,
+          "webhook-signature": webhookSignature,
+        });
+      } catch (verifyErr) {
+        console.error("[Polar Webhook] Cryptographic signature verification failed:", verifyErr);
+        return new Response("Invalid webhook signature", { status: 401 });
       }
 
       // 2. Parse and process validated webhook payload
@@ -96,4 +97,3 @@ http.route({
 });
 
 export default http;
-

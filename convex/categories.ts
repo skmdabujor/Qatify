@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { assertAdminAccess } from "./adminAuth";
 
 // 1. Fetch all categories (bounded)
 export const list = query({
@@ -23,9 +24,11 @@ export const getBySlug = query({
   },
 });
 
-// 3. Seed / Import categories into Convex database
+// 3. Seed / Import categories into Convex database (Protected)
 export const seedCategories = mutation({
   args: {
+    adminEmail: v.optional(v.string()),
+    adminKey: v.optional(v.string()),
     items: v.array(
       v.object({
         categoryId: v.string(),
@@ -37,6 +40,8 @@ export const seedCategories = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
+
     let inserted = 0;
     for (const item of args.items) {
       const existing = await ctx.db
@@ -52,4 +57,3 @@ export const seedCategories = mutation({
     return { success: true, count: inserted };
   },
 });
-

@@ -1,15 +1,8 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { assertAdminAccess } from "./adminAuth";
 
-// Helper: Validate admin secret if set in environment
-function assertAdmin(adminKey?: string) {
-  const expected = process.env.ADMIN_SECRET_KEY;
-  if (expected && adminKey !== expected) {
-    throw new Error("Unauthorized: Invalid Admin Secret Key");
-  }
-}
-
-// 1. Validate a coupon code against current subtotal
+// 1. Validate a coupon code against current subtotal (Public Query)
 export const validateCoupon = query({
   args: {
     code: v.string(),
@@ -78,22 +71,24 @@ export const validateCoupon = query({
   },
 });
 
-// 2. Admin: List all coupons
+// 2. Admin: List all coupons (Protected)
 export const listCoupons = query({
   args: {
-    limit: v.optional(v.number()),
+    adminEmail: v.optional(v.string()),
     adminKey: v.optional(v.string()),
+    limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    assertAdmin(args.adminKey);
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
     const takeCount = args.limit ?? 50;
     return await ctx.db.query("coupons").take(takeCount);
   },
 });
 
-// 3. Admin: Create a new coupon
+// 3. Admin: Create a new coupon (Protected)
 export const createCoupon = mutation({
   args: {
+    adminEmail: v.optional(v.string()),
     adminKey: v.optional(v.string()),
     code: v.string(),
     discountType: v.union(v.literal("percentage"), v.literal("fixed")),
@@ -106,7 +101,7 @@ export const createCoupon = mutation({
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    assertAdmin(args.adminKey);
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
     const cleanCode = args.code.trim().toUpperCase();
 
     // Ensure unique code
@@ -136,14 +131,15 @@ export const createCoupon = mutation({
   },
 });
 
-// 4. Admin: Toggle coupon active status
+// 4. Admin: Toggle coupon active status (Protected)
 export const toggleCouponStatus = mutation({
   args: {
-    couponId: v.id("coupons"),
+    adminEmail: v.optional(v.string()),
     adminKey: v.optional(v.string()),
+    couponId: v.id("coupons"),
   },
   handler: async (ctx, args) => {
-    assertAdmin(args.adminKey);
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
     const coupon = await ctx.db.get(args.couponId);
     if (!coupon) throw new Error("Coupon not found");
 
@@ -153,14 +149,15 @@ export const toggleCouponStatus = mutation({
   },
 });
 
-// 5. Admin: Delete coupon
+// 5. Admin: Delete coupon (Protected)
 export const deleteCoupon = mutation({
   args: {
-    couponId: v.id("coupons"),
+    adminEmail: v.optional(v.string()),
     adminKey: v.optional(v.string()),
+    couponId: v.id("coupons"),
   },
   handler: async (ctx, args) => {
-    assertAdmin(args.adminKey);
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
     const coupon = await ctx.db.get(args.couponId);
     if (!coupon) throw new Error("Coupon not found");
 
@@ -169,10 +166,14 @@ export const deleteCoupon = mutation({
   },
 });
 
-// 6. Seed starter coupons for instant testing
+// 6. Seed starter coupons (Protected)
 export const seedCoupons = mutation({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    adminEmail: v.optional(v.string()),
+    adminKey: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
     const defaultCoupons = [
       {
         code: "WELCOME10",
@@ -226,4 +227,3 @@ export const seedCoupons = mutation({
     return { insertedCount };
   },
 });
-

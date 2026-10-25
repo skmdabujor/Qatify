@@ -4,21 +4,32 @@ import { PRODUCTS, CATEGORIES } from "../data/products";
 import * as fs from "fs";
 import * as path from "path";
 
-// Read NEXT_PUBLIC_CONVEX_URL from .env.local
+// Read NEXT_PUBLIC_CONVEX_URL and ADMIN_SECRET_KEY from environment or .env.local
 let convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
-if (!convexUrl) {
+let adminKey = process.env.ADMIN_SECRET_KEY || "";
+
+if (!convexUrl || !adminKey) {
   const envPath = path.resolve(process.cwd(), ".env.local");
   if (fs.existsSync(envPath)) {
     const envContent = fs.readFileSync(envPath, "utf-8");
-    const match = envContent.match(/NEXT_PUBLIC_CONVEX_URL=(.+)/);
-    if (match) {
-      convexUrl = match[1].trim();
+    if (!convexUrl) {
+      const match = envContent.match(/NEXT_PUBLIC_CONVEX_URL=(.+)/);
+      if (match) convexUrl = match[1].trim();
+    }
+    if (!adminKey) {
+      const matchKey = envContent.match(/ADMIN_SECRET_KEY=(.+)/);
+      if (matchKey) adminKey = matchKey[1].trim();
     }
   }
 }
 
 if (!convexUrl) {
   console.error("❌ NEXT_PUBLIC_CONVEX_URL not found in environment or .env.local");
+  process.exit(1);
+}
+
+if (!adminKey) {
+  console.error("❌ ADMIN_SECRET_KEY not found in environment or .env.local");
   process.exit(1);
 }
 
@@ -39,6 +50,7 @@ async function main() {
 
   try {
     const catResult = await client.mutation(api.categories.seedCategories, {
+      adminKey,
       items: mappedCategories,
     });
     console.log(`✅ Successfully seeded categories! Inserted: ${catResult.count} categories.`);
@@ -82,6 +94,7 @@ async function main() {
 
   try {
     const result = await client.mutation(api.products.seedProducts, {
+      adminKey,
       items: mappedItems,
     });
     console.log(`✅ Successfully seeded products! Inserted: ${result.count} products.`);
@@ -92,4 +105,3 @@ async function main() {
 }
 
 main();
-

@@ -1,20 +1,24 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { assertAdminAccess } from "./adminAuth";
 
 // =============================================================================
 // Qatify — Dynamic Admin Access Management (Convex)
-// Allows adding, removing, and verifying admin emails in real time.
+// Manages store owner & admin access dynamically in the Convex backend database.
+// No secret keys required on the frontend — access is determined by whether the
+// email is registered and granted access in the `admins` table.
 // =============================================================================
 
 /**
  * 1. Query: Check whether a given email has Admin privileges.
+ * Reactive and real-time. Frontend uses this to conditionally render Store Admin.
  */
 export const checkIsAdmin = query({
   args: { email: v.string() },
   handler: async (ctx, args) => {
     const normalized = args.email.trim().toLowerCase();
     if (!normalized || !normalized.includes("@")) {
-      return { isAdmin: false, role: null, name: null };
+      return { isAdmin: false, role: null, name: null, email: null };
     }
 
     const admin = await ctx.db
@@ -23,7 +27,7 @@ export const checkIsAdmin = query({
       .first();
 
     if (!admin) {
-      return { isAdmin: false, role: null, name: null };
+      return { isAdmin: false, role: null, name: null, email: null };
     }
 
     return {
@@ -36,19 +40,38 @@ export const checkIsAdmin = query({
 });
 
 /**
- * 2. Query: List all active admins.
+ * 2. Query: Verify whether an Admin Secret Key is valid (Legacy / CLI helper).
+ */
+export const verifyAdminKey = query({
+  args: { adminKey: v.string() },
+  handler: async (ctx, args) => {
+    const expected = process.env.ADMIN_SECRET_KEY;
+    if (!expected || !args.adminKey) {
+      return { valid: false };
+    }
+    return { valid: args.adminKey.trim() === expected.trim() };
+  },
+});
+
+/**
+ * 3. Query: List all active admins.
+ * Protected: requires either an authorized adminEmail or valid adminKey.
  */
 export const listAdmins = query({
-  args: { limit: v.optional(v.number()) },
+  args: {
+    adminEmail: v.optional(v.string()),
+    adminKey: v.optional(v.string()),
+    limit: v.optional(v.number()),
+  },
   handler: async (ctx, args) => {
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
     const takeCount = args.limit ?? 50;
     return await ctx.db.query("admins").order("desc").take(takeCount);
   },
 });
 
 /**
- * 3. Query: Get the count of registered admins.
- * Useful to check if the store has any initial admin configured.
+ * 4. Query: Get the count of registered admins.
  */
 export const getAdminCount = query({
   args: {},
@@ -59,16 +82,21 @@ export const getAdminCount = query({
 });
 
 /**
- * 4. Mutation: Add a new admin email.
+ * 5. Mutation: Add a new admin email.
+ * Protected: requires an authorized admin/owner email or valid adminKey.
  */
 export const addAdmin = mutation({
   args: {
+    adminEmail: v.optional(v.string()),
+    adminKey: v.optional(v.string()),
     email: v.string(),
     name: v.optional(v.string()),
     role: v.optional(v.union(v.literal("owner"), v.literal("admin"))),
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
+
     const normalized = args.email.trim().toLowerCase();
     if (!normalized || !normalized.includes("@")) {
       throw new Error("Invalid email address format.");
@@ -98,11 +126,18 @@ export const addAdmin = mutation({
 });
 
 /**
- * 5. Mutation: Remove an admin by ID.
+ * 6. Mutation: Remove an admin by ID.
+ * Protected: requires an authorized admin/owner email or valid adminKey.
  */
 export const removeAdmin = mutation({
-  args: { id: v.id("admins") },
+  args: {
+    adminEmail: v.optional(v.string()),
+    adminKey: v.optional(v.string()),
+    id: v.id("admins"),
+  },
   handler: async (ctx, args) => {
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
+
     const admin = await ctx.db.get(args.id);
     if (!admin) {
       throw new Error("Admin record not found.");
@@ -115,11 +150,18 @@ export const removeAdmin = mutation({
 });
 
 /**
- * 6. Mutation: Remove an admin by email.
+ * 7. Mutation: Remove an admin by email.
+ * Protected: requires an authorized admin/owner email or valid adminKey.
  */
 export const removeAdminByEmail = mutation({
-  args: { email: v.string() },
+  args: {
+    adminEmail: v.optional(v.string()),
+    adminKey: v.optional(v.string()),
+    email: v.string(),
+  },
   handler: async (ctx, args) => {
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
+
     const normalized = args.email.trim().toLowerCase();
     const admin = await ctx.db
       .query("admins")
@@ -137,18 +179,23 @@ export const removeAdminByEmail = mutation({
 });
 
 /**
- * 7. Mutation: Seed initial admin (Bootstrap).
- * If the database currently has 0 admins, this allows the store owner to claim initial access.
+ * 8. Mutation: Seed initial admin (Bootstrap).
+ * Allows bootstrap only if 0 admins exist or valid adminKey provided.
  */
 export const bootstrapInitialAdmin = mutation({
   args: {
     email: v.string(),
     name: v.optional(v.string()),
+    adminKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const existingAdmins = await ctx.db.query("admins").take(1);
     if (existingAdmins.length > 0) {
-      throw new Error("Initial admin setup is disabled because admins already exist.");
+      // If admins already exist, must have valid adminKey
+      const expected = process.env.ADMIN_SECRET_KEY;
+      if (!expected || args.adminKey !== expected) {
+        throw new Error("Initial admin setup is disabled because admins already exist.");
+      }
     }
 
     const normalized = args.email.trim().toLowerCase();
@@ -168,4 +215,3 @@ export const bootstrapInitialAdmin = mutation({
     return { success: true, id, email: normalized };
   },
 });
-

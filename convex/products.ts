@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { assertAdminAccess } from "./adminAuth";
 
 // 1. Fetch products (bounded collection)
 export const list = query({
@@ -80,9 +81,11 @@ export const getUnder99 = query({
   },
 });
 
-// 7. Seed / Import mock products into Convex database
+// 7. Seed / Import mock products into Convex database (Protected)
 export const seedProducts = mutation({
   args: {
+    adminEmail: v.optional(v.string()),
+    adminKey: v.optional(v.string()),
     items: v.array(
       v.object({
         productId: v.string(),
@@ -156,6 +159,7 @@ export const seedProducts = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
     let inserted = 0;
     for (const item of args.items) {
       const existing = await ctx.db
@@ -172,23 +176,18 @@ export const seedProducts = mutation({
   },
 });
 
-// Helper: Validate admin secret if set in environment
-function assertAdmin(adminKey?: string) {
-  const expected = process.env.ADMIN_SECRET_KEY;
-  if (expected && adminKey !== expected) {
-    throw new Error("Unauthorized: Invalid Admin Secret");
-  }
-}
-
 // =============================================================================
 // ADMIN OPERATIONS: Product Management & Convex Cloud File Storage
 // =============================================================================
 
 // 8. Generate upload URL for uploading product images to Convex Storage
 export const generateUploadUrl = mutation({
-  args: { adminKey: v.optional(v.string()) },
+  args: {
+    adminEmail: v.optional(v.string()),
+    adminKey: v.optional(v.string()),
+  },
   handler: async (ctx, args) => {
-    assertAdmin(args.adminKey);
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
     return await ctx.storage.generateUploadUrl();
   },
 });
@@ -204,6 +203,7 @@ export const getStorageUrl = query({
 // 10. Admin: Create a new product
 export const createProduct = mutation({
   args: {
+    adminEmail: v.optional(v.string()),
     adminKey: v.optional(v.string()),
     productId: v.optional(v.string()),
     title: v.string(),
@@ -243,7 +243,7 @@ export const createProduct = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    assertAdmin(args.adminKey);
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
     const slug =
       args.slug ||
       args.title
@@ -310,6 +310,7 @@ export const createProduct = mutation({
 // 11. Admin: Update existing product
 export const updateProduct = mutation({
   args: {
+    adminEmail: v.optional(v.string()),
     adminKey: v.optional(v.string()),
     id: v.id("products"),
     title: v.optional(v.string()),
@@ -328,8 +329,8 @@ export const updateProduct = mutation({
     images: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    assertAdmin(args.adminKey);
-    const { id, adminKey, ...patchFields } = args;
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
+    const { id, adminKey, adminEmail, ...patchFields } = args;
     const existing = await ctx.db.get(id);
     if (!existing) throw new Error("Product not found");
 
@@ -353,10 +354,11 @@ export const updateProduct = mutation({
 export const toggleStockStatus = mutation({
   args: {
     id: v.id("products"),
+    adminEmail: v.optional(v.string()),
     adminKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    assertAdmin(args.adminKey);
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
     const product = await ctx.db.get(args.id);
     if (!product) throw new Error("Product not found");
 
@@ -376,10 +378,11 @@ export const toggleStockStatus = mutation({
 export const deleteProduct = mutation({
   args: {
     id: v.id("products"),
+    adminEmail: v.optional(v.string()),
     adminKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    assertAdmin(args.adminKey);
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
     const product = await ctx.db.get(args.id);
     if (!product) throw new Error("Product not found");
 

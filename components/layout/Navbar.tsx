@@ -762,7 +762,7 @@ export const Navbar: React.FC = () => {
               <Link
                 href="/dashboard"
                 className={styles.actionIconBtn}
-                title="Customer & Admin Dashboard"
+                title="Customer Account & Tracking"
               >
                 <div className={styles.iconWithBadge}>
                   <User size={20} />

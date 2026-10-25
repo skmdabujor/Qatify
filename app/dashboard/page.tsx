@@ -37,8 +37,6 @@ import {
   SlidersHorizontal,
   Sparkles,
   Trash2,
-  Lock,
-  ShieldAlert,
 } from 'lucide-react';
 import { useShop } from '@/context/ShopContext';
 import { QATAR_MUNICIPALITIES } from '@/data/products';
@@ -73,22 +71,32 @@ function DashboardContent() {
   // Admin Active Tab Filter ('all' | 'analytics' | 'pipeline' | 'orders')
   const [adminTab, setAdminTab] = useState<'all' | 'analytics' | 'pipeline' | 'orders'>('all');
 
-  // User Account Email & Silent Convex Admin Check
+  // User Account Email from localStorage (Customer Hub)
   const [userEmail, setUserEmail] = useState<string>('');
+
+  // Account Sign-in / Email Modal State
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [emailInput, setEmailInput] = useState('');
+  const [emailError, setEmailError] = useState('');
 
   // Hydrate user email from localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('qatify_user_email') || 'sheakmohammadabujor@gmail.com';
+      const stored = localStorage.getItem('qatify_user_email') || '';
       setUserEmail(stored);
     }
   }, []);
 
-  // Real-time Convex Admin Verification (Only accounts added in Convex backend get access)
-  const adminCheck = useQuery(api.admins.checkIsAdmin, { email: userEmail });
+  // Server-side Dynamic Admin Access Check against Convex `admins` table
+  const adminCheck = useQuery(
+    api.admins.checkIsAdmin,
+    userEmail ? { email: userEmail } : 'skip'
+  );
   const isAdmin = Boolean(adminCheck?.isAdmin);
+  const adminRole = adminCheck?.role || null;
+  const adminName = adminCheck?.name || null;
 
-  // If user is not authorized in Convex, keep role strictly in customer mode
+  // If role is admin but user is not verified in Convex backend, revert to customer view
   useEffect(() => {
     if (!isAdmin && role === 'admin') {
       setRole('customer');
@@ -107,18 +115,62 @@ function DashboardContent() {
     showToast,
   } = useShop();
 
+  const handleSwitchToAdmin = () => {
+    if (isAdmin) {
+      setRole('admin');
+      showToast('Store Admin 🛡️', 'Switched to Dropship Operations', 'success');
+    }
+  };
+
+  const handleOpenEmailModal = () => {
+    setEmailInput(userEmail || '');
+    setEmailError('');
+    setIsEmailModalOpen(true);
+  };
+
+  const handleSaveEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    const clean = emailInput.trim().toLowerCase();
+    if (!clean || !clean.includes('@') || !clean.includes('.')) {
+      setEmailError('Please enter a valid email address.');
+      return;
+    }
+    localStorage.setItem('qatify_user_email', clean);
+    setUserEmail(clean);
+    setIsEmailModalOpen(false);
+    showToast('Account Connected 🇶🇦', `Signed in as ${clean}`, 'success');
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem('qatify_user_email');
+    setUserEmail('');
+    setRole('customer');
+    showToast('Signed Out', 'Switched to Guest Session', 'info');
+  };
+
   const orderFromUrl = searchParams.get('order') || '';
-  const liveOrders = useQuery(api.orders.listRecentOrders, { limit: 50 });
+
+  // Customer-scoped orders: fetch only orders matching the user's email
+  const customerLiveOrders = useQuery(
+    api.orders.getOrdersByCustomer,
+    userEmail ? { email: userEmail, limit: 30 } : 'skip'
+  );
+
+  // Admin-scoped live orders: strictly fetched only when user is verified in Convex
+  const adminLiveOrders = useQuery(
+    api.orders.listRecentOrders,
+    isAdmin && userEmail ? { adminEmail: userEmail, limit: 50 } : 'skip'
+  );
+
   const updateStatus = useMutation(api.orders.updateOrderStatus);
 
-  // Combine live Convex orders with fallback mock orders
+  // Combine live orders strictly based on current authenticated role
   const displayOrders: any[] =
-    liveOrders && liveOrders.length > 0
-      ? liveOrders.map((o) => ({
-          ...o,
-          id: o._id,
-        }))
-      : orders;
+    role === 'admin'
+      ? (adminLiveOrders && adminLiveOrders.length > 0 ? adminLiveOrders : [])
+      : (customerLiveOrders && customerLiveOrders.length > 0
+          ? customerLiveOrders
+          : orders);
 
   // Dynamic KPIs from actual database orders
   const totalRevenue = displayOrders.reduce((sum, o) => sum + (o.totalQAR || 0), 0);
@@ -148,17 +200,17 @@ function DashboardContent() {
     }
     if (!selectedOrder && displayOrders.length > 0) {
       setSelectedOrder(displayOrders[0]);
-    } else if (selectedOrder && liveOrders && liveOrders.length > 0) {
-      const updated = liveOrders.find((o) => o.orderNumber === selectedOrder.orderNumber);
+    } else if (selectedOrder && displayOrders.length > 0) {
+      const updated = displayOrders.find((o: any) => o.orderNumber === selectedOrder.orderNumber);
       if (
         updated &&
         (updated.status !== selectedOrder.status ||
           (updated as any).paymentStatus !== (selectedOrder as any).paymentStatus)
       ) {
-        setSelectedOrder({ ...updated, id: updated._id });
+        setSelectedOrder({ ...updated, id: updated._id || updated.id });
       }
     }
-  }, [orderFromUrl, displayOrders, selectedOrder, liveOrders]);
+  }, [orderFromUrl, displayOrders, selectedOrder]);
 
   // Address Modal State
   const [isAddAddressOpen, setIsAddAddressOpen] = useState(false);
@@ -247,7 +299,7 @@ function DashboardContent() {
             </p>
           </div>
 
-          {/* Role Switcher Pill — ONLY rendered if the email is registered in Convex backend */}
+          {/* Role Switcher Pill — ONLY rendered if the email is granted admin access in Convex backend */}
           {isAdmin && (
             <div className={styles.roleSwitcherWrap}>
               <span className={styles.switcherLabel}>View Mode:</span>
@@ -262,11 +314,11 @@ function DashboardContent() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setRole('admin')}
+                  onClick={handleSwitchToAdmin}
                   className={`${styles.rolePill} ${role === 'admin' ? styles.active : ''}`}
                   aria-pressed={role === 'admin'}
                 >
-                  Dropship Store Admin
+                  🛡️ Store Admin ({adminRole === 'owner' ? 'Owner' : 'Admin'})
                 </button>
               </div>
             </div>
@@ -287,16 +339,84 @@ function DashboardContent() {
                       {userEmail ? userEmail.slice(0, 2).toUpperCase() : 'QA'}
                     </div>
                     <div className={styles.userInfo}>
-                      <span className={styles.userName}>Qatar Account</span>
-                      <span className={styles.userLocation} title={userEmail}>
-                        {userEmail}
+                      <span className={styles.userName}>
+                        {isAdmin
+                          ? (adminName || 'Store Admin')
+                          : (userEmail ? 'Qatar Customer' : 'Qatar Guest')}
+                      </span>
+                      <span className={styles.userLocation} title={userEmail || 'Guest Session'}>
+                        {userEmail || 'Guest Account'}
                       </span>
                     </div>
                   </div>
                   <div className={styles.userStatusPill}>
                     <span className={styles.statusDot} />
-                    <span>{isAdmin ? 'Admin Authorized' : 'Verified Customer'}</span>
+                    <span>
+                      {isAdmin
+                        ? (adminRole === 'owner' ? 'Store Owner' : 'Admin Authorized')
+                        : (userEmail ? 'Verified Account' : 'Guest Account')}
+                    </span>
                   </div>
+                </div>
+
+                {/* Account Action: Sign In or Switch/Sign Out */}
+                <div style={{ padding: '0 16px 12px' }}>
+                  {userEmail ? (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px' }}>
+                      <button
+                        type="button"
+                        onClick={handleOpenEmailModal}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#a1a1aa',
+                          cursor: 'pointer',
+                          padding: 0,
+                          textDecoration: 'underline',
+                          fontSize: '11px',
+                        }}
+                      >
+                        Switch Account
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSignOut}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#ef4444',
+                          cursor: 'pointer',
+                          padding: 0,
+                          fontSize: '11px',
+                        }}
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleOpenEmailModal}
+                      style={{
+                        width: '100%',
+                        padding: '6px 10px',
+                        background: '#18181b',
+                        color: '#facc15',
+                        border: '1px solid #27272a',
+                        borderRadius: '6px',
+                        fontSize: '11.5px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <Users size={13} />
+                      <span>Sign In with Email</span>
+                    </button>
+                  )}
                 </div>
 
                 <div className={styles.sidebarNav}>
@@ -353,7 +473,7 @@ function DashboardContent() {
                 <div className={styles.adminBadgeBlock}>
                   <div className={styles.adminBadgeLeft}>
                     <span className={styles.adminPill}>
-                      {adminCheck?.role === 'owner' ? 'STORE OWNER' : 'DROPSHIP ADMIN'}
+                      {adminRole === 'owner' ? 'STORE OWNER' : 'DROPSHIP ADMIN'}
                     </span>
                     <span className={styles.adminStoreName}>Qatify Qatar Hub</span>
                   </div>
@@ -408,14 +528,14 @@ function DashboardContent() {
                       {userEmail}
                     </span>
                     <span className={styles.adminSessionRole}>
-                      {adminCheck?.role || 'Admin'}
+                      {adminRole === 'owner' ? 'Store Owner' : 'Store Admin'}
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setRole('customer')}
                     className={styles.adminLogoutBtn}
-                    title="Switch to customer hub"
+                    title="Switch to Customer Account view"
                   >
                     Customer Hub
                   </button>
@@ -1132,9 +1252,9 @@ function DashboardContent() {
                                         const newStatus = e.target.value as any;
                                         try {
                                           await updateStatus({
+                                            adminEmail: userEmail,
                                             orderId: ord._id,
                                             status: newStatus,
-                                            adminEmail: userEmail || undefined,
                                           });
                                           showToast('Status Updated! ✈️', `${ord.orderNumber} is now: ${newStatus}`, 'success');
                                         } catch (err) {
@@ -1177,6 +1297,72 @@ function DashboardContent() {
             )}
           </main>
         </div>
+
+        {/* Email Sign-In / Account Link Modal */}
+        {isEmailModalOpen && (
+          <div
+            className={styles.modalOverlay}
+            onClick={() => setIsEmailModalOpen(false)}
+          >
+            <div
+              className={styles.modalCard}
+              onClick={(e) => e.stopPropagation()}
+              style={{ maxWidth: '420px' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <div style={{ background: '#0a0a0c', color: '#facc15', padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Users size={20} />
+                </div>
+                <div>
+                  <h3 className={styles.modalTitle} style={{ margin: 0, fontSize: '17px' }}>Account Sign In</h3>
+                  <p style={{ margin: '3px 0 0', fontSize: '13px', color: '#71717a' }}>
+                    Enter your email to access your account & orders.
+                  </p>
+                </div>
+              </div>
+
+              <form onSubmit={handleSaveEmail} className={styles.modalForm}>
+                <div className={styles.modalField}>
+                  <label>Email Address</label>
+                  <input
+                    type="email"
+                    autoFocus
+                    required
+                    value={emailInput}
+                    onChange={(e) => {
+                      setEmailInput(e.target.value);
+                      setEmailError('');
+                    }}
+                    placeholder="e.g. yourname@example.com"
+                  />
+                </div>
+
+                {emailError && (
+                  <div style={{ color: '#ef4444', fontSize: '12.5px', marginTop: '2px' }}>
+                    {emailError}
+                  </div>
+                )}
+
+                <p style={{ fontSize: '11.5px', color: '#71717a', margin: '4px 0 0', lineHeight: 1.4 }}>
+                  💡 Store Owners & Admins: When you enter the email authorized in the Convex backend database, Store Admin operations unlock automatically.
+                </p>
+
+                <div className={styles.modalActions}>
+                  <button
+                    type="button"
+                    onClick={() => setIsEmailModalOpen(false)}
+                    className={styles.cancelModalBtn}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className={styles.saveModalBtn}>
+                    Continue & Sign In
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

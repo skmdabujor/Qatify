@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { assertAdminAccess } from "./adminAuth";
 
 // 1. Subscribe customer email to Qatar VIP Deal alerts (used by FirstTimeDiscountPopup & Footer)
 export const subscribe = mutation({
@@ -44,18 +45,15 @@ export const subscribe = mutation({
   },
 });
 
-// 2. Admin: List all newsletter subscribers (bounded)
+// 2. Admin: List all newsletter subscribers (Protected)
 export const listSubscribers = query({
   args: {
+    adminEmail: v.optional(v.string()),
     adminKey: v.optional(v.string()),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    // Basic admin protection
-    const expectedKey = process.env.ADMIN_SECRET_KEY;
-    if (expectedKey && args.adminKey !== expectedKey) {
-      throw new Error("Unauthorized access to subscriber list");
-    }
+    await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
 
     const takeCount = args.limit ?? 50;
     return await ctx.db
@@ -64,4 +62,3 @@ export const listSubscribers = query({
       .take(takeCount);
   },
 });
-
