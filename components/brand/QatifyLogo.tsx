@@ -1,7 +1,7 @@
 'use client';
 
 // =============================================================================
-// Qatify — Brand Logo Component (Scalable SVG + Wordmark + Qatar Pill)
+// Qatify — Brand Logo Component (Scalable SVG + Wordmark)
 // Monogram: Geometric forward-leaning "Q" squircle in Red with Electric Yellow lightning spark tail
 // =============================================================================
 
@@ -25,9 +25,9 @@ export const QatifyLogo: React.FC<QatifyLogoProps> = ({
 }) => {
   // Dimensions map
   const dimensions = {
-    sm: { iconSize: 28, fontSize: 18, pillSize: 10 },
-    md: { iconSize: 34, fontSize: 22, pillSize: 11 },
-    lg: { iconSize: 44, fontSize: 28, pillSize: 13 },
+    sm: { iconSize: 28, fontSize: 18, gap: 5 },
+    md: { iconSize: 34, fontSize: 22, gap: 6 },
+    lg: { iconSize: 44, fontSize: 28, gap: 8 },
   }[size];
 
   const textColor = variant === 'light' ? '#FFFFFF' : '#0A0A0C';
@@ -38,7 +38,7 @@ export const QatifyLogo: React.FC<QatifyLogoProps> = ({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: size === 'sm' ? '8px' : '10px',
+        gap: `${dimensions.gap}px`,
         userSelect: 'none',
         textDecoration: 'none',
       }}
@@ -97,10 +97,10 @@ export const QatifyLogo: React.FC<QatifyLogoProps> = ({
         <circle cx="28" cy="28" r="3.5" fill="#FACC15" />
       </svg>
 
-      {/* Wordmark and Qatar Pill Badge */}
+      {/* Wordmark */}
       {!iconOnly && (
         <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <span
               style={{
                 fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
@@ -131,24 +131,6 @@ export const QatifyLogo: React.FC<QatifyLogoProps> = ({
                 />
               </span>
               FY
-            </span>
-
-            {/* .qa Pill Badge */}
-            <span
-              style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontWeight: 800,
-                fontSize: `${dimensions.pillSize}px`,
-                backgroundColor: '#FACC15',
-                color: '#0A0A0C',
-                padding: '2px 5px',
-                borderRadius: '4px',
-                letterSpacing: '-0.02em',
-                lineHeight: 1,
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              }}
-            >
-              .QA
             </span>
           </div>
 

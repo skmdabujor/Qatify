@@ -215,6 +215,8 @@
   align-items: center;
   gap: 10px;
   min-width: 0;
+  flex: 1;
+  overflow: hidden;
 }
 
 .avatarCircle {
@@ -236,6 +238,7 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  overflow: hidden;
 }
 
 .userName {
@@ -250,6 +253,10 @@
 .userLocation {
   font-size: 11px;
   color: #a1a1aa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 165px;
 }
 
 .userStatusPill {
@@ -2021,4 +2028,370 @@
     color: #ffffff;
   }
 }
+
+.tableActionSelect {
+  background-color: #ffffff;
+  color: $color-ink-black;
+  border: 1px solid #d4d4d8;
+  padding: 4px 8px;
+  border-radius: $radius-xs;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: $color-ink-black;
+    background-color: #f8fafc;
+    color: $color-ink-black;
+  }
+
+  &:focus {
+    border-color: $color-accent-red;
+    box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.15);
+    color: $color-ink-black;
+  }
+
+  option {
+    background-color: #ffffff;
+    color: #0a0a0c;
+    font-weight: 600;
+    padding: 6px 8px;
+  }
+}
+
+// =============================================================================
+// ADMIN ACCESS GATE & ADMIN MANAGEMENT STYLES
+// =============================================================================
+.adminAuthGateCard {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 36px 32px;
+  max-width: 520px;
+  margin: 40px auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  text-align: center;
+
+  @include mobile {
+    padding: 24px 16px;
+    margin: 20px auto;
+  }
+}
+
+.gateIconWrap {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-color: #fff1f2;
+  color: $color-accent-red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+}
+
+.gateTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: $color-ink-black;
+  margin-bottom: 8px;
+}
+
+.gateSubtitle {
+  font-size: 13.5px;
+  color: $color-text-muted;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.gateAlertBox {
+  background-color: #fefce8;
+  border: 1px solid #fef08a;
+  border-radius: $radius-sm;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  text-align: left;
+  font-size: 12.5px;
+  color: #854d0e;
+  line-height: 1.4;
+
+  strong {
+    display: block;
+    margin-bottom: 2px;
+  }
+}
+
+.gateForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+
+.gateFieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 12px;
+    font-weight: 700;
+    color: $color-ink-black;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  input {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: $radius-sm;
+    border: 1px solid $color-border-subtle;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s ease;
+
+    &:focus {
+      border-color: $color-accent-red;
+    }
+  }
+}
+
+.gateSubmitBtn {
+  height: 46px;
+  background-color: $color-accent-red;
+  color: #ffffff;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.92;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.gateCancelBtn {
+  height: 38px;
+  background-color: transparent;
+  color: $color-text-muted;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-sm;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+
+  &:hover {
+    color: $color-ink-black;
+    background-color: #f4f4f5;
+  }
+}
+
+// Admin Session Info in Sidebar
+.adminSessionBar {
+  padding: 10px 14px;
+  background-color: #1a1a20;
+  border-top: 1px solid #27272a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.adminSessionText {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .adminSessionEmail {
+    font-size: 11px;
+    color: #e4e4e7;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .adminSessionRole {
+    font-size: 9.5px;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.adminLogoutBtn {
+  background: transparent;
+  border: 1px solid #3f3f46;
+  color: #a1a1aa;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+  }
+}
+
+// Admin Team Tab Styles
+.adminTeamSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.adminTeamGrid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  align-items: start;
+
+  @include laptop {
+    grid-template-columns: 1fr;
+  }
+}
+
+.adminAddFormCard {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 20px;
+
+  h4 {
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 4px;
+    color: $color-ink-black;
+  }
+
+  p {
+    font-size: 12px;
+    color: $color-text-muted;
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+}
+
+.adminAddForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  label {
+    font-size: 11px;
+    font-weight: 700;
+    color: $color-ink-black;
+    text-transform: uppercase;
+  }
+
+  input, select {
+    width: 100%;
+    height: 38px;
+    padding: 0 10px;
+    border-radius: $radius-xs;
+    border: 1px solid $color-border-subtle;
+    font-size: 13px;
+    outline: none;
+
+    &:focus {
+      border-color: $color-accent-red;
+    }
+  }
+
+  button {
+    height: 40px;
+    background-color: $color-accent-red;
+    color: #ffffff;
+    border: none;
+    border-radius: $radius-xs;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: opacity 0.15s ease;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}
+
+.adminListCard {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 20px;
+
+  h4 {
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 4px;
+    color: $color-ink-black;
+  }
+
+  p {
+    font-size: 12px;
+    color: $color-text-muted;
+    margin-bottom: 16px;
+  }
+}
+
+.adminRoleOwnerPill {
+  background-color: #fff1f2;
+  color: $color-accent-red;
+  border: 1px solid #fecdd3;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: $radius-xs;
+  text-transform: uppercase;
+}
+
+.adminRoleAdminPill {
+  background-color: #f4f4f5;
+  color: #3f3f46;
+  border: 1px solid #e4e4e7;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: $radius-xs;
+  text-transform: uppercase;
+}
+
+.removeAdminBtn {
+  background-color: #fff1f2;
+  color: #e11d48;
+  border: 1px solid #fecdd3;
+  padding: 4px 10px;
+  border-radius: $radius-xs;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: #e11d48;
+    color: #ffffff;
+  }
+}
+
 

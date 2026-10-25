@@ -172,14 +172,23 @@ export const seedProducts = mutation({
   },
 });
 
+// Helper: Validate admin secret if set in environment
+function assertAdmin(adminKey?: string) {
+  const expected = process.env.ADMIN_SECRET_KEY;
+  if (expected && adminKey !== expected) {
+    throw new Error("Unauthorized: Invalid Admin Secret");
+  }
+}
+
 // =============================================================================
 // ADMIN OPERATIONS: Product Management & Convex Cloud File Storage
 // =============================================================================
 
 // 8. Generate upload URL for uploading product images to Convex Storage
 export const generateUploadUrl = mutation({
-  args: {},
-  handler: async (ctx) => {
+  args: { adminKey: v.optional(v.string()) },
+  handler: async (ctx, args) => {
+    assertAdmin(args.adminKey);
     return await ctx.storage.generateUploadUrl();
   },
 });
@@ -195,6 +204,7 @@ export const getStorageUrl = query({
 // 10. Admin: Create a new product
 export const createProduct = mutation({
   args: {
+    adminKey: v.optional(v.string()),
     productId: v.optional(v.string()),
     title: v.string(),
     slug: v.optional(v.string()),
@@ -233,6 +243,7 @@ export const createProduct = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    assertAdmin(args.adminKey);
     const slug =
       args.slug ||
       args.title
@@ -299,6 +310,7 @@ export const createProduct = mutation({
 // 11. Admin: Update existing product
 export const updateProduct = mutation({
   args: {
+    adminKey: v.optional(v.string()),
     id: v.id("products"),
     title: v.optional(v.string()),
     priceQAR: v.optional(v.number()),
@@ -316,7 +328,8 @@ export const updateProduct = mutation({
     images: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    const { id, ...patchFields } = args;
+    assertAdmin(args.adminKey);
+    const { id, adminKey, ...patchFields } = args;
     const existing = await ctx.db.get(id);
     if (!existing) throw new Error("Product not found");
 
@@ -338,8 +351,12 @@ export const updateProduct = mutation({
 
 // 12. Admin: Toggle product in-stock status
 export const toggleStockStatus = mutation({
-  args: { id: v.id("products") },
+  args: {
+    id: v.id("products"),
+    adminKey: v.optional(v.string()),
+  },
   handler: async (ctx, args) => {
+    assertAdmin(args.adminKey);
     const product = await ctx.db.get(args.id);
     if (!product) throw new Error("Product not found");
 
@@ -357,8 +374,12 @@ export const toggleStockStatus = mutation({
 
 // 13. Admin: Delete product
 export const deleteProduct = mutation({
-  args: { id: v.id("products") },
+  args: {
+    id: v.id("products"),
+    adminKey: v.optional(v.string()),
+  },
   handler: async (ctx, args) => {
+    assertAdmin(args.adminKey);
     const product = await ctx.db.get(args.id);
     if (!product) throw new Error("Product not found");
 

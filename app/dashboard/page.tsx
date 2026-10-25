@@ -37,6 +37,8 @@ import {
   SlidersHorizontal,
   Sparkles,
   Trash2,
+  Lock,
+  ShieldAlert,
 } from 'lucide-react';
 import { useShop } from '@/context/ShopContext';
 import { QATAR_MUNICIPALITIES } from '@/data/products';
@@ -70,6 +72,28 @@ function DashboardContent() {
 
   // Admin Active Tab Filter ('all' | 'analytics' | 'pipeline' | 'orders')
   const [adminTab, setAdminTab] = useState<'all' | 'analytics' | 'pipeline' | 'orders'>('all');
+
+  // User Account Email & Silent Convex Admin Check
+  const [userEmail, setUserEmail] = useState<string>('');
+
+  // Hydrate user email from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('qatify_user_email') || 'sheakmohammadabujor@gmail.com';
+      setUserEmail(stored);
+    }
+  }, []);
+
+  // Real-time Convex Admin Verification (Only accounts added in Convex backend get access)
+  const adminCheck = useQuery(api.admins.checkIsAdmin, { email: userEmail });
+  const isAdmin = Boolean(adminCheck?.isAdmin);
+
+  // If user is not authorized in Convex, keep role strictly in customer mode
+  useEffect(() => {
+    if (!isAdmin && role === 'admin') {
+      setRole('customer');
+    }
+  }, [isAdmin, role]);
 
   const {
     orders,
@@ -223,28 +247,30 @@ function DashboardContent() {
             </p>
           </div>
 
-          {/* Role Switcher Pill (Customer vs Admin) */}
-          <div className={styles.roleSwitcherWrap}>
-            <span className={styles.switcherLabel}>View Mode:</span>
-            <div className={styles.rolePillsGroup}>
-              <button
-                type="button"
-                onClick={() => setRole('customer')}
-                className={`${styles.rolePill} ${role === 'customer' ? styles.active : ''}`}
-                aria-pressed={role === 'customer'}
-              >
-                Customer Account
-              </button>
-              <button
-                type="button"
-                onClick={() => setRole('admin')}
-                className={`${styles.rolePill} ${role === 'admin' ? styles.active : ''}`}
-                aria-pressed={role === 'admin'}
-              >
-                Dropship Store Admin
-              </button>
+          {/* Role Switcher Pill — ONLY rendered if the email is registered in Convex backend */}
+          {isAdmin && (
+            <div className={styles.roleSwitcherWrap}>
+              <span className={styles.switcherLabel}>View Mode:</span>
+              <div className={styles.rolePillsGroup}>
+                <button
+                  type="button"
+                  onClick={() => setRole('customer')}
+                  className={`${styles.rolePill} ${role === 'customer' ? styles.active : ''}`}
+                  aria-pressed={role === 'customer'}
+                >
+                  Customer Account
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole('admin')}
+                  className={`${styles.rolePill} ${role === 'admin' ? styles.active : ''}`}
+                  aria-pressed={role === 'admin'}
+                >
+                  Dropship Store Admin
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Dashboard Shell: Dark Sidebar + Clean Canvas */}
@@ -257,15 +283,19 @@ function DashboardContent() {
               <>
                 <div className={styles.userProfileMini}>
                   <div className={styles.userProfileLeft}>
-                    <div className={styles.avatarCircle}>TA</div>
+                    <div className={styles.avatarCircle}>
+                      {userEmail ? userEmail.slice(0, 2).toUpperCase() : 'QA'}
+                    </div>
                     <div className={styles.userInfo}>
-                      <span className={styles.userName}>Tariq Al-Mansoor</span>
-                      <span className={styles.userLocation}>Lusail, Qatar</span>
+                      <span className={styles.userName}>Qatar Account</span>
+                      <span className={styles.userLocation} title={userEmail}>
+                        {userEmail}
+                      </span>
                     </div>
                   </div>
                   <div className={styles.userStatusPill}>
                     <span className={styles.statusDot} />
-                    <span>Verified Buyer</span>
+                    <span>{isAdmin ? 'Admin Authorized' : 'Verified Customer'}</span>
                   </div>
                 </div>
 
@@ -322,7 +352,9 @@ function DashboardContent() {
               <>
                 <div className={styles.adminBadgeBlock}>
                   <div className={styles.adminBadgeLeft}>
-                    <span className={styles.adminPill}>DROPSHIP ADMIN</span>
+                    <span className={styles.adminPill}>
+                      {adminCheck?.role === 'owner' ? 'STORE OWNER' : 'DROPSHIP ADMIN'}
+                    </span>
                     <span className={styles.adminStoreName}>Qatify Qatar Hub</span>
                   </div>
                   <div className={styles.adminLiveStatus}>
@@ -367,6 +399,25 @@ function DashboardContent() {
                   >
                     <FileText size={16} />
                     <span>Recent Orders (Qatar)</span>
+                  </button>
+                </div>
+
+                <div className={styles.adminSessionBar}>
+                  <div className={styles.adminSessionText}>
+                    <span className={styles.adminSessionEmail} title={userEmail}>
+                      {userEmail}
+                    </span>
+                    <span className={styles.adminSessionRole}>
+                      {adminCheck?.role || 'Admin'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setRole('customer')}
+                    className={styles.adminLogoutBtn}
+                    title="Switch to customer hub"
+                  >
+                    Customer Hub
                   </button>
                 </div>
               </>
@@ -948,8 +999,9 @@ function DashboardContent() {
 
             {/* ===============================================================
                 ADMIN VIEW (DROPSHIP STORE ADMIN & PIPELINE OVERVIEW)
+                Only rendered if role is admin AND user is verified in Convex
             ================================================================ */}
-            {role === 'admin' && (
+            {role === 'admin' && isAdmin && (
               <div className={styles.adminWorkspace}>
                 {/* 4 Analytics KPI Cards */}
                 {(adminTab === 'all' || adminTab === 'analytics') && (
@@ -1079,22 +1131,18 @@ function DashboardContent() {
                                       onChange={async (e) => {
                                         const newStatus = e.target.value as any;
                                         try {
-                                          await updateStatus({ orderId: ord._id, status: newStatus });
+                                          await updateStatus({
+                                            orderId: ord._id,
+                                            status: newStatus,
+                                            adminEmail: userEmail || undefined,
+                                          });
                                           showToast('Status Updated! ✈️', `${ord.orderNumber} is now: ${newStatus}`, 'success');
                                         } catch (err) {
                                           console.error(err);
                                           showToast('Update Failed', 'Could not update status.', 'error');
                                         }
                                       }}
-                                      className={styles.tableActionBtn}
-                                      style={{
-                                        cursor: 'pointer',
-                                        padding: '4px 6px',
-                                        fontSize: '11px',
-                                        borderRadius: '4px',
-                                        background: '#ffffff',
-                                        border: '1px solid #d4d4d8',
-                                      }}
+                                      className={styles.tableActionSelect}
                                     >
                                       <option value="Order Confirmed">Order Confirmed</option>
                                       <option value="Air Hub Transit">Air Hub Transit</option>

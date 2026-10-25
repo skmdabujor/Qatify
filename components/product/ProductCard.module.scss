@@ -544,11 +544,84 @@
   font-size: 12px;
   gap: 6px;
   border-radius: $radius-xs;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
   @include mobile {
     padding: 7px 6px;
     font-size: 11px;
     gap: 4px;
+  }
+
+  &.added {
+    background-color: #10b981 !important;
+    border-color: #059669;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+  }
+}
+
+.btnPrice {
+  font-family: $font-mono;
+  font-size: 11.5px;
+  font-weight: 700;
+  opacity: 0.95;
+  margin-left: 2px;
+
+  @media (max-width: 1250px) {
+    display: none;
+  }
+
+  @include tablet {
+    display: none;
+  }
+}
+
+// Slide-animated Add to Cart on desktop hover
+@media (min-width: 769px) {
+  .card:not(.list) {
+    .content {
+      padding-bottom: 12px;
+    }
+
+    .priceRow {
+      transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+
+    .addToCartBtn {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      width: calc(100% - 16px);
+      z-index: 4;
+      transform: translateY(calc(100% + 14px));
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: 0 4px 16px rgba(225, 29, 72, 0.38);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity 0.22s ease,
+                  background-color 0.15s ease,
+                  box-shadow 0.15s ease;
+      will-change: transform, opacity;
+    }
+
+    &:hover,
+    &:focus-within {
+      .priceRow {
+        opacity: 0;
+        transform: translateY(-4px);
+        pointer-events: none;
+      }
+
+      .addToCartBtn {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
   }
 }
 

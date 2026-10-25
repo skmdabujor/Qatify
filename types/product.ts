@@ -77,6 +77,7 @@ export interface CartItem {
 export interface QatarAddress {
   id?: string;
   fullName: string;
+  email?: string;
   phone: string;
   municipality: string;
   zoneNumber: string;

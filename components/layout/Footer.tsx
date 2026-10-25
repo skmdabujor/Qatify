@@ -7,6 +7,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import {
   Plane,
   ShieldCheck,
@@ -27,12 +29,19 @@ import styles from './Footer.module.scss';
 export const Footer: React.FC = () => {
   const { showToast, openChat } = useShop();
   const [email, setEmail] = useState('');
+  const subscribeNewsletter = useMutation(api.newsletter.subscribe);
 
-  const handleNewsletter = (e: React.FormEvent) => {
+  const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
-      showToast('Subscribed to Qatify VIP! 🎉', 'You will receive top trending gadget deals in Qatar.');
-      setEmail('');
+    const cleanEmail = email.trim();
+    if (cleanEmail) {
+      try {
+        await subscribeNewsletter({ email: cleanEmail, source: 'footer' });
+        showToast('Subscribed to Qatify VIP! 🎉', 'You will receive top trending gadget deals in Qatar.');
+        setEmail('');
+      } catch (err: any) {
+        showToast('Subscription Notice', err?.message || 'Could not subscribe right now.', 'warning');
+      }
     }
   };
 
@@ -162,11 +171,11 @@ export const Footer: React.FC = () => {
                   </button>
                 </li>
                 <li><Link href="/dashboard">Track International Shipment</Link></li>
-                <li><Link href="/cart">Shopping Cart & Free Shipping</Link></li>
+                <li><Link href="/cart">Shopping Cart & Delivery</Link></li>
                 <li><Link href="/dashboard?tab=orders">Order History & Invoices</Link></li>
                 <li><Link href="/shop?filter=under-99">Deals Under QAR 99</Link></li>
                 <li><Link href="/dashboard?tab=addresses">Qatar Delivery Zones</Link></li>
-                <li><Link href="/dashboard?role=admin">Dropship Admin Overview</Link></li>
+                <li><Link href="/dashboard">Direct Air Express Tracking</Link></li>
               </ul>
             </div>
 

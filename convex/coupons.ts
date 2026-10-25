@@ -1,11 +1,20 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 
+// Helper: Validate admin secret if set in environment
+function assertAdmin(adminKey?: string) {
+  const expected = process.env.ADMIN_SECRET_KEY;
+  if (expected && adminKey !== expected) {
+    throw new Error("Unauthorized: Invalid Admin Secret Key");
+  }
+}
+
 // 1. Validate a coupon code against current subtotal
 export const validateCoupon = query({
   args: {
     code: v.string(),
     subtotalQAR: v.number(),
+    currentDate: v.optional(v.string()), // YYYY-MM-DD passed from client to avoid non-deterministic query wall-clock reads
   },
   handler: async (ctx, args) => {
     const cleanCode = args.code.trim().toUpperCase();
@@ -26,10 +35,9 @@ export const validateCoupon = query({
       return { isValid: false, discountQAR: 0, message: "This coupon is no longer active" };
     }
 
-    // Check expiration
-    if (coupon.expiryDate) {
-      const today = new Date().toISOString().slice(0, 10);
-      if (today > coupon.expiryDate) {
+    // Check expiration using passed currentDate (or safe fallback)
+    if (coupon.expiryDate && args.currentDate) {
+      if (args.currentDate > coupon.expiryDate) {
         return { isValid: false, discountQAR: 0, message: "This coupon has expired" };
       }
     }
@@ -72,8 +80,12 @@ export const validateCoupon = query({
 
 // 2. Admin: List all coupons
 export const listCoupons = query({
-  args: { limit: v.optional(v.number()) },
+  args: {
+    limit: v.optional(v.number()),
+    adminKey: v.optional(v.string()),
+  },
   handler: async (ctx, args) => {
+    assertAdmin(args.adminKey);
     const takeCount = args.limit ?? 50;
     return await ctx.db.query("coupons").take(takeCount);
   },
@@ -82,6 +94,7 @@ export const listCoupons = query({
 // 3. Admin: Create a new coupon
 export const createCoupon = mutation({
   args: {
+    adminKey: v.optional(v.string()),
     code: v.string(),
     discountType: v.union(v.literal("percentage"), v.literal("fixed")),
     discountValue: v.number(),
@@ -93,6 +106,7 @@ export const createCoupon = mutation({
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    assertAdmin(args.adminKey);
     const cleanCode = args.code.trim().toUpperCase();
 
     // Ensure unique code
@@ -126,8 +140,10 @@ export const createCoupon = mutation({
 export const toggleCouponStatus = mutation({
   args: {
     couponId: v.id("coupons"),
+    adminKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    assertAdmin(args.adminKey);
     const coupon = await ctx.db.get(args.couponId);
     if (!coupon) throw new Error("Coupon not found");
 
@@ -141,8 +157,10 @@ export const toggleCouponStatus = mutation({
 export const deleteCoupon = mutation({
   args: {
     couponId: v.id("coupons"),
+    adminKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    assertAdmin(args.adminKey);
     const coupon = await ctx.db.get(args.couponId);
     if (!coupon) throw new Error("Coupon not found");
 

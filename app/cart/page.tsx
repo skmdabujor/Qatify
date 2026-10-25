@@ -88,6 +88,7 @@ export default function CartPage() {
       const res = await convex.query(api.coupons.validateCoupon, {
         code,
         subtotalQAR: cartSubtotal,
+        currentDate: new Date().toISOString().slice(0, 10),
       });
 
       if (res.isValid && res.code) {

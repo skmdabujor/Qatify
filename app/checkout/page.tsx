@@ -23,6 +23,7 @@ import {
   Building,
   Phone,
   User,
+  Mail,
   Sparkles,
   MessageCircle,
 } from 'lucide-react';
@@ -60,6 +61,7 @@ export default function CheckoutPage() {
   // Address State (Qatar National Address format)
   const defaultAddr = savedAddresses[0] || {
     fullName: 'Tariq Al-Mansoor',
+    email: 'customer@qatify.qa',
     phone: '+974 5512 8894',
     municipality: 'Lusail City (مدينة لوسيل)',
     zoneNumber: 'Zone 69',
@@ -71,6 +73,7 @@ export default function CheckoutPage() {
 
   const [address, setAddress] = useState<QatarAddress>({
     fullName: defaultAddr.fullName,
+    email: defaultAddr.email || '',
     phone: defaultAddr.phone,
     municipality: defaultAddr.municipality,
     zoneNumber: defaultAddr.zoneNumber,
@@ -156,7 +159,7 @@ export default function CheckoutPage() {
         address: {
           fullName: address.fullName,
           phone: address.phone,
-          email: (address as any).email || undefined,
+          email: address.email || undefined,
           municipality: address.municipality,
           zoneNumber: address.zoneNumber,
           streetNumber: address.streetNumber,
@@ -396,6 +399,24 @@ export default function CheckoutPage() {
                         value={address.phone}
                         onChange={(e) => setAddress({ ...address, phone: e.target.value })}
                         placeholder="+974 5512 8894"
+                        className={styles.textInput}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Customer Email Address for Order Confirmation */}
+                  <div className={styles.formGroup}>
+                    <label className={styles.fieldLabel}>
+                      Email Address (for Air Tracking & Receipt) <span className={styles.req}>*</span>
+                    </label>
+                    <div className={styles.inputWithIcon}>
+                      <Mail size={15} className={styles.fieldIcon} />
+                      <input
+                        type="email"
+                        required
+                        value={address.email || ''}
+                        onChange={(e) => setAddress({ ...address, email: e.target.value })}
+                        placeholder="e.g. tariq@example.com"
                         className={styles.textInput}
                       />
                     </div>

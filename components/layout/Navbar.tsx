@@ -5,9 +5,11 @@
 // Top Utility Bar + Predictive Search + Category Strip + Cart Counter
 // =============================================================================
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import {
   Search,
   ShoppingCart,
@@ -33,10 +35,13 @@ import {
   Laptop,
   Cable,
   MessageCircle,
+  ArrowRight,
+  TrendingUp,
 } from 'lucide-react';
 import { QatifyLogo } from '@/components/brand/QatifyLogo';
 import { useShop } from '@/context/ShopContext';
-import { CATEGORIES } from '@/data/products';
+import { CATEGORIES, PRODUCTS } from '@/data/products';
+import { Product, toProduct } from '@/types/product';
 import styles from './Navbar.module.scss';
 
 const POPULAR_SEARCH_TAGS = [
@@ -90,27 +95,109 @@ export const Navbar: React.FC = () => {
   } = useShop();
 
   const [localSearch, setLocalSearch] = useState(searchQuery);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
   const [isSearchCategoryOpen, setIsSearchCategoryOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isMobileSearchFocused, setIsMobileSearchFocused] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
 
   const categoryMenuRef = useRef<HTMLDivElement>(null);
   const searchCategoryRef = useRef<HTMLDivElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const mobileSearchContainerRef = useRef<HTMLDivElement>(null);
 
   // Sync localSearch when global searchQuery changes
   useEffect(() => {
     setLocalSearch(searchQuery);
   }, [searchQuery]);
 
-  // Close category dropdowns on outside click
+  // Debounce search query for Convex database full-text search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(localSearch);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [localSearch]);
+
+  // Reset keyboard highlight index when search text changes
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [localSearch]);
+
+  // Live Convex full-text search query
+  const liveSearchResults = useQuery(
+    api.products.searchProducts,
+    debouncedSearch.trim()
+      ? {
+          searchTerm: debouncedSearch.trim(),
+          categorySlug: selectedCategory || undefined,
+          limit: 8,
+        }
+      : 'skip'
+  );
+
+  // Real-time suggested products (Convex results merged with instant local product search fallback)
+  const suggestedProducts = useMemo(() => {
+    const query = localSearch.trim().toLowerCase();
+    if (!query) return [];
+
+    // Instant local filtering across title, brand, category, tags
+    const localMatches = PRODUCTS.filter((p) => {
+      if (selectedCategory && p.categorySlug !== selectedCategory) {
+        return false;
+      }
+      const titleMatch = p.title.toLowerCase().includes(query);
+      const brandMatch = p.brand?.toLowerCase().includes(query);
+      const catMatch = p.category?.toLowerCase().includes(query);
+      const tagMatch = p.tags?.some((t) => t.toLowerCase().includes(query));
+      return titleMatch || brandMatch || catMatch || tagMatch;
+    });
+
+    if (liveSearchResults && liveSearchResults.length > 0) {
+      const liveConverted = liveSearchResults.map(toProduct);
+      const seen = new Set<string>();
+      const combined: Product[] = [];
+      for (const item of [...liveConverted, ...localMatches]) {
+        const key = item.slug || item.id;
+        if (!seen.has(key)) {
+          seen.add(key);
+          combined.push(item);
+        }
+      }
+      return combined.slice(0, 8);
+    }
+
+    return localMatches.slice(0, 8);
+  }, [localSearch, liveSearchResults, selectedCategory]);
+
+  // Matching categories when user types category-related terms
+  const matchingCategories = useMemo(() => {
+    const query = localSearch.trim().toLowerCase();
+    if (!query || query.length < 2) return [];
+    return CATEGORIES.filter(
+      (c) =>
+        c.name.toLowerCase().includes(query) ||
+        c.slug.toLowerCase().includes(query)
+    ).slice(0, 3);
+  }, [localSearch]);
+
+  // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (categoryMenuRef.current && !categoryMenuRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (categoryMenuRef.current && !categoryMenuRef.current.contains(target)) {
         setIsCategoryMenuOpen(false);
       }
-      if (searchCategoryRef.current && !searchCategoryRef.current.contains(e.target as Node)) {
+      if (searchCategoryRef.current && !searchCategoryRef.current.contains(target)) {
         setIsSearchCategoryOpen(false);
+      }
+      if (searchContainerRef.current && !searchContainerRef.current.contains(target)) {
+        setIsSearchFocused(false);
+      }
+      if (mobileSearchContainerRef.current && !mobileSearchContainerRef.current.contains(target)) {
+        setIsMobileSearchFocused(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -123,14 +210,16 @@ export const Navbar: React.FC = () => {
       if (e.key === 'Escape') {
         setIsCategoryMenuOpen(false);
         setIsSearchCategoryOpen(false);
+        setIsSearchFocused(false);
+        setIsMobileSearchFocused(false);
       }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setSearchQuery(localSearch);
     const params = new URLSearchParams();
     if (localSearch.trim()) {
@@ -142,7 +231,37 @@ export const Navbar: React.FC = () => {
     const queryString = params.toString();
     router.push(`/shop${queryString ? `?${queryString}` : ''}`);
     setIsSearchFocused(false);
+    setIsMobileSearchFocused(false);
     setIsSearchCategoryOpen(false);
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (suggestedProducts.length > 0) {
+        setSelectedIndex((prev) =>
+          prev < suggestedProducts.length - 1 ? prev + 1 : 0
+        );
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (suggestedProducts.length > 0) {
+        setSelectedIndex((prev) =>
+          prev > 0 ? prev - 1 : suggestedProducts.length - 1
+        );
+      }
+    } else if (e.key === 'Enter') {
+      if (selectedIndex >= 0 && selectedIndex < suggestedProducts.length) {
+        e.preventDefault();
+        const selected = suggestedProducts[selectedIndex];
+        setIsSearchFocused(false);
+        setIsMobileSearchFocused(false);
+        router.push(`/products/${selected.slug}`);
+      }
+    } else if (e.key === 'Escape') {
+      setIsSearchFocused(false);
+      setIsMobileSearchFocused(false);
+    }
   };
 
   const handleSelectCategory = (catSlug: string) => {
@@ -169,6 +288,246 @@ export const Navbar: React.FC = () => {
     }
     router.push(`/shop?${params.toString()}`);
     setIsSearchFocused(false);
+    setIsMobileSearchFocused(false);
+  };
+
+  const highlightMatch = (text: string, query: string) => {
+    if (!query.trim()) return text;
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+    const parts = text.split(regex);
+    return (
+      <>
+        {parts.map((part, index) =>
+          part.toLowerCase() === query.toLowerCase() ? (
+            <mark key={index} className={styles.highlightText}>
+              {part}
+            </mark>
+          ) : (
+            part
+          )
+        )}
+      </>
+    );
+  };
+
+  const renderSuggestionsDropdown = (isMobile = false) => {
+    const trimmed = localSearch.trim();
+    return (
+      <div
+        className={`${styles.searchSuggestionsDropdown} ${isMobile ? styles.mobileDropdown : ''}`}
+        role="listbox"
+        aria-label="Search suggestions"
+      >
+        {!trimmed ? (
+          <div className={styles.emptySearchGuide}>
+            <div className={styles.suggestionSectionHeader}>
+              <TrendingUp size={13} className={styles.headerIcon} />
+              <span>Trending Searches in Qatar</span>
+            </div>
+            <div className={styles.popularTagsRow}>
+              {POPULAR_SEARCH_TAGS.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  className={styles.popularTagPill}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    handleQuickTagClick(tag);
+                  }}
+                >
+                  <Search size={11} />
+                  <span>{tag}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className={styles.suggestionDivider} />
+
+            <div className={styles.suggestionSectionHeader}>
+              <Sparkles size={13} className={styles.headerIcon} />
+              <span>Popular Fast-Ship Tech</span>
+            </div>
+            <div className={styles.trendingQuickList}>
+              {PRODUCTS.slice(0, 3).map((p) => (
+                <Link
+                  key={p.id}
+                  href={`/products/${p.slug}`}
+                  className={styles.trendingQuickItem}
+                  onClick={() => {
+                    setIsSearchFocused(false);
+                    setIsMobileSearchFocused(false);
+                  }}
+                >
+                  <img
+                    src={p.images[0]}
+                    alt={p.title}
+                    className={styles.quickThumb}
+                  />
+                  <div className={styles.quickInfo}>
+                    <span className={styles.quickTitle}>{p.title}</span>
+                    <span className={styles.quickPrice}>QAR {p.priceQAR}</span>
+                  </div>
+                  <span className={styles.quickBadge}>✈️ 6-10d</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className={styles.searchResultsContainer}>
+            {/* Matching Categories */}
+            {matchingCategories.length > 0 && (
+              <div className={styles.matchingCategoriesSection}>
+                <div className={styles.suggestionSectionHeader}>
+                  <LayoutGrid size={13} className={styles.headerIcon} />
+                  <span>In Category</span>
+                </div>
+                <div className={styles.matchingCategoryChips}>
+                  {matchingCategories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      className={styles.categoryChipBtn}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        handleSelectCategory(cat.slug);
+                        setIsSearchFocused(false);
+                        setIsMobileSearchFocused(false);
+                      }}
+                    >
+                      <span className={styles.catChipName}>{cat.name}</span>
+                      <span className={styles.catChipHint}>Browse →</span>
+                    </button>
+                  ))}
+                </div>
+                <div className={styles.suggestionDivider} />
+              </div>
+            )}
+
+            {/* Matching Products */}
+            <div className={styles.suggestionSectionHeader}>
+              <Sparkles size={13} className={styles.headerIcon} />
+              <span>
+                Product Suggestions ({suggestedProducts.length})
+              </span>
+            </div>
+
+            {suggestedProducts.length > 0 ? (
+              <div className={styles.productsSuggestionList}>
+                {suggestedProducts.map((product, idx) => {
+                  const isSelected = selectedIndex === idx;
+                  return (
+                    <Link
+                      key={product.id || product.slug}
+                      href={`/products/${product.slug}`}
+                      className={`${styles.productSuggestionItem} ${isSelected ? styles.selected : ''}`}
+                      onMouseEnter={() => setSelectedIndex(idx)}
+                      onClick={() => {
+                        setIsSearchFocused(false);
+                        setIsMobileSearchFocused(false);
+                      }}
+                    >
+                      <div className={styles.productThumbWrap}>
+                        <img
+                          src={
+                            product.images?.[0] ||
+                            'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800'
+                          }
+                          alt={product.title}
+                          className={styles.productThumb}
+                        />
+                        {product.discountPercent > 0 && (
+                          <span className={styles.thumbDiscountBadge}>
+                            -{product.discountPercent}%
+                          </span>
+                        )}
+                      </div>
+
+                      <div className={styles.productSuggestionDetails}>
+                        <span className={styles.productSuggestionTitle}>
+                          {highlightMatch(product.title, trimmed)}
+                        </span>
+                        <div className={styles.productSuggestionMetaRow}>
+                          <span className={styles.productCategoryPill}>
+                            {product.category}
+                          </span>
+                          {product.brand && (
+                            <span className={styles.productBrandPill}>
+                              {product.brand}
+                            </span>
+                          )}
+                          <span className={styles.deliveryPill}>
+                            ✈️ Direct Air Express (6–10 Days)
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className={styles.productSuggestionPriceCol}>
+                        <div className={styles.currentPrice}>
+                          <span className={styles.currencyLabel}>QAR</span>
+                          <span className={styles.priceNumber}>
+                            {product.priceQAR}
+                          </span>
+                        </div>
+                        {product.originalPriceQAR > product.priceQAR && (
+                          <span className={styles.originalPrice}>
+                            QAR {product.originalPriceQAR}
+                          </span>
+                        )}
+                        <span className={styles.stockStatusBadge}>
+                          {product.inStock ? '✓ In Stock' : 'Pre-order'}
+                        </span>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className={styles.noResultsBox}>
+                <p className={styles.noResultsTitle}>
+                  No items found matching &ldquo;<strong>{trimmed}</strong>&rdquo;
+                </p>
+                <p className={styles.noResultsSub}>
+                  Try searching with keywords like MagSafe, Earbuds, 100W GaN, or Smartwatch
+                </p>
+                <div className={styles.suggestedKeywords}>
+                  {POPULAR_SEARCH_TAGS.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      className={styles.suggestedTagBtn}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        handleQuickTagClick(tag);
+                      }}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* View All Results Footer CTA */}
+            <div className={styles.suggestionFooter}>
+              <button
+                type="button"
+                className={styles.viewAllResultsBtn}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  handleSearchSubmit(e);
+                }}
+              >
+                <span>
+                  View all results for &ldquo;<strong>{trimmed}</strong>&rdquo;
+                </span>
+                <ArrowRight size={14} />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
 
   const currentCatObj = CATEGORIES.find((c) => c.slug === selectedCategory);
@@ -185,9 +544,6 @@ export const Navbar: React.FC = () => {
               <span className={styles.planeIcon}>✈️</span>
               <span className={styles.deliveryText}>
                 <strong>Direct Global Air Shipping:</strong> 6–10 Days Doorstep Delivery Across Qatar
-              </span>
-              <span className={styles.freeShippingBadge}>
-                Free Shipping Over QAR 150
               </span>
             </div>
 
@@ -234,7 +590,7 @@ export const Navbar: React.FC = () => {
             </div>
 
             {/* Predictive Search with Category Filter Dropdown */}
-            <div className={styles.searchContainer}>
+            <div className={styles.searchContainer} ref={searchContainerRef}>
               <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
                 {/* Modern Category Selector with Custom Dropdown Menu */}
                 <div className={styles.categoryDropdownWrapper} ref={searchCategoryRef}>
@@ -326,11 +682,16 @@ export const Navbar: React.FC = () => {
                   <input
                     type="text"
                     value={localSearch}
-                    onChange={(e) => setLocalSearch(e.target.value)}
+                    onChange={(e) => {
+                      setLocalSearch(e.target.value);
+                      setIsSearchFocused(true);
+                    }}
                     onFocus={() => setIsSearchFocused(true)}
+                    onKeyDown={handleSearchKeyDown}
                     placeholder="Search 1,000+ trending tech, MagSafe, GaN chargers, earbuds in Qatar..."
                     className={styles.searchInput}
                     aria-label="Search catalog"
+                    autoComplete="off"
                   />
                   {localSearch && (
                     <button
@@ -338,6 +699,7 @@ export const Navbar: React.FC = () => {
                       onClick={() => {
                         setLocalSearch('');
                         setSearchQuery('');
+                        setSelectedIndex(-1);
                       }}
                       className={styles.clearSearchBtn}
                       aria-label="Clear search input"
@@ -358,6 +720,9 @@ export const Navbar: React.FC = () => {
                   <Search size={18} strokeWidth={2.2} />
                 </button>
               </form>
+
+              {/* Real-time Predictive Suggestions Dropdown */}
+              {isSearchFocused && renderSuggestionsDropdown(false)}
 
               {/* Trending Search Tags Strip */}
               <div className={styles.trendingTags}>
@@ -427,7 +792,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Dedicated Mobile & Tablet Quick Search Bar (< 768px) */}
-          <div className={styles.mobileSearchRow}>
+          <div className={styles.mobileSearchRow} ref={mobileSearchContainerRef}>
             <form onSubmit={handleSearchSubmit} className={styles.mobileSearchForm}>
               <div className={styles.mobileSearchIconWrap}>
                 <Search size={16} />
@@ -436,10 +801,16 @@ export const Navbar: React.FC = () => {
                 id="mobile-catalog-search-input"
                 type="text"
                 value={localSearch}
-                onChange={(e) => setLocalSearch(e.target.value)}
+                onChange={(e) => {
+                  setLocalSearch(e.target.value);
+                  setIsMobileSearchFocused(true);
+                }}
+                onFocus={() => setIsMobileSearchFocused(true)}
+                onKeyDown={handleSearchKeyDown}
                 placeholder="Search 1,000+ tech gadgets, MagSafe in Qatar..."
                 className={styles.mobileSearchInput}
                 aria-label="Search catalog"
+                autoComplete="off"
               />
               {localSearch && (
                 <button
@@ -447,6 +818,7 @@ export const Navbar: React.FC = () => {
                   onClick={() => {
                     setLocalSearch('');
                     setSearchQuery('');
+                    setSelectedIndex(-1);
                   }}
                   className={styles.mobileClearBtn}
                   aria-label="Clear search text"
@@ -462,6 +834,9 @@ export const Navbar: React.FC = () => {
                 <Search size={16} />
               </button>
             </form>
+
+            {/* Mobile Predictive Suggestions Dropdown */}
+            {isMobileSearchFocused && renderSuggestionsDropdown(true)}
           </div>
         </div>
       </div>

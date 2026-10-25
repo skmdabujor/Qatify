@@ -628,16 +628,15 @@
 // Grids
 .productsGrid4Col {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 12px;
 
-  @include desktop {
-    grid-template-columns: repeat(3, 1fr);
+  @media (max-width: 1360px) {
+    grid-template-columns: repeat(4, 1fr);
   }
 
-  @media (min-width: 769px) and (max-width: 1024px) {
+  @media (max-width: 1080px) {
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
   }
 
   @include tablet {

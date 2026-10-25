@@ -193,5 +193,48 @@ export default defineSchema({
     isActive: v.boolean(), // can be toggled by admin
     description: v.optional(v.string()),
   }).index("by_code", ["code"]),
+
+  // 5. Product Reviews Table
+  reviews: defineTable({
+    productId: v.string(), // custom productId or slug
+    authorName: v.string(),
+    rating: v.number(), // 1 to 5
+    comment: v.string(),
+    location: v.string(), // e.g. "Lusail, Qatar", "Doha, Qatar"
+    verifiedBuyer: v.boolean(),
+    date: v.string(),
+  }).index("by_productId", ["productId"]),
+
+  // 6. Newsletter Subscribers / Leads Table
+  newsletter_subscribers: defineTable({
+    email: v.string(),
+    source: v.string(), // e.g. "first_time_popup", "footer"
+    subscribedAt: v.string(),
+  }).index("by_email", ["email"]),
+
+  // 7. Customer Inquiries & Offline Support Messages
+  inquiries: defineTable({
+    name: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+    subject: v.optional(v.string()),
+    message: v.string(),
+    status: v.union(
+      v.literal("new"),
+      v.literal("in_progress"),
+      v.literal("resolved")
+    ),
+    createdAt: v.string(),
+  }).index("by_status", ["status"]),
+
+  // 8. Admin Management Table (Dynamic Admin Access Control)
+  admins: defineTable({
+    email: v.string(), // Normalized lowercase email
+    name: v.optional(v.string()),
+    role: v.union(v.literal("owner"), v.literal("admin")),
+    addedAt: v.string(), // ISO timestamp
+    notes: v.optional(v.string()),
+  }).index("by_email", ["email"]),
 });
+
 

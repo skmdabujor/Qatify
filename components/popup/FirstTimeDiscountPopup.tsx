@@ -9,6 +9,8 @@
 // =============================================================================
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import {
   X,
   Gift,
@@ -29,6 +31,7 @@ const COUPON_CODE = 'WELCOME10';
 
 export const FirstTimeDiscountPopup: React.FC = () => {
   const { showToast } = useShop();
+  const subscribeNewsletter = useMutation(api.newsletter.subscribe);
 
   const [isHydrated, setIsHydrated] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -119,7 +122,11 @@ export const FirstTimeDiscountPopup: React.FC = () => {
       return;
     }
 
-    // Save signup state
+    // Save signup state in Convex backend and localStorage
+    subscribeNewsletter({ email: trimmedEmail, source: 'first_time_popup' }).catch((err) => {
+      console.warn('Newsletter subscription sync error:', err);
+    });
+
     try {
       localStorage.setItem('qatify_user_signed_up', 'true');
       localStorage.setItem('qatify_user_email', trimmedEmail);

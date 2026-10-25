@@ -31,6 +31,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   showStockBar = false,
 }) => {
   const { addToCart, toggleWishlist, isInWishlist } = useShop();
+  const [isAdded, setIsAdded] = React.useState(false);
 
   const isFavorited = isInWishlist(product.id);
 
@@ -38,6 +39,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     e.preventDefault();
     e.stopPropagation();
     addToCart(product, 1);
+    setIsAdded(true);
+    setTimeout(() => {
+      setIsAdded(false);
+    }, 1500);
   };
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
@@ -172,11 +177,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <button
           type="button"
           onClick={handleAddToCart}
-          className={styles.addToCartBtn}
+          className={`${styles.addToCartBtn} ${isAdded ? styles.added : ''}`}
           aria-label={`Add ${product.title} to cart`}
         >
-          <ShoppingCart size={15} />
-          <span>Add to Cart</span>
+          {isAdded ? (
+            <>
+              <Check size={14} />
+              <span>Added to Cart!</span>
+            </>
+          ) : (
+            <>
+              <ShoppingCart size={14} />
+              <span>Add to Cart</span>
+              <span className={styles.btnPrice}>• QAR {product.priceQAR}</span>
+            </>
+          )}
         </button>
       </div>
     </div>

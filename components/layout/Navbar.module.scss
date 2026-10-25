@@ -212,6 +212,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative;
 
   @include laptop {
     max-width: none;
@@ -225,6 +226,7 @@
 // Dedicated Mobile Search Bar
 .mobileSearchRow {
   display: none;
+  position: relative;
 
   @include tablet {
     display: block;
@@ -690,6 +692,463 @@
   &:hover {
     color: $color-accent-red;
     text-decoration: underline;
+  }
+}
+
+// =============================================================================
+// PREDICTIVE SEARCH SUGGESTIONS DROPDOWN (Real-time Suggestions & Quick Discovery)
+// =============================================================================
+.searchSuggestionsDropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 45px -8px rgba(15, 23, 42, 0.22), 0 4px 14px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 1100;
+  overflow: hidden;
+  animation: searchFlyoutFade 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 480px;
+  display: flex;
+  flex-direction: column;
+
+  &.mobileDropdown {
+    top: calc(100% + 4px);
+    max-height: 420px;
+  }
+}
+
+@keyframes searchFlyoutFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.emptySearchGuide,
+.searchResultsContainer {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  @include custom-scrollbar;
+}
+
+.suggestionSectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px 6px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $color-text-secondary;
+  background-color: #ffffff;
+
+  .headerIcon {
+    color: $color-accent-red;
+  }
+}
+
+.popularTagsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 14px 12px;
+}
+
+.popularTagPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: $radius-full;
+  font-size: 12px;
+  font-weight: 600;
+  color: $color-ink-black;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  svg {
+    color: $color-text-muted;
+  }
+
+  &:hover {
+    background-color: #ffe4e6;
+    border-color: #fecdd3;
+    color: $color-accent-red;
+
+    svg {
+      color: $color-accent-red;
+    }
+  }
+}
+
+.suggestionDivider {
+  height: 1px;
+  background-color: #f1f5f9;
+  margin: 4px 14px;
+}
+
+.trendingQuickList {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 8px 10px;
+  gap: 4px;
+}
+
+.trendingQuickItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: #f8fafc;
+  }
+}
+
+.quickThumb {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 6px;
+  background-color: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.quickInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.quickTitle {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: $color-ink-black;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quickPrice {
+  font-size: 12px;
+  font-weight: 800;
+  color: $color-accent-red;
+  font-family: $font-mono;
+}
+
+.quickBadge {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #0284c7;
+  background-color: #e0f2fe;
+  padding: 2px 7px;
+  border-radius: $radius-full;
+  flex-shrink: 0;
+}
+
+.matchingCategoriesSection {
+  background-color: #fafbfc;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.matchingCategoryChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 14px 10px;
+}
+
+.categoryChipBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: $radius-full;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  .catChipName {
+    font-weight: 700;
+    color: $color-ink-black;
+  }
+
+  .catChipHint {
+    font-size: 11px;
+    color: $color-accent-red;
+    font-weight: 600;
+  }
+
+  &:hover {
+    border-color: $color-accent-red;
+    background-color: #fff1f2;
+  }
+}
+
+.productsSuggestionList {
+  display: flex;
+  flex-direction: column;
+}
+
+.productSuggestionItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  text-decoration: none;
+  border-bottom: 1px solid #f4f4f5;
+  transition: background-color $transition-fast;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover,
+  &.selected {
+    background-color: #f8fafc;
+
+    .productSuggestionTitle {
+      color: $color-accent-red;
+    }
+  }
+}
+
+.productThumbWrap {
+  width: 48px;
+  height: 48px;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f1f5f9;
+  border: 1px solid #e4e4e7;
+  flex-shrink: 0;
+}
+
+.productThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbDiscountBadge {
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  background-color: $color-accent-red;
+  color: #ffffff;
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 3px;
+  line-height: 1;
+}
+
+.productSuggestionDetails {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.productSuggestionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: $color-ink-black;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color $transition-fast;
+}
+
+.highlightText {
+  background-color: #fef08a;
+  color: #854d0e;
+  font-weight: 800;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+.productSuggestionMetaRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.productCategoryPill {
+  font-size: 10.5px;
+  font-weight: 600;
+  background-color: #f1f5f9;
+  color: $color-text-secondary;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.productBrandPill {
+  font-size: 10.5px;
+  font-weight: 600;
+  background-color: #e2e8f0;
+  color: #334155;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.deliveryPill {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: $color-accent-yellow-dark;
+  background-color: $color-accent-yellow-bg;
+  padding: 1px 6px;
+  border-radius: 4px;
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.productSuggestionPriceCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.currentPrice {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: $color-ink-black;
+  font-family: $font-mono;
+}
+
+.currencyLabel {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: $color-accent-red;
+}
+
+.priceNumber {
+  letter-spacing: -0.02em;
+}
+
+.originalPrice {
+  font-size: 11px;
+  text-decoration: line-through;
+  color: $color-text-muted;
+  font-family: $font-mono;
+}
+
+.stockStatusBadge {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: $color-success;
+}
+
+.noResultsBox {
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.noResultsTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: $color-ink-black;
+  margin-bottom: 6px;
+}
+
+.noResultsSub {
+  font-size: 12px;
+  color: $color-text-muted;
+  margin-bottom: 14px;
+}
+
+.suggestedKeywords {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.suggestedTagBtn {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: $color-ink-black;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 4px 10px;
+  border-radius: $radius-full;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background-color: #ffe4e6;
+    border-color: #fecdd3;
+    color: $color-accent-red;
+  }
+}
+
+.suggestionFooter {
+  border-top: 1px solid #f1f5f9;
+  background-color: #fafafa;
+  padding: 8px 12px;
+}
+
+.viewAllResultsBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 14px;
+  background-color: $color-ink-black;
+  color: #ffffff;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color $transition-fast, transform $transition-fast;
+
+  strong {
+    color: $color-accent-yellow;
+  }
+
+  svg {
+    transition: transform $transition-fast;
+  }
+
+  &:hover {
+    background-color: $color-accent-red;
+
+    svg {
+      transform: translateX(3px);
+    }
+  }
+
+  &:active {
+    transform: scale(0.99);
   }
 }
 

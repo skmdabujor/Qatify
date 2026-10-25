@@ -292,7 +292,7 @@ export const ChatWidget: React.FC = () => {
         id,
         sender: 'agent',
         agentName: 'Tariq (Doha Support)',
-        text: 'All orders are flown via Direct Air Express directly to Hamad International Airport (DOH) in 6–10 business days. We handle 100% of Qatar customs clearance, and courier partners dispatch straight to your door across Doha, Lusail, Al Rayyan, Al Wakrah, and Al Khor.\n\n🚚 Orders over QAR 150 qualify for FREE Air Express delivery!',
+        text: 'All orders are flown via Direct Air Express directly to Hamad International Airport (DOH) in 6–10 business days. We handle 100% of Qatar customs clearance, and courier partners dispatch straight to your door across Doha, Lusail, Al Rayyan, Al Wakrah, and Al Khor.',
         timestamp: time,
         actions: [
           {

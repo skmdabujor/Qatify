@@ -69,9 +69,9 @@ const getCategoryIcon = (iconName: string) => {
 export default function ShopHomePage() {
   // Real-time Convex database queries
   const liveCategories = useQuery(api.categories.list, { limit: 12 });
-  const liveTrending = useQuery(api.products.getTrending, { limit: 8 });
-  const liveUnder99 = useQuery(api.products.getUnder99, { limit: 4 });
-  const liveBestSellers = useQuery(api.products.getBestSellers, { limit: 4 });
+  const liveTrending = useQuery(api.products.getTrending, { limit: 10 });
+  const liveUnder99 = useQuery(api.products.getUnder99, { limit: 5 });
+  const liveBestSellers = useQuery(api.products.getBestSellers, { limit: 5 });
 
   // Use live data with fallback to mock data while hydrating/loading
   const categories = liveCategories && liveCategories.length > 0
@@ -79,13 +79,13 @@ export default function ShopHomePage() {
     : CATEGORIES;
   const trendingProducts = liveTrending && liveTrending.length > 0
     ? liveTrending.map(toProduct)
-    : PRODUCTS.filter((p) => p.isTrending).slice(0, 8);
+    : PRODUCTS.filter((p) => p.isTrending).slice(0, 10);
   const under99Products = liveUnder99 && liveUnder99.length > 0
     ? liveUnder99.map(toProduct)
-    : PRODUCTS.filter((p) => p.isUnder99).slice(0, 4);
+    : PRODUCTS.filter((p) => p.isUnder99).slice(0, 5);
   const bestSellerProducts = liveBestSellers && liveBestSellers.length > 0
     ? liveBestSellers.map(toProduct)
-    : PRODUCTS.filter((p) => p.isBestSeller).slice(0, 4);
+    : PRODUCTS.filter((p) => p.isBestSeller).slice(0, 5);
 
   return (
     <div className={styles.homeContainer}>

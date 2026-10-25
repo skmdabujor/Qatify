@@ -5,10 +5,10 @@
 // Gallery + Buy Box + Volume Discounts + Interactive 6-10 Day Qatar Timeline
 // =============================================================================
 
-import React, { useState, use, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { notFound, useRouter } from 'next/navigation';
-import { useQuery } from 'convex/react';
+import { notFound, useRouter, useParams } from 'next/navigation';
+import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { toProduct } from '@/types/product';
 import {
@@ -43,10 +43,15 @@ export default function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const router = useRouter();
-  const { slug } = use(params);
+  const routeParams = useParams();
+
+  // Extract slug synchronously from useParams to prevent Fast Refresh Suspense reloads
+  const paramSlug = routeParams?.slug;
+  const slug = (typeof paramSlug === 'string' ? paramSlug : Array.isArray(paramSlug) ? paramSlug[0] : '') || '';
+
   const { addToCart, toggleWishlist, isInWishlist, showToast, openChat } = useShop();
 
-  const liveProduct = useQuery(api.products.getBySlug, { slug });
+  const liveProduct = useQuery(api.products.getBySlug, slug ? { slug } : 'skip');
   const fallbackProduct = PRODUCTS.find((p) => p.slug === slug);
   const product = liveProduct ? toProduct(liveProduct) : fallbackProduct;
 
@@ -72,7 +77,7 @@ export default function ProductDetailPage({
         setSelectedOption(product.variants.options[0].values[0]);
       }
     }
-  }, [product]);
+  }, [product, selectedColor, selectedOption]);
 
   // Municipality selector for 6-10 day dynamic timeline
   const [selectedMunicipality, setSelectedMunicipality] = useState(
@@ -82,17 +87,67 @@ export default function ProductDetailPage({
   // Active information tab
   const [activeTab, setActiveTab] = useState<'specs' | 'contents' | 'shipping' | 'reviews'>('specs');
 
-  // Related products from Convex or mock fallback
-  const liveRelated = useQuery(api.products.list, {
-    categorySlug: product?.categorySlug,
-    limit: 6,
-  });
+  // Related products from Convex or mock fallback (skipped if categorySlug is not yet loaded)
+  const liveRelated = useQuery(
+    api.products.list,
+    product?.categorySlug
+      ? {
+          categorySlug: product.categorySlug,
+          limit: 6,
+        }
+      : 'skip'
+  );
+
+  // Live verified reviews from Convex (skipped if productId/slug is not yet available to prevent validation errors)
+  const reviewTargetId = product?.id || product?.slug || slug;
+  const liveReviews = useQuery(
+    api.reviews.listByProduct,
+    reviewTargetId
+      ? {
+          productId: reviewTargetId,
+          limit: 20,
+        }
+      : 'skip'
+  );
+  const submitReviewMutation = useMutation(api.reviews.submitReview);
+
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewName, setReviewName] = useState('');
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewLocation, setReviewLocation] = useState('Doha, Qatar');
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewName.trim() || !reviewComment.trim()) {
+      showToast('Missing Fields', 'Please provide your name and review comment.', 'warning');
+      return;
+    }
+    try {
+      setIsSubmittingReview(true);
+      await submitReviewMutation({
+        productId: product?.id || product?.slug || slug,
+        authorName: reviewName.trim(),
+        rating: reviewRating,
+        comment: reviewComment.trim(),
+        location: reviewLocation.trim() || 'Doha, Qatar',
+      });
+      showToast('Review Submitted! 🎉', 'Shukran for sharing your feedback with Qatar shoppers.', 'success');
+      setReviewComment('');
+      setShowReviewForm(false);
+    } catch (err: any) {
+      showToast('Submission Failed', err?.message || 'Could not submit review.', 'error');
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   const relatedProducts = (
     liveRelated && liveRelated.length > 0
       ? liveRelated.filter((p) => (p.productId || p._id) !== product?.id).map(toProduct)
       : PRODUCTS.filter((p) => product && p.id !== product.id && p.categorySlug === product.categorySlug)
-  ).slice(0, 4);
+  ).slice(0, 5);
 
   if (liveProduct === null && !fallbackProduct) {
     notFound();
@@ -182,7 +237,7 @@ export default function ProductDetailPage({
               </div>
 
               <img
-                src={product.images[activeImageIndex] || product.images[0] || '/placeholder.svg'}
+                src={(product.images && product.images.length > 0) ? (product.images[activeImageIndex] || product.images[0]) : '/placeholder.svg'}
                 alt={product.title}
                 className={styles.mainZoomImage}
                 onError={(e) => {
@@ -195,7 +250,7 @@ export default function ProductDetailPage({
             </div>
 
             {/* Thumbnail Strip */}
-            {product.images.length > 1 && (
+            {product.images && product.images.length > 1 && (
               <div className={styles.thumbnailStrip}>
                 {product.images.map((img, idx) => (
                   <button
@@ -481,7 +536,7 @@ export default function ProductDetailPage({
               <div className={styles.timelineCardBody}>
                 <div className={styles.timelineWindowSummary}>
                   <span>Target Window: </span>
-                  <strong>{formatDate(today)} — {formatDate(finalDeliveryDate)}</strong>
+                  <strong suppressHydrationWarning>{formatDate(today)} — {formatDate(finalDeliveryDate)}</strong>
                   <span className={styles.windowPill}>6–10 Business Days</span>
                 </div>
 
@@ -491,7 +546,7 @@ export default function ProductDetailPage({
                     <div className={`${styles.tNode} ${styles.completed}`} />
                     <div className={styles.tContent}>
                       <span className={styles.tTitle}>Order Placed Today</span>
-                      <span className={styles.tDate}>{formatDate(today)}</span>
+                      <span className={styles.tDate} suppressHydrationWarning>{formatDate(today)}</span>
                     </div>
                   </div>
 
@@ -499,7 +554,7 @@ export default function ProductDetailPage({
                     <div className={`${styles.tNode} ${styles.completed}`} />
                     <div className={styles.tContent}>
                       <span className={styles.tTitle}>Quality Check & Air Pack</span>
-                      <span className={styles.tDate}>{formatDate(dispatchDate)}</span>
+                      <span className={styles.tDate} suppressHydrationWarning>{formatDate(dispatchDate)}</span>
                     </div>
                   </div>
 
@@ -507,7 +562,7 @@ export default function ProductDetailPage({
                     <div className={`${styles.tNode} ${styles.current}`} />
                     <div className={styles.tContent}>
                       <span className={styles.tTitle}>Direct Flight to Qatar</span>
-                      <span className={styles.tDate}>{formatDate(flightDate)}</span>
+                      <span className={styles.tDate} suppressHydrationWarning>{formatDate(flightDate)}</span>
                     </div>
                   </div>
 
@@ -515,7 +570,7 @@ export default function ProductDetailPage({
                     <div className={styles.tNode} />
                     <div className={styles.tContent}>
                       <span className={styles.tTitle}>Hamad Airport Customs</span>
-                      <span className={styles.tDate}>{formatDate(customsDate)}</span>
+                      <span className={styles.tDate} suppressHydrationWarning>{formatDate(customsDate)}</span>
                     </div>
                   </div>
 
@@ -523,7 +578,7 @@ export default function ProductDetailPage({
                     <div className={styles.tNode} />
                     <div className={styles.tContent}>
                       <span className={styles.tTitle}>Doorstep in {selectedMunicipality.split(' ')[0]}</span>
-                      <span className={styles.tDate}>{formatDate(finalDeliveryDate)}</span>
+                      <span className={styles.tDate} suppressHydrationWarning>{formatDate(finalDeliveryDate)}</span>
                     </div>
                   </div>
                 </div>
@@ -531,7 +586,7 @@ export default function ProductDetailPage({
                 <div className={styles.timelineGuaranteesRow}>
                   <div className={styles.tGuarantee}>
                     <CheckCircle2 size={13} />
-                    <span>Free delivery on orders over QAR 150</span>
+                    <span>Insured doorstep delivery across Qatar</span>
                   </div>
                   <div className={styles.tGuarantee}>
                     <CheckCircle2 size={13} />
@@ -578,7 +633,7 @@ export default function ProductDetailPage({
               onClick={() => setActiveTab('contents')}
               className={`${styles.tabBtn} ${activeTab === 'contents' ? styles.activeTab : ''}`}
             >
-              Package Contents ({product.packageContents.length})
+              Package Contents ({product.packageContents?.length || 0})
             </button>
             <button
               type="button"
@@ -592,7 +647,7 @@ export default function ProductDetailPage({
               onClick={() => setActiveTab('reviews')}
               className={`${styles.tabBtn} ${activeTab === 'reviews' ? styles.activeTab : ''}`}
             >
-              Verified Reviews ({product.reviewCount})
+              Verified Reviews ({product.reviewCount || 0})
             </button>
           </div>
 
@@ -603,7 +658,7 @@ export default function ProductDetailPage({
                 <h3 className={styles.tabHeading}>Hardware & Engineering Specifications</h3>
                 <table className={styles.specsTable}>
                   <tbody>
-                    {Object.entries(product.specifications).map(([key, value], idx) => (
+                    {Object.entries(product.specifications || {}).map(([key, value], idx) => (
                       <tr
                         key={key}
                         className={idx % 2 === 0 ? styles.evenRow : styles.oddRow}
@@ -622,7 +677,7 @@ export default function ProductDetailPage({
               <div className={styles.contentsTab}>
                 <h3 className={styles.tabHeading}>What’s Inside the Retail Box</h3>
                 <ul className={styles.contentsList}>
-                  {product.packageContents.map((item, idx) => (
+                  {(product.packageContents || []).map((item, idx) => (
                     <li key={idx} className={styles.contentItem}>
                       <CheckCircle2 size={16} className={styles.checkIcon} />
                       <span>{item}</span>
@@ -705,39 +760,212 @@ export default function ProductDetailPage({
                   </div>
                 </div>
 
-                {/* Sample Verified Reviews */}
-                <div className={styles.sampleReviewsList}>
-                  <div className={styles.reviewItem}>
-                    <div className={styles.revHeader}>
-                      <span className={styles.revAuthor}>Nasser K. (Lusail)</span>
-                      <span className={styles.revVerified}>✓ Verified Qatar Buyer</span>
-                      <span className={styles.revDate}>3 days ago</span>
-                    </div>
-                    <div className={styles.revRating}>
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <Star key={s} size={12} fill="#FACC15" color="#FACC15" />
-                      ))}
-                    </div>
-                    <p className={styles.revBody}>
-                      Arrived in exactly 7 days to my apartment in Fox Hills, Lusail. The tracking from Shenzhen hub to Hamad Airport customs was very accurate. Product quality is authentic and feels premium.
-                    </p>
-                  </div>
+                {/* Write Review Action Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', paddingBottom: '12px', borderBottom: '1px solid #e4e4e7' }}>
+                  <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#0a0a0c' }}>
+                    Customer Reviews ({liveReviews && liveReviews.length > 0 ? liveReviews.length : product.reviewCount})
+                  </h4>
+                  <button
+                    type="button"
+                    onClick={() => setShowReviewForm(!showReviewForm)}
+                    style={{
+                      padding: '8px 16px',
+                      backgroundColor: showReviewForm ? '#f4f4f5' : '#0a0a0c',
+                      color: showReviewForm ? '#0a0a0c' : '#ffffff',
+                      border: '1px solid #e4e4e7',
+                      borderRadius: '6px',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {showReviewForm ? 'Cancel' : '✍️ Write a Review'}
+                  </button>
+                </div>
 
-                  <div className={styles.reviewItem}>
-                    <div className={styles.revHeader}>
-                      <span className={styles.revAuthor}>Fatima A. (Al Rayyan)</span>
-                      <span className={styles.revVerified}>✓ Verified Qatar Buyer</span>
-                      <span className={styles.revDate}>1 week ago</span>
+                {/* Inline Review Submission Form */}
+                {showReviewForm && (
+                  <form
+                    onSubmit={handleReviewSubmit}
+                    style={{
+                      background: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      padding: '18px',
+                      marginBottom: '24px',
+                    }}
+                  >
+                    <div style={{ marginBottom: '12px' }}>
+                      <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#0a0a0c', marginBottom: '6px' }}>
+                        Your Rating
+                      </label>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => setReviewRating(star)}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              cursor: 'pointer',
+                              padding: '2px',
+                            }}
+                          >
+                            <Star
+                              size={20}
+                              fill={star <= reviewRating ? '#FACC15' : 'transparent'}
+                              color={star <= reviewRating ? '#FACC15' : '#a1a1aa'}
+                            />
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <div className={styles.revRating}>
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <Star key={s} size={12} fill="#FACC15" color="#FACC15" />
-                      ))}
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#52525b', marginBottom: '4px' }}>
+                          Your Name
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={reviewName}
+                          onChange={(e) => setReviewName(e.target.value)}
+                          placeholder="e.g. Tariq Al-Mansoor"
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            borderRadius: '6px',
+                            border: '1px solid #cbd5e1',
+                            fontSize: '13px',
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#52525b', marginBottom: '4px' }}>
+                          Location in Qatar
+                        </label>
+                        <input
+                          type="text"
+                          value={reviewLocation}
+                          onChange={(e) => setReviewLocation(e.target.value)}
+                          placeholder="e.g. Lusail, Qatar"
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            borderRadius: '6px',
+                            border: '1px solid #cbd5e1',
+                            fontSize: '13px',
+                          }}
+                        />
+                      </div>
                     </div>
-                    <p className={styles.revBody}>
-                      Ordered 2 units with the volume discount. Saved quite a bit compared to local retail mall prices in Doha. Highly recommended dropshipper!
-                    </p>
-                  </div>
+
+                    <div style={{ marginBottom: '14px' }}>
+                      <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#52525b', marginBottom: '4px' }}>
+                        Review Comment
+                      </label>
+                      <textarea
+                        required
+                        rows={3}
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        placeholder="Share your experience regarding delivery time, product quality, or features..."
+                        style={{
+                          width: '100%',
+                          padding: '8px 12px',
+                          borderRadius: '6px',
+                          border: '1px solid #cbd5e1',
+                          fontSize: '13px',
+                          fontFamily: 'inherit',
+                          resize: 'vertical',
+                        }}
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmittingReview}
+                      style={{
+                        padding: '10px 20px',
+                        backgroundColor: '#e11d48',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontSize: '13px',
+                        fontWeight: 700,
+                        cursor: isSubmittingReview ? 'not-allowed' : 'pointer',
+                        opacity: isSubmittingReview ? 0.7 : 1,
+                      }}
+                    >
+                      {isSubmittingReview ? 'Submitting...' : 'Post Verified Review'}
+                    </button>
+                  </form>
+                )}
+
+                {/* Verified Reviews List (Live from Convex or Fallback) */}
+                <div className={styles.sampleReviewsList}>
+                  {liveReviews && liveReviews.length > 0 ? (
+                    liveReviews.map((rev) => (
+                      <div key={rev._id} className={styles.reviewItem}>
+                        <div className={styles.revHeader}>
+                          <span className={styles.revAuthor}>
+                            {rev.authorName} ({rev.location})
+                          </span>
+                          {rev.verifiedBuyer && (
+                            <span className={styles.revVerified}>✓ Verified Qatar Buyer</span>
+                          )}
+                          <span className={styles.revDate}>{rev.date}</span>
+                        </div>
+                        <div className={styles.revRating}>
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              size={12}
+                              fill={s <= rev.rating ? '#FACC15' : 'transparent'}
+                              color={s <= rev.rating ? '#FACC15' : '#cbd5e1'}
+                            />
+                          ))}
+                        </div>
+                        <p className={styles.revBody}>{rev.comment}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <>
+                      <div className={styles.reviewItem}>
+                        <div className={styles.revHeader}>
+                          <span className={styles.revAuthor}>Nasser K. (Lusail)</span>
+                          <span className={styles.revVerified}>✓ Verified Qatar Buyer</span>
+                          <span className={styles.revDate}>3 days ago</span>
+                        </div>
+                        <div className={styles.revRating}>
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star key={s} size={12} fill="#FACC15" color="#FACC15" />
+                          ))}
+                        </div>
+                        <p className={styles.revBody}>
+                          Arrived in exactly 7 days to my apartment in Fox Hills, Lusail. The tracking from Shenzhen hub to Hamad Airport customs was very accurate. Product quality is authentic and feels premium.
+                        </p>
+                      </div>
+
+                      <div className={styles.reviewItem}>
+                        <div className={styles.revHeader}>
+                          <span className={styles.revAuthor}>Fatima A. (Al Rayyan)</span>
+                          <span className={styles.revVerified}>✓ Verified Qatar Buyer</span>
+                          <span className={styles.revDate}>1 week ago</span>
+                        </div>
+                        <div className={styles.revRating}>
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star key={s} size={12} fill="#FACC15" color="#FACC15" />
+                          ))}
+                        </div>
+                        <p className={styles.revBody}>
+                          Ordered 2 units with the volume discount. Saved quite a bit compared to local retail mall prices in Doha. Highly recommended dropshipper!
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             )}
