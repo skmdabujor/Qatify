@@ -111,10 +111,10 @@ export default function ShopHomePage() {
             {/* Block 1: Angled Campaign Ribbon */}
             <div className={styles.ribbonBlock}>
               <div className={styles.ribbonShape}>
-                <span className={styles.ribbonMainText}>PAYDAY SALE</span>
+                <span className={styles.ribbonMainText}>MEGA TECH SALE</span>
               </div>
               <div className={styles.ribbonDatePill}>
-                <span>23 - 31 OCTOBER</span>
+                <span>BEST DEALS IN QATAR</span>
               </div>
             </div>
 
@@ -278,25 +278,25 @@ export default function ShopHomePage() {
         <section className={styles.airCargoPromoBanner}>
           <div className={styles.airCargoInner}>
             <div className={styles.airCargoContent}>
-              <span className={styles.cargoPill}>✈️ CROSS-BORDER DROPSHIP LOGISTICS</span>
+              <span className={styles.cargoPill}>🚚 FAST & RELIABLE QATAR DELIVERY</span>
               <h3 className={styles.cargoTitle}>
-                Direct Air Express from Global Hubs to Hamad International
+                Direct Doorstep Delivery Across All Qatar Municipalities
               </h3>
               <p className={styles.cargoDesc}>
-                We bypass expensive retail markups by shipping directly via tracked air cargo. Every order is inspected at our export center before boarding daily flights to Qatar.
+                We bring you genuine global tech and viral gadget innovations at unbeatable prices. Every product is authenticated, securely packaged, and dispatched with prompt tracked delivery across Qatar.
               </p>
               <div className={styles.cargoPerks}>
                 <div className={styles.cargoPerk}>
                   <CheckCircle2 size={15} />
-                  <span>Doha, Lusail, Al Rayyan & Al Wakrah</span>
+                  <span>Doha, Lusail, Al Rayyan, Al Wakrah & Al Khor</span>
                 </div>
                 <div className={styles.cargoPerk}>
                   <CheckCircle2 size={15} />
-                  <span>Doorstep delivery in 6–10 business days</span>
+                  <span>Fast express delivery with live tracking</span>
                 </div>
                 <div className={styles.cargoPerk}>
                   <CheckCircle2 size={15} />
-                  <span>Live tracking with Qatar customs updates</span>
+                  <span>100% genuine guaranteed with local warranty</span>
                 </div>
               </div>
             </div>
@@ -304,35 +304,35 @@ export default function ShopHomePage() {
             <div className={styles.cargoTrackingWidget}>
               <div className={styles.trackingMockHeader}>
                 <Plane size={16} />
-                <span>Live Route Simulation</span>
+                <span>Live Delivery Journey</span>
               </div>
               <div className={styles.trackingSteps}>
                 <div className={styles.trackingStep}>
                   <div className={`${styles.stepDot} ${styles.done}`} />
                   <div className={styles.stepInfo}>
-                    <strong>Export Hub (Shenzhen)</strong>
-                    <span>Quality Checked & Packed</span>
+                    <strong>Order Confirmed</strong>
+                    <span>Quality Inspected & Packed</span>
                   </div>
                 </div>
                 <div className={styles.trackingStep}>
                   <div className={`${styles.stepDot} ${styles.done}`} />
                   <div className={styles.stepInfo}>
-                    <strong>Direct Air Freight</strong>
-                    <span>Daily Flight to DOH Airport</span>
+                    <strong>Express Air Transit</strong>
+                    <span>Direct Flight to Doha</span>
                   </div>
                 </div>
                 <div className={styles.trackingStep}>
                   <div className={`${styles.stepDot} ${styles.current}`} />
                   <div className={styles.stepInfo}>
-                    <strong>Hamad Int’l Customs</strong>
-                    <span>Electronic Clearance</span>
+                    <strong>Hamad Int’l Hub</strong>
+                    <span>Customs Clearance</span>
                   </div>
                 </div>
                 <div className={styles.trackingStep}>
                   <div className={styles.stepDot} />
                   <div className={styles.stepInfo}>
                     <strong>Qatar Doorstep</strong>
-                    <span>Delivered in 6–10 Days</span>
+                    <span>Delivered to Your Address</span>
                   </div>
                 </div>
               </div>

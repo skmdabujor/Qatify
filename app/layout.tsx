@@ -11,21 +11,47 @@ import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/components/cart/CartDrawer';
 import { ToastContainer } from '@/components/ui/Toast';
 import { ChatWidget } from '@/components/chat/ChatWidget';
+import { WhatsAppButton } from '@/components/ui/WhatsAppButton';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 
 export const metadata: Metadata = {
-  title: 'Qatify — Qatar’s Direct Air Dropship Electronics & Trending Gadgets',
+  metadataBase: new URL('https://qatify.qa'),
+  title: {
+    default: 'Qatify Qatar | Best Online Shopping for Mobiles, Electronics & Gadgets',
+    template: '%s | Qatify Qatar',
+  },
   description:
-    'High-conversion dropshipping store tailored for Qatar. 6–10 Days Tracked Direct Air Express delivery to Doha, Lusail, Al Rayyan, Al Wakrah, and all Qatar municipalities.',
+    'Shop authentic mobile accessories, GaN fast chargers, ANC earbuds, smartwatches, and smart gadgets in Qatar at the best prices. Enjoy fast express delivery across Doha, Lusail, Al Rayyan, Al Wakrah & Cash on Delivery.',
   keywords: [
-    'Qatar electronics',
-    'Doha dropshipping',
-    'MagSafe Qatar',
-    'GaN charger Doha',
-    'QAR electronics',
-    'smartwatch Qatar',
+    'online shopping qatar',
+    'buy electronics doha',
+    'al anees qatar',
+    'smartphones accessories qatar',
+    'anker qatar',
+    'baseus qatar',
+    'green lion qatar',
+    'porodo qatar',
+    'best price in qatar',
+    'fast charger qatar',
+    'earbuds price in qatar',
+    'smartwatch qatar',
   ],
   authors: [{ name: 'Qatify Qatar' }],
+  openGraph: {
+    title: 'Qatify Qatar | Best Online Shopping for Mobiles, Electronics & Gadgets',
+    description:
+      'Shop authentic mobile accessories, GaN chargers, ANC earbuds & smartwatches in Qatar. Best price guarantee with fast delivery across Doha.',
+    url: 'https://qatify.qa',
+    siteName: 'Qatify Qatar',
+    locale: 'en_QA',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Qatify Qatar | Online Tech & Electronics Store',
+    description:
+      'Qatar’s favorite store for genuine gadgets, fast chargers, earbuds & smart accessories. Best prices & fast doorstep delivery.',
+  },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -63,6 +89,7 @@ export default function RootLayout({
             <CartDrawer />
             <ToastContainer />
             <ChatWidget />
+            <WhatsAppButton phoneNumber="01875707255" />
             <main>{children}</main>
             <Footer />
             <MobileBottomNav />

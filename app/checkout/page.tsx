@@ -287,7 +287,7 @@ export default function CheckoutPage() {
         <nav className={styles.breadcrumbNav}>
           <Link href="/cart" className={styles.crumbLink}>Cart</Link>
           <ChevronRight size={13} className={styles.crumbChevron} />
-          <span className={styles.currentCrumb}>Qatar Direct Air Checkout</span>
+          <span className={styles.currentCrumb}>Qatar Express Checkout</span>
         </nav>
 
         {/* 3-Step Visual Progress Bar */}
@@ -533,9 +533,9 @@ export default function CheckoutPage() {
                 <div className={styles.formCardHeader}>
                   <Plane size={20} className={styles.headerIconRed} />
                   <div>
-                    <h2 className={styles.formCardTitle}>2. Choose Air Shipping Method</h2>
+                    <h2 className={styles.formCardTitle}>2. Choose Qatar Delivery Method</h2>
                     <p className={styles.formCardSub}>
-                      Direct air cargo destined for Hamad International Airport (DOH) with tracked electronic customs clearance.
+                      Fast express courier delivery across Doha, Lusail, Al Rayyan, and all Qatar municipalities.
                     </p>
                   </div>
                 </div>
@@ -832,7 +832,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className={styles.guaranteeItem}>
                   <Plane size={16} />
-                  <span>Direct Air Flight to Hamad Airport</span>
+                  <span>Fast Doorstep Delivery in Qatar</span>
                 </div>
               </div>
 

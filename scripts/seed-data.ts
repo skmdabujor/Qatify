@@ -1,6 +1,6 @@
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex/_generated/api.js";
-import { PRODUCTS, CATEGORIES } from "../data/products";
+import { PRODUCTS, CATEGORIES } from "../data/products.js";
 import * as fs from "fs";
 import * as path from "path";
 

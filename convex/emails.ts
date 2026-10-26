@@ -5,8 +5,9 @@ import { Doc } from "./_generated/dataModel";
 
 // Helper: Generate responsive branded HTML email template for Qatify
 export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): string {
-  const trackingUrl = `${siteUrl}/dashboard?order=${order.orderNumber}`;
-  const whatsappUrl = `https://wa.me/97455128894?text=Hi%20Qatify%2C%20I%20have%20an%20inquiry%20regarding%20Order%20${order.orderNumber}`;
+  const trackingUrl = `${siteUrl}/dashboard?order=${encodeURIComponent(order.orderNumber)}`;
+  const whatsappNumber = process.env.WHATSAPP_NUMBER || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801875707255";
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi Qatify, I have an inquiry regarding Order #${order.orderNumber}`)}`;
 
   const itemsHtml = order.items
     .map(
@@ -213,8 +214,8 @@ export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): s
                 Need help with your order or delivery?
               </div>
               <div style="margin-bottom: 16px;">
-                <a href="${whatsappUrl}" target="_blank" style="display: inline-block; background-color: #25d366; color: #ffffff; font-size: 13px; font-weight: 700; text-decoration: none; padding: 8px 16px; border-radius: 20px;">
-                  💬 Chat on WhatsApp (+974 5512 8894)
+                <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background-color: #25d366; color: #ffffff; font-size: 13px; font-weight: 700; text-decoration: none; padding: 8px 16px; border-radius: 20px;">
+                  💬 Chat on WhatsApp (01875707255)
                 </a>
               </div>
               <div style="font-size: 12px; color: #71717a; line-height: 1.5;">

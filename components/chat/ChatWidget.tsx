@@ -103,7 +103,7 @@ export const ChatWidget: React.FC = () => {
       id: 'msg-welcome-1',
       sender: 'agent',
       agentName: 'Tariq (Doha Support)',
-      text: 'Marhaba! 👋 Welcome to Qatify Customer Support. I am here to assist you with orders, 6–10 Days Direct Air delivery to Qatar, or product compatibility.',
+      text: 'Marhaba! 👋 Welcome to Qatify Customer Support. I am here to assist you with orders, fast delivery across Qatar, or product inquiries.',
       timestamp: formatCurrentTime(),
     },
     {
@@ -180,55 +180,74 @@ export const ChatWidget: React.FC = () => {
     } catch {}
   };
 
+  const formatLine = (lineText: string) => {
+    const parts: React.ReactNode[] = [];
+    let remaining = lineText;
+    let keyIdx = 0;
+    const tokenRegex = /(\[([^\]]+)\]\(([^)]+)\)|\*\*([^*]+)\*\*)/;
+
+    while (remaining) {
+      const match = remaining.match(tokenRegex);
+      if (!match || match.index === undefined) {
+        parts.push(remaining);
+        break;
+      }
+
+      if (match.index > 0) {
+        parts.push(remaining.substring(0, match.index));
+      }
+
+      if (match[2] && match[3]) {
+        const label = match[2];
+        const url = match[3];
+        parts.push(
+          <Link
+            key={keyIdx++}
+            href={url}
+            onClick={() => closeChat()}
+            style={{ color: '#8A1538', textDecoration: 'underline', fontWeight: 600 }}
+          >
+            {label}
+          </Link>
+        );
+      } else if (match[4]) {
+        parts.push(<strong key={keyIdx++}>{match[4]}</strong>);
+      }
+
+      remaining = remaining.substring(match.index + match[0].length);
+    }
+
+    return parts;
+  };
+
+  const renderFormattedText = (rawText: string) => {
+    const paragraphs = rawText.split('\n\n');
+    return paragraphs.map((para, pIdx) => (
+      <p key={pIdx} className={styles.paragraph}>
+        {para.split('\n').map((line, lIdx) => (
+          <React.Fragment key={lIdx}>
+            {lIdx > 0 && <br />}
+            {formatLine(line)}
+          </React.Fragment>
+        ))}
+      </p>
+    ));
+  };
+
   const generateBotReply = (userQuery: string): ChatMessage => {
     const q = userQuery.toLowerCase().trim();
     const time = formatCurrentTime();
     const id = 'msg-reply-' + Date.now();
 
-    // 1. Live Support Agent handoff
-    if (
-      q.includes('human') ||
-      q.includes('agent') ||
-      q.includes('representative') ||
-      q.includes('talk to someone') ||
-      q.includes('real person') ||
-      q.includes('support') ||
-      q.includes('help')
-    ) {
-      return {
-        id,
-        sender: 'agent',
-        agentName: 'Maryam (Senior Care)',
-        text: 'Our Doha customer support team is active right now! You are chatting directly with live Qatify support. How can we assist you with your order, shipping, or product selection today?',
-        timestamp: time,
-        actions: [
-          {
-            label: '📦 Track My Order',
-            actionType: 'chip',
-            payload: 'Can you help track my order?',
-          },
-          {
-            label: '✈️ Delivery Times to Qatar',
-            actionType: 'chip',
-            payload: 'How long does delivery take to Doha?',
-          },
-          {
-            label: '🛡️ 14-Day Warranty Info',
-            actionType: 'chip',
-            payload: 'What is your warranty and return policy?',
-          },
-        ],
-      };
-    }
-
-    // 2. Order Tracking
+    // 1. Order Tracking (Prioritized so questions like "Can you help track my order?" work accurately)
     if (
       q.includes('track') ||
-      q.includes('order') ||
-      q.includes('shipment') ||
       q.includes('where is my package') ||
-      q.includes('status') ||
-      q.includes('qat-')
+      q.includes('where is my order') ||
+      q.includes('shipment') ||
+      q.includes('order status') ||
+      q.includes('qat-') ||
+      (q.includes('order') && (q.includes('track') || q.includes('status') || q.includes('check') || q.includes('locate')))
     ) {
       const foundOrder = activeOrder || (orders && orders[0]);
 
@@ -265,13 +284,50 @@ export const ChatWidget: React.FC = () => {
         id,
         sender: 'agent',
         agentName: 'Tariq (Doha Support)',
-        text: 'To track your shipment, please visit your Orders Dashboard or provide your Order ID (format: QAT-XXXX-XXXX). Every Qatify shipment to Qatar includes full 6–10 Days tracked air transit directly to Hamad Airport (DOH).',
+        text: 'To track your shipment, please visit your Orders Dashboard or provide your Order ID (format: QAT-XXXX-XXXX). Every Qatify shipment to Qatar includes full 6–8 Days tracked air transit directly to Hamad Airport (DOH).',
         timestamp: time,
         actions: [
           {
             label: '📦 Open Tracking Dashboard',
             actionType: 'link',
             url: '/dashboard',
+          },
+        ],
+      };
+    }
+
+    // 2. Live Support Agent handoff (Strict intent only, avoids false positives on words like "help")
+    if (
+      q.includes('talk to human') ||
+      q.includes('talk to agent') ||
+      q.includes('live agent') ||
+      q.includes('real person') ||
+      q.includes('speak with agent') ||
+      q.includes('customer care agent') ||
+      q.includes('talk to someone') ||
+      q.includes('representative')
+    ) {
+      return {
+        id,
+        sender: 'agent',
+        agentName: 'Maryam (Senior Care)',
+        text: 'Our Doha customer support team is active right now! You are chatting directly with live Qatify support. How can we assist you with your order, shipping, or product selection today?',
+        timestamp: time,
+        actions: [
+          {
+            label: '📦 Track My Order',
+            actionType: 'chip',
+            payload: 'Can you help track my order?',
+          },
+          {
+            label: '✈️ Delivery Times to Qatar',
+            actionType: 'chip',
+            payload: 'How long does delivery take to Doha?',
+          },
+          {
+            label: '🛡️ 14-Day Warranty Info',
+            actionType: 'chip',
+            payload: 'What is your warranty and return policy?',
           },
         ],
       };
@@ -292,7 +348,7 @@ export const ChatWidget: React.FC = () => {
         id,
         sender: 'agent',
         agentName: 'Tariq (Doha Support)',
-        text: 'All orders are flown via Direct Air Express directly to Hamad International Airport (DOH) in 6–10 business days. We handle 100% of Qatar customs clearance, and courier partners dispatch straight to your door across Doha, Lusail, Al Rayyan, Al Wakrah, and Al Khor.',
+        text: 'All orders are processed promptly with express delivery directly to your doorstep across Doha, Lusail, Al Rayyan, Al Wakrah, and Al Khor. We handle 100% of customs clearance and deliver safely within 6–8 business days.',
         timestamp: time,
         actions: [
           {
@@ -394,7 +450,7 @@ export const ChatWidget: React.FC = () => {
         id,
         sender: 'agent',
         agentName: 'Tariq (Doha Support)',
-        text: '🎉 Use coupon code WELCOME10 at checkout to get an extra 10% off your entire first order! It stacks on top of already discounted dropship pricing.',
+        text: '🎉 Use coupon code WELCOME10 at checkout to get an extra 10% off your entire first order! It applies on top of our best price guarantee.',
         timestamp: time,
         actions: [
           {
@@ -465,7 +521,7 @@ export const ChatWidget: React.FC = () => {
     };
   };
 
-  const handleSendMessage = (textToSend?: string) => {
+  const handleSendMessage = async (textToSend?: string) => {
     const text = (textToSend || inputText).trim();
     if (!text) return;
 
@@ -476,11 +532,70 @@ export const ChatWidget: React.FC = () => {
       timestamp: formatCurrentTime(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    const updatedHistory = [...messages, userMessage];
+    setMessages(updatedHistory);
     setInputText('');
     setIsTyping(true);
 
-    // Realistic typing delay (600 - 1000ms)
+    try {
+      // 1. Try real Gemini AI shopping assistant API route
+      const activeOrderData = activeOrder
+        ? {
+            orderNumber: activeOrder.orderNumber,
+            status: activeOrder.status,
+            totalQAR: activeOrder.totalQAR,
+            itemsCount: activeOrder.items.length,
+            trackingNumber: activeOrder.trackingNumber,
+          }
+        : (orders && orders[0])
+        ? {
+            orderNumber: orders[0].orderNumber,
+            status: orders[0].status,
+            totalQAR: orders[0].totalQAR,
+            itemsCount: orders[0].items.length,
+            trackingNumber: orders[0].trackingNumber,
+          }
+        : null;
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: text,
+          history: updatedHistory.slice(-6).map((m) => ({
+            sender: m.sender,
+            text: m.text,
+          })),
+          activeOrder: activeOrderData,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.text) {
+          const aiReply: ChatMessage = {
+            id: 'msg-ai-' + Date.now(),
+            sender: 'agent',
+            agentName: 'Tariq (Qatify AI Doha)',
+            text: data.text,
+            timestamp: formatCurrentTime(),
+            actions: data.actions || [],
+          };
+
+          setMessages((prev) => [...prev, aiReply]);
+          setIsTyping(false);
+
+          if (!isChatOpen) {
+            setUnreadCount((c) => c + 1);
+          }
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('API chat route unavailable, using smart local fallback:', err);
+    }
+
+    // 2. Fallback to smart local rule-based response
     setTimeout(() => {
       const botReply = generateBotReply(text);
       setMessages((prev) => [...prev, botReply]);
@@ -489,7 +604,7 @@ export const ChatWidget: React.FC = () => {
       if (!isChatOpen) {
         setUnreadCount((c) => c + 1);
       }
-    }, 750);
+    }, 600);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -591,7 +706,7 @@ export const ChatWidget: React.FC = () => {
           {/* Quick Qatar Presence Banner */}
           <div className={styles.presenceBanner}>
             <div className={styles.presenceText}>
-              <span>✈️ <strong>Direct Air Express:</strong> 6–10 Days tracked air delivery to Doha, Lusail & Qatar</span>
+              <span>🚚 <strong>Express Qatar Delivery:</strong> Fast tracked doorstep delivery to Doha, Lusail & all Qatar</span>
             </div>
           </div>
 
@@ -620,11 +735,7 @@ export const ChatWidget: React.FC = () => {
                   )}
 
                   <div className={styles.messageContent}>
-                    {msg.text.split('\n\n').map((paragraph, idx) => (
-                      <p key={idx} className={styles.paragraph}>
-                        {paragraph}
-                      </p>
-                    ))}
+                    {renderFormattedText(msg.text)}
                   </div>
 
                   {/* Render Live Order Card if included */}

@@ -235,6 +235,18 @@ export default defineSchema({
     addedAt: v.string(), // ISO timestamp
     notes: v.optional(v.string()),
   }).index("by_email", ["email"]),
+
+  // 9. Admin Telegram Notification Recipients (Telegram Bot Order Alerts)
+  telegram_recipients: defineTable({
+    chatId: v.string(), // Telegram chat ID (user ID e.g. "123456789" or group ID "-100...")
+    name: v.string(), // E.g. "Store Owner", "Manager"
+    botToken: v.optional(v.string()), // Optional specific Bot Token
+    isActive: v.boolean(), // whether notifications are enabled
+    createdAt: v.string(), // ISO timestamp
+    notes: v.optional(v.string()),
+  })
+    .index("by_chatId", ["chatId"])
+    .index("by_isActive", ["isActive"]),
 });
 
 

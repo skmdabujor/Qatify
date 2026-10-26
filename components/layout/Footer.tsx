@@ -47,7 +47,7 @@ export const Footer: React.FC = () => {
 
   return (
     <footer className={styles.footer}>
-      {/* 1. DROPSHIP ASSURANCE TRUST STRIP */}
+      {/* 1. CUSTOMER ASSURANCE TRUST STRIP */}
       <div className={styles.trustStrip}>
         <div className="container">
           <div className={styles.trustGrid}>
@@ -56,9 +56,9 @@ export const Footer: React.FC = () => {
                 <Plane size={24} />
               </div>
               <div className={styles.trustContent}>
-                <h4 className={styles.trustTitle}>6–10 Days Air Express</h4>
+                <h4 className={styles.trustTitle}>Fast Qatar Express Delivery</h4>
                 <p className={styles.trustDesc}>
-                  Direct air transit from global tech hub to Hamad Airport (DOH) & doorstep delivery in Qatar.
+                  Prompt tracked doorstep delivery across Doha, Lusail, Al Rayyan, Al Wakrah, and all municipalities.
                 </p>
               </div>
             </div>
@@ -68,9 +68,9 @@ export const Footer: React.FC = () => {
                 <ShieldCheck size={24} />
               </div>
               <div className={styles.trustContent}>
-                <h4 className={styles.trustTitle}>100% Pre-Dispatch Checked</h4>
+                <h4 className={styles.trustTitle}>100% Genuine Guaranteed</h4>
                 <p className={styles.trustDesc}>
-                  Every electronic item undergoes powered testing and optical inspection before packaging.
+                  Every product is authentic, factory-sealed, and quality tested before dispatch.
                 </p>
               </div>
             </div>
@@ -80,9 +80,9 @@ export const Footer: React.FC = () => {
                 <CreditCard size={24} />
               </div>
               <div className={styles.trustContent}>
-                <h4 className={styles.trustTitle}>Secure QAR Payment</h4>
+                <h4 className={styles.trustTitle}>Secure Payments & COD</h4>
                 <p className={styles.trustDesc}>
-                  Pay securely in Qatari Riyal (QAR) with Apple Pay, Visa, Mastercard, or local debit cards.
+                  Pay securely in Qatari Riyal (QAR) with Apple Pay, Visa, Mastercard, or Cash on Delivery.
                 </p>
               </div>
             </div>
@@ -92,9 +92,9 @@ export const Footer: React.FC = () => {
                 <RotateCcw size={24} />
               </div>
               <div className={styles.trustContent}>
-                <h4 className={styles.trustTitle}>14-Day Return Protection</h4>
+                <h4 className={styles.trustTitle}>14-Day Easy Replacement</h4>
                 <p className={styles.trustDesc}>
-                  Hassle-free replacement guarantee on defective electronics across all Qatar municipalities.
+                  Hassle-free local replacement warranty on electronic items across Qatar.
                 </p>
               </div>
             </div>
@@ -110,7 +110,7 @@ export const Footer: React.FC = () => {
             <div className={styles.brandCol}>
               <QatifyLogo variant="light" size="lg" showTagline={true} />
               <p className={styles.brandBio}>
-                Qatify is Qatar’s premium direct-from-source tech and gadget dropshipping destination. Delivering viral electronics, MagSafe power gear, gaming peripherals, and smart living innovations directly to your doorstep in Doha, Lusail, Al Rayyan, and Al Wakrah in 6–10 business days.
+                Qatify is Qatar’s trusted online destination for authentic tech accessories and smart lifestyle electronics. We offer the best prices in Qatar on leading brands including Anker, Baseus, Green Lion, Porodo, and Soundcore, backed by prompt doorstep delivery and local customer support.
               </p>
 
               <div className={styles.contactDetails}>

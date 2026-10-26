@@ -37,7 +37,9 @@ import {
   SlidersHorizontal,
   Sparkles,
   Trash2,
+  Send,
 } from 'lucide-react';
+import { TelegramAlertsManager } from '@/components/admin/TelegramAlertsManager';
 import { useShop } from '@/context/ShopContext';
 import { QATAR_MUNICIPALITIES } from '@/data/products';
 import { QatarAddress, Order } from '@/types/product';
@@ -68,8 +70,10 @@ function DashboardContent() {
       : 'tracking'
   );
 
-  // Admin Active Tab Filter ('all' | 'analytics' | 'pipeline' | 'orders')
-  const [adminTab, setAdminTab] = useState<'all' | 'analytics' | 'pipeline' | 'orders'>('all');
+  // Admin Active Tab Filter ('all' | 'analytics' | 'pipeline' | 'orders' | 'telegram')
+  const [adminTab, setAdminTab] = useState<
+    'all' | 'analytics' | 'pipeline' | 'orders' | 'telegram'
+  >('all');
 
   // User Account Email from localStorage (Customer Hub)
   const [userEmail, setUserEmail] = useState<string>('');
@@ -519,6 +523,15 @@ function DashboardContent() {
                   >
                     <FileText size={16} />
                     <span>Recent Orders (Qatar)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setAdminTab('telegram')}
+                    className={`${styles.navItem} ${adminTab === 'telegram' ? styles.active : ''}`}
+                  >
+                    <Send size={16} />
+                    <span>Telegram Order Alerts</span>
                   </button>
                 </div>
 
@@ -1057,14 +1070,14 @@ function DashboardContent() {
                       </a>
 
                       <a
-                        href="https://wa.me/97455128894"
+                        href="https://wa.me/8801875707255?text=Hi%20Qatify%2C%20I%20need%20assistance%20with%20my%20order"
                         target="_blank"
                         rel="noopener noreferrer"
                         className={styles.channelCard}
                       >
                         <Headphones size={22} className={styles.channelIcon} />
                         <h4>WhatsApp Concierge</h4>
-                        <p>+974 5512 8894</p>
+                        <p>01875707255</p>
                         <span>Instant order tracking updates • Tap to Chat</span>
                       </a>
                     </div>
@@ -1292,6 +1305,11 @@ function DashboardContent() {
                       </table>
                     </div>
                   </div>
+                )}
+
+                {/* Telegram Order Alerts Manager */}
+                {(adminTab === 'all' || adminTab === 'telegram') && (
+                  <TelegramAlertsManager />
                 )}
               </div>
             )}

@@ -74,8 +74,8 @@ function CheckoutSuccessContent() {
 
           <h1 className={styles.successHeading}>Shukran! Your Order is Placed</h1>
           <p className={styles.successSub}>
-            Your order has been recorded into Qatify cloud. We are routing your items to our
-            Shenzhen export center for express air transit to Hamad International Airport (DOH).
+            Your order has been recorded into Qatify cloud. We are preparing your items for
+            prompt dispatch and tracked express delivery directly to your doorstep in Qatar.
           </p>
 
           {/* Primary Metadata Box */}

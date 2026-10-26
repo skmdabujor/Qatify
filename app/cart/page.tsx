@@ -165,11 +165,11 @@ export default function CartPage() {
                   <div className={styles.alertTextWrap}>
                     {isFreeShipping ? (
                       <p className={styles.freeUnlocked}>
-                        🎉 <strong>Free Qatar Direct Air Express unlocked!</strong> Your order qualifies for free delivery.
+                        🎉 <strong>Free Express Delivery in Qatar unlocked!</strong> Your order qualifies for free delivery.
                       </p>
                     ) : (
                       <p className={styles.freeNeeded}>
-                        Add <strong className="price-qar">QAR {freeShippingRemaining}</strong> more to get <strong>FREE Direct Air Shipping</strong> to Doha!
+                        Add <strong className="price-qar">QAR {freeShippingRemaining}</strong> more to get <strong>FREE Express Delivery</strong> across Qatar!
                       </p>
                     )}
                     <div className={styles.progressTrack}>

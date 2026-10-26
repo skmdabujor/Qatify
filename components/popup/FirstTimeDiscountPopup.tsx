@@ -222,7 +222,7 @@ export const FirstTimeDiscountPopup: React.FC = () => {
               <p className={styles.bannerSubtitle}>
                 {isSubmitted
                   ? 'Your special voucher code is activated. Apply it at checkout to enjoy 10% off.'
-                  : 'Join Qatify today! Sign up to unlock an exclusive 10% discount on Qatar direct air electronics.'}
+                  : 'Join Qatify today! Sign up to unlock an exclusive 10% discount on genuine tech and trending gadgets in Qatar.'}
               </p>
             </div>
 

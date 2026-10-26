@@ -20,6 +20,7 @@ import type * as orders from "../orders.js";
 import type * as polar from "../polar.js";
 import type * as products from "../products.js";
 import type * as reviews from "../reviews.js";
+import type * as telegram from "../telegram.js";
 
 import type {
   ApiFromModules,
@@ -40,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   polar: typeof polar;
   products: typeof products;
   reviews: typeof reviews;
+  telegram: typeof telegram;
 }>;
 
 /**

@@ -27,8 +27,8 @@ import { PRODUCTS, CATEGORIES } from '@/data/products';
 import { Product, SortOption, toProduct, toCategory } from '@/types/product';
 import styles from './page.module.scss';
 
-// Brands available in mock data
-const ALL_BRANDS = ['AcoustiQ', 'VoltGrid', 'AeroDrive', 'GlowMatrix', 'Chronos'];
+// Top brands available in Qatar electronics retail
+const ALL_BRANDS = ['Anker', 'Baseus', 'Soundcore', 'Green Lion', 'Porodo', 'Joyroom', 'Wanbo', 'VGN', 'SJRC'];
 
 function ShopContent() {
   const searchParams = useSearchParams();

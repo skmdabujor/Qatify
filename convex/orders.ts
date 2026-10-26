@@ -289,6 +289,11 @@ export const createOrder = mutation({
       });
     }
 
+    // Schedule instant Telegram alert to store owners / admins
+    await ctx.scheduler.runAfter(0, internal.telegram.sendOrderNotificationTelegram, {
+      orderId,
+    });
+
     return { orderId, orderNumber, trackingNumber, totalQAR };
   },
 });

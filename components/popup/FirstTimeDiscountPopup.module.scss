@@ -453,7 +453,7 @@
 // Floating Reopen Badge (when dismissed or closed)
 .floatingReopenBadge {
   position: fixed;
-  bottom: 24px;
+  bottom: 92px; // Stacked cleanly above the sticky WhatsApp launcher
   left: 24px;
   z-index: $z-fixed;
   background: linear-gradient(135deg, #e11d48 0%, #8a1538 100%);
@@ -478,7 +478,7 @@
   }
 
   @include tablet {
-    bottom: 74px; // Avoid mobile bottom app bar
+    bottom: 134px; // Floats above WhatsApp launcher on mobile
     left: 16px;
     padding: 8px 14px;
     font-size: 12px;

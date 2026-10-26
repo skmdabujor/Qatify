@@ -1,0 +1,157 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+// =============================================================================
+// Qatify — Sticky Floating WhatsApp Customer Support Button Styles
+// =============================================================================
+
+.whatsappWrapper {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: $z-fixed;
+  display: flex;
+  align-items: center;
+
+  @include tablet {
+    bottom: 74px; // Floats cleanly above the 56px mobile bottom navigation bar
+    left: 16px;
+  }
+}
+
+.whatsappBtn {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  color: #ffffff;
+  border-radius: $radius-full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px -4px rgba(37, 211, 102, 0.48), 0 4px 10px -2px rgba(10, 10, 12, 0.15);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 240ms ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 14px 30px -4px rgba(37, 211, 102, 0.65), 0 6px 14px -2px rgba(10, 10, 12, 0.2);
+
+    .tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  @include tablet {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+// WhatsApp Vector Icon
+.iconSvg {
+  width: 32px;
+  height: 32px;
+  position: relative;
+  z-index: 3;
+  fill: #ffffff;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+
+  @include tablet {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+// Glowing Pulse Ripple Effect
+.pulseRing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: $radius-full;
+  background-color: #25d366;
+  opacity: 0.6;
+  animation: whatsappPulse 2.4s infinite cubic-bezier(0.24, 0, 0.38, 1);
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes whatsappPulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  60% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+// Online indicator dot
+.onlineIndicator {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 13px;
+  height: 13px;
+  background-color: #4ade80;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  z-index: 4;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+// Hover Tooltip
+.tooltip {
+  position: absolute;
+  left: calc(100% + 12px);
+  background-color: #0a0a0c;
+  color: #ffffff;
+  font-family: $font-heading;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 8px 14px;
+  border-radius: $radius-lg;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-6px);
+  transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+  pointer-events: none;
+  z-index: $z-tooltip;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -5px;
+    transform: translateY(-50%) rotate(45deg);
+    width: 10px;
+    height: 10px;
+    background-color: #0a0a0c;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  @include tablet {
+    display: none;
+  }
+}
+

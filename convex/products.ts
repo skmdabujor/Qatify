@@ -170,6 +170,9 @@ export const seedProducts = mutation({
       if (!existing) {
         await ctx.db.insert("products", item);
         inserted++;
+      } else {
+        await ctx.db.patch(existing._id, item);
+        inserted++;
       }
     }
     return { success: true, count: inserted };
