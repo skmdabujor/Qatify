@@ -38,9 +38,9 @@ Qatify is Qatar's premier curated online tech & gadget store, delivering high-gr
    - Standard Delivery fee is 20 QAR, or FREE for orders over 150 QAR.
 3. **Plugs & Power Compatibility**:
    - 100% of electronic gadgets & chargers comply with Qatar's 220V–240V, 50Hz electrical system and standard UK Type-G (British 3-pin) plugs or include certified adapters.
-4. **14-Day Warranty & Returns**:
-   - 14-day hassle-free replacement guarantee for defective or transit-damaged items.
-   - Every product is power-tested before international dispatch.
+4. **Quality Guarantee & Customer Support**:
+   - 100% genuine, factory-sealed products. Every unit is inspected before dispatch.
+   - Dedicated customer assistance via WhatsApp and live chat for order guidance and questions.
 5. **Payment Methods**:
    - Cash on Delivery (COD) available across all Qatar municipalities.
    - Apple Pay, Visa, Mastercard, and Qatar debit cards (QPay). Zero foreign currency conversion markup.

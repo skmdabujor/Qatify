@@ -220,7 +220,7 @@ export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): s
               </div>
               <div style="font-size: 12px; color: #71717a; line-height: 1.5;">
                 Hotline: +974 4492 8100 &nbsp;|&nbsp; Email: support@qatify.qa<br>
-                100% Quality Inspected Before Flight Dispatch &nbsp;•&nbsp; 14-Day Return Protection<br>
+                100% Quality Inspected Before Flight Dispatch &nbsp;•&nbsp; 24/7 Dedicated Support<br>
                 <span style="font-size: 11px; color: #52525b; margin-top: 8px; display: block;">© 2026 Qatify Technologies W.L.L. Doha, State of Qatar.</span>
               </div>
             </td>

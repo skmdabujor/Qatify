@@ -1,0 +1,479 @@
+// =============================================================================
+// Qatify — 1-Line Circular Category Navigation SCSS Module
+// Responsive Single-Row Ribbon: Edge-to-Edge Spanning on Desktop + Mobile Swipe
+// Qatari Brand Theme: Crimson Red, Solar Gold/Yellow, Clean White & Deep Black
+// =============================================================================
+
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.navSection {
+  position: relative;
+  width: 100%;
+  background: #ffffff;
+  padding: $space-4 0 $space-5;
+  user-select: none;
+
+  @include mobile {
+    padding: $space-2 0 $space-3;
+  }
+}
+
+// --- OPTIONAL HEADER ---
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-3;
+  padding: 0 4px;
+
+  @include mobile {
+    margin-bottom: $space-2;
+  }
+}
+
+.titleGroup {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.heading {
+  font-family: $font-heading;
+  font-size: 17px;
+  font-weight: 800;
+  color: $color-ink-black;
+  letter-spacing: -0.02em;
+  margin: 0;
+
+  @include mobile {
+    font-size: 14px;
+  }
+}
+
+.subheading {
+  font-size: 12px;
+  color: $color-text-muted;
+  font-weight: 500;
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.viewAllLink {
+  font-family: $font-heading;
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-accent-red;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color $transition-fast, transform $transition-fast;
+
+  &:hover {
+    color: $color-accent-red-hover;
+    transform: translateX(2px);
+  }
+}
+
+.navButtonsGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  @include tablet {
+    display: none;
+  }
+}
+
+.headerArrowBtn {
+  @include button-reset;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid $color-border-medium;
+  background-color: #ffffff;
+  color: $color-ink-black;
+  transition: all $transition-fast;
+
+  &:hover:not(:disabled) {
+    background-color: $color-accent-red;
+    border-color: $color-accent-red;
+    color: #ffffff;
+    box-shadow: 0 2px 8px $color-accent-red-glow;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+// --- CAROUSEL / RIBBON WRAPPER ---
+.scrollWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.fadeLeft,
+.fadeRight {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+
+  @include mobile {
+    width: 16px;
+  }
+}
+
+.fadeLeft {
+  left: 0;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.95), transparent);
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+.fadeRight {
+  right: 0;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.95), transparent);
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+// Floating Side Arrows on Desktop
+.floatingArrowBtn {
+  @include button-reset;
+  position: absolute;
+  top: 42%;
+  transform: translateY(-50%);
+  z-index: 6;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: $color-ink-black;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+  transition: all $transition-fast;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: $color-accent-red;
+    color: #ffffff;
+    border-color: $color-accent-red;
+    transform: translateY(-50%) scale(1.08);
+    box-shadow: 0 6px 16px rgba(225, 29, 72, 0.35);
+  }
+
+  &.prev {
+    left: -10px;
+  }
+
+  &.next {
+    right: -10px;
+  }
+
+  @include laptop {
+    display: none;
+  }
+}
+
+// Scroll Track: Smooth Horizontal Overflow
+.scrollTrack {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 4px 2px 8px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// --- 1 LINE RIBBON (Spans Full Width on Desktop, Swipes on Mobile) ---
+.singleRowRibbon {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  gap: 12px;
+
+  // On wide screens (desktop): Distribute evenly so all items span across the full width without blank gaps!
+  @media (min-width: 1025px) {
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  // On laptop & mobile: Keep natural flex width so it scrolls smoothly with swipe
+  @media (max-width: 1024px) {
+    width: max-content;
+    gap: 14px;
+  }
+
+  @include mobile {
+    gap: 10px;
+  }
+}
+
+// --- SINGLE CATEGORY CARD ---
+.categoryCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: transform $transition-fast;
+
+  // On desktop, flex-grow evenly to fill the entire line
+  @media (min-width: 1025px) {
+    flex: 1 1 0;
+    max-width: 104px;
+    min-width: 76px;
+  }
+
+  @media (max-width: 1024px) {
+    width: 82px;
+  }
+
+  @include mobile {
+    width: 68px;
+  }
+
+  &:hover {
+    .circleWrapper {
+      transform: translateY(-3px) scale(1.04);
+
+      &.ringRed {
+        box-shadow: 0 8px 18px rgba(220, 38, 38, 0.28);
+        border-color: #b91c1c;
+      }
+
+      &.ringGold {
+        box-shadow: 0 8px 18px rgba(234, 179, 8, 0.32);
+        border-color: #ca8a04;
+      }
+
+      .productImg {
+        transform: scale(1.12);
+      }
+    }
+
+    .badgePill {
+      transform: translateX(-50%) scale(1.05);
+    }
+
+    .title {
+      color: $color-accent-red;
+    }
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+// Circular Item Frame
+.circleWrapper {
+  position: relative;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, #ffffff 40%, #fafafa 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+
+  @media (min-width: 1280px) {
+    width: 78px;
+    height: 78px;
+  }
+
+  @media (max-width: 1024px) {
+    width: 70px;
+    height: 70px;
+  }
+
+  @include mobile {
+    width: 62px;
+    height: 62px;
+  }
+
+  // Ring Borders
+  &.ringRed {
+    border: 2.5px solid #dc2626;
+  }
+
+  &.ringGold {
+    border: 2.5px solid #eab308;
+  }
+
+  &.ringGreen {
+    border: 2.5px solid #16a34a;
+  }
+}
+
+// Product Cutout Image
+.productImg {
+  width: 76%;
+  height: 76%;
+  object-fit: contain;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+}
+
+// Fallback Icon Badge (Used when image fails or network is slow)
+.fallbackIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, #ffffff 30%, #fee2e2 100%);
+  color: #dc2626;
+
+  svg {
+    transition: transform $transition-fast;
+  }
+
+  @include mobile {
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+// Special "More Categories" Golden Circle
+.moreCategoriesCircle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #fef9c3 0%, #fde047 50%, #eab308 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.8), 0 3px 8px rgba(234, 179, 8, 0.25);
+
+  .moreRedIconPill {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(220, 38, 38, 0.4);
+    transition: transform $transition-fast;
+
+    @include mobile {
+      width: 26px;
+      height: 26px;
+    }
+  }
+
+  &:hover .moreRedIconPill {
+    transform: scale(1.12);
+  }
+}
+
+// Overlapping Offer / Price Badge Pill
+.badgePill {
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 2px 6.5px;
+  border-radius: 9999px;
+  border: 1.5px solid #ffffff;
+  font-family: $font-heading;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35);
+
+  @include mobile {
+    padding: 1.5px 5px;
+    font-size: 7.5px;
+    bottom: -6px;
+    border-width: 1px;
+  }
+
+  &.badgeRed {
+    background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+  }
+
+  &.badgeYellow {
+    background: linear-gradient(180deg, #fde047 0%, #facc15 100%);
+    color: #0f172a;
+    box-shadow: 0 2px 6px rgba(234, 179, 8, 0.35);
+  }
+
+  &.badgeGreen {
+    background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+    color: #ffffff;
+  }
+
+  &.badgeGold {
+    background: linear-gradient(180deg, #fef08a 0%, #eab308 100%);
+    color: #0f172a;
+  }
+}
+
+// Category Title Label Below Circle
+.title {
+  margin-top: 13px;
+  font-family: $font-heading;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: $color-ink-black;
+  text-align: center;
+  line-height: 1.2;
+  max-width: 90px;
+  height: 28px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+  transition: color $transition-fast;
+
+  @include mobile {
+    font-size: 9.5px;
+    margin-top: 10px;
+    max-width: 68px;
+    height: 24px;
+  }
+}

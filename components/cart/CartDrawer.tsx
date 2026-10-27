@@ -342,7 +342,7 @@ export const CartDrawer: React.FC = () => {
             {/* Assurance trust note */}
             <div className={styles.assuranceNote}>
               <ShieldCheck size={14} />
-              <span>100% Quality Inspected • 14-Day Return Guarantee</span>
+              <span>100% Quality Inspected • 24/7 Qatar Support</span>
             </div>
           </div>
         )}

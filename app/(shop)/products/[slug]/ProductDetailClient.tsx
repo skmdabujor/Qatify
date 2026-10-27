@@ -17,7 +17,7 @@ import {
   ShoppingCart,
   Plane,
   ShieldCheck,
-  RotateCcw,
+  Headset,
   CheckCircle2,
   Share2,
   Clock,
@@ -79,6 +79,25 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
       }
     }
   }, [product, selectedColor, selectedOption]);
+
+  // Sticky Add to Cart Bar visibility on scroll
+  const [showStickyBar, setShowStickyBar] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Reveal sticky bar when scrolled down more than 380px
+      if (window.scrollY > 380) {
+        setShowStickyBar(true);
+      } else {
+        setShowStickyBar(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Municipality selector for dynamic timeline
   const [selectedMunicipality, setSelectedMunicipality] = useState(
@@ -323,10 +342,10 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                 </div>
               </div>
               <div className={styles.assuranceItem}>
-                <RotateCcw size={18} />
+                <Headset size={18} />
                 <div>
-                  <strong>14-Day Easy Replacement</strong>
-                  <span>Hassle-free replacement policy on defects</span>
+                  <strong>24/7 Dedicated Support</strong>
+                  <span>Instant WhatsApp & live chat assistance</span>
                 </div>
               </div>
             </div>
@@ -630,7 +649,7 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                   </div>
                   <div className={styles.tGuarantee}>
                     <CheckCircle2 size={13} />
-                    <span>14-day defect replacement policy</span>
+                    <span>24/7 WhatsApp & live customer support</span>
                   </div>
                 </div>
 
@@ -678,7 +697,7 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
               onClick={() => setActiveTab('shipping')}
               className={`${styles.tabBtn} ${activeTab === 'shipping' ? styles.activeTab : ''}`}
             >
-              Shipping & 14-Day Guarantee
+              Shipping & Support
             </button>
             <button
               type="button"
@@ -725,10 +744,10 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
               </div>
             )}
 
-            {/* Tab 3: Shipping & 14-Day Guarantee */}
+            {/* Tab 3: Shipping & Customer Care */}
             {activeTab === 'shipping' && (
               <div className={styles.shippingTab}>
-                <h3 className={styles.tabHeading}>Qatify Qatar Delivery & Return Policy</h3>
+                <h3 className={styles.tabHeading}>Qatify Qatar Delivery & Support Policy</h3>
                 <div className={styles.policyGrid}>
                   <div className={styles.policyCard}>
                     <Plane size={22} className={styles.policyIcon} />
@@ -747,10 +766,10 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                   </div>
 
                   <div className={styles.policyCard}>
-                    <RotateCcw size={22} className={styles.policyIcon} />
-                    <h4>14-Day Return Protection</h4>
+                    <Headset size={22} className={styles.policyIcon} />
+                    <h4>Dedicated Qatar Support</h4>
                     <p>
-                      If any item arrives defective or does not match specifications, contact our Doha support team via WhatsApp for an immediate free local replacement.
+                      Have any questions or need assistance? Contact our Doha support team via WhatsApp or live chat for prompt, dedicated customer service.
                     </p>
                   </div>
                 </div>
@@ -1017,6 +1036,107 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
             </div>
           </section>
         )}
+
+        {/* ===================================================================
+            STICKY ADD TO CART BAR (Scroll-Activated)
+        ==================================================================== */}
+        <div
+          className={`${styles.stickyBar} ${showStickyBar ? styles.visible : ''}`}
+          aria-hidden={!showStickyBar}
+        >
+          <div className={styles.stickyInner}>
+            {/* Product Thumbnail & Quick Info */}
+            <div className={styles.stickyProductInfo}>
+              <img
+                src={product.images[activeImageIndex] || product.images[0] || '/placeholder.svg'}
+                alt={product.title}
+                className={styles.stickyThumb}
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.src.endsWith('/placeholder.svg')) {
+                    target.src = '/placeholder.svg';
+                  }
+                }}
+              />
+              <div className={styles.stickyTextCol}>
+                <h4 className={styles.stickyTitle} title={product.title}>
+                  {product.title}
+                </h4>
+                <div className={styles.stickyMetaRow}>
+                  <span className={styles.stickyBrand}>{product.brand}</span>
+                  {selectedColor && (
+                    <span className={styles.stickyVariant}>• {selectedColor}</span>
+                  )}
+                  {selectedOption && (
+                    <span className={styles.stickyVariant}>• {selectedOption}</span>
+                  )}
+                  <span className={styles.stickyDeliveryBadge}>
+                    ⚡ Express Qatar Delivery
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Price & Quantity & CTAs */}
+            <div className={styles.stickyRightCol}>
+              <div className={styles.stickyPriceBlock}>
+                <div className={styles.stickyCurrentPrice}>
+                  <span className={styles.stickyQar}>QAR</span>
+                  <span className={styles.stickyAmount}>{totalPriceQAR}</span>
+                </div>
+                {product.originalPriceQAR > unitPrice && (
+                  <span className={styles.stickyOriginalPrice}>
+                    QAR {product.originalPriceQAR * quantity}
+                  </span>
+                )}
+              </div>
+
+              {/* Quantity Stepper (hidden on smaller mobile) */}
+              <div className={styles.stickyStepper}>
+                <button
+                  type="button"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className={styles.stickyStepBtn}
+                  aria-label="Decrease quantity"
+                >
+                  <Minus size={13} />
+                </button>
+                <span className={styles.stickyStepVal}>{quantity}</span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity(quantity + 1)}
+                  className={styles.stickyStepBtn}
+                  aria-label="Increase quantity"
+                >
+                  <Plus size={13} />
+                </button>
+              </div>
+
+              {/* Action Buttons */}
+              <div className={styles.stickyBtnGroup}>
+                <button
+                  type="button"
+                  onClick={handleAddToCart}
+                  className={styles.stickyAddBtn}
+                  title="Add to Cart"
+                >
+                  <ShoppingCart size={16} />
+                  <span>Add to Cart</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleBuyNow}
+                  className={styles.stickyBuyBtn}
+                  title="Buy Now with Cash or Card"
+                >
+                  <Zap size={16} />
+                  <span>Buy Now</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

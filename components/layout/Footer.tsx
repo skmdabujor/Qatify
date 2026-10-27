@@ -13,7 +13,7 @@ import {
   Plane,
   ShieldCheck,
   CreditCard,
-  RotateCcw,
+  Headset,
   Mail,
   Phone,
   MapPin,
@@ -89,12 +89,12 @@ export const Footer: React.FC = () => {
 
             <div className={styles.trustCard}>
               <div className={styles.trustIconWrap}>
-                <RotateCcw size={24} />
+                <Headset size={24} />
               </div>
               <div className={styles.trustContent}>
-                <h4 className={styles.trustTitle}>14-Day Easy Replacement</h4>
+                <h4 className={styles.trustTitle}>24/7 Dedicated Support</h4>
                 <p className={styles.trustDesc}>
-                  Hassle-free local replacement warranty on electronic items across Qatar.
+                  Live WhatsApp & customer service ready to assist you anywhere in Qatar.
                 </p>
               </div>
             </div>

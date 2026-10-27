@@ -468,7 +468,7 @@ function DashboardContent() {
                     className={`${styles.navItem} ${customerTab === 'support' ? styles.active : ''}`}
                   >
                     <Headphones size={16} />
-                    <span>Support & 14-Day Returns</span>
+                    <span>Support & Help Desk</span>
                   </button>
                 </div>
               </>
@@ -1053,12 +1053,12 @@ function DashboardContent() {
                   </div>
                 )}
 
-                {/* TAB 5: SUPPORT & 14-DAY RETURNS */}
+                {/* TAB 5: SUPPORT & CUSTOMER CARE */}
                 {customerTab === 'support' && (
                   <div className={styles.tabContentCard}>
-                    <h2 className={styles.cardHeading}>Qatar Customer Support & Returns</h2>
+                    <h2 className={styles.cardHeading}>Qatar Customer Support & Care</h2>
                     <p className={styles.cardSub}>
-                      Direct assistance in Doha and Lusail with our 14-day defect replacement policy.
+                      Direct assistance in Doha and Lusail with our dedicated support concierge.
                     </p>
 
                     <div className={styles.supportChannelsGrid}>
@@ -1083,7 +1083,7 @@ function DashboardContent() {
                     </div>
 
                     <div className={styles.returnFormSection}>
-                      <h3 className={styles.returnFormTitle}>Submit 14-Day Return / Replacement Claim</h3>
+                      <h3 className={styles.returnFormTitle}>Submit Order Assistance Request</h3>
                       <form onSubmit={handleReturnSubmit} className={styles.returnForm}>
                         <div className={styles.modalField}>
                           <label>Order Reference</label>
@@ -1121,7 +1121,7 @@ function DashboardContent() {
                           />
                         </div>
                         <button type="submit" className={styles.submitClaimBtn}>
-                          Submit Replacement Claim
+                          Submit Support Request
                         </button>
                       </form>
                     </div>

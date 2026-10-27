@@ -775,11 +775,19 @@
   @include tablet {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
+
+    > :nth-child(odd):last-child {
+      display: none !important;
+    }
   }
 
   @include mobile {
     grid-template-columns: repeat(2, 1fr);
     gap: 6px;
+
+    > :nth-child(odd):last-child {
+      display: none !important;
+    }
   }
 }
 
@@ -888,6 +896,18 @@
   display: block;
   object-fit: cover;
   border-radius: $radius-md;
+}
+
+// =============================================================================
+// SECTION 3: CIRCULAR CATEGORY NAVIGATION GRID (Between 60% Banner & Products)
+// =============================================================================
+.circularCategoryNavSection {
+  margin-bottom: $space-6;
+  width: 100%;
+
+  @include mobile {
+    margin-bottom: $space-4;
+  }
 }
 
 
@@ -1038,11 +1058,21 @@
 
   @include tablet {
     grid-template-columns: repeat(2, 1fr);
+
+    // When total items are odd in a 2-column view, hide the last item so count is always even
+    > :nth-child(odd):last-child {
+      display: none !important;
+    }
   }
 
   @include mobile {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
+
+    // Ensure mobile screen always shows an even number of products with zero empty grid space
+    > :nth-child(odd):last-child {
+      display: none !important;
+    }
   }
 }
 

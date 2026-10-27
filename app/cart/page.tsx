@@ -22,7 +22,7 @@ import {
   Sparkles,
   Heart,
   ChevronRight,
-  RotateCcw,
+  Headset,
   MessageCircle,
 } from 'lucide-react';
 import { useShop } from '@/context/ShopContext';
@@ -431,8 +431,8 @@ export default function CartPage() {
                     <span>100% Quality Inspected before dispatch</span>
                   </div>
                   <div className={styles.trustRow}>
-                    <RotateCcw size={16} />
-                    <span>14-day defect replacement policy in Qatar</span>
+                    <Headset size={16} />
+                    <span>24/7 dedicated support via WhatsApp & chat</span>
                   </div>
                   <div className={styles.trustRow}>
                     <Plane size={16} />

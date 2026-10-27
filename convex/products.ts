@@ -73,7 +73,7 @@ export const getBestSellers = query({
 export const getUnder99 = query({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    const takeCount = args.limit ?? 10;
+    const takeCount = args.limit ?? 15;
     return await ctx.db
       .query("products")
       .withIndex("by_isUnder99", (q) => q.eq("isUnder99", true))

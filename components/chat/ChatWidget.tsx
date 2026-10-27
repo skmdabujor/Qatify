@@ -63,7 +63,7 @@ const SUGGESTED_QUESTIONS = [
   { label: '✈️ Delivery time to Qatar', query: 'How long does delivery take to Doha?' },
   { label: '💳 Payment & Apple Pay', query: 'What payment methods do you accept?' },
   { label: '🔌 UK 3-pin plug compatibility', query: 'Are plugs compatible with Qatar wall sockets?' },
-  { label: '🛡️ 14-Day Warranty & Returns', query: 'What is your warranty and return policy?' },
+  { label: '🎧 Customer Support & Help', query: 'How can I contact customer support?' },
   { label: '💬 Talk to Live Support Agent', query: 'I want to talk to a customer support agent' },
 ];
 
@@ -325,9 +325,9 @@ export const ChatWidget: React.FC = () => {
             payload: 'How long does delivery take to Doha?',
           },
           {
-            label: '🛡️ 14-Day Warranty Info',
+            label: '🎧 Customer Support Help',
             actionType: 'chip',
-            payload: 'What is your warranty and return policy?',
+            payload: 'How can I contact customer support?',
           },
         ],
       };
@@ -426,13 +426,13 @@ export const ChatWidget: React.FC = () => {
         id,
         sender: 'agent',
         agentName: 'Maryam (Senior Care)',
-        text: 'All Qatify electronics are backed by our 14-Day Hassle-Free Replacement Guarantee. Every gadget is power-tested before international dispatch. If an item arrives defective or damaged, our Doha courier picks it up for an immediate replacement.',
+        text: 'All Qatify electronics are 100% genuine, factory-sealed, and quality tested before dispatch. If you have any inquiries or need assistance with your items, our Doha support team is available via WhatsApp and live chat to assist you promptly.',
         timestamp: time,
         actions: [
           {
-            label: '🛡️ How to claim warranty',
+            label: '💬 Chat with Support Agent',
             actionType: 'chip',
-            payload: 'What are the steps to replace a defective item in Qatar?',
+            payload: 'I want to talk to a customer support agent',
           },
         ],
       };

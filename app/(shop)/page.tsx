@@ -33,6 +33,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { ProductCard } from '@/components/product/ProductCard';
+import { CircularCategoryNav } from '@/components/category';
 import { FirstTimeDiscountPopup } from '@/components/popup/FirstTimeDiscountPopup';
 import { PRODUCTS, CATEGORIES } from '@/data/products';
 import { toProduct, toCategory } from '@/types/product';
@@ -70,7 +71,7 @@ export default function ShopHomePage() {
   // Real-time Convex database queries
   const liveCategories = useQuery(api.categories.list, { limit: 12 });
   const liveTrending = useQuery(api.products.getTrending, { limit: 10 });
-  const liveUnder99 = useQuery(api.products.getUnder99, { limit: 5 });
+  const liveUnder99 = useQuery(api.products.getUnder99, { limit: 15 });
   const liveBestSellers = useQuery(api.products.getBestSellers, { limit: 5 });
 
   // Use live data with fallback to mock data while hydrating/loading
@@ -80,9 +81,11 @@ export default function ShopHomePage() {
   const trendingProducts = liveTrending && liveTrending.length > 0
     ? liveTrending.map(toProduct)
     : PRODUCTS.filter((p) => p.isTrending).slice(0, 10);
-  const under99Products = liveUnder99 && liveUnder99.length > 0
-    ? liveUnder99.map(toProduct)
-    : PRODUCTS.filter((p) => p.isUnder99).slice(0, 5);
+  const under99Products = (
+    liveUnder99 && liveUnder99.length > 0
+      ? liveUnder99.map(toProduct)
+      : PRODUCTS.filter((p) => p.isUnder99)
+  ).slice(0, 15);
   const bestSellerProducts = liveBestSellers && liveBestSellers.length > 0
     ? liveBestSellers.map(toProduct)
     : PRODUCTS.filter((p) => p.isBestSeller).slice(0, 5);
@@ -245,6 +248,13 @@ export default function ShopHomePage() {
               />
             </picture>
           </Link>
+        </section>
+
+        {/* ===================================================================
+            SECTION 3: CIRCULAR CATEGORY NAVIGATION (Between 60% Banner & Products)
+        ==================================================================== */}
+        <section className={styles.circularCategoryNavSection}>
+          <CircularCategoryNav />
         </section>
 
         {/* ===================================================================
