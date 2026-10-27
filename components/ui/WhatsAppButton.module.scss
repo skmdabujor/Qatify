@@ -12,10 +12,17 @@
   z-index: $z-fixed;
   display: flex;
   align-items: center;
+  transition: bottom 280ms cubic-bezier(0.16, 1, 0.3, 1);
 
   @include tablet {
     bottom: 74px; // Floats cleanly above the 56px mobile bottom navigation bar
     left: 16px;
+  }
+}
+
+:global(body.has-sticky-cart) .whatsappWrapper {
+  @include tablet {
+    bottom: calc(118px + env(safe-area-inset-bottom, 0px)); // Floats above bottom nav (56px) + sticky cart (~50px)
   }
 }
 

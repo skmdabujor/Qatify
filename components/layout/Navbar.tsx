@@ -913,8 +913,7 @@ export const Navbar: React.FC = () => {
 
             {/* Delivery Guarantee Pill */}
             <div className={styles.qatarAirPill}>
-              <Plane size={13} />
-              <span>✈️ Tracked Direct Air Express: 6–10 Days to Qatar</span>
+              <span>Tracked Direct Air Express: 6–10 Days to Qatar</span>
             </div>
           </div>
         </div>

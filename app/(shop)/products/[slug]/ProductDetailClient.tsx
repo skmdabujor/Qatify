@@ -85,18 +85,32 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
 
   useEffect(() => {
     const handleScroll = () => {
-      // Reveal sticky bar when scrolled down more than 380px
-      if (window.scrollY > 380) {
-        setShowStickyBar(true);
-      } else {
-        setShowStickyBar(false);
+      // Reveal sticky bar when scrolled: 220px on mobile/tablet, 380px on desktop
+      const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+      const threshold = isMobile ? 220 : 380;
+      const shouldShow = window.scrollY > threshold;
+      setShowStickyBar(shouldShow);
+
+      if (typeof document !== 'undefined') {
+        if (shouldShow) {
+          document.body.classList.add('has-sticky-cart');
+        } else {
+          document.body.classList.remove('has-sticky-cart');
+        }
       }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true });
     handleScroll();
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+      if (typeof document !== 'undefined') {
+        document.body.classList.remove('has-sticky-cart');
+      }
+    };
   }, []);
 
   // Municipality selector for dynamic timeline
