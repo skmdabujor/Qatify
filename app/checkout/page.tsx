@@ -30,6 +30,13 @@ import {
 import { useShop } from '@/context/ShopContext';
 import { QATAR_MUNICIPALITIES, SHIPPING_METHODS } from '@/data/products';
 import { QatarAddress, ShippingMethod, Order } from '@/types/product';
+import {
+  ApplePayIcon,
+  VisaIcon,
+  MastercardIcon,
+  AmexIcon,
+  CashOnDeliveryIcon,
+} from '@/components/ui/PaymentIcons';
 import styles from './page.module.scss';
 
 // Feature Flag: Cash on Delivery status (Set to true to re-enable COD on checkout)
@@ -632,6 +639,7 @@ export default function CheckoutPage() {
                         onChange={() => setPaymentMethod('apple_pay')}
                       />
                       <span className={styles.payOptionName}>Apple Pay</span>
+                      <ApplePayIcon width={40} height={25} />
                       <span className={styles.recommendedPill}>RECOMMENDED IN QATAR</span>
                     </div>
                     <p className={styles.payOptionSub}>
@@ -654,7 +662,11 @@ export default function CheckoutPage() {
                         onChange={() => setPaymentMethod('credit_card')}
                       />
                       <span className={styles.payOptionName}>Credit / Debit Card</span>
-                      <span className={styles.cardLogos}>Visa • Mastercard • CBQ • QNB</span>
+                      <div className={styles.cardLogosRow}>
+                        <VisaIcon width={34} height={21} />
+                        <MastercardIcon width={34} height={21} />
+                        <AmexIcon width={34} height={21} />
+                      </div>
                     </div>
                     <p className={styles.payOptionSub}>
                       Secure payment with local Qatari banks or international credit cards.
@@ -722,6 +734,7 @@ export default function CheckoutPage() {
                           onChange={() => setPaymentMethod('cash_on_delivery')}
                         />
                         <span className={styles.payOptionName}>Cash on Delivery (COD)</span>
+                        <CashOnDeliveryIcon width={40} height={25} />
                         <span className={styles.codPill}>ALL QATAR ZONES</span>
                       </div>
                       <p className={styles.payOptionSub}>
