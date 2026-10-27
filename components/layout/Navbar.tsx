@@ -104,9 +104,36 @@ export const Navbar: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
 
   const categoryMenuRef = useRef<HTMLDivElement>(null);
+  const categoryMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const searchCategoryRef = useRef<HTMLDivElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const mobileSearchContainerRef = useRef<HTMLDivElement>(null);
+
+  // Clear category hover timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (categoryMenuTimeoutRef.current) {
+        clearTimeout(categoryMenuTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleCategoryMouseEnter = () => {
+    if (categoryMenuTimeoutRef.current) {
+      clearTimeout(categoryMenuTimeoutRef.current);
+      categoryMenuTimeoutRef.current = null;
+    }
+    setIsCategoryMenuOpen(true);
+  };
+
+  const handleCategoryMouseLeave = () => {
+    if (categoryMenuTimeoutRef.current) {
+      clearTimeout(categoryMenuTimeoutRef.current);
+    }
+    categoryMenuTimeoutRef.current = setTimeout(() => {
+      setIsCategoryMenuOpen(false);
+    }, 150);
+  };
 
   // Sync localSearch when global searchQuery changes
   useEffect(() => {
@@ -846,11 +873,17 @@ export const Navbar: React.FC = () => {
         <div className="container">
           <div className={styles.categoryStripInner}>
             {/* All Categories Flyout Trigger */}
-            <div className={styles.allCatWrapper} ref={categoryMenuRef}>
+            <div
+              className={styles.allCatWrapper}
+              ref={categoryMenuRef}
+              onMouseEnter={handleCategoryMouseEnter}
+              onMouseLeave={handleCategoryMouseLeave}
+            >
               <button
                 type="button"
-                onClick={() => setIsCategoryMenuOpen(!isCategoryMenuOpen)}
                 className={`${styles.allCatBtn} ${isCategoryMenuOpen ? styles.active : ''}`}
+                aria-expanded={isCategoryMenuOpen}
+                aria-haspopup="true"
               >
                 <Menu size={16} />
                 <span>All Categories</span>
@@ -859,7 +892,11 @@ export const Navbar: React.FC = () => {
 
               {/* Mega Flyout Dropdown */}
               {isCategoryMenuOpen && (
-                <div className={styles.megaFlyout}>
+                <div
+                  className={styles.megaFlyout}
+                  onMouseEnter={handleCategoryMouseEnter}
+                  onMouseLeave={handleCategoryMouseLeave}
+                >
                   <div className={styles.megaFlyoutHeader}>
                     <span>Popular Dropship Categories</span>
                   </div>
