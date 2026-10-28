@@ -2,7 +2,7 @@
 // Qatify — Global Root Layout (App Router)
 // =============================================================================
 
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import '@/styles/globals.scss';
 import { ConvexClientProvider } from '@/components/providers/ConvexClientProvider';
 import { ShopProvider } from '@/context/ShopContext';
@@ -65,6 +65,13 @@ export const metadata: Metadata = {
     ],
     shortcut: '/favicon.ico',
   },
+  manifest: '/site.webmanifest',
+};
+
+export const viewport: Viewport = {
+  themeColor: '#E06C2A',
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({

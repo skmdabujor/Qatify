@@ -10,8 +10,10 @@
 
 import type * as adminAuth from "../adminAuth.js";
 import type * as admins from "../admins.js";
+import type * as auth from "../auth.js";
 import type * as categories from "../categories.js";
 import type * as coupons from "../coupons.js";
+import type * as crons from "../crons.js";
 import type * as emails from "../emails.js";
 import type * as http from "../http.js";
 import type * as inquiries from "../inquiries.js";
@@ -21,6 +23,8 @@ import type * as polar from "../polar.js";
 import type * as products from "../products.js";
 import type * as reviews from "../reviews.js";
 import type * as telegram from "../telegram.js";
+import type * as tracking from "../tracking.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -31,8 +35,10 @@ import type {
 declare const fullApi: ApiFromModules<{
   adminAuth: typeof adminAuth;
   admins: typeof admins;
+  auth: typeof auth;
   categories: typeof categories;
   coupons: typeof coupons;
+  crons: typeof crons;
   emails: typeof emails;
   http: typeof http;
   inquiries: typeof inquiries;
@@ -42,6 +48,8 @@ declare const fullApi: ApiFromModules<{
   products: typeof products;
   reviews: typeof reviews;
   telegram: typeof telegram;
+  tracking: typeof tracking;
+  users: typeof users;
 }>;
 
 /**

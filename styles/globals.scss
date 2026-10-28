@@ -19,9 +19,12 @@
   --color-text-secondary: #{$color-text-secondary};
   --color-text-muted: #{$color-text-muted};
 
-  // Accent 10%
-  --color-accent-red: #{$color-accent-red};
-  --color-accent-red-hover: #{$color-accent-red-hover};
+  // Accent 10% (Signature Brand Orange & Solar Yellow)
+  --color-accent-orange: #{$color-accent-orange};
+  --color-accent-orange-hover: #{$color-accent-orange-hover};
+  --color-accent-orange-light: #{$color-accent-orange-light};
+  --color-accent-red: #{$color-accent-orange};
+  --color-accent-red-hover: #{$color-accent-orange-hover};
   --color-accent-yellow: #{$color-accent-yellow};
   --color-accent-yellow-dark: #{$color-accent-yellow-dark};
   --color-accent-yellow-tint: #{$color-accent-yellow-tint};

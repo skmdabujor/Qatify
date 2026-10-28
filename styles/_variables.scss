@@ -32,11 +32,17 @@ $color-text-muted: #71717a;
 $color-text-inverse: #ffffff;
 $color-text-inverse-muted: #a1a1aa;
 
-// --- 10% HIGH-ENERGY ACCENTS (Qatify Red & Electric Solar Yellow) ---
-$color-accent-red: #e11d48;
-$color-accent-red-hover: #be123c;
-$color-accent-red-light: #ffe4e6;
-$color-accent-red-glow: rgba(225, 29, 72, 0.2);
+// --- 10% HIGH-ENERGY ACCENTS (Qatify Signature Orange & Electric Solar Yellow) ---
+$color-accent-orange: #e06c2a;
+$color-accent-orange-hover: #c85718;
+$color-accent-orange-light: #fff1eb;
+$color-accent-orange-glow: rgba(224, 108, 42, 0.22);
+
+// SCSS variables aliased for seamless consistency across all components
+$color-accent-red: $color-accent-orange;
+$color-accent-red-hover: $color-accent-orange-hover;
+$color-accent-red-light: $color-accent-orange-light;
+$color-accent-red-glow: $color-accent-orange-glow;
 
 $color-accent-yellow: #facc15;
 $color-accent-yellow-dark: #eab308;

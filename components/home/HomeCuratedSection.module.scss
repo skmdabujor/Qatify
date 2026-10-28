@@ -1,0 +1,876 @@
+// =============================================================================
+// Qatify — Home Curated Section & Feature Promo Banner SCSS
+// Replicates the Curated Brand Showcase & "Everything for Your Home" Section
+// Designed with Strict Qatify 60/30/10 Rule & Flawless Horizontal Alignment
+// =============================================================================
+
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.sectionWrapper {
+  width: 100%;
+  margin-top: $space-4;
+  margin-bottom: $space-8;
+
+  @include mobile {
+    margin-top: $space-3;
+    margin-bottom: $space-6;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 1. TOP FEATURE PROMO BANNER CAROUSEL (Nintendo & Featured Brands)
+// -----------------------------------------------------------------------------
+.bannerCarousel {
+  position: relative;
+  width: 100%;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  background-color: #121216;
+  margin-bottom: $space-8;
+
+  @include mobile {
+    border-radius: $radius-md;
+    margin-bottom: $space-6;
+  }
+}
+
+.bannerSlideTrack {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 4.1;
+  min-height: 180px;
+
+  @include tablet {
+    aspect-ratio: 16 / 5.2;
+    min-height: 160px;
+  }
+
+  @include mobile {
+    aspect-ratio: 16 / 6.5;
+    min-height: 140px;
+  }
+}
+
+.bannerSlide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+  display: block;
+  text-decoration: none;
+
+  &.activeSlide {
+    opacity: 1;
+    visibility: visible;
+    z-index: 2;
+  }
+}
+
+// Banner 1: Nintendo Switch / Mario Kart
+.nintendoBanner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #cc0000 0%, #e60012 40%, #ff1a1a 80%, #b8000a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.bannerImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.4s ease;
+
+  .bannerSlide:hover & {
+    transform: scale(1.015);
+  }
+}
+
+// Banner 2: Luxury Home / Coffee & Living
+.homeTechBanner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #09090b 0%, #18181b 50%, #27272a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $space-10;
+  color: #ffffff;
+  overflow: hidden;
+
+  @include tablet {
+    padding: 0 $space-6;
+  }
+
+  @include mobile {
+    padding: 0 $space-4;
+  }
+}
+
+.homeTechContent {
+  max-width: 55%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  @include mobile {
+    max-width: 65%;
+    gap: 4px;
+  }
+}
+
+.homeTechTag {
+  font-family: $font-mono;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: $color-accent-yellow;
+  text-transform: uppercase;
+
+  @include mobile {
+    font-size: 9px;
+  }
+}
+
+.homeTechTitle {
+  font-family: $font-heading;
+  font-size: 26px;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+
+  @include tablet {
+    font-size: 20px;
+  }
+
+  @include mobile {
+    font-size: 15px;
+  }
+}
+
+.homeTechDesc {
+  font-size: 13px;
+  color: #d4d4d8;
+  line-height: 1.4;
+
+  @include tablet {
+    display: none;
+  }
+}
+
+.homeTechVisual {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 2;
+
+  img {
+    height: 140px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
+
+    @include tablet {
+      height: 100px;
+    }
+
+    @include mobile {
+      height: 75px;
+    }
+  }
+}
+
+// Banner CTA Buttons
+.bannerShopNowBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #e60012;
+  color: #ffffff;
+  font-family: $font-heading;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 8px 22px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 12px rgba(230, 0, 18, 0.45);
+  transition: all $transition-fast;
+  margin-top: 6px;
+  width: fit-content;
+
+  &:hover {
+    background-color: #b8000a;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(230, 0, 18, 0.6);
+  }
+
+  @include mobile {
+    font-size: 10px;
+    padding: 5px 14px;
+    margin-top: 4px;
+  }
+}
+
+.bannerExploreBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: $color-accent-yellow;
+  color: #0a0a0c;
+  font-family: $font-heading;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 8px 22px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 12px rgba(250, 204, 21, 0.35);
+  transition: all $transition-fast;
+  margin-top: 6px;
+  width: fit-content;
+
+  &:hover {
+    background-color: $color-accent-yellow-dark;
+    transform: translateY(-1px);
+  }
+
+  @include mobile {
+    font-size: 10px;
+    padding: 5px 14px;
+    margin-top: 4px;
+  }
+}
+
+// Banner Slide Navigation Arrows
+.bannerNavBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.65);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: translateY(-50%) scale(1.08);
+  }
+
+  &.prevBtn {
+    left: 12px;
+
+    @include mobile {
+      left: 6px;
+      width: 26px;
+      height: 26px;
+    }
+  }
+
+  &.nextBtn {
+    right: 12px;
+
+    @include mobile {
+      right: 6px;
+      width: 26px;
+      height: 26px;
+    }
+  }
+}
+
+// Banner Pagination Dots
+.bannerDots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  @include mobile {
+    bottom: 5px;
+    gap: 4px;
+  }
+}
+
+.bannerDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.45);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all $transition-fast;
+
+  &.activeDot {
+    width: 20px;
+    border-radius: 4px;
+    background-color: #ffffff;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  }
+
+  @include mobile {
+    width: 5px;
+    height: 5px;
+
+    &.activeDot {
+      width: 14px;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 2. "EVERYTHING FOR YOUR HOME" COLLECTION SHOWCASE
+// -----------------------------------------------------------------------------
+.collectionContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+// Qatify Signature Shelf Header (100% matches Trending, Super Deals & Best Sellers)
+.shelfHeaderRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: $space-4;
+  padding-bottom: $space-2;
+  border-bottom: 2px solid $color-border-subtle;
+
+  @include mobile {
+    margin-bottom: $space-3;
+    padding-bottom: $space-2;
+  }
+}
+
+.shelfTitleGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.shelfTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #fff1f2;
+  color: $color-accent-red;
+  border: 1px solid #fecdd3;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: $radius-xs;
+  font-family: $font-mono;
+  white-space: nowrap;
+  margin-bottom: 4px;
+  width: fit-content;
+
+  @include mobile {
+    font-size: 9.5px;
+    padding: 1.5px 5px;
+  }
+}
+
+.shelfHeading {
+  font-family: $font-heading;
+  font-size: 18px;
+  font-weight: 800;
+  color: $color-ink-black;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+
+  @include mobile {
+    font-size: 14.5px;
+    letter-spacing: -0.01em;
+  }
+}
+
+// Qatify Signature Header "View More" Button
+.viewMoreBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: $color-ink-black;
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: $radius-xs;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all $transition-fast;
+
+  span {
+    white-space: nowrap;
+  }
+
+  @include mobile {
+    font-size: 11.5px;
+    padding: 3px 6px;
+    gap: 3px;
+
+    svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+  }
+
+  &:hover {
+    color: $color-accent-red;
+    background-color: $color-surface-muted;
+
+    svg {
+      transform: translateX(2px);
+    }
+  }
+
+  svg {
+    transition: transform $transition-fast;
+    color: currentColor;
+  }
+}
+
+// Carousel Wrapper with floating Left/Right arrows
+.carouselOuter {
+  position: relative;
+  width: 100%;
+}
+
+.carouselScrollContainer {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 6px 2px 14px 2px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.productCardsTrack {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - (4 * 16px)) / 5);
+  gap: 16px;
+  width: max-content;
+  min-width: 100%;
+
+  @media (max-width: 1200px) {
+    grid-auto-columns: calc((100% - (3 * 14px)) / 4);
+    gap: 14px;
+  }
+
+  @include tablet {
+    grid-auto-columns: calc((100% - (2 * 12px)) / 3);
+    gap: 12px;
+  }
+
+  @include mobile {
+    grid-auto-columns: calc((100% - 10px) / 2);
+    gap: 10px;
+  }
+
+  @media (max-width: 440px) {
+    grid-auto-columns: 82%;
+  }
+}
+
+// Floating Carousel Arrows
+.shelfArrowBtn {
+  position: absolute;
+  top: calc(50% - 14px);
+  transform: translateY(-50%);
+  z-index: 4;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  color: $color-ink-black;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover:not(:disabled) {
+    background-color: #0a0a0c;
+    color: #ffffff;
+    border-color: #0a0a0c;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  &.shelfPrevBtn {
+    left: -14px;
+
+    @include tablet {
+      left: 0;
+    }
+  }
+
+  &.shelfNextBtn {
+    right: -14px;
+
+    @include tablet {
+      right: 0;
+    }
+  }
+
+  @include mobile {
+    display: none; // On mobile, clean touch horizontal swipe is preferred
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 3. PRODUCT CARD (Exact Replication with Qatify Design Polish)
+// -----------------------------------------------------------------------------
+.productCard {
+  scroll-snap-align: start;
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: $shadow-card-hover;
+    border-color: $color-border-medium;
+  }
+
+  @include mobile {
+    padding: 10px;
+    border-radius: $radius-sm;
+  }
+}
+
+.cardTopActions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+}
+
+.wishlistBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid $color-border-subtle;
+  color: $color-text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    color: $color-accent-red;
+    border-color: $color-accent-red;
+    transform: scale(1.1);
+  }
+
+  &.activeWish {
+    color: $color-accent-red;
+    background-color: $color-accent-red-light;
+    border-color: $color-accent-red;
+  }
+}
+
+.cardImageLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 160px;
+  background-color: #ffffff;
+  margin-bottom: 12px;
+  text-decoration: none;
+  overflow: hidden;
+
+  @include mobile {
+    height: 130px;
+    margin-bottom: 8px;
+  }
+}
+
+.productImg {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+
+  .productCard:hover & {
+    transform: scale(1.04);
+  }
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.brandLabel {
+  font-family: $font-heading;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $color-text-muted;
+  margin-bottom: 5px;
+
+  @include mobile {
+    font-size: 9.5px;
+    margin-bottom: 3px;
+  }
+}
+
+.productTitleLink {
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 12px;
+
+  &:hover .productTitle {
+    color: $color-accent-red;
+  }
+}
+
+.productTitle {
+  font-family: $font-heading;
+  font-size: 13px;
+  font-weight: 600;
+  color: $color-ink-black;
+  line-height: 1.35;
+  height: 35px; // Fixed 2-line height for 100% horizontal synchronization across all cards!
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color $transition-fast;
+
+  @include mobile {
+    font-size: 12px;
+    height: 32px;
+  }
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #f4f4f5;
+}
+
+.priceGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+// Standard Regular Price Display
+.standardPrice {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+
+  .currency {
+    font-family: $font-heading;
+    font-size: 11px;
+    font-weight: 800;
+    color: $color-ink-black;
+    letter-spacing: 0.02em;
+  }
+
+  .amount {
+    font-family: $font-heading;
+    font-size: 15.5px;
+    font-weight: 800;
+    color: $color-ink-black;
+  }
+}
+
+// Yellow Pill Highlighted Deal Price (As seen on Dyson item in user's reference screenshot)
+.dealPricePill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  background-color: $color-accent-yellow;
+  color: #0a0a0c;
+  padding: 3px 7px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(250, 204, 21, 0.25);
+
+  .currency {
+    font-family: $font-heading;
+    font-size: 10px;
+    font-weight: 900;
+  }
+
+  .amount {
+    font-family: $font-heading;
+    font-size: 14.5px;
+    font-weight: 900;
+  }
+
+  @include mobile {
+    padding: 2px 5px;
+
+    .currency {
+      font-size: 9px;
+    }
+
+    .amount {
+      font-size: 13px;
+    }
+  }
+}
+
+.originalPrice {
+  font-size: 12px;
+  color: #a1a1aa;
+  text-decoration: line-through;
+  font-weight: 500;
+
+  @include mobile {
+    font-size: 10.5px;
+  }
+}
+
+// Quick Add to Cart Button
+.quickCartBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background-color: #f4f4f5;
+  border: none;
+  color: $color-ink-black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all $transition-fast;
+  flex-shrink: 0;
+
+  &:hover {
+    background-color: $color-accent-red;
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  &.addedSuccess {
+    background-color: #10b981;
+    color: #ffffff;
+  }
+
+  @include mobile {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 4. "VIEW ALL" BOTTOM ACTION BUTTON (Matching Qatify Homepage UI/UX)
+// -----------------------------------------------------------------------------
+.viewAllBottomContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: $space-6;
+
+  @include mobile {
+    margin-top: $space-4;
+  }
+}
+
+.qatifyViewAllBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: $font-heading;
+  font-size: 13px;
+  font-weight: 700;
+  color: $color-ink-black;
+  text-decoration: none;
+  padding: 8px 24px;
+  background-color: $color-surface-muted;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-xs;
+  white-space: nowrap;
+  transition: all $transition-fast;
+
+  span {
+    white-space: nowrap;
+  }
+
+  svg {
+    transition: transform $transition-fast;
+    color: $color-accent-red;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    color: $color-accent-red;
+    background-color: #ffffff;
+    border-color: rgba(225, 29, 72, 0.4);
+    box-shadow: $shadow-xs;
+
+    svg {
+      transform: translateX(3px);
+    }
+  }
+
+  @include mobile {
+    font-size: 12px;
+    padding: 7px 18px;
+    gap: 4px;
+
+    svg {
+      width: 13px;
+      height: 13px;
+    }
+  }
+}
+

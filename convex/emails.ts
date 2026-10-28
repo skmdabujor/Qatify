@@ -110,7 +110,7 @@ export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): s
                 <tr>
                   <td>
                     <div style="font-size: 12px; font-weight: 700; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px;">Air Express Tracking Number</div>
-                    <div style="font-size: 16px; font-weight: 800; color: #e11d48; font-family: monospace; margin: 4px 0 12px 0;">${order.trackingNumber}</div>
+                    <div style="font-size: 16px; font-weight: 800; color: #e06c2a; font-family: monospace; margin: 4px 0 12px 0;">${order.trackingNumber}</div>
                     
                     <div style="font-size: 13px; color: #0a0a0c; margin-bottom: 14px; line-height: 1.4;">
                       ⏱️ <strong>Estimated Doorstep Arrival:</strong> ${order.estimatedDeliveryWindow} (via Hamad Int’l Airport DOH)
@@ -120,7 +120,7 @@ export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): s
                     <table cellpadding="0" cellspacing="0" border="0" width="100%">
                       <tr>
                         <td align="center">
-                          <a href="${trackingUrl}" target="_blank" style="display: block; background-color: #e11d48; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; text-align: center; padding: 12px 20px; border-radius: 8px;">
+                          <a href="${trackingUrl}" target="_blank" style="display: block; background-color: #e06c2a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; text-align: center; padding: 12px 20px; border-radius: 8px;">
                             Track Your Air Shipment Live →
                           </a>
                         </td>
@@ -173,7 +173,7 @@ export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): s
                     <table cellpadding="0" cellspacing="0" border="0" width="100%">
                       <tr>
                         <td style="font-size: 16px; font-weight: 800; color: #0a0a0c;">Total Amount</td>
-                        <td align="right" style="font-size: 18px; font-weight: 800; color: #e11d48;">QAR ${order.totalQAR.toLocaleString()}</td>
+                        <td align="right" style="font-size: 18px; font-weight: 800; color: #e06c2a;">QAR ${order.totalQAR.toLocaleString()}</td>
                       </tr>
                       <tr>
                         <td colspan="2" style="font-size: 12px; color: #64748b; padding-top: 4px;">

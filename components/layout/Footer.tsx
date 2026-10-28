@@ -210,12 +210,12 @@ export const Footer: React.FC = () => {
                     💬 Live Chat & Support
                   </button>
                 </li>
-                <li><Link href="/dashboard">Track International Shipment</Link></li>
+                <li><Link href="/track-order">Track International Shipment</Link></li>
                 <li><Link href="/cart">Shopping Cart & Delivery</Link></li>
                 <li><Link href="/dashboard?tab=orders">Order History & Invoices</Link></li>
                 <li><Link href="/shop?filter=under-99">Deals Under QAR 99</Link></li>
                 <li><Link href="/dashboard?tab=addresses">Qatar Delivery Zones</Link></li>
-                <li><Link href="/dashboard">Direct Air Express Tracking</Link></li>
+                <li><Link href="/track-order">Direct Air Express Tracking</Link></li>
               </ul>
             </div>
 

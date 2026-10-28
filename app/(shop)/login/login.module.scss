@@ -1,0 +1,235 @@
+// =============================================================================
+// Qatify — Login & Signup Page Styles
+// =============================================================================
+
+.pageWrapper {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  background: radial-gradient(circle at 50% 0%, rgba(138, 21, 56, 0.05) 0%, rgba(248, 250, 252, 1) 100%);
+}
+
+.authContainer {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.authCard {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  box-shadow: 0 20px 40px -15px rgba(138, 21, 56, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.cardHeader {
+  padding: 2rem 2rem 1.25rem;
+  text-align: center;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.logoLink {
+  display: inline-flex;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.375rem;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.perks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 0.625rem 1rem;
+  background: #fffdf5;
+  border-bottom: 1px dashed #fef08a;
+
+  .perk {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #854d0e;
+
+    svg {
+      color: #ca8a04;
+    }
+  }
+}
+
+.form {
+  padding: 1.75rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+}
+
+.errorAlert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.625rem;
+  color: #991b1b;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .icon {
+    position: absolute;
+    left: 0.875rem;
+    color: #94a3b8;
+    pointer-events: none;
+  }
+
+  .input {
+    width: 100%;
+    padding: 0.6875rem 2.5rem 0.6875rem 2.625rem;
+    font-size: 0.875rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 0.625rem;
+    background: #f8fafc;
+    color: #0f172a;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #8A1538;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(138, 21, 56, 0.1);
+    }
+  }
+
+  .toggleBtn {
+    position: absolute;
+    right: 0.75rem;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0.25rem;
+
+    &:hover {
+      color: #475569;
+    }
+  }
+}
+
+.phonePrefix {
+  position: absolute;
+  left: 2.625rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+  pointer-events: none;
+}
+
+.phoneInput {
+  padding-left: 5.75rem !important;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 0.8125rem;
+  border-radius: 0.625rem;
+  border: none;
+  background: linear-gradient(135deg, #8A1538 0%, #680E28 100%);
+  color: #ffffff;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(138, 21, 56, 0.25);
+  margin-top: 0.5rem;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(138, 21, 56, 0.35);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
+
+.spinner {
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.footerLink {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+
+  .highlightLink {
+    color: #8A1538;
+    font-weight: 700;
+    text-decoration: underline;
+    margin-left: 0.25rem;
+
+    &:hover {
+      color: #680E28;
+    }
+  }
+}
+
+.securityBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-align: center;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

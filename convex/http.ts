@@ -2,8 +2,11 @@ import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { Webhook } from "standardwebhooks";
+import { auth } from "./auth";
 
 const http = httpRouter();
+
+auth.addHttpRoutes(http);
 
 http.route({
   path: "/polar-webhook",
@@ -91,6 +94,40 @@ http.route({
       });
     } catch (err) {
       console.error("[Polar Webhook] Error processing request:", err);
+      return new Response("Internal Server Error", { status: 500 });
+    }
+  }),
+});
+
+// =============================================================================
+// 17TRACK Inbound Webhook Endpoint
+// Real-time carrier push updates for AliExpress / International cargo
+// =============================================================================
+http.route({
+  path: "/17track-webhook",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    try {
+      const rawBody = await req.text();
+      let body: unknown;
+      try {
+        body = JSON.parse(rawBody);
+      } catch {
+        return new Response("Invalid JSON payload", { status: 400 });
+      }
+
+      if (body && typeof body === "object") {
+        await ctx.runMutation(internal.tracking.process17TrackWebhook, {
+          payload: body,
+        });
+      }
+
+      return new Response(JSON.stringify({ code: 0, message: "ok" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (err) {
+      console.error("[17TRACK Webhook] Error processing request:", err);
       return new Response("Internal Server Error", { status: 500 });
     }
   }),

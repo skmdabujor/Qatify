@@ -1,44 +1,47 @@
-<svg width="512" height="512" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="qatifyRedGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F43F5E" />
-      <stop offset="1" stop-color="#BE123C" />
-    </linearGradient>
-    <linearGradient id="sparkYellowGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FEF08A" />
-      <stop offset="1" stop-color="#EAB308" />
+    <linearGradient id="iconOrangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E86E2A" />
+      <stop offset="50%" stop-color="#E06C2A" />
+      <stop offset="100%" stop-color="#D65D1E" />
     </linearGradient>
   </defs>
 
-  <!-- Squircle Badge -->
-  <rect
-    x="4"
-    y="4"
-    width="92"
-    height="92"
-    rx="24"
-    fill="url(#qatifyRedGrad)"
-  />
+  <!-- Squircle Icon Background -->
+  <rect width="512" height="512" rx="112" fill="url(#iconOrangeGrad)"/>
 
-  <!-- Geometric "Q" Body Outer Ring -->
-  <circle
-    cx="48"
-    cy="46"
-    r="26"
-    stroke="#FFFFFF"
-    stroke-width="11"
-    stroke-linecap="round"
-  />
+  <!-- Centered Tilted Shopping Bag with Q Monogram -->
+  <g transform="translate(68, 44) rotate(2.5 188 208)">
+    <!-- Arched Bag Handles (Bolder 28px for razor-sharp micro-resolution) -->
+    <path 
+      d="M 132 112 C 132 32, 244 32, 244 112" 
+      stroke="#FFFFFF" 
+      stroke-width="28" 
+      stroke-linecap="round" 
+      fill="none" 
+    />
+    <!-- Bag Body -->
+    <path 
+      d="M 82 116 C 82 96, 98 86, 118 86 L 258 86 C 278 86, 294 96, 294 116 L 322 324 C 324 344, 308 358, 288 358 L 88 358 C 68 358, 52 344, 54 324 Z" 
+      fill="#FFFFFF" 
+    />
+    <!-- Rivets / Grommets -->
+    <circle cx="132" cy="122" r="9" fill="#E06C2A" />
+    <circle cx="244" cy="122" r="9" fill="#E06C2A" />
 
-  <!-- Dynamic Forward-Leaning Lightning Bolt / Spark as the "Q" Tail in Electric Yellow -->
-  <path
-    d="M 52 50 L 66 32 L 60 52 L 78 50 L 46 80 L 52 58 Z"
-    fill="url(#sparkYellowGrad)"
-    stroke="#0A0A0C"
-    stroke-width="2.5"
-    stroke-linejoin="round"
-  />
-
-  <!-- Forward Speed Lines in Yellow -->
-  <circle cx="28" cy="28" r="3.5" fill="#FACC15" />
+    <!-- Q Monogram in Signature Orange -->
+    <g id="icon-letter-Q">
+      <ellipse cx="188" cy="232" rx="60" ry="70" fill="#E06C2A" />
+      <ellipse cx="188" cy="230" rx="31" ry="40" fill="#FFFFFF" />
+      <!-- Punchy Q Tail -->
+      <path 
+        d="M 190 252 C 215 268, 244 288, 272 310 C 258 318, 236 322, 218 306 Z" 
+        fill="#E06C2A" 
+      />
+      <path 
+        d="M 214 272 L 276 314 C 282 319, 278 330, 268 330 L 232 325 Z" 
+        fill="#E06C2A" 
+      />
+    </g>
+  </g>
 </svg>

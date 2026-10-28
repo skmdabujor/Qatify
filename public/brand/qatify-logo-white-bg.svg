@@ -1,0 +1,95 @@
+<svg width="640" height="240" viewBox="0 0 640 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bagGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E86E2A" />
+      <stop offset="100%" stop-color="#D65D1E" />
+    </linearGradient>
+    <filter id="softBagShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#E06C2A" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <g transform="translate(68, 20)">
+    
+    <!-- Tilted Orange Shopping Bag with White Q -->
+    <g transform="rotate(3.5 85 85)" filter="url(#softBagShadow)">
+      <!-- Arched Handles in Orange -->
+      <path 
+        d="M 60 46 C 60 16, 110 16, 110 46" 
+        stroke="#E06C2A" 
+        stroke-width="8.5" 
+        stroke-linecap="round" 
+        fill="none" 
+      />
+      <!-- Bag Body in Vibrant Orange -->
+      <path 
+        d="M 40 48 C 40 40, 46 36, 54 36 L 118 36 C 126 36, 131 40, 131 48 L 143 134 C 144 142, 138 148, 130 148 L 42 148 C 34 148, 28 142, 29 134 Z" 
+        fill="url(#bagGrad)" 
+      />
+      <!-- Handle Rivets -->
+      <circle cx="60" cy="50" r="3.5" fill="#FFFFFF" />
+      <circle cx="110" cy="50" r="3.5" fill="#FFFFFF" />
+
+      <!-- White 'Q' Monogram inside Bag -->
+      <g id="letter-Q-white">
+        <ellipse cx="85" cy="96" rx="24" ry="28" fill="#FFFFFF" />
+        <ellipse cx="85" cy="95" rx="13" ry="16" fill="#E06C2A" />
+        <path 
+          d="M 86 104 C 95 111, 106 119, 118 128 C 112 131, 103 133, 96 126 Z" 
+          fill="#FFFFFF" 
+        />
+        <path 
+          d="M 96 112 L 120 130 C 123 132, 121 136, 117 136 L 103 134 Z" 
+          fill="#FFFFFF" 
+        />
+      </g>
+    </g>
+
+    <!-- Wordmark 'atify' in Premium Dark Charcoal #0F172A -->
+    <text 
+      x="172" 
+      y="126" 
+      font-family="'Plus Jakarta Sans', Arial, Helvetica, sans-serif" 
+      font-size="104" 
+      font-weight="900" 
+      letter-spacing="-2.5" 
+      fill="#0F172A"
+    >atify</text>
+
+    <!-- Smiling Face Dot on 'i' in Signature Orange at (299, 58) -->
+    <g transform="translate(299, 58)">
+      <circle cx="0" cy="0" r="13" fill="#E06C2A" />
+      <circle cx="-4" cy="-2.5" r="1.8" fill="#FFFFFF" />
+      <circle cx="4" cy="-2.5" r="1.8" fill="#FFFFFF" />
+      <path 
+        d="M -5 1.5 Q 0 7.5 5 1.5" 
+        stroke="#FFFFFF" 
+        stroke-width="2.2" 
+        stroke-linecap="round" 
+        fill="none" 
+      />
+    </g>
+
+    <!-- Bottom Tagline Banner in Orange -->
+    <g transform="translate(0, 168)">
+      <line x1="50" y1="12" x2="88" y2="12" stroke="#E06C2A" stroke-width="3" stroke-linecap="round" />
+      
+      <!-- Orange Tagline Capsule Pill -->
+      <rect x="100" y="0" width="245" height="24" rx="12" fill="#E06C2A" />
+      
+      <text 
+        x="222" 
+        y="16.5" 
+        font-family="'Plus Jakarta Sans', Arial, Helvetica, sans-serif" 
+        font-size="12" 
+        font-weight="900" 
+        letter-spacing="1.8" 
+        fill="#FFFFFF" 
+        text-anchor="middle"
+      >SHOP MORE, PAY LESS</text>
+      
+      <line x1="357" y1="12" x2="395" y2="12" stroke="#E06C2A" stroke-width="3" stroke-linecap="round" />
+    </g>
+
+  </g>
+</svg>

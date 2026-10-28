@@ -760,7 +760,7 @@ export const ChatWidget: React.FC = () => {
                           <span>{msg.orderCard.itemsCount} products</span>
                         </div>
                         <div className={styles.orderSnippetRow}>
-                          <span>Air Waybill:</span>
+                          <span>Tracking Code:</span>
                           <span className={styles.monoCode}>
                             {msg.orderCard.trackingNumber}
                           </span>

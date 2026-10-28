@@ -1,0 +1,128 @@
+const sharp = require('sharp');
+const fs = require('fs');
+
+function generateLogo({
+  width = 460,
+  height = 210,
+  fontSize = 98,
+  bagX = 26,
+  textX = 162,
+  tagline = "SHOP MORE, PAY LESS"
+} = {}) {
+  return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="brandOrangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E56926" />
+      <stop offset="60%" stop-color="#E06C2A" />
+      <stop offset="100%" stop-color="#D75C1C" />
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <!-- Background with subtle rounded corners -->
+  <rect width="${width}" height="${height}" rx="16" fill="url(#brandOrangeGrad)"/>
+
+  <!-- Logo Group -->
+  <g id="qatify-logo">
+    
+    <!-- Dynamic Shopping Bag with 'Q' Monogram -->
+    <g transform="rotate(3.5 86 85)" filter="url(#softShadow)">
+      <!-- Arched Handles -->
+      <path 
+        d="M 64 45 C 64 16, 108 16, 108 45" 
+        stroke="#FFFFFF" 
+        stroke-width="7.5" 
+        stroke-linecap="round" 
+        fill="none" 
+      />
+      <!-- Bag Body -->
+      <path 
+        d="M 45 46 C 45 40, 50 36, 56 36 L 116 36 C 122 36, 127 40, 127 46 L 138 126 C 139 133, 133 139, 126 139 L 46 139 C 39 139, 33 133, 34 126 Z" 
+        fill="#FFFFFF" 
+      />
+      <!-- Grommets -->
+      <circle cx="64" cy="49" r="3" fill="#E06C2A" />
+      <circle cx="108" cy="49" r="3" fill="#E06C2A" />
+
+      <!-- Bold 'Q' Monogram in Signature Orange -->
+      <g id="bag-q">
+        <!-- Q Outer Ring -->
+        <ellipse cx="86" cy="92" rx="23" ry="27" fill="#E06C2A" />
+        <!-- Q Inner Counter (White) -->
+        <ellipse cx="86" cy="91" rx="12" ry="15" fill="#FFFFFF" />
+        <!-- Dynamic Q Tail -->
+        <path 
+          d="M 87 99 C 96 105, 106 112, 116 120 C 111 123, 103 125, 96 119 Z" 
+          fill="#E06C2A" 
+        />
+        <path 
+          d="M 95 106 L 118 122 C 120 124, 119 127, 115 127 L 102 125 Z" 
+          fill="#E06C2A" 
+        />
+      </g>
+    </g>
+
+    <!-- Wordmark 'atify' -->
+    <text 
+      x="${textX}" 
+      y="120" 
+      font-family="'Plus Jakarta Sans', Arial, Helvetica, sans-serif" 
+      font-size="${fontSize}" 
+      font-weight="900" 
+      letter-spacing="-2" 
+      fill="#FFFFFF"
+    >atify</text>
+
+    <!-- Smiling Face Dot on 'i' covering native dot -->
+    <g transform="translate(${textX + 115}, 59)">
+      <circle cx="0" cy="0" r="11" fill="#FFFFFF" />
+      <circle cx="-3.5" cy="-2" r="1.5" fill="#E06C2A" />
+      <circle cx="3.5" cy="-2" r="1.5" fill="#E06C2A" />
+      <path 
+        d="M -4.5 1.5 Q 0 6 4.5 1.5" 
+        stroke="#E06C2A" 
+        stroke-width="1.8" 
+        stroke-linecap="round" 
+        fill="none" 
+      />
+    </g>
+
+    <!-- Tagline / Slogan Pill & Flanking Dashes -->
+    <g transform="translate(0, 164)">
+      <!-- Left Dash -->
+      <line x1="95" y1="11" x2="125" y2="11" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+      
+      <!-- White Tagline Pill Badge -->
+      <rect x="135" y="0" width="220" height="22" rx="11" fill="#FFFFFF" />
+      
+      <!-- Tagline Text inside the white pill -->
+      <text 
+        x="245" 
+        y="15" 
+        font-family="'Plus Jakarta Sans', Arial, Helvetica, sans-serif" 
+        font-size="11" 
+        font-weight="900" 
+        letter-spacing="1.5" 
+        fill="#E06C2A" 
+        text-anchor="middle"
+      >${tagline}</text>
+      
+      <!-- Right Dash -->
+      <line x1="365" y1="11" x2="395" y2="11" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+    </g>
+
+  </g>
+</svg>`;
+}
+
+async function run() {
+  const svg = generateLogo();
+  fs.writeFileSync('public/qatify-logo-v1.svg', svg);
+  const buf = await sharp(Buffer.from(svg)).png().toBuffer();
+  fs.writeFileSync('public/qatify-logo-v1.png', buf);
+  console.log('Generated qatify-logo-v1.png successfully');
+}
+
+run();

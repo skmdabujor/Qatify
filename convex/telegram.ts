@@ -394,3 +394,73 @@ export const testSendTelegram = action({
   },
 });
 
+/**
+ * 4. Internal Action: Send Telegram alert when an order's shipment milestone updates
+ */
+export const sendShipmentStatusTelegram = internalAction({
+  args: {
+    orderId: v.id("orders"),
+    stage: v.string(),
+    checkpointDesc: v.string(),
+    checkpointLocation: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const order: Doc<"orders"> | null = await ctx.runQuery(
+      internal.orders.getOrderByIdInternal,
+      { orderId: args.orderId }
+    );
+    if (!order) return { success: false };
+
+    const dbRecipients: Doc<"telegram_recipients">[] = await ctx.runQuery(
+      internal.telegram.getActiveRecipientsInternal,
+      {}
+    );
+
+    const defaultBotToken = process.env.TELEGRAM_BOT_TOKEN;
+    const defaultChatId = process.env.TELEGRAM_CHAT_ID;
+
+    const targets: Array<{ chatId: string; botToken: string; name: string }> = [];
+    for (const r of dbRecipients) {
+      const token = r.botToken || defaultBotToken;
+      if (token && r.chatId) targets.push({ chatId: r.chatId, botToken: token, name: r.name });
+    }
+    if (targets.length === 0 && defaultBotToken && defaultChatId) {
+      targets.push({ chatId: defaultChatId, botToken: defaultBotToken, name: "Store Owner" });
+    }
+    if (targets.length === 0) return { success: true };
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://qatify.qa";
+    const text = [
+      `✈️ <b>[SHIPMENT MILESTONE UPDATE - QATIFY]</b>`,
+      `━━━━━━━━━━━━━━━━━━━━━━`,
+      `📦 <b>Order Ref:</b> #${order.orderNumber}`,
+      `🏷️ <b>New Status:</b> <b>${args.stage}</b>`,
+      `📍 <b>Location:</b> ${args.checkpointLocation}`,
+      `📝 <b>Event:</b> ${args.checkpointDesc}`,
+      `👤 <b>Customer:</b> ${order.address.fullName} (${order.address.municipality})`,
+      `🚚 <b>Air Tracking:</b> <code>${order.trackingNumber}</code>`,
+      order.aliexpressTrackingNumber ? `🌐 <b>AliExpress Code:</b> <code>${order.aliexpressTrackingNumber}</code>` : "",
+      `━━━━━━━━━━━━━━━━━━━━━━`,
+      `🔗 <a href="${siteUrl}/track-order?code=${encodeURIComponent(order.orderNumber)}">View Customer Tracking Page</a>`,
+    ].filter(Boolean).join("\n");
+
+    for (const target of targets) {
+      try {
+        await fetch(`https://api.telegram.org/bot${target.botToken}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: target.chatId,
+            text,
+            parse_mode: "HTML",
+          }),
+        });
+      } catch (err) {
+        console.error(`[Telegram Alert] Failed to send update to ${target.chatId}:`, err);
+      }
+    }
+    return { success: true };
+  },
+});
+
+

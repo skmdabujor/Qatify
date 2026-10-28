@@ -183,6 +183,10 @@ $breakpoint-wide: 1440px;
   }
 }
 
+@mixin btn-primary-orange {
+  @include btn-primary-red;
+}
+
 @mixin btn-secondary-black {
   @include button-reset;
   background-color: $color-ink-black;

@@ -1,7 +1,10 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
 export default defineSchema({
+  ...authTables,
+
   // 1. Product Catalog Table
   products: defineTable({
     productId: v.string(), // custom id like 'qat-001'
@@ -160,6 +163,21 @@ export default defineSchema({
     polarCheckoutId: v.optional(v.string()),
     polarOrderId: v.optional(v.string()),
     trackingNumber: v.string(),
+    aliexpressTrackingNumber: v.optional(v.string()),
+    aliexpressCarrier: v.optional(v.string()),
+    trackingProvider: v.optional(v.string()),
+    lastTrackingSync: v.optional(v.string()),
+    liveCheckpoints: v.optional(
+      v.array(
+        v.object({
+          time: v.string(),
+          status: v.string(),
+          location: v.string(),
+          description: v.string(),
+          carrier: v.optional(v.string()),
+        })
+      )
+    ),
     estimatedDeliveryWindow: v.string(),
     timeline: v.array(
       v.object({
@@ -175,6 +193,7 @@ export default defineSchema({
   })
     .index("by_orderNumber", ["orderNumber"])
     .index("by_trackingNumber", ["trackingNumber"])
+    .index("by_aliexpressTrackingNumber", ["aliexpressTrackingNumber"])
     .index("by_polarCheckoutId", ["polarCheckoutId"])
     .index("by_status", ["status"])
     .index("by_customerEmail", ["customerEmail"])

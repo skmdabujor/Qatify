@@ -39,6 +39,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { QatifyLogo } from '@/components/brand/QatifyLogo';
+import { AuthModal } from '@/components/auth/AuthModal';
 import { useShop } from '@/context/ShopContext';
 import { CATEGORIES, PRODUCTS } from '@/data/products';
 import { Product, toProduct } from '@/types/product';
@@ -93,6 +94,10 @@ export const Navbar: React.FC = () => {
     selectedCategory,
     setSelectedCategory,
   } = useShop();
+
+  const viewer = useQuery(api.users.viewer);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'signIn' | 'signUp'>('signIn');
 
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
@@ -575,7 +580,27 @@ export const Navbar: React.FC = () => {
             </div>
 
             <div className={styles.topUtilityLinks}>
-              <Link href="/dashboard" className={styles.utilityLink}>
+              {viewer ? (
+                <Link href="/dashboard" className={styles.utilityLink} style={{ color: '#facc15', fontWeight: 600 }}>
+                  <User size={12} />
+                  <span>Hi, {viewer.name ? viewer.name.split(' ')[0] : viewer.email.split('@')[0]}</span>
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthModalMode('signIn');
+                    setIsAuthModalOpen(true);
+                  }}
+                  className={styles.utilityLink}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit' }}
+                >
+                  <User size={12} />
+                  <span>Sign In / Register</span>
+                </button>
+              )}
+              <span className={styles.utilityDivider}>|</span>
+              <Link href="/track-order" className={styles.utilityLink}>
                 Track Order
               </Link>
               <span className={styles.utilityDivider}>|</span>
@@ -793,8 +818,22 @@ export const Navbar: React.FC = () => {
               >
                 <div className={styles.iconWithBadge}>
                   <User size={20} />
+                  {viewer && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        bottom: '1px',
+                        right: '1px',
+                        width: '7px',
+                        height: '7px',
+                        borderRadius: '50%',
+                        backgroundColor: '#22c55e',
+                        border: '1.5px solid #ffffff',
+                      }}
+                    />
+                  )}
                 </div>
-                <span className={styles.iconLabel}>Account</span>
+                <span className={styles.iconLabel}>{viewer ? (viewer.name ? viewer.name.split(' ')[0] : 'Account') : 'Account'}</span>
               </Link>
 
               {/* Cart Drawer Trigger with Live Count & QAR Subtotal */}
@@ -1030,6 +1069,11 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
       )}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        defaultMode={authModalMode}
+      />
     </header>
   );
 };

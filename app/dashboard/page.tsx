@@ -38,8 +38,14 @@ import {
   Sparkles,
   Trash2,
   Send,
+  RotateCw,
+  Edit3,
 } from 'lucide-react';
 import { TelegramAlertsManager } from '@/components/admin/TelegramAlertsManager';
+import { TrackingTimeline } from '@/components/tracking/TrackingTimeline';
+import { AliExpressLinkModal } from '@/components/admin/AliExpressLinkModal';
+import { useAuthActions } from '@convex-dev/auth/react';
+import { AuthModal } from '@/components/auth/AuthModal';
 import { useShop } from '@/context/ShopContext';
 import { QATAR_MUNICIPALITIES } from '@/data/products';
 import { QatarAddress, Order } from '@/types/product';
@@ -75,6 +81,9 @@ function DashboardContent() {
     'all' | 'analytics' | 'pipeline' | 'orders' | 'telegram'
   >('all');
 
+  const viewer = useQuery(api.users.viewer);
+  const { signOut } = useAuthActions();
+
   // User Account Email from localStorage (Customer Hub)
   const [userEmail, setUserEmail] = useState<string>('');
 
@@ -83,13 +92,21 @@ function DashboardContent() {
   const [emailInput, setEmailInput] = useState('');
   const [emailError, setEmailError] = useState('');
 
-  // Hydrate user email from localStorage
+  // Hydrate user email from Convex viewer or localStorage
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (viewer?.email) {
+      setUserEmail(viewer.email);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('qatify_user_email', viewer.email);
+      }
+    } else if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('qatify_user_email') || '';
       setUserEmail(stored);
     }
-  }, []);
+  }, [viewer]);
+
+
+
 
   // Server-side Dynamic Admin Access Check against Convex `admins` table
   const adminCheck = useQuery(
@@ -145,7 +162,12 @@ function DashboardContent() {
     showToast('Account Connected 🇶🇦', `Signed in as ${clean}`, 'success');
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (err) {
+      console.error('Sign out error:', err);
+    }
     localStorage.removeItem('qatify_user_email');
     setUserEmail('');
     setRole('customer');
@@ -167,6 +189,8 @@ function DashboardContent() {
   );
 
   const updateStatus = useMutation(api.orders.updateOrderStatus);
+  const refreshTracking = useMutation(api.tracking.refreshOrderTracking);
+  const [linkingOrder, setLinkingOrder] = useState<any>(null);
 
   // Combine live orders strictly based on current authenticated role
   const displayOrders: any[] =
@@ -340,13 +364,13 @@ function DashboardContent() {
                 <div className={styles.userProfileMini}>
                   <div className={styles.userProfileLeft}>
                     <div className={styles.avatarCircle}>
-                      {userEmail ? userEmail.slice(0, 2).toUpperCase() : 'QA'}
+                      {viewer?.name ? viewer.name.slice(0, 2).toUpperCase() : (userEmail ? userEmail.slice(0, 2).toUpperCase() : 'QA')}
                     </div>
                     <div className={styles.userInfo}>
                       <span className={styles.userName}>
                         {isAdmin
                           ? (adminName || 'Store Admin')
-                          : (userEmail ? 'Qatar Customer' : 'Qatar Guest')}
+                          : (viewer?.name || (userEmail ? 'Qatar Customer' : 'Qatar Guest'))}
                       </span>
                       <span className={styles.userLocation} title={userEmail || 'Guest Session'}>
                         {userEmail || 'Guest Account'}
@@ -358,7 +382,7 @@ function DashboardContent() {
                     <span>
                       {isAdmin
                         ? (adminRole === 'owner' ? 'Store Owner' : 'Admin Authorized')
-                        : (userEmail ? 'Verified Account' : 'Guest Account')}
+                        : (viewer ? 'Verified Convex Account' : (userEmail ? 'Verified Account' : 'Guest Account'))}
                     </span>
                   </div>
                 </div>
@@ -649,74 +673,7 @@ function DashboardContent() {
                     </div>
 
                     {selectedOrder ? (
-                      <>
-                        {/* Active Shipment Card */}
-                        <div className={styles.activeShipmentBanner}>
-                          <div className={styles.shipmentMetaBlock}>
-                            <span className={styles.shipmentTag}>LIVE AIR EXPRESS</span>
-                            <h3 className={styles.shipmentTrackingCode}>
-                              {selectedOrder.trackingNumber}
-                            </h3>
-                            <span className={styles.shipmentRef}>
-                              Order Ref: {selectedOrder.orderNumber} • Placed on {selectedOrder.date}
-                            </span>
-                          </div>
-
-                          <div className={styles.shipmentEtaBlock}>
-                            <span className={styles.etaLabel}>Target Qatar Arrival:</span>
-                            <strong className={styles.etaDates}>
-                              {selectedOrder.estimatedDeliveryWindow}
-                            </strong>
-                            <span className={styles.etaLocation}>
-                              Destination: {selectedOrder.address?.municipality || 'Qatar'}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* 5-STAGE PROGRESS TIMELINE */}
-                        <div className={styles.fiveStageTimeline}>
-                          {selectedOrder.timeline?.map((step: any, idx: number) => {
-                            const isDone = step.completed;
-                            const isCurrent = step.current;
-
-                            return (
-                              <div
-                                key={step.stage}
-                                className={`${styles.timelineNodeRow} ${
-                                  isDone ? styles.done : isCurrent ? styles.current : ''
-                                }`}
-                              >
-                                <div className={styles.nodeColumn}>
-                                  <div className={styles.nodeCircle}>
-                                    {isDone ? (
-                                      <CheckCircle2 size={16} />
-                                    ) : isCurrent ? (
-                                      <Plane size={15} className={styles.pulsePlane} />
-                                    ) : (
-                                      <span className={styles.stageIndex}>{idx + 1}</span>
-                                    )}
-                                  </div>
-                                  {idx < selectedOrder.timeline.length - 1 && (
-                                    <div className={styles.nodeLine} />
-                                  )}
-                                </div>
-
-                                <div className={styles.nodeDetails}>
-                                  <div className={styles.nodeTopLine}>
-                                    <h4 className={styles.nodeTitle}>{step.title}</h4>
-                                    <span className={styles.nodeDate}>{step.date}</span>
-                                  </div>
-                                  <p className={styles.nodeDesc}>{step.description}</p>
-                                  <div className={styles.nodeLocation}>
-                                    <MapPin size={12} />
-                                    <span>{step.location}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </>
+                      <TrackingTimeline order={selectedOrder} />
                     ) : (
                       <div className={styles.activeShipmentBanner} style={{ textAlign: 'center', padding: '40px 20px' }}>
                         <p>No active shipment selected. Search by your order reference (QA-XXXXXX) or tracking code above.</p>
@@ -1245,7 +1202,92 @@ function DashboardContent() {
                                 <td>{customerName} ({municipality})</td>
                                 <td>{ord.items?.length || 1} items ({itemsText})</td>
                                 <td className="price-qar">QAR {ord.totalQAR?.toLocaleString()}</td>
-                                <td><code>{ord.trackingNumber}</code></td>
+                                <td>
+                                  <div><code>{ord.trackingNumber}</code></div>
+                                  {isLive && (
+                                    ord.aliexpressTrackingNumber ? (
+                                      <div style={{ marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                        <span
+                                          style={{
+                                            fontSize: '11px',
+                                            color: '#facc15',
+                                            backgroundColor: '#1c1917',
+                                            padding: '2px 6px',
+                                            borderRadius: '4px',
+                                            border: '1px solid #44403c',
+                                            fontFamily: 'monospace',
+                                          }}
+                                          title={`Carrier: ${ord.aliexpressCarrier || 'cainiao'}`}
+                                        >
+                                          AliExpress: {ord.aliexpressTrackingNumber}
+                                        </span>
+                                        <button
+                                          type="button"
+                                          title="Sync Live AliExpress Status"
+                                          onClick={async () => {
+                                            try {
+                                              await refreshTracking({ orderNumber: ord.orderNumber });
+                                              showToast('Syncing AliExpress ✈️', `Live checkpoints fetching for ${ord.orderNumber}...`, 'info');
+                                            } catch (err) {
+                                              console.error(err);
+                                              showToast('Sync Failed', 'Could not sync live checkpoints.', 'error');
+                                            }
+                                          }}
+                                          style={{
+                                            background: 'transparent',
+                                            border: 'none',
+                                            color: '#e06c2a',
+                                            cursor: 'pointer',
+                                            padding: '2px',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                          }}
+                                        >
+                                          <RotateCw size={12} />
+                                        </button>
+                                        <button
+                                          type="button"
+                                          title="Edit AliExpress Tracking Code"
+                                          onClick={() => setLinkingOrder(ord)}
+                                          style={{
+                                            background: 'transparent',
+                                            border: 'none',
+                                            color: '#a1a1aa',
+                                            cursor: 'pointer',
+                                            padding: '2px',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                          }}
+                                        >
+                                          <Edit3 size={12} />
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <div style={{ marginTop: '4px' }}>
+                                        <button
+                                          type="button"
+                                          onClick={() => setLinkingOrder(ord)}
+                                          style={{
+                                            background: 'rgba(224, 108, 42, 0.1)',
+                                            color: '#e06c2a',
+                                            border: '1px solid rgba(224, 108, 42, 0.3)',
+                                            padding: '2px 8px',
+                                            borderRadius: '4px',
+                                            fontSize: '11px',
+                                            fontWeight: 600,
+                                            cursor: 'pointer',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '4px',
+                                          }}
+                                        >
+                                          <Plane size={11} />
+                                          <span>+ Link AliExpress</span>
+                                        </button>
+                                      </div>
+                                    )
+                                  )}
+                                </td>
                                 <td>
                                   <span className={
                                     ord.status === 'Delivered'
@@ -1316,71 +1358,23 @@ function DashboardContent() {
           </main>
         </div>
 
-        {/* Email Sign-In / Account Link Modal */}
-        {isEmailModalOpen && (
-          <div
-            className={styles.modalOverlay}
-            onClick={() => setIsEmailModalOpen(false)}
-          >
-            <div
-              className={styles.modalCard}
-              onClick={(e) => e.stopPropagation()}
-              style={{ maxWidth: '420px' }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                <div style={{ background: '#0a0a0c', color: '#facc15', padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Users size={20} />
-                </div>
-                <div>
-                  <h3 className={styles.modalTitle} style={{ margin: 0, fontSize: '17px' }}>Account Sign In</h3>
-                  <p style={{ margin: '3px 0 0', fontSize: '13px', color: '#71717a' }}>
-                    Enter your email to access your account & orders.
-                  </p>
-                </div>
-              </div>
+        {/* Convex Auth Sign-In & Sign-Up Modal */}
+        <AuthModal
+          isOpen={isEmailModalOpen}
+          onClose={() => setIsEmailModalOpen(false)}
+          onSuccess={() => setIsEmailModalOpen(false)}
+        />
 
-              <form onSubmit={handleSaveEmail} className={styles.modalForm}>
-                <div className={styles.modalField}>
-                  <label>Email Address</label>
-                  <input
-                    type="email"
-                    autoFocus
-                    required
-                    value={emailInput}
-                    onChange={(e) => {
-                      setEmailInput(e.target.value);
-                      setEmailError('');
-                    }}
-                    placeholder="e.g. yourname@example.com"
-                  />
-                </div>
-
-                {emailError && (
-                  <div style={{ color: '#ef4444', fontSize: '12.5px', marginTop: '2px' }}>
-                    {emailError}
-                  </div>
-                )}
-
-                <p style={{ fontSize: '11.5px', color: '#71717a', margin: '4px 0 0', lineHeight: 1.4 }}>
-                  💡 Store Owners & Admins: When you enter the email authorized in the Convex backend database, Store Admin operations unlock automatically.
-                </p>
-
-                <div className={styles.modalActions}>
-                  <button
-                    type="button"
-                    onClick={() => setIsEmailModalOpen(false)}
-                    className={styles.cancelModalBtn}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className={styles.saveModalBtn}>
-                    Continue & Sign In
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+        {/* Dropshipping AliExpress Link & Sync Modal */}
+        <AliExpressLinkModal
+          isOpen={Boolean(linkingOrder)}
+          onClose={() => setLinkingOrder(null)}
+          order={linkingOrder}
+          adminEmail={userEmail}
+          onSuccess={() => {
+            showToast('Tracking Linked! ✈️', 'AliExpress logistics synced into Qatify timeline', 'success');
+          }}
+        />
       </div>
     </div>
   );

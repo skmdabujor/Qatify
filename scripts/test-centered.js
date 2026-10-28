@@ -1,0 +1,125 @@
+const sharp = require('sharp');
+const fs = require('fs');
+
+function buildLogoCentered() {
+  const width = 460;
+  const height = 210;
+  const tagline = "SHOP MORE, PAY LESS";
+
+  return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="brandOrangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E56926" />
+      <stop offset="60%" stop-color="#E06C2A" />
+      <stop offset="100%" stop-color="#D75C1C" />
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <!-- Background with smooth rounded corners -->
+  <rect width="${width}" height="${height}" rx="18" fill="url(#brandOrangeGrad)"/>
+
+  <!-- Logo Group Centered -->
+  <g id="qatify-logo">
+    
+    <!-- Dynamic Shopping Bag with 'Q' Monogram (Tilted 3.5 deg) -->
+    <g transform="rotate(3.5 111 85)" filter="url(#softShadow)">
+      <!-- Arched Handles -->
+      <path 
+        d="M 89 45 C 89 16, 133 16, 133 45" 
+        stroke="#FFFFFF" 
+        stroke-width="7.5" 
+        stroke-linecap="round" 
+        fill="none" 
+      />
+      <!-- Bag Body -->
+      <path 
+        d="M 70 46 C 70 40, 75 36, 81 36 L 141 36 C 147 36, 152 40, 152 46 L 163 126 C 164 133, 158 139, 151 139 L 71 139 C 64 139, 58 133, 59 126 Z" 
+        fill="#FFFFFF" 
+      />
+      <!-- Grommets -->
+      <circle cx="89" cy="49" r="3" fill="#E06C2A" />
+      <circle cx="133" cy="49" r="3" fill="#E06C2A" />
+
+      <!-- Bold 'Q' Monogram in Signature Orange -->
+      <g id="bag-q">
+        <!-- Q Outer Ring -->
+        <ellipse cx="111" cy="92" rx="23" ry="27" fill="#E06C2A" />
+        <!-- Q Inner Counter (White) -->
+        <ellipse cx="111" cy="91" rx="12" ry="15" fill="#FFFFFF" />
+        <!-- Dynamic Q Tail -->
+        <path 
+          d="M 112 99 C 121 105, 131 112, 141 120 C 136 123, 128 125, 121 119 Z" 
+          fill="#E06C2A" 
+        />
+        <path 
+          d="M 120 106 L 143 122 C 145 124, 144 127, 140 127 L 127 125 Z" 
+          fill="#E06C2A" 
+        />
+      </g>
+    </g>
+
+    <!-- Wordmark 'atify' -->
+    <text 
+      x="187" 
+      y="120" 
+      font-family="'Plus Jakarta Sans', Arial, Helvetica, sans-serif" 
+      font-size="98" 
+      font-weight="900" 
+      letter-spacing="-2" 
+      fill="#FFFFFF"
+    >atify</text>
+
+    <!-- Smiling Face Dot on 'i' covering native dot at (306, 56) -->
+    <g transform="translate(306, 56)">
+      <circle cx="0" cy="0" r="11.5" fill="#FFFFFF" />
+      <circle cx="-3.5" cy="-2.5" r="1.6" fill="#E06C2A" />
+      <circle cx="3.5" cy="-2.5" r="1.6" fill="#E06C2A" />
+      <path 
+        d="M -4.5 1.5 Q 0 6.5 4.5 1.5" 
+        stroke="#E06C2A" 
+        stroke-width="1.9" 
+        stroke-linecap="round" 
+        fill="none" 
+      />
+    </g>
+
+    <!-- Tagline / Slogan Pill & Flanking Dashes Centered -->
+    <g transform="translate(0, 164)">
+      <!-- Left Dash -->
+      <line x1="80" y1="11" x2="112" y2="11" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+      
+      <!-- White Tagline Pill Badge -->
+      <rect x="122" y="0" width="216" height="22" rx="11" fill="#FFFFFF" />
+      
+      <!-- Tagline Text inside the white pill -->
+      <text 
+        x="230" 
+        y="15" 
+        font-family="'Plus Jakarta Sans', Arial, Helvetica, sans-serif" 
+        font-size="11" 
+        font-weight="900" 
+        letter-spacing="1.5" 
+        fill="#E06C2A" 
+        text-anchor="middle"
+      >${tagline}</text>
+      
+      <!-- Right Dash -->
+      <line x1="348" y1="11" x2="380" y2="11" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+    </g>
+
+  </g>
+</svg>`;
+}
+
+async function run() {
+  const svg = buildLogoCentered();
+  fs.writeFileSync('public/qatify-logo-centered.svg', svg);
+  const buf = await sharp(Buffer.from(svg)).png().toBuffer();
+  fs.writeFileSync('public/qatify-logo-centered.png', buf);
+  console.log('Saved centered logo');
+}
+
+run();
