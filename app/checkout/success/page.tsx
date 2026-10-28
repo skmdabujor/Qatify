@@ -35,6 +35,8 @@ function CheckoutSuccessContent() {
     orderNumber: orderNumber || 'QA-000000',
   });
 
+  const [copied, setCopied] = useState(false);
+
   // Clear cart upon arriving at success page
   useEffect(() => {
     clearCart();
@@ -129,6 +131,102 @@ function CheckoutSuccessContent() {
               </span>
             </div>
           </div>
+
+          {/* VIP Reward Coupon Box (Rendered when 20 items were purchased) */}
+          {order?.vipRewardCoupon && (
+            <div
+              style={{
+                marginTop: '22px',
+                marginBottom: '20px',
+                padding: '18px 20px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)',
+                border: '2px dashed #e06c2a',
+                boxShadow: '0 4px 16px rgba(224, 108, 42, 0.18)',
+                textAlign: 'center',
+              }}
+            >
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: '#c2410c',
+                  fontWeight: 800,
+                  fontSize: '15px',
+                  marginBottom: '8px',
+                }}
+              >
+                <span>🎁 EXCLUSIVE VIP REWARD UNLOCKED!</span>
+              </div>
+              <p
+                style={{
+                  fontSize: '13.5px',
+                  color: '#9a3412',
+                  marginBottom: '12px',
+                  lineHeight: '1.4',
+                }}
+              >
+                Congratulations on purchasing the 20-item Mega Bundle! Here is your exclusive single-use coupon for <strong>20% OFF on any single product</strong> on your next purchase:
+              </p>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  background: '#ffffff',
+                  padding: '8px 18px',
+                  borderRadius: '8px',
+                  border: '1px solid #fdba74',
+                }}
+              >
+                <code
+                  style={{
+                    fontFamily: 'monospace',
+                    fontSize: '18px',
+                    fontWeight: 800,
+                    color: '#e06c2a',
+                    letterSpacing: '0.08em',
+                  }}
+                >
+                  {order.vipRewardCoupon}
+                </code>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (order.vipRewardCoupon) {
+                      navigator.clipboard.writeText(order.vipRewardCoupon);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2500);
+                    }
+                  }}
+                  style={{
+                    background: '#e06c2a',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '6px 14px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {copied ? '✓ Copied!' : 'Copy Code'}
+                </button>
+              </div>
+              <span
+                style={{
+                  display: 'block',
+                  fontSize: '11px',
+                  color: '#c2410c',
+                  marginTop: '8px',
+                  fontWeight: 500,
+                }}
+              >
+                Valid for 60 days on Qatify catalog • Single redemption
+              </span>
+            </div>
+          )}
 
           {/* Action CTAs */}
           <div className={styles.successCtaRow}>

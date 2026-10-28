@@ -36,6 +36,12 @@ interface ShopContextType {
   removeFromCart: (itemId: string) => void;
   clearCart: () => void;
 
+  // Bundle Promotion (Tiered 5-20 Items, >= 180 QAR)
+  bundleItemCount: number;
+  bundleTierPercent: number;
+  bundleDiscountQAR: number;
+  addBundleToCart: (products: Product[]) => void;
+
   // Wishlist
   wishlist: Product[];
   toggleWishlist: (product: Product) => void;
@@ -252,6 +258,30 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const isFreeShipping = cartSubtotal >= FREE_SHIPPING_THRESHOLD;
   const freeShippingRemaining = Math.max(0, FREE_SHIPPING_THRESHOLD - cartSubtotal);
 
+  // Bundle Promotion Calculation (Qualifying products: priceQAR >= 180)
+  const qualifyingBundleItems = cart.filter((item) => item.product.priceQAR >= 180);
+  const bundleItemCount = qualifyingBundleItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  let bundleTierPercent = 0;
+  if (bundleItemCount >= 20) {
+    bundleTierPercent = 20;
+  } else if (bundleItemCount >= 15) {
+    bundleTierPercent = 15;
+  } else if (bundleItemCount >= 10) {
+    bundleTierPercent = 10;
+  } else if (bundleItemCount >= 5) {
+    bundleTierPercent = 5;
+  }
+
+  const qualifyingBundleSubtotal = qualifyingBundleItems.reduce(
+    (acc, item) => acc + item.product.priceQAR * item.quantity,
+    0
+  );
+  const bundleDiscountQAR =
+    bundleTierPercent > 0
+      ? Math.round((qualifyingBundleSubtotal * bundleTierPercent) / 100)
+      : 0;
+
   // Cart Actions
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
@@ -319,6 +349,40 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
   const clearCart = () => {
     setCart([]);
+  };
+
+  const addBundleToCart = (products: Product[]) => {
+    setCart((prev) => {
+      const next = [...prev];
+      for (const product of products) {
+        const color = product.variants?.colors?.[0]?.name;
+        const option = product.variants?.options?.[0]?.values?.[0];
+        const itemUniqueId = `${product.id}-${color || 'default'}-${option || 'default'}`;
+        const existingIndex = next.findIndex((item) => item.id === itemUniqueId);
+
+        if (existingIndex > -1) {
+          next[existingIndex] = {
+            ...next[existingIndex],
+            quantity: next[existingIndex].quantity + 1,
+          };
+        } else {
+          next.push({
+            id: itemUniqueId,
+            product,
+            quantity: 1,
+            selectedColor: color,
+            selectedOption: option,
+          });
+        }
+      }
+      return next;
+    });
+
+    showToast(
+      'Bundle Added to Cart! 🎁',
+      `${products.length} products added with Tiered Bundle Discount.`,
+      'success'
+    );
   };
 
   // Wishlist Actions
@@ -465,6 +529,10 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         removeFromCart,
         clearCart,
+        bundleItemCount,
+        bundleTierPercent,
+        bundleDiscountQAR,
+        addBundleToCart,
         wishlist,
         toggleWishlist,
         isInWishlist,

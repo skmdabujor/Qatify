@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { action, query, internalAction } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { internal, api } from "./_generated/api";
 import { Doc } from "./_generated/dataModel";
 
 // Helper: Generate responsive branded HTML email template for Qatify
@@ -57,18 +57,18 @@ export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): s
               <table cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td valign="middle" style="padding-right: 12px;">
-                    <img src="https://mellow-puma-618.eu-west-1.convex.cloud/api/storage/abf7ad3e-2e8a-4cad-81fa-e45e052d50b9" width="38" height="38" alt="Qatify" style="display: block; border-radius: 10px;" />
+                    <img src="https://mellow-puma-618.eu-west-1.convex.cloud/api/storage/kg2bvtt5c9jz56hv42td27x8318h40pk" width="40" height="40" alt="Qatify" style="display: block; border-radius: 10px;" />
                   </td>
                   <td valign="middle">
                     <table cellpadding="0" cellspacing="0" border="0">
                       <tr>
                         <td valign="middle">
-                          <span style="font-size: 22px; font-weight: 900; letter-spacing: -0.5px; color: #ffffff; text-transform: uppercase;">
+                          <span style="font-size: 24px; font-weight: 900; letter-spacing: -0.5px; color: #ffffff; text-transform: uppercase;">
                             QATIFY
                           </span>
                         </td>
                         <td valign="middle" style="padding-left: 8px;">
-                          <span style="background-color: #facc15; color: #0a0a0c; font-size: 11px; font-weight: 800; padding: 2px 6px; border-radius: 4px; font-family: monospace; display: inline-block;">
+                          <span style="background-color: #facc15; color: #0a0a0c; font-size: 11px; font-weight: 900; padding: 2px 7px; border-radius: 4px; font-family: monospace; display: inline-block;">
                             .QA
                           </span>
                         </td>
@@ -327,5 +327,103 @@ export const previewOrderConfirmationHtml = query({
 
     const siteUrl = "http://localhost:3000";
     return generateOrderEmailHtml(order, siteUrl);
+  },
+});
+
+// 3. Public Action: Dispatch or Test Order Confirmation Email (via Resend)
+export const resendOrderConfirmationEmailAction = action({
+  args: {
+    orderNumber: v.optional(v.string()),
+    orderId: v.optional(v.id("orders")),
+    recipientEmail: v.optional(v.string()),
+  },
+  handler: async (
+    ctx,
+    args
+  ): Promise<{
+    success: boolean;
+    emailId?: string;
+    orderNumber?: string;
+    recipient?: string;
+    simulated?: boolean;
+    error?: string;
+    message?: string;
+  }> => {
+    let order: Doc<"orders"> | null = null;
+
+    if (args.orderId) {
+      order = await ctx.runQuery(internal.orders.getOrderByIdInternal, {
+        orderId: args.orderId,
+      });
+    } else if (args.orderNumber) {
+      order = await ctx.runQuery(api.orders.getByOrderNumber, {
+        orderNumber: args.orderNumber,
+      });
+    } else {
+      const recentOrders = await ctx.runQuery(api.orders.listRecentOrders, {
+        limit: 1,
+      });
+      if (recentOrders && recentOrders.length > 0) {
+        order = recentOrders[0];
+      }
+    }
+
+    if (!order) {
+      return { success: false, error: "No order found to send confirmation email." };
+    }
+
+    const resendApiKey = process.env.RESEND_API_KEY;
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://qatify.qa";
+    const recipientEmail =
+      args.recipientEmail?.trim().toLowerCase() ||
+      order.customerEmail ||
+      order.address.email ||
+      "sheakmohammadabujor@gmail.com";
+
+    const emailHtml = generateOrderEmailHtml(order, siteUrl);
+
+    if (!resendApiKey) {
+      return {
+        success: true,
+        simulated: true,
+        orderNumber: order.orderNumber,
+        recipient: recipientEmail,
+        message: `Simulated order confirmation email for #${order.orderNumber} to ${recipientEmail}`,
+      };
+    }
+
+    try {
+      const response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${resendApiKey}`,
+        },
+        body: JSON.stringify({
+          from: process.env.EMAIL_FROM || "Qatify Qatar <onboarding@resend.dev>",
+          to: [recipientEmail],
+          subject: `Order Confirmed: ${order.orderNumber} | Qatify Qatar`,
+          html: emailHtml,
+          text: `Shukran! Your Qatify order ${order.orderNumber} is confirmed. Total: QAR ${order.totalQAR}. Track your shipment live at: ${siteUrl}/dashboard?order=${order.orderNumber}`,
+          reply_to: "support@qatify.qa",
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return { success: false, error: errorText, orderNumber: order.orderNumber, recipient: recipientEmail };
+      }
+
+      const data = await response.json();
+      return {
+        success: true,
+        emailId: data.id,
+        orderNumber: order.orderNumber,
+        recipient: recipientEmail,
+        message: `Order confirmation email sent for #${order.orderNumber} to ${recipientEmail} (ID: ${data.id})`,
+      };
+    } catch (err) {
+      return { success: false, error: String(err), orderNumber: order.orderNumber, recipient: recipientEmail };
+    }
   },
 });

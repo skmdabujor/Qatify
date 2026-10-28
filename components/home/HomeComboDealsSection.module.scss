@@ -1,0 +1,617 @@
+// =============================================================================
+// Qatify — Home Combo Deals, Shell Shocker & New Drop Promo Section SCSS
+// 3-Card Balanced Layout:
+// - Card 1: Combo Up & Save (Gaming & Desk Tech)
+// - Card 2: Shell Shocker (Flash Deal, Clean Typography - No Fire Icon)
+// - Card 3: New Drop (Electric Yellow Hype Tag - No Fire Icon)
+// =============================================================================
+
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.sectionWrapper {
+  width: 100%;
+  margin-top: $space-4;
+  margin-bottom: $space-8;
+
+  @include mobile {
+    margin-top: $space-3;
+    margin-bottom: $space-6;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 3-COLUMN CARDS GRID
+// -----------------------------------------------------------------------------
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+
+  @include laptop {
+    gap: 12px;
+  }
+
+  @include tablet {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 14px;
+    padding-bottom: 8px;
+    margin: 0 -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 4px;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// INDIVIDUAL PROMO CARD BASE
+// -----------------------------------------------------------------------------
+.promoCard {
+  position: relative;
+  border-radius: 14px;
+  padding: 16px 14px 18px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #bfd5f2;
+  box-shadow: 0 4px 14px rgba(4, 62, 141, 0.12);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  min-height: 290px;
+
+  // The signature Newegg blue vertical gradient sampled from original image
+  background: linear-gradient(
+    180deg,
+    #043e8d 0%,
+    #08499b 28%,
+    #3065a7 50%,
+    #7da2d0 68%,
+    #bcd3f0 82%,
+    #e0edff 92%,
+    #e8f2fc 100%
+  );
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(4, 62, 141, 0.2);
+  }
+
+  @include tablet {
+    flex: 0 0 320px;
+    scroll-snap-align: start;
+  }
+
+  @include mobile {
+    flex: 0 0 88vw;
+    max-width: 340px;
+    padding: 14px 12px 16px 12px;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// CARD HEADER ROW (Typography only - No Fire Icons!)
+// -----------------------------------------------------------------------------
+.cardHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+// Card 1 Title
+.categoryTitle {
+  font-family: $font-heading;
+  font-size: 16.5px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+
+  @include mobile {
+    font-size: 15px;
+  }
+}
+
+// Card 2 Title: Shell Shocker (Crisp Clean White)
+.shockerTitleGroup {
+  display: inline-flex;
+  align-items: center;
+}
+
+.shockerText {
+  font-family: $font-heading;
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  line-height: 1.2;
+}
+
+// Card 3 Title: New Drop (Crisp Clean White)
+.newDropTitleGroup {
+  display: inline-flex;
+  align-items: center;
+}
+
+.newDropText {
+  font-family: $font-heading;
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  line-height: 1.2;
+}
+
+.headerActionLink {
+  font-family: $font-heading;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  text-decoration: none;
+  opacity: 0.95;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+    transform: translateX(2px);
+  }
+
+  .chevronSmall {
+    font-size: 10px;
+    line-height: 1;
+  }
+}
+
+// Subtitle (Savings Callout)
+.savingsCallout {
+  font-family: $font-heading;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+
+  @include mobile {
+    font-size: 12.5px;
+    margin-bottom: 8px;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// INNER WHITE / LIGHT CONTAINER (Bundle Products Area)
+// -----------------------------------------------------------------------------
+.bundleBox {
+  background-color: #cdd9eb;
+  border-radius: 10px;
+  padding: 10px 10px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 10px;
+  min-height: 130px;
+  justify-content: space-between;
+}
+
+// Top Single Item in Bundle
+.topItemRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.thumbFrame {
+  width: 44px;
+  height: 44px;
+  background-color: #ffffff;
+  border-radius: 6px;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.08);
+  }
+}
+
+.itemTitle {
+  font-family: $font-heading;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-decoration: none;
+
+  &:hover {
+    color: #043e8d;
+  }
+}
+
+// Clean Modern Slot Status Divider (Replaced the confusing axis track)
+.slotDividerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 0;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: 6px;
+  border: 1px dashed rgba(224, 108, 42, 0.4);
+}
+
+.slotCounterTag {
+  font-family: $font-heading;
+  font-size: 11px;
+  font-weight: 700;
+  color: #043e8d;
+  letter-spacing: 0.02em;
+}
+
+.quickAddPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: $color-accent-orange;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 10.5px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(224, 108, 42, 0.35);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $color-accent-orange-hover;
+    transform: scale(1.05);
+  }
+}
+
+// Bottom Companion Products (2 Columns)
+.bottomItemsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.bottomItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  overflow: hidden;
+  position: relative;
+}
+
+.removeSmallBtn {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.9);
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: auto;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: scale(1.2);
+    background: #dc2626;
+  }
+}
+
+.addSlotCardBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px dashed #9bb7d8;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #043e8d;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #ffffff;
+    border-color: #043e8d;
+    transform: scale(1.02);
+  }
+}
+
+.smallThumbFrame {
+  width: 32px;
+  height: 32px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.smallItemTitle {
+  font-family: $font-heading;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #334155;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-decoration: none;
+
+  &:hover {
+    color: #043e8d;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// PRICING ROW (= QAR XXX.XX)
+// -----------------------------------------------------------------------------
+.pricingRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+.equalSign {
+  font-family: $font-mono;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0a0a0c;
+  line-height: 1;
+}
+
+.totalPrice {
+  font-family: $font-mono;
+  font-size: 19px;
+  font-weight: 900;
+  color: #0a0a0c;
+  letter-spacing: -0.02em;
+  line-height: 1;
+
+  .currency {
+    font-size: 13px;
+    font-weight: 700;
+    margin-right: 3px;
+  }
+}
+
+.strikePrice {
+  font-family: $font-mono;
+  font-size: 12.5px;
+  color: #64748b;
+  text-decoration: line-through;
+  font-weight: 500;
+  line-height: 1;
+}
+
+// -----------------------------------------------------------------------------
+// ACTION BUTTON (Single Wide Add to Cart on all 3 cards!)
+// -----------------------------------------------------------------------------
+.wideAddToCartBtn {
+  width: 100%;
+  background: linear-gradient(135deg, #f97316 0%, #e06c2a 100%);
+  border: none;
+  color: #ffffff;
+  font-family: $font-heading;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 9.5px 16px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 2px 10px rgba(224, 108, 42, 0.45);
+
+  &:hover {
+    background: linear-gradient(135deg, #ea580c 0%, #c85718 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(224, 108, 42, 0.6);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  .btnChevron {
+    font-size: 10px;
+    margin-left: 2px;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// SPOTLIGHT DEALS SPECIFIC STYLES (Cards 2 & 3)
+// -----------------------------------------------------------------------------
+.shockerProductTitle {
+  font-family: $font-heading;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.35;
+  margin-bottom: 5px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 38px; // Fixed 2-line height for perfect horizontal alignment!
+
+  @include mobile {
+    font-size: 13px;
+    height: 36px;
+  }
+}
+
+.shockerPromoNote {
+  font-family: $font-body;
+  font-size: 11.5px;
+  color: #dbeafe;
+  line-height: 1.3;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 30px; // Fixed height for alignment
+
+  @include mobile {
+    font-size: 11px;
+    margin-bottom: 8px;
+    height: 28px;
+  }
+}
+
+.shockerVisualRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex: 1;
+}
+
+.shockerPriceBlock {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 85px;
+}
+
+.shockerPriceLarge {
+  font-family: $font-mono;
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+  .cents {
+    font-size: 14px;
+    vertical-align: super;
+    font-weight: 700;
+  }
+
+  .currency {
+    font-size: 12.5px;
+    display: block;
+    margin-bottom: 2px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  }
+
+  @include mobile {
+    font-size: 21px;
+  }
+}
+
+.shockerStrikethrough {
+  font-family: $font-mono;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: line-through;
+  margin-top: 3px;
+}
+
+.shockerCarouselContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.shockerCardBox {
+  width: 135px;
+  height: 92px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
+
+  @include mobile {
+    width: 122px;
+    height: 82px;
+  }
+}

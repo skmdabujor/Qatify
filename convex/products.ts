@@ -81,7 +81,29 @@ export const getUnder99 = query({
   },
 });
 
-// 7. Seed / Import mock products into Convex database (Protected)
+// 7. Fetch Bundle-Eligible Products (Price >= 180 QAR, in stock)
+export const getBundleEligibleProducts = query({
+  args: {
+    categorySlug: v.optional(v.string()),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const takeCount = args.limit ?? 100;
+    const allProducts = await ctx.db.query("products").take(takeCount);
+
+    return allProducts.filter((p) => {
+      const isEligiblePrice = p.priceQAR >= 180;
+      const isInStock = p.inStock !== false;
+      const matchesCategory =
+        !args.categorySlug ||
+        args.categorySlug === "all" ||
+        p.categorySlug === args.categorySlug;
+      return isEligiblePrice && isInStock && matchesCategory;
+    });
+  },
+});
+
+// 8. Seed / Import mock products into Convex database (Protected)
 export const seedProducts = mutation({
   args: {
     adminEmail: v.optional(v.string()),

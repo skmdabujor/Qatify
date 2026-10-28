@@ -49,6 +49,9 @@ export default function CheckoutPage() {
     cartSubtotal,
     appliedCoupon,
     appliedDiscountQAR,
+    bundleItemCount,
+    bundleTierPercent,
+    bundleDiscountQAR,
     isFreeShipping,
     savedAddresses,
     addAddress,
@@ -116,7 +119,8 @@ export default function CheckoutPage() {
     selectedShipping.id === 'standard-air' && isFreeShipping
       ? 0
       : selectedShipping.priceQAR;
-  const grandTotal = Math.max(0, cartSubtotal + shippingCost - (appliedDiscountQAR || 0));
+  const totalDiscount = (appliedDiscountQAR || 0) + (bundleDiscountQAR || 0);
+  const grandTotal = Math.max(0, cartSubtotal + shippingCost - totalDiscount);
 
   // Handle address submit -> move to step 2
   const handleAddressSubmit = (e: React.FormEvent) => {
@@ -190,7 +194,7 @@ export default function CheckoutPage() {
         items: cart,
         subtotalQAR: cartSubtotal,
         shippingQAR: shippingCost,
-        discountQAR: appliedDiscountQAR || 0,
+        discountQAR: totalDiscount,
         totalQAR: grandTotal,
         address,
         shippingMethod: selectedShipping,
@@ -814,6 +818,20 @@ export default function CheckoutPage() {
                   <span>Subtotal</span>
                   <span className="price-qar">QAR {cartSubtotal.toLocaleString()}</span>
                 </div>
+
+                {bundleDiscountQAR > 0 && (
+                  <div className={styles.calcRow} style={{ color: '#16a34a' }}>
+                    <span>Tiered Bundle ({bundleTierPercent}% OFF)</span>
+                    <span className="price-qar">- QAR {bundleDiscountQAR.toLocaleString()}</span>
+                  </div>
+                )}
+
+                {appliedDiscountQAR > 0 && (
+                  <div className={styles.calcRow} style={{ color: '#16a34a' }}>
+                    <span>Promo Coupon</span>
+                    <span className="price-qar">- QAR {appliedDiscountQAR.toLocaleString()}</span>
+                  </div>
+                )}
 
                 <div className={styles.calcRow}>
                   <div className={styles.calcLabelCol}>

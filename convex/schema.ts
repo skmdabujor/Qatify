@@ -119,6 +119,10 @@ export default defineSchema({
     discountQAR: v.number(),
     totalQAR: v.number(),
     couponCode: v.optional(v.string()),
+    bundleDiscountQAR: v.optional(v.number()),
+    bundleTierPercent: v.optional(v.number()),
+    bundleItemCount: v.optional(v.number()),
+    vipRewardCoupon: v.optional(v.string()),
     customerEmail: v.optional(v.string()),
     customerPhone: v.optional(v.string()),
     address: v.object({

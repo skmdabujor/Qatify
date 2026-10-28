@@ -1,0 +1,741 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.pageWrapper {
+  width: 100%;
+  min-height: 100vh;
+  background: #f8fafc;
+  padding-bottom: 160px; // Clearance for sticky bottom bundle tray
+}
+
+// -----------------------------------------------------------------------------
+// HERO HEADER (QATIFY SIGNATURE OBSIDIAN + VIBRANT ORANGE GLOW)
+// -----------------------------------------------------------------------------
+.heroHeader {
+  background: linear-gradient(135deg, #121216 0%, #1c1c22 45%, #2a1608 100%);
+  color: #ffffff;
+  padding: 44px 0 38px 0;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 2px solid rgba(224, 108, 42, 0.3);
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: -80px;
+    bottom: -80px;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(224, 108, 42, 0.22) 0%, transparent 70%);
+    pointer-events: none;
+  }
+}
+
+.heroContent {
+  max-width: 880px;
+}
+
+.badgeRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.vipPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(224, 108, 42, 0.18);
+  border: 1px solid rgba(224, 108, 42, 0.45);
+  color: #f97316;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 5px 14px;
+  border-radius: 20px;
+}
+
+.minSpendNotice {
+  color: #d4d4d8;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.heroTitle {
+  font-family: $font-heading;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  color: #ffffff;
+
+  @include mobile {
+    font-size: 25px;
+  }
+}
+
+.heroSubtitle {
+  font-size: 15px;
+  line-height: 1.55;
+  color: #e4e4e7;
+  margin-bottom: 22px;
+
+  strong {
+    color: #fdba74;
+    font-weight: 700;
+  }
+}
+
+// 4-Tier Ladder Visual in Hero
+.tierLadderGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.tierCard {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+
+  &.activeTier {
+    background: rgba(224, 108, 42, 0.2);
+    border-color: #e06c2a;
+    box-shadow: 0 0 12px rgba(224, 108, 42, 0.25);
+  }
+
+  &.vipTier {
+    background: linear-gradient(135deg, rgba(224, 108, 42, 0.28) 0%, rgba(234, 88, 12, 0.38) 100%);
+    border-color: #ea580c;
+    box-shadow: 0 0 16px rgba(234, 88, 12, 0.35);
+  }
+}
+
+.tierDot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+
+  .activeTier & {
+    background: #e06c2a;
+  }
+  .vipTier & {
+    background: #ea580c;
+  }
+}
+
+.tierInfo {
+  display: flex;
+  flex-direction: column;
+
+  strong {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  span {
+    font-size: 11.5px;
+    color: #cbd5e1;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// FILTER CONTROLS BAR
+// -----------------------------------------------------------------------------
+.filterBarSection {
+  background: #ffffff;
+  border-bottom: 1px solid #e4e4e7;
+  padding: 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.filterControlsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.categoryChips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.chipBtn {
+  background: #f4f4f5;
+  border: 1px solid #e4e4e7;
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #52525b;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #e4e4e7;
+    color: #0a0a0c;
+  }
+
+  &.activeChip {
+    background: #e06c2a;
+    border-color: #e06c2a;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(224, 108, 42, 0.35);
+  }
+}
+
+.searchWrap {
+  position: relative;
+  min-width: 250px;
+
+  @include mobile {
+    width: 100%;
+  }
+
+  svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a1a1aa;
+  }
+
+  input {
+    width: 100%;
+    background: #f8f9fa;
+    border: 1px solid #d4d4d8;
+    border-radius: 20px;
+    padding: 8px 14px 8px 36px;
+    font-size: 13px;
+    color: #18181b;
+    outline: none;
+    transition: all 0.2s ease;
+
+    &:focus {
+      border-color: #e06c2a;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(224, 108, 42, 0.12);
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// PRODUCT CATALOG GRID
+// -----------------------------------------------------------------------------
+.catalogSection {
+  padding: 32px 0;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.catalogCountText {
+  font-size: 14px;
+  color: #71717a;
+  font-weight: 600;
+}
+
+.productsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+
+  @include laptop {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.bundleProductCard {
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  &:hover {
+    border-color: #fdba74;
+    box-shadow: 0 6px 18px rgba(224, 108, 42, 0.1);
+    transform: translateY(-2px);
+  }
+
+  &.cardSelected {
+    border: 2px solid #e06c2a;
+    background: #fff8f5;
+    box-shadow: 0 4px 16px rgba(224, 108, 42, 0.18);
+  }
+}
+
+.eligibleBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #e06c2a;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.03em;
+  z-index: 2;
+  box-shadow: 0 1px 4px rgba(224, 108, 42, 0.3);
+}
+
+.imageWrap {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  overflow: hidden;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
+}
+
+.productMeta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.categoryTag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.productTitle {
+  font-family: $font-heading;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #18181b;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 38px;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: auto;
+  margin-bottom: 14px;
+}
+
+.priceValue {
+  font-size: 19px;
+  font-weight: 800;
+  color: #e06c2a;
+}
+
+.currency {
+  font-size: 12px;
+  font-weight: 700;
+  margin-right: 2px;
+}
+
+.addBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #e06c2a;
+  background: #e06c2a;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(224, 108, 42, 0.25);
+
+  &:hover:not(:disabled) {
+    background: #c85718;
+    border-color: #c85718;
+    transform: translateY(-1px);
+  }
+
+  &.removeBtn {
+    background: #f4f4f5;
+    border-color: #d4d4d8;
+    color: #3f3f46;
+    box-shadow: none;
+
+    &:hover {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #dc2626;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #a1a1aa;
+    border-color: #a1a1aa;
+    box-shadow: none;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// STICKY BOTTOM BUNDLE TRAY (LIVE TRACKER WITH QATIFY ORANGE ACCENTS)
+// -----------------------------------------------------------------------------
+.stickyBottomTray {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(18, 18, 22, 0.96);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(224, 108, 42, 0.35);
+  color: #ffffff;
+  padding: 14px 0 16px 0;
+  z-index: 100;
+  box-shadow: 0 -8px 26px rgba(0, 0, 0, 0.35);
+}
+
+.trayLayout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  @include tablet {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+}
+
+// Progress & Avatars Column
+.leftProgressCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.statusMessageRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.motivationText {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #fdba74;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.counterBadge {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #ffffff;
+  background: rgba(224, 108, 42, 0.25);
+  border: 1px solid rgba(224, 108, 42, 0.45);
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+// Visual Progress Bar Track with 4 Milestone Nodes
+.progressBarWrapper {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  overflow: visible;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, #fdba74 0%, #f97316 50%, #e06c2a 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(224, 108, 42, 0.5);
+}
+
+.milestoneMarkers {
+  position: absolute;
+  top: -6px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.markerNode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+
+  &:first-child {
+    transform: translateX(0);
+  }
+  &:last-child {
+    transform: translateX(-100%);
+  }
+}
+
+.markerDot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #27272a;
+  border: 2px solid #ffffff;
+  font-size: 8px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+
+  &.reachedDot {
+    background: #e06c2a;
+    border-color: #fdba74;
+    box-shadow: 0 0 10px #e06c2a;
+  }
+}
+
+// Mini Selected Items Avatar Row
+.selectedThumbnailsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    height: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(224, 108, 42, 0.4);
+  }
+}
+
+.thumbSlot {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  background: #ffffff;
+  padding: 2px;
+  border: 1px solid rgba(224, 108, 42, 0.4);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.removeThumbBtn {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 10px;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: scale(1.15);
+  }
+}
+
+// Right Action & Pricing Column
+.rightActionCol {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  @include tablet {
+    justify-content: space-between;
+  }
+
+  @include mobile {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+}
+
+.priceCalculationBox {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  @include mobile {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.originalStrikeRow {
+  font-size: 12px;
+  color: #a1a1aa;
+  text-decoration: line-through;
+}
+
+.savingsCalloutRow {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fdba74;
+}
+
+.finalTotalRow {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: $font-heading;
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.primaryCtaBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: 10px;
+  font-size: 14.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  background: linear-gradient(135deg, #f97316 0%, #e06c2a 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 14px rgba(224, 108, 42, 0.45);
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ea580c 0%, #c85718 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(224, 108, 42, 0.6);
+  }
+
+  &.lockedBtn {
+    background: #27272a;
+    color: #71717a;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  &.vipActiveBtn {
+    background: linear-gradient(135deg, #f97316 0%, #c85718 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 18px rgba(224, 108, 42, 0.6);
+    animation: pulseGlowOrange 2s infinite ease-in-out;
+  }
+}
+
+@keyframes pulseGlowOrange {
+  0% {
+    box-shadow: 0 0 0 0 rgba(224, 108, 42, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(224, 108, 42, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(224, 108, 42, 0);
+  }
+}

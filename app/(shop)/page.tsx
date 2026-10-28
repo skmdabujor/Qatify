@@ -35,6 +35,7 @@ import {
 import { ProductCard } from '@/components/product/ProductCard';
 import { CircularCategoryNav } from '@/components/category';
 import { FirstTimeDiscountPopup } from '@/components/popup/FirstTimeDiscountPopup';
+import { HomeComboDealsSection } from '@/components/home/HomeComboDealsSection';
 import { PRODUCTS, CATEGORIES } from '@/data/products';
 import { toProduct, toCategory } from '@/types/product';
 import styles from './page.module.scss';
@@ -349,6 +350,11 @@ export default function ShopHomePage() {
             </div>
           </div>
         </section>
+
+        {/* ===================================================================
+            SECTION 5.5: QATIFY COMBO DEALS & SHELL SHOCKER SPOTLIGHT
+        ==================================================================== */}
+        <HomeComboDealsSection />
 
         {/* ===================================================================
             SECTION 6: BEST-SELLING SMART ACCESSORIES & UNDER QAR 99

@@ -1481,6 +1481,2235 @@ export const PRODUCTS: Product[] = [
       hubOrigin: 'Regional Tech Distribution Hub',
     },
   }
+,
+  {
+    "id": "qat-024",
+    "slug": "keychron-q1-pro-wireless-custom-mechanical-keyboard",
+    "title": "Keychron Q1 Pro QMK/VIA Wireless Custom Mechanical Keyboard (Gateron Jupiter Red)",
+    "shortDescription": "Full aluminum CNC body, double-gasket acoustic mount, hot-swappable PCB, and Bluetooth 5.1 multi-device pairing.",
+    "fullDescription": "Crafted for productivity and elite gaming in Qatar. The Keychron Q1 Pro features an aircraft-grade 6063 CNC machined aluminum body, KSA profile double-shot PBT keycaps, and south-facing RGB backlighting.",
+    "category": "Gaming & Desk Tech",
+    "categorySlug": "gaming-gear",
+    "subcategory": "Keyboards",
+    "brand": "Keychron",
+    "priceQAR": 689,
+    "originalPriceQAR": 689,
+    "discountPercent": 0,
+    "rating": 4.94,
+    "reviewCount": 182,
+    "soldCount": 420,
+    "stockPercent": 88,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": true,
+    "badge": "HOT DROP",
+    "images": [
+      "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Keychron",
+      "Mechanical Keyboard",
+      "Custom Keyboard",
+      "Wireless",
+      "Hot-swap"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Carbon Black",
+          "hex": "#18181b"
+        },
+        {
+          "name": "Silver Gray",
+          "hex": "#71717a"
+        }
+      ],
+      "options": [
+        {
+          "name": "Switch Type",
+          "values": [
+            "Gateron Red (Linear)",
+            "Gateron Brown (Tactile)"
+          ]
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 689,
+        "savingsText": "VIP Tech Piece"
+      }
+    ],
+    "specifications": {
+      "Body Material": "Full CNC Machined 6063 Aluminum",
+      "Mounting Style": "Double Gasket Acoustic Mount",
+      "Battery": "4000mAh Rechargeable Li-polymer (Up to 300 Hours)",
+      "Connectivity": "Bluetooth 5.1 + Type-C Wired"
+    },
+    "packageContents": [
+      "Keychron Q1 Pro Fully Assembled",
+      "Type-C to Type-C Cable",
+      "Type-A Adapter",
+      "Switch & Keycap Puller"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-025",
+    "slug": "sony-wh-1000xm5-wireless-noise-cancelling-headphones",
+    "title": "Sony WH-1000XM5 Wireless Industry-Leading Noise Cancelling Over-Ear Headphones",
+    "shortDescription": "Dual-processor Auto NC Optimizer, 8 beamforming microphones, 30-hour battery life, and ultra-comfortable soft fit leather.",
+    "fullDescription": "The pinnacle of acoustic silence in Doha. Featuring two processors controlling eight microphones, the Sony WH-1000XM5 provides unparalleled noise cancellation for air travel, office focus, and everyday luxury audio.",
+    "category": "TWS & Spatial Audio",
+    "categorySlug": "tws-audio",
+    "subcategory": "Headphones",
+    "brand": "Sony",
+    "priceQAR": 1199,
+    "originalPriceQAR": 1199,
+    "discountPercent": 0,
+    "rating": 4.96,
+    "reviewCount": 520,
+    "soldCount": 940,
+    "stockPercent": 92,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "FLAGSHIP",
+    "images": [
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Sony",
+      "WH-1000XM5",
+      "ANC",
+      "Wireless Headphones",
+      "Hi-Res Audio"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Black",
+          "hex": "#0a0a0c"
+        },
+        {
+          "name": "Silver / Cream",
+          "hex": "#e2e8f0"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 1199,
+        "savingsText": "Qatar Official"
+      }
+    ],
+    "specifications": {
+      "Noise Cancellation": "Industry Leading Auto NC Optimizer with V1 + QN1 Processors",
+      "Battery Life": "30 Hours with ANC / 40 Hours without ANC",
+      "Audio Drivers": "30mm Carbon Fiber Composite Dome"
+    },
+    "packageContents": [
+      "Sony WH-1000XM5 Headphones",
+      "Collapsible Carrying Case",
+      "Audio Cable 1.2m",
+      "USB-C Charging Cable"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-026",
+    "slug": "anker-prime-20000mah-200w-power-bank",
+    "title": "Anker Prime 20,000mAh Power Bank (200W Multi-Port Fast Output with Smart Digital Display)",
+    "shortDescription": "Simultaneous 2x 100W USB-C output, smart LCD power status monitor, compact soda-can form factor.",
+    "fullDescription": "Power two high-spec MacBook Pros simultaneously anywhere in Qatar. Compact enough to slip into a backpack, the Anker Prime 20K features intelligent ActiveShield 2.0 safety and a rich real-time digital display.",
+    "category": "GaN Chargers & Banks",
+    "categorySlug": "chargers-powerbanks",
+    "subcategory": "Power Banks",
+    "brand": "Anker",
+    "priceQAR": 499,
+    "originalPriceQAR": 499,
+    "discountPercent": 0,
+    "rating": 4.91,
+    "reviewCount": 310,
+    "soldCount": 880,
+    "stockPercent": 85,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": true,
+    "badge": "BESTSELLER",
+    "images": [
+      "https://images.unsplash.com/photo-1609592426815-f5b2fa012017?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Anker",
+      "Power Bank",
+      "200W",
+      "Laptop Charger",
+      "Fast Charge"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Graphite Black",
+          "hex": "#27272a"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 499,
+        "savingsText": "Base Price"
+      }
+    ],
+    "specifications": {
+      "Capacity": "20,000mAh / 72Wh Airline Approved",
+      "Total Output": "200W Max Shared Output",
+      "Screen": "Full Color TFT Smart Power Display"
+    },
+    "packageContents": [
+      "Anker Prime 20,000mAh Power Bank",
+      "0.6m 140W USB-C Cable",
+      "Travel Pouch",
+      "Welcome Guide"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-027",
+    "slug": "benq-screenbar-halo-wireless-monitor-light",
+    "title": "BenQ ScreenBar Halo Wireless Asymmetric Monitor Light Bar with Backlight Ambience",
+    "shortDescription": "Patented asymmetric optical design, 3 ambient lighting modes, wireless rotary controller, and curved monitor bracket.",
+    "fullDescription": "The ultimate monitor lighting bar in Qatar. Eliminates screen reflection with zero eye strain, featuring an integrated rear ambient backlight and a magnetic wireless control puck with touch controls.",
+    "category": "Gaming & Desk Tech",
+    "categorySlug": "gaming-gear",
+    "subcategory": "Desk Lighting",
+    "brand": "BenQ",
+    "priceQAR": 549,
+    "originalPriceQAR": 549,
+    "discountPercent": 0,
+    "rating": 4.93,
+    "reviewCount": 220,
+    "soldCount": 390,
+    "stockPercent": 90,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": false,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "PREMIUM",
+    "images": [
+      "https://images.unsplash.com/photo-1547082299-de196ea013d6?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "BenQ",
+      "ScreenBar",
+      "Desk Setup",
+      "Monitor Light",
+      "RGB"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Space Gray Metallic",
+          "hex": "#3f3f46"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 549,
+        "savingsText": "Regular Price"
+      }
+    ],
+    "specifications": {
+      "Optical Design": "Patented Asymmetric Optics with Dual Rear Ambient Light",
+      "Color Temperature": "2700K to 6500K Stepless",
+      "Control": "Wireless Smart Rotary Puck 2.4GHz"
+    },
+    "packageContents": [
+      "BenQ ScreenBar Halo Light Bar",
+      "Wireless Smart Controller",
+      "Curved Monitor Adapter Accessory",
+      "Batteries & Manual"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-028",
+    "slug": "dji-mini-3-ultralight-foldable-4k-camera-drone",
+    "title": "DJI Mini 3 Ultralight Foldable 4K HDR Camera Drone (Sub-249g with True Vertical Shooting)",
+    "shortDescription": "Extended 38-min battery life, 4K HDR video, level-5 wind resistance, and rotating gimbal for portrait social media clips.",
+    "fullDescription": "Weighing under 249 grams, no registration required in most jurisdictions. Captures vibrant 4K HDR footage along Doha Corniche and Katara beach with effortless true vertical shooting for TikTok and Instagram.",
+    "category": "Drones & Vlogging",
+    "categorySlug": "drones-cameras",
+    "subcategory": "Drones",
+    "brand": "DJI",
+    "priceQAR": 1499,
+    "originalPriceQAR": 1499,
+    "discountPercent": 0,
+    "rating": 4.97,
+    "reviewCount": 380,
+    "soldCount": 650,
+    "stockPercent": 86,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "BESTSELLER",
+    "images": [
+      "https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "DJI",
+      "Mini 3",
+      "4K Drone",
+      "Camera Drone",
+      "Aerial"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Classic Gray",
+          "hex": "#cbd5e1"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 1499,
+        "savingsText": "Official Tech"
+      }
+    ],
+    "specifications": {
+      "Takeoff Weight": "< 249 g Regulation-Friendly",
+      "Max Flight Time": "38 Minutes per Battery",
+      "Video Resolution": "4K HDR at 30fps with 4x Digital Zoom"
+    },
+    "packageContents": [
+      "DJI Mini 3 Aircraft",
+      "DJI RC-N1 Remote Controller",
+      "Intelligent Flight Battery",
+      "Spare Propellers (Pair)",
+      "Gimbal Protector"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-029",
+    "slug": "razer-deathadder-v3-pro-wireless-gaming-mouse",
+    "title": "Razer DeathAdder V3 Pro Ultra-Lightweight Wireless Ergonomic Esports Gaming Mouse (63g)",
+    "shortDescription": "Focus Pro 30K Optical Sensor, Gen-3 optical switches, 90-hour battery life, and hyperpolling wireless compatibility.",
+    "fullDescription": "The icon of esports refinement. Refined by top pro gamers with zero dead weight at 63 grams, the Razer DeathAdder V3 Pro delivers flawless tracking over desk pads with seamless wireless speed.",
+    "category": "Gaming & Desk Tech",
+    "categorySlug": "gaming-gear",
+    "subcategory": "Gaming Mice",
+    "brand": "Razer",
+    "priceQAR": 449,
+    "originalPriceQAR": 449,
+    "discountPercent": 0,
+    "rating": 4.89,
+    "reviewCount": 290,
+    "soldCount": 710,
+    "stockPercent": 89,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "ESPORTS",
+    "images": [
+      "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Razer",
+      "Gaming Mouse",
+      "Wireless",
+      "Esports",
+      "DeathAdder"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Matte Black",
+          "hex": "#0a0a0c"
+        },
+        {
+          "name": "Mercury White",
+          "hex": "#f8fafc"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 449,
+        "savingsText": "Pro Gaming"
+      }
+    ],
+    "specifications": {
+      "Sensor": "Focus Pro 30K Optical Sensor (30,000 DPI)",
+      "Weight": "63 grams Ultra-Lightweight",
+      "Switches": "Optical Mouse Switches Gen-3 (90M Clicks)"
+    },
+    "packageContents": [
+      "Razer DeathAdder V3 Pro",
+      "Wireless USB Dongle + Adapter",
+      "Type-A to Type-C Speedflex Cable",
+      "Razer Grip Tape"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-030",
+    "slug": "caldigit-ts4-thunderbolt-4-18-port-dock-station",
+    "title": "CalDigit TS4 Thunderbolt 4 18-Port Premium Desktop Docking Station (98W Laptop Charging)",
+    "shortDescription": "18 ports of extreme connectivity, 2.5GbE Ethernet, 8K single or dual 6K display support, and SD/microSD 4.0 slots.",
+    "fullDescription": "The undisputed king of Thunderbolt docks. Connect your entire workstation with one single cable to your MacBook Pro or Windows PC, delivering 98W fast charging and high-speed data transfer.",
+    "category": "Laptop Hubs & Stands",
+    "categorySlug": "laptop-gear",
+    "subcategory": "Docking Stations",
+    "brand": "CalDigit",
+    "priceQAR": 1399,
+    "originalPriceQAR": 1399,
+    "discountPercent": 0,
+    "rating": 4.97,
+    "reviewCount": 140,
+    "soldCount": 310,
+    "stockPercent": 91,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": false,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "PRO WORKSTATION",
+    "images": [
+      "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "CalDigit",
+      "Thunderbolt 4",
+      "Docking Station",
+      "MacBook Dock",
+      "2.5GbE"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Space Gray Aluminum",
+          "hex": "#4b5563"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 1399,
+        "savingsText": "Pro Dock"
+      }
+    ],
+    "specifications": {
+      "Ports": "18 Total Ports (3x TB4, 5x USB-A, 3x USB-C, 2.5GbE, DisplayPort 1.4)",
+      "Power Delivery": "98W Continuous Host Charging",
+      "Cooling": "Full Metal Extruded Heat Sink Architecture"
+    },
+    "packageContents": [
+      "CalDigit TS4 Dock",
+      "Thunderbolt 4 Cable (0.8m)",
+      "230W Power Supply Unit (UK 3-Pin)",
+      "Rubber Strips"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-031",
+    "slug": "elgato-stream-deck-mk2-15-lcd-keys-controller",
+    "title": "Elgato Stream Deck MK.2 15 Customizable LCD Macro Keys Studio Controller",
+    "shortDescription": "Tactile LCD keys, multi-action macro automation, interchangeable faceplate, and plug-in store ecosystem.",
+    "fullDescription": "Streamline your Qatar streaming, editing, and office workflow. One-touch operation triggers audio effects, OBS scene switching, smart home lighting, and complex keyboard macros effortlessly.",
+    "category": "Gaming & Desk Tech",
+    "categorySlug": "gaming-gear",
+    "subcategory": "Studio Controllers",
+    "brand": "Elgato",
+    "priceQAR": 529,
+    "originalPriceQAR": 529,
+    "discountPercent": 0,
+    "rating": 4.92,
+    "reviewCount": 340,
+    "soldCount": 890,
+    "stockPercent": 88,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "CREATOR PICK",
+    "images": [
+      "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Elgato",
+      "Stream Deck",
+      "Macro Controller",
+      "Streaming Gear",
+      "Content Creator"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Deep Black",
+          "hex": "#09090b"
+        },
+        {
+          "name": "White",
+          "hex": "#f8fafc"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 529,
+        "savingsText": "Streamer Ready"
+      }
+    ],
+    "specifications": {
+      "Keys": "15 Customizable LCD Keys",
+      "Interface": "USB 2.0 Detachable Cable (1.5m)",
+      "Stand": "45-Degree Fixed Desktop Ergonomic Stand"
+    },
+    "packageContents": [
+      "Stream Deck MK.2",
+      "Desktop Stand",
+      "USB-C to USB-A Cable",
+      "Quick Start Guide"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-032",
+    "slug": "bose-quietcomfort-ultra-wireless-spatial-earbuds",
+    "title": "Bose QuietComfort Ultra Wireless Spatial Noise Cancelling In-Ear Earbuds",
+    "shortDescription": "Breakthrough Bose Immersive Audio, world-class noise cancellation, and CustomTune personalized ear fit.",
+    "fullDescription": "Experience groundbreaking spatial audio that places what you hear right in front of you. CustomTune technology automatically analyzes your unique ear canal acoustics to calibrate noise cancellation in real-time.",
+    "category": "TWS & Spatial Audio",
+    "categorySlug": "tws-audio",
+    "subcategory": "Earbuds",
+    "brand": "Bose",
+    "priceQAR": 949,
+    "originalPriceQAR": 949,
+    "discountPercent": 0,
+    "rating": 4.88,
+    "reviewCount": 260,
+    "soldCount": 570,
+    "stockPercent": 84,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": true,
+    "badge": "NEW DROP",
+    "images": [
+      "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Bose",
+      "QuietComfort",
+      "Ultra Earbuds",
+      "Spatial Audio",
+      "ANC"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Black",
+          "hex": "#18181b"
+        },
+        {
+          "name": "White Smoke",
+          "hex": "#f1f5f9"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 949,
+        "savingsText": "Ultra Audio"
+      }
+    ],
+    "specifications": {
+      "Audio Mode": "Bose Immersive Spatial Audio + Quiet & Aware Modes",
+      "Battery": "Up to 6 Hours (24 Hours with Case)",
+      "Water Resistance": "IPX4 Sweat and Splash Proof"
+    },
+    "packageContents": [
+      "Bose QC Ultra Earbuds",
+      "Bose Fit Kit (3 pairs eartips + 3 pairs stability bands)",
+      "Charging Case",
+      "USB-C Cable"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-033",
+    "slug": "shure-mv7-usb-xlr-dynamic-podcast-microphone",
+    "title": "Shure MV7 Dual USB/XLR Dynamic Broadcast & Podcasting Microphone",
+    "shortDescription": "Voice Isolation Technology, built-in 3.5mm headphone monitor, digital touch panel, and ShurePlus MOTIV app tuning.",
+    "fullDescription": "Inspired by the legendary SM7B, the Shure MV7 features both USB and XLR outputs for podcasters, gamers, and vocalists. Auto Level Mode dynamically adjusts gain on the fly so your voice sounds studio-grade consistently.",
+    "category": "Gaming & Desk Tech",
+    "categorySlug": "gaming-gear",
+    "subcategory": "Microphones",
+    "brand": "Shure",
+    "priceQAR": 849,
+    "originalPriceQAR": 849,
+    "discountPercent": 0,
+    "rating": 4.95,
+    "reviewCount": 310,
+    "soldCount": 620,
+    "stockPercent": 90,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "STUDIO GRADE",
+    "images": [
+      "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Shure",
+      "MV7",
+      "Podcast Mic",
+      "USB Mic",
+      "Studio Audio"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Matte Black",
+          "hex": "#111827"
+        },
+        {
+          "name": "Silver Gray",
+          "hex": "#9ca3af"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 849,
+        "savingsText": "Podcast King"
+      }
+    ],
+    "specifications": {
+      "Capsule": "Dynamic (Cardioid Polar Pattern)",
+      "Connectivity": "Micro-B to USB-C + XLR 3-Pin Balanced",
+      "Headphone Monitoring": "Zero-Latency 3.5mm Output"
+    },
+    "packageContents": [
+      "Shure MV7 Microphone with Integrated Swivel Mount",
+      "Micro-B to USB-C Cable (3m)",
+      "Micro-B to USB-A Cable (3m)"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-034",
+    "slug": "belkin-boostcharge-pro-3-in-1-magsafe-wireless-stand",
+    "title": "Belkin BoostCharge Pro 3-in-1 Fast Wireless Charger Stand with 15W Official MagSafe",
+    "shortDescription": "Official Made for Apple MagSafe 15W fast charging for iPhone 16/15, Apple Watch Series 10 fast charging, and AirPods tray.",
+    "fullDescription": "The cleanest nightstand and desk charging setup in Qatar. Premium stainless steel branches suspend your iPhone and Apple Watch securely with authentic 15W MagSafe magnetic alignment.",
+    "category": "GaN Chargers & Banks",
+    "categorySlug": "chargers-powerbanks",
+    "subcategory": "Wireless Chargers",
+    "brand": "Belkin",
+    "priceQAR": 429,
+    "originalPriceQAR": 429,
+    "discountPercent": 0,
+    "rating": 4.91,
+    "reviewCount": 420,
+    "soldCount": 1100,
+    "stockPercent": 85,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "APPLE CERTIFIED",
+    "images": [
+      "https://images.unsplash.com/photo-1622445262464-84b1456045b6?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Belkin",
+      "MagSafe",
+      "3-in-1 Charger",
+      "Apple Watch",
+      "iPhone Stand"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "White Ceramic",
+          "hex": "#ffffff"
+        },
+        {
+          "name": "Matte Black",
+          "hex": "#18181b"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 429,
+        "savingsText": "Certified MagSafe"
+      }
+    ],
+    "specifications": {
+      "Charging Speeds": "15W MagSafe iPhone, Fast Apple Watch, 5W Qi AirPods",
+      "Materials": "Stainless Steel Arms with Soft-Touch Base",
+      "Power Adapter": "Official 40W AC Adapter (UK 3-Pin included)"
+    },
+    "packageContents": [
+      "Belkin 3-in-1 Wireless Charger Stand",
+      "AC Power Adapter (UK 3-Pin)",
+      "Documentation"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-035",
+    "slug": "asus-rog-strix-scope-ii-96-wireless-gaming-keyboard",
+    "title": "ASUS ROG Strix Scope II 96 Wireless Gaming Keyboard with ROG NX Snow Mechanical Switches",
+    "shortDescription": "96% compact layout, tri-mode connectivity (2.4G SpeedNova, Bluetooth, wired), sound-dampening foam, and multi-wheel.",
+    "fullDescription": "Retains all function and number keys while freeing up desktop space. Pre-lubed ROG NX Snow linear switches offer creamy acoustics, paired with silicone dampening foam and hot-swappable switch sockets.",
+    "category": "Gaming & Desk Tech",
+    "categorySlug": "gaming-gear",
+    "subcategory": "Keyboards",
+    "brand": "ASUS ROG",
+    "priceQAR": 629,
+    "originalPriceQAR": 629,
+    "discountPercent": 0,
+    "rating": 4.93,
+    "reviewCount": 160,
+    "soldCount": 390,
+    "stockPercent": 87,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": false,
+    "isUnder99": false,
+    "isNewArrival": true,
+    "badge": "ROG GAMING",
+    "images": [
+      "https://images.unsplash.com/photo-1595225476474-87563907a212?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "ASUS ROG",
+      "Gaming Keyboard",
+      "Wireless Keyboard",
+      "NX Snow",
+      "96% Layout"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Obsidian Black",
+          "hex": "#0f172a"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 629,
+        "savingsText": "Pro Gaming"
+      }
+    ],
+    "specifications": {
+      "Layout": "96% Compact (Retains Full NumPad)",
+      "Switches": "ROG NX Snow Pre-Lubed Linear Switches (Hot-Swappable)",
+      "Battery Life": "Up to 1500 Hours without RGB"
+    },
+    "packageContents": [
+      "ROG Strix Scope II 96 Keyboard",
+      "Detachable Magnetic Wrist Rest",
+      "2-in-1 Switch & Keycap Puller",
+      "Type-C Braided Cable"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-036",
+    "slug": "insta360-link-4k-ai-gimbal-webcam",
+    "title": "Insta360 Link 4K AI Gimbal Webcam with Gesture Control & 1/2\" Sensor",
+    "shortDescription": "AI auto-tracking 3-axis motorized gimbal, true 4K resolution, HDR mode, DeskView top-down angle, and privacy mode.",
+    "fullDescription": "The most intelligent 4K webcam ever built. The motorized 3-axis gimbal keeps you perfectly centered as you move around your office in Doha, responding seamlessly to hand gesture commands.",
+    "category": "Gaming & Desk Tech",
+    "categorySlug": "gaming-gear",
+    "subcategory": "Webcams",
+    "brand": "Insta360",
+    "priceQAR": 1099,
+    "originalPriceQAR": 1099,
+    "discountPercent": 0,
+    "rating": 4.95,
+    "reviewCount": 190,
+    "soldCount": 480,
+    "stockPercent": 91,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "AI POWERED",
+    "images": [
+      "https://images.unsplash.com/photo-1588508065123-287b28e013da?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Insta360",
+      "Webcam",
+      "4K Camera",
+      "AI Gimbal",
+      "Streaming"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Gunmetal Gray",
+          "hex": "#334155"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 1099,
+        "savingsText": "AI Creator"
+      }
+    ],
+    "specifications": {
+      "Resolution": "4K Ultra HD at 30fps / 1080p at 60fps",
+      "Sensor Size": "Large 1/2\" CMOS Sensor (Outstanding Low-Light)",
+      "Gimbal": "3-Axis Motorized Gimbal with AI Subject Tracking"
+    },
+    "packageContents": [
+      "Insta360 Link 4K Webcam",
+      "USB-C Cable with USB-A Adapter",
+      "Recognition Markers",
+      "Clip Mount"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-037",
+    "slug": "nanoleaf-lines-smarter-modular-rgb-wall-bars",
+    "title": "Nanoleaf Lines Smarter Kit (9-Pack) Modular Backlit RGBIC LED Smart Wall Light Bars",
+    "shortDescription": "Modular geometric backlighting, dynamic color animations, music visualizer sync, and Apple HomeKit/Matter support.",
+    "fullDescription": "Transform your gaming room or home office wall into a futuristic ambient masterpiece. Connect lightweight dual-color modular light bars into infinite geometric patterns with ultra-vibrant backlit diffusion.",
+    "category": "Smart Home & Ambience",
+    "categorySlug": "smart-home",
+    "subcategory": "Smart Lighting",
+    "brand": "Nanoleaf",
+    "priceQAR": 699,
+    "originalPriceQAR": 699,
+    "discountPercent": 0,
+    "rating": 4.89,
+    "reviewCount": 240,
+    "soldCount": 520,
+    "stockPercent": 88,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": false,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "AMBIENT TECH",
+    "images": [
+      "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Nanoleaf",
+      "RGB Lighting",
+      "Smart Home",
+      "Gaming Room",
+      "Lines"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Matte White Lines",
+          "hex": "#f8fafc"
+        },
+        {
+          "name": "Black Skins Included",
+          "hex": "#1e293b"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 699,
+        "savingsText": "Kit Price"
+      }
+    ],
+    "specifications": {
+      "Components": "9 Light Lines, 9 Mounting Connectors & Caps",
+      "Color Palette": "16M+ Colors with Dynamic Rhythm Music Sync",
+      "Smart Compatibility": "Matter, Apple Home, Google Home, Alexa, Razer Chroma"
+    },
+    "packageContents": [
+      "9x Light Lines",
+      "9x Mounting Connectors",
+      "Controller Cap",
+      "100-240V Power Supply Unit (UK 3-Pin)",
+      "Mounting Tape"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-038",
+    "slug": "steelseries-arctis-nova-pro-wireless-gaming-headset",
+    "title": "SteelSeries Arctis Nova Pro Wireless Multi-System Gaming Headset with Active Noise Cancellation",
+    "shortDescription": "Infinity Power System hot-swap dual batteries, multi-system OLED wireless base station, and 360 Spatial Audio.",
+    "fullDescription": "Never take a break to charge. The Infinity Power System includes two batteries—one charges in the OLED base station while the other powers your headset. Switch between PC and PS5 with a single touch.",
+    "category": "Gaming & Desk Tech",
+    "categorySlug": "gaming-gear",
+    "subcategory": "Gaming Headsets",
+    "brand": "SteelSeries",
+    "priceQAR": 1299,
+    "originalPriceQAR": 1299,
+    "discountPercent": 0,
+    "rating": 4.96,
+    "reviewCount": 310,
+    "soldCount": 780,
+    "stockPercent": 90,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "ESPORTS CROWN",
+    "images": [
+      "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "SteelSeries",
+      "Arctis Nova Pro",
+      "Wireless Headset",
+      "ANC",
+      "Gaming Audio"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Stellar Black",
+          "hex": "#1e1e24"
+        },
+        {
+          "name": "Glacier White",
+          "hex": "#f8fafc"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 1299,
+        "savingsText": "Pro Audio"
+      }
+    ],
+    "specifications": {
+      "Base Station": "Wireless Base Station with OLED Display and Audio DAC",
+      "Battery System": "Dual Hot-Swappable Battery Packs (Infinite Playtime)",
+      "Audio Drivers": "Premium High-Fidelity Drivers with 360 Spatial Audio"
+    },
+    "packageContents": [
+      "Arctis Nova Pro Wireless Headset",
+      "Wireless Base Station",
+      "2x Lithium-ion Batteries",
+      "2x USB-C to USB-A Cables",
+      "Microphone Pop Filter"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-039",
+    "slug": "ugreen-nexode-300w-5-port-gan-desktop-fast-charger",
+    "title": "Ugreen Nexode 300W 5-Port GaN Desktop Fast Charger with 140W Single Port PD 3.1 Output",
+    "shortDescription": "Powers 3 laptops simultaneously, GaNFast III technology, thermal guard monitoring, and UK 3-pin desktop cord.",
+    "fullDescription": "The ultimate desktop power station for heavy tech users in Qatar. Outputs an astonishing 140W on a single port for the 16\" MacBook Pro, while simultaneously fast-charging two additional laptops and two smartphones.",
+    "category": "GaN Chargers & Banks",
+    "categorySlug": "chargers-powerbanks",
+    "subcategory": "Desktop Chargers",
+    "brand": "Ugreen",
+    "priceQAR": 649,
+    "originalPriceQAR": 649,
+    "discountPercent": 0,
+    "rating": 4.92,
+    "reviewCount": 175,
+    "soldCount": 420,
+    "stockPercent": 88,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": false,
+    "isUnder99": false,
+    "isNewArrival": true,
+    "badge": "300W MONSTER",
+    "images": [
+      "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Ugreen",
+      "300W Charger",
+      "GaNFast",
+      "140W PD",
+      "Desktop Charger"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Deep Space Gray",
+          "hex": "#374151"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 649,
+        "savingsText": "Mega Output"
+      }
+    ],
+    "specifications": {
+      "Total Output": "300W Max Continuous Output",
+      "Port Array": "4x USB-C (Port 1 up to 140W PD 3.1), 1x USB-A (22.5W)",
+      "Safety": "Thermal Guard Dual-Core Sensor Monitoring 6,000 times/min"
+    },
+    "packageContents": [
+      "Ugreen Nexode 300W Charger",
+      "AC Power Cord 2m (UK 3-Pin)",
+      "240W USB-C to USB-C Fast Cable (1.5m)",
+      "Manual"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-040",
+    "slug": "garmin-forerunner-265-gps-amoled-running-smartwatch",
+    "title": "Garmin Forerunner 265 GPS AMOLED Running & Triathlon Smartwatch with Training Readiness",
+    "shortDescription": "Brilliant 1.3\" AMOLED touchscreen, multi-band GNSS satIQ GPS, morning report, HRV status, and 13-day battery.",
+    "fullDescription": "Train smarter under Qatar conditions. Features a vibrant AMOLED display readable in direct Arabian sun, providing advanced running dynamics, wrist-based running power, and accurate multi-band satellite GPS.",
+    "category": "Smartwatches & Fit",
+    "categorySlug": "smartwatches",
+    "subcategory": "Sports Watches",
+    "brand": "Garmin",
+    "priceQAR": 1449,
+    "originalPriceQAR": 1449,
+    "discountPercent": 0,
+    "rating": 4.97,
+    "reviewCount": 220,
+    "soldCount": 510,
+    "stockPercent": 86,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "ATHLETE CHOICE",
+    "images": [
+      "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Garmin",
+      "Forerunner 265",
+      "Running Watch",
+      "AMOLED",
+      "GPS Smartwatch"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Black with Amp Yellow Strap",
+          "hex": "#18181b"
+        },
+        {
+          "name": "Whitestone with Tidal Blue",
+          "hex": "#e0f2fe"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 1449,
+        "savingsText": "Pro Athlete"
+      }
+    ],
+    "specifications": {
+      "Screen": "1.3\" Vivid AMOLED Display (Corning Gorilla Glass 3)",
+      "Battery Life": "Up to 13 Days in Smartwatch Mode / 20 Hours in GPS Mode",
+      "Water Rating": "5 ATM (Swim and Shower Proof)"
+    },
+    "packageContents": [
+      "Garmin Forerunner 265 Watch",
+      "USB-C Charging/Data Cable",
+      "Quick Start Documentation"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-041",
+    "slug": "logitech-mx-master-3s-wireless-performance-mouse",
+    "title": "Logitech MX Master 3S Wireless Performance Mouse with Quiet Clicks & 8K DPI Any-Surface Tracking",
+    "shortDescription": "MagSpeed electromagnetic scroll wheel, 8,000 DPI sensor on glass, ergonomic thumb rest, and Easy-Switch multi-computer flow.",
+    "fullDescription": "The gold standard for office and creative productivity. Quiet clicks reduce noise by 90% while the MagSpeed scroll wheel zips through 1,000 lines of code or spreadsheets in one single second.",
+    "category": "Gaming & Desk Tech",
+    "categorySlug": "gaming-gear",
+    "subcategory": "Mice",
+    "brand": "Logitech",
+    "priceQAR": 349,
+    "originalPriceQAR": 349,
+    "discountPercent": 0,
+    "rating": 4.96,
+    "reviewCount": 680,
+    "soldCount": 1850,
+    "stockPercent": 94,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "LEGENDARY",
+    "images": [
+      "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Logitech",
+      "MX Master 3S",
+      "Ergonomic Mouse",
+      "Quiet Clicks",
+      "Productivity"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Graphite",
+          "hex": "#262626"
+        },
+        {
+          "name": "Pale Gray",
+          "hex": "#e5e7eb"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 349,
+        "savingsText": "Office Pro"
+      }
+    ],
+    "specifications": {
+      "Sensor": "Darkfield High Precision (200 - 8000 DPI tracks on glass)",
+      "Scroll Wheel": "MagSpeed Smart Electromagnetic Auto-Shift",
+      "Battery": "500mAh Li-Po (Up to 70 days per full charge)"
+    },
+    "packageContents": [
+      "MX Master 3S Mouse",
+      "Logi Bolt USB Receiver",
+      "USB-C Charging Cable",
+      "User Documentation"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-042",
+    "slug": "rode-wireless-pro-dual-channel-compact-mic-system",
+    "title": "Rode Wireless PRO Dual-Channel Compact Wireless Microphone System with 32-Bit Float On-Board Recording",
+    "shortDescription": "Never clip audio again with 32-bit float, universal camera & smartphone compatibility, 260m line-of-sight range, smart charge case.",
+    "fullDescription": "The ultimate wireless audio revolution for creators in Qatar. Includes two transmitters with lavalier microphones and a receiver. 32-bit float on-board recording ensures pure audio recovery even if the speaker screams.",
+    "category": "Drones & Vlogging",
+    "categorySlug": "drones-cameras",
+    "subcategory": "Wireless Microphones",
+    "brand": "Rode",
+    "priceQAR": 1299,
+    "originalPriceQAR": 1299,
+    "discountPercent": 0,
+    "rating": 4.95,
+    "reviewCount": 165,
+    "soldCount": 410,
+    "stockPercent": 87,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": true,
+    "badge": "32-BIT FLOAT",
+    "images": [
+      "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Rode",
+      "Wireless PRO",
+      "Lavalier Mic",
+      "32-Bit Float",
+      "Vlogging"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Matte Black",
+          "hex": "#18181b"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 1299,
+        "savingsText": "Pro Audio"
+      }
+    ],
+    "specifications": {
+      "Transmission": "Series IV 2.4GHz Digital Transmission with 128-bit encryption",
+      "Range": "Up to 260m Line of Sight",
+      "On-Board Memory": "32GB Internal Storage per Transmitter (>40 hours recording)"
+    },
+    "packageContents": [
+      "2x Transmitters",
+      "1x Dual Receiver",
+      "Smart Charge Case",
+      "2x Lavalier II Microphones",
+      "Complete Cable Kit"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-043",
+    "slug": "xiaomi-smart-laser-projector-2-pro-1080p",
+    "title": "Xiaomi Smart Laser Projector 2 Pro 1080P FHD (1300 ANSI Lumens with Android TV & Auto Focus)",
+    "shortDescription": "1300 ANSI Lumens, 60\" to 120\" cinematic display, omnidirectional auto-keystone correction, and dual 10W Dolby audio.",
+    "fullDescription": "Bring true cinema home to your living room in Qatar. The 4-channel LED light source delivers 1300 ANSI Lumens bright enough for daytime viewing, complete with built-in Netflix and Google Assistant.",
+    "category": "Smart Home & Ambience",
+    "categorySlug": "smart-home",
+    "subcategory": "Projectors",
+    "brand": "Xiaomi",
+    "priceQAR": 1499,
+    "originalPriceQAR": 1499,
+    "discountPercent": 0,
+    "rating": 4.88,
+    "reviewCount": 130,
+    "soldCount": 290,
+    "stockPercent": 84,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": false,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "HOME CINEMA",
+    "images": [
+      "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Xiaomi",
+      "Smart Projector",
+      "Laser Projector",
+      "1080P FHD",
+      "Android TV"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "White Fabric Blend",
+          "hex": "#f8fafc"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 1499,
+        "savingsText": "Cinema Pro"
+      }
+    ],
+    "specifications": {
+      "Brightness": "1300 ANSI Lumens High-Luminance",
+      "Resolution": "1920x1080 Full HD Native with 4K Decoding Support",
+      "Speakers": "Dual 10W Full-Frequency Speakers with Dolby Audio & DTS-HD"
+    },
+    "packageContents": [
+      "Xiaomi Projector 2 Pro",
+      "Bluetooth Remote Control",
+      "UK 3-Pin Power Cord",
+      "Lens Cleaning Cloth",
+      "Manual"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-044",
+    "slug": "baseus-blade-hd-100w-ultra-slim-laptop-power-bank",
+    "title": "Baseus Blade HD 100W Ultra-Slim Laptop Power Bank (20,000mAh with Digital Battery Status)",
+    "shortDescription": "Razor-thin 18mm profile fits seamlessly into briefcase pockets, 100W Power Delivery output, dual USB-C + dual USB-A.",
+    "fullDescription": "Designed specifically for traveling executives and digital nomads in Doha. At just 18mm thin, it charges your MacBook Pro at full 100W speed while lying flat beneath your laptop or inside your slim sleeve.",
+    "category": "GaN Chargers & Banks",
+    "categorySlug": "chargers-powerbanks",
+    "subcategory": "Power Banks",
+    "brand": "Baseus",
+    "priceQAR": 289,
+    "originalPriceQAR": 289,
+    "discountPercent": 0,
+    "rating": 4.89,
+    "reviewCount": 280,
+    "soldCount": 680,
+    "stockPercent": 88,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "ULTRA SLIM",
+    "images": [
+      "https://images.unsplash.com/photo-1609592426815-f5b2fa012017?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Baseus",
+      "Blade HD",
+      "100W Power Bank",
+      "Slim Power Bank",
+      "Laptop Charger"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Space Black",
+          "hex": "#18181b"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 289,
+        "savingsText": "Base Price"
+      }
+    ],
+    "specifications": {
+      "Thickness": "18mm Ultra-Slim Profile",
+      "Capacity": "20,000mAh / 74Wh Airline Certified",
+      "Max Output": "100W Max USB-C Fast Charging"
+    },
+    "packageContents": [
+      "Baseus Blade HD 100W Power Bank",
+      "100W USB-C to USB-C Cable (50cm)",
+      "Storage Pouch",
+      "User Manual"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-045",
+    "slug": "kanto-yu2-desktop-reference-bookshelf-audio-speakers",
+    "title": "Kanto YU2 Powered Desktop Reference Bookshelf Audio Speakers (Built-in USB DAC & Sub Out)",
+    "shortDescription": "100W peak power, 3\" Kevlar drivers, 3/4\" silk dome tweeters, internal digital USB soundcard, and sub output.",
+    "fullDescription": "Audiophile acoustics tailored for modern desk spaces. The Kanto YU2 connects directly to your Mac or PC via USB, bypassing noisy onboard computer audio cards for crystalline highs and warm acoustic mids.",
+    "category": "TWS & Spatial Audio",
+    "categorySlug": "tws-audio",
+    "subcategory": "Speakers",
+    "brand": "Kanto",
+    "priceQAR": 799,
+    "originalPriceQAR": 799,
+    "discountPercent": 0,
+    "rating": 4.93,
+    "reviewCount": 145,
+    "soldCount": 310,
+    "stockPercent": 91,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": false,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "AUDIOPHILE",
+    "images": [
+      "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Kanto",
+      "Desktop Speakers",
+      "Bookshelf Speakers",
+      "USB DAC",
+      "Hi-Fi Audio"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Matte Black",
+          "hex": "#18181b"
+        },
+        {
+          "name": "Matte White",
+          "hex": "#f8fafc"
+        },
+        {
+          "name": "Walnut Wood",
+          "hex": "#78350f"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 799,
+        "savingsText": "Studio Pair"
+      }
+    ],
+    "specifications": {
+      "Amplifier": "Class D Amplifier with 100W Peak Power (50W RMS)",
+      "Drivers": "3\" Kevlar Woofers and 3/4\" Silk Dome Tweeters",
+      "Inputs": "USB DAC Input (16-bit/48kHz), 3.5mm AUX, Subwoofer Output"
+    },
+    "packageContents": [
+      "Pair of Kanto YU2 Speakers",
+      "Power Supply (UK 3-Pin)",
+      "USB DAC Cable",
+      "3.5mm AUX Cable",
+      "Speaker Wire"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-046",
+    "slug": "epomaker-rt100-retro-97-key-gasket-mechanical-keyboard",
+    "title": "EPOMAKER RT100 Retro 97-Key Gasket Mechanical Keyboard with Smart Mini TV Screen & Volume Knob",
+    "shortDescription": "Detachable customizable mini LCD screen, gasket-mounted structure, south-facing RGB, Sea Salt Silent Switches.",
+    "fullDescription": "The sensation of desk aesthetics. The EPOMAKER RT100 includes a nostalgic mini TV screen that displays real-time weather, clock, CPU temperature, or custom animated GIFs alongside a tactile multi-function knob.",
+    "category": "Gaming & Desk Tech",
+    "categorySlug": "gaming-gear",
+    "subcategory": "Keyboards",
+    "brand": "EPOMAKER",
+    "priceQAR": 379,
+    "originalPriceQAR": 379,
+    "discountPercent": 0,
+    "rating": 4.88,
+    "reviewCount": 210,
+    "soldCount": 590,
+    "stockPercent": 87,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "VIRAL TECH",
+    "images": [
+      "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "EPOMAKER",
+      "RT100",
+      "Retro Keyboard",
+      "Mini TV Screen",
+      "Mechanical Keyboard"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Retro Gray & Cream",
+          "hex": "#d1d5db"
+        },
+        {
+          "name": "Deep Sea Blue",
+          "hex": "#1e3a8a"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 379,
+        "savingsText": "Base Price"
+      }
+    ],
+    "specifications": {
+      "Mount Type": "Gasket-Mounted Sound Absorbing Architecture",
+      "Display": "Detachable 1.3\" Color Mini TV Screen",
+      "Connectivity": "Bluetooth 5.0, 2.4GHz Wireless, Type-C Wired"
+    },
+    "packageContents": [
+      "EPOMAKER RT100 Keyboard",
+      "Mini Smart TV Display",
+      "Type-C Cable",
+      "2-in-1 Keycap Puller",
+      "Manual"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-047",
+    "slug": "70mai-omni-360-full-view-smart-dash-cam",
+    "title": "70mai Omni 360 Full-View 1080P Smart Dash Cam with AI Motion Detection & 4G Cloud Monitoring",
+    "shortDescription": "Patented 340-degree motorized pan rotation, 60fps high frame rate, F1.5 aperture night owl vision, and GPS logger.",
+    "fullDescription": "Zero blind spots when parked in Doha heat. The 70mai Omni automatically detects suspicious impacts or motion around your vehicle, rotating its motorized camera directly toward the source to capture instant evidence.",
+    "category": "Car Tech & Mounts",
+    "categorySlug": "car-accessories",
+    "subcategory": "Dash Cams",
+    "brand": "70mai",
+    "priceQAR": 529,
+    "originalPriceQAR": 529,
+    "discountPercent": 0,
+    "rating": 4.91,
+    "reviewCount": 195,
+    "soldCount": 540,
+    "stockPercent": 89,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "360 SECURITY",
+    "images": [
+      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "70mai",
+      "Omni Dash Cam",
+      "360 Camera",
+      "Car Security",
+      "AI Motion"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Black & Red Racing",
+          "hex": "#18181b"
+        }
+      ],
+      "options": [
+        {
+          "name": "Storage",
+          "values": [
+            "64GB eMMC Built-in",
+            "128GB eMMC Built-in (+QAR 40)"
+          ]
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 529,
+        "savingsText": "Full Protection"
+      }
+    ],
+    "specifications": {
+      "View Angle": "340° Motorized Pan with 140° Field of View (Full 360°)",
+      "Night Vision": "PureCel Plus-S HDR with Ultra-Wide F1.5 Aperture",
+      "GPS & ADAS": "Built-in GPS Logger with Lane Departure & Forward Collision Alerts"
+    },
+    "packageContents": [
+      "70mai Dash Cam Omni",
+      "Car Power Adapter (Dual USB)",
+      "Power Cord 3.5m",
+      "Electrostatic Stickers",
+      "Crowbar"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-048",
+    "slug": "govee-glide-hexa-light-panels-3d-ultra-rgbic",
+    "title": "Govee Glide Hexa Light Panels 3D Ultra RGBIC (10-Pack) Modular Geometric Wall Ambient Lights",
+    "shortDescription": "3D dimensional lighting effect, RGBIC segmented color gradients, music sync visualizer, and Matter compatibility.",
+    "fullDescription": "Step beyond flat wall lighting. The Govee Glide Hexa 3D panels create a stunning visual optical illusion of cubes protruding from your wall, blending vivid 16-million-color ambient effects across your room.",
+    "category": "Smart Home & Ambience",
+    "categorySlug": "smart-home",
+    "subcategory": "Smart Lighting",
+    "brand": "Govee",
+    "priceQAR": 599,
+    "originalPriceQAR": 599,
+    "discountPercent": 0,
+    "rating": 4.92,
+    "reviewCount": 230,
+    "soldCount": 470,
+    "stockPercent": 88,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": false,
+    "isUnder99": false,
+    "isNewArrival": true,
+    "badge": "3D LIGHTING",
+    "images": [
+      "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Govee",
+      "Hexa Panels",
+      "3D Wall Lights",
+      "RGBIC",
+      "Gaming Setup"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Frost White Diffusion",
+          "hex": "#ffffff"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 599,
+        "savingsText": "10-Pack Kit"
+      }
+    ],
+    "specifications": {
+      "Quantity": "10 Modular 3D Hexagonal Panels",
+      "Lighting Technology": "RGBIC Segmented Individual Color Control",
+      "Connectivity": "Wi-Fi 2.4GHz + Bluetooth 5.0 with App Control"
+    },
+    "packageContents": [
+      "10x Hexa 3D Light Panels",
+      "Control Box",
+      "Power Adapter (UK 3-Pin)",
+      "Connecting Cables",
+      "Mounting Tape"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-049",
+    "slug": "sandisk-professional-pro-blade-1tb-transport-nvme-ssd",
+    "title": "SanDisk Professional PRO-BLADE 1TB Transport Modular High-Speed NVMe USB-C SSD (2000MB/s)",
+    "shortDescription": "Blazing 2000MB/s read/write speeds, solid aluminum heatsink enclosure, modular interchangeable PRO-BLADE SSD mags.",
+    "fullDescription": "Built for video editors and creative professionals in Qatar working with 4K and 8K ProRes footage. Swap SSD magazines instantly while the rugged aluminum core dissipates heat continuously during heavy render exports.",
+    "category": "Laptop Hubs & Stands",
+    "categorySlug": "laptop-gear",
+    "subcategory": "Storage & SSDs",
+    "brand": "SanDisk Professional",
+    "priceQAR": 649,
+    "originalPriceQAR": 649,
+    "discountPercent": 0,
+    "rating": 4.95,
+    "reviewCount": 160,
+    "soldCount": 380,
+    "stockPercent": 92,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": false,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "FAST NVME",
+    "images": [
+      "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "SanDisk",
+      "PRO-BLADE",
+      "NVMe SSD",
+      "1TB External SSD",
+      "2000MB/s"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Industrial Gray",
+          "hex": "#4b5563"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 649,
+        "savingsText": "Pro Storage"
+      }
+    ],
+    "specifications": {
+      "Speed": "Up to 2,000 MB/s Read and Write over USB 3.2 Gen 2x2",
+      "Durability": "Up to 3-Meter Drop Protection and 4,000 lbs Crush Resistance",
+      "Capacity": "1TB Modular PRO-BLADE NVMe Mag"
+    },
+    "packageContents": [
+      "PRO-BLADE Transport Enclosure",
+      "1TB PRO-BLADE Mag NVMe SSD",
+      "20Gbps USB-C to USB-C Cable",
+      "Quick Start Guide"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-050",
+    "slug": "marshall-emberton-ii-portable-bluetooth-speaker",
+    "title": "Marshall Emberton II Portable Bluetooth Speaker with True Stereophonic 360 Sound (30+ Hours Playtime)",
+    "shortDescription": "Signature Marshall vintage brass knob, IP67 dust & water resistance, Stack Mode pairing, and 30+ hours of battery life.",
+    "fullDescription": "Rich, clear, and loud sound wherever life takes you across Qatar. Emberton II utilizes True Stereophonic, a unique form of multi-directional 360-degree sound from Marshall that fills the room completely.",
+    "category": "TWS & Spatial Audio",
+    "categorySlug": "tws-audio",
+    "subcategory": "Speakers",
+    "brand": "Marshall",
+    "priceQAR": 579,
+    "originalPriceQAR": 579,
+    "discountPercent": 0,
+    "rating": 4.93,
+    "reviewCount": 310,
+    "soldCount": 840,
+    "stockPercent": 91,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "ICONIC VINTAGE",
+    "images": [
+      "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Marshall",
+      "Emberton II",
+      "Bluetooth Speaker",
+      "IP67 Waterproof",
+      "360 Audio"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Black & Brass",
+          "hex": "#1c1917"
+        },
+        {
+          "name": "Cream & Gold",
+          "hex": "#fef3c7"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 579,
+        "savingsText": "Rock Legend"
+      }
+    ],
+    "specifications": {
+      "Sound System": "Two 2\" 10W Full Range Drivers with Two Passive Radiators",
+      "Battery": "30+ Hours of Portable Playtime (20-min quick charge gives 4 hours)",
+      "Protection": "IP67 Dust and Water Resistant (Submersible in 1m water for 30 mins)"
+    },
+    "packageContents": [
+      "Marshall Emberton II Speaker",
+      "USB-C Charging Cable",
+      "User Manual and Legal Information"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-051",
+    "slug": "zhiyun-smooth-5s-ai-3-axis-smartphone-gimbal-stabilizer",
+    "title": "Zhiyun Smooth 5S AI 3-Axis Professional Smartphone Gimbal Stabilizer with Magnetic Fill Light",
+    "shortDescription": "Orthogonal 3-axis cinema movements, 650-lux built-in fill light, magnetic AI tracker sensor, and heavy payload capacity.",
+    "fullDescription": "Transform your iPhone or Samsung into a professional Hollywood cinema camera. The orthogonal 3-axis structure allows full 360-degree vortex rotation without motors bumping into phone lenses.",
+    "category": "Drones & Vlogging",
+    "categorySlug": "drones-cameras",
+    "subcategory": "Gimbals",
+    "brand": "Zhiyun",
+    "priceQAR": 699,
+    "originalPriceQAR": 699,
+    "discountPercent": 0,
+    "rating": 4.87,
+    "reviewCount": 165,
+    "soldCount": 390,
+    "stockPercent": 88,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": false,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": true,
+    "badge": "CINEMATIC",
+    "images": [
+      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Zhiyun",
+      "Smooth 5S",
+      "Gimbal",
+      "Phone Stabilizer",
+      "Mobile Filmmaking"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Classic Slate Gray",
+          "hex": "#374151"
+        },
+        {
+          "name": "White Edition",
+          "hex": "#f8fafc"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 699,
+        "savingsText": "Mobile Cinema"
+      }
+    ],
+    "specifications": {
+      "Motors": "Heavy-Duty 3-Axis Orthogonal Motors (Supports iPhone 16 Pro Max with lenses)",
+      "Fill Light": "Built-in 650-Lux Tilt Axis Light (5000K Color Temp)",
+      "Battery": "Up to 24 Hours Runtime with 2-Hour PD Fast Recharging"
+    },
+    "packageContents": [
+      "Zhiyun Smooth 5S Gimbal",
+      "Mini Tripod Stand",
+      "USB-C Charging Cable",
+      "Quick Start Guide"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-052",
+    "slug": "torras-coolify-3-neck-air-conditioner-wearable",
+    "title": "Torras Coolify 3 Wearable Personal Neck Air Conditioner with Semiconductor Peltier Cooling",
+    "shortDescription": "Quad-motor 360-degree airflow, semiconductor peltier cooling plates, drops body temperature by up to 18°C in 3 seconds.",
+    "fullDescription": "Beat the scorching Qatar summer with personal air conditioning wherever you walk. Featuring 3 semiconductor peltier cooling plates and 7 air ducts that blow chilly air directly across your neck and face.",
+    "category": "Smart Home & Ambience",
+    "categorySlug": "smart-home",
+    "subcategory": "Personal Cooling",
+    "brand": "Torras",
+    "priceQAR": 749,
+    "originalPriceQAR": 749,
+    "discountPercent": 0,
+    "rating": 4.94,
+    "reviewCount": 310,
+    "soldCount": 920,
+    "stockPercent": 86,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "SUMMER ESSENTIAL",
+    "images": [
+      "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Torras",
+      "Coolify 3",
+      "Neck AC",
+      "Wearable Air Conditioner",
+      "Summer Tech"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Midnight Black",
+          "hex": "#0f172a"
+        },
+        {
+          "name": "Titanium White",
+          "hex": "#f8fafc"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 749,
+        "savingsText": "Stay Chilled"
+      }
+    ],
+    "specifications": {
+      "Cooling System": "Dual-Layer Semiconductor Peltier Engine with 38-Watt Cooling Power",
+      "Airflow": "7 Directional Wind Ducts with 4 Silent Turbofans",
+      "Battery": "6000mAh Battery (Up to 13 Hours runtime in Eco mode)"
+    },
+    "packageContents": [
+      "Torras Coolify 3 Neck Air Conditioner",
+      "Hard EVA Travel Protective Case",
+      "USB-C Fast Charging Cable",
+      "User Manual"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  },
+  {
+    "id": "qat-053",
+    "slug": "elgato-wave-mic-arm-lp-low-profile-boom-arm",
+    "title": "Elgato Wave Mic Arm LP Low Profile Premium All-Metal Desk Microphone Boom Arm",
+    "shortDescription": "All-metal anti-torsion construction, cable management magnetic channels, 360-degree rotation, under-monitor clearance.",
+    "fullDescription": "The cleanest microphone arm for modern desk setups. Sits low below your monitor line-of-sight so your camera view remains unobstructed, complete with magnetic hide-away cable channels.",
+    "category": "Gaming & Desk Tech",
+    "categorySlug": "gaming-gear",
+    "subcategory": "Studio Arms",
+    "brand": "Elgato",
+    "priceQAR": 329,
+    "originalPriceQAR": 329,
+    "discountPercent": 0,
+    "rating": 4.96,
+    "reviewCount": 390,
+    "soldCount": 1100,
+    "stockPercent": 93,
+    "inStock": true,
+    "isFlashDeal": false,
+    "isTrending": true,
+    "isBestSeller": true,
+    "isUnder99": false,
+    "isNewArrival": false,
+    "badge": "DESK SETUP ESSENTIAL",
+    "images": [
+      "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=800&auto=format&fit=crop&q=80"
+    ],
+    "tags": [
+      "Elgato",
+      "Wave Mic Arm LP",
+      "Low Profile Arm",
+      "Desk Setup",
+      "Microphone Boom"
+    ],
+    "variants": {
+      "colors": [
+        {
+          "name": "Matte Black",
+          "hex": "#18181b"
+        },
+        {
+          "name": "White Edition",
+          "hex": "#f8fafc"
+        }
+      ]
+    },
+    "volumeDiscounts": [
+      {
+        "quantity": 1,
+        "pricePerUnitQAR": 329,
+        "savingsText": "Base Price"
+      }
+    ],
+    "specifications": {
+      "Build": "Full Heavy-Duty Metal Anti-Torsion Construction",
+      "Max Weight Capacity": "Up to 2kg / 4.4 lbs",
+      "Desk Clamp": "Padded Clamp expandable up to 60mm / 2.4\""
+    },
+    "packageContents": [
+      "Wave Mic Arm LP",
+      "1/4\" to 3/8\" and 1/4\" to 5/8\" Thread Adapters",
+      "Allen Wrench",
+      "Desk Clamp"
+    ],
+    "dropshipInfo": {
+      "dispatchHours": 24,
+      "shippingDaysMin": 6,
+      "shippingDaysMax": 8,
+      "freeShippingThresholdQAR": 150,
+      "shippingCostQAR": 0,
+      "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+      "qualityInspected": true,
+      "hubOrigin": "Regional Tech Distribution Hub"
+    }
+  }
 ];
 
 export const SHIPPING_METHODS: ShippingMethod[] = [

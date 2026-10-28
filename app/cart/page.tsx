@@ -48,6 +48,9 @@ export default function CartPage() {
     appliedCoupon,
     appliedDiscountQAR,
     setCoupon,
+    bundleItemCount,
+    bundleTierPercent,
+    bundleDiscountQAR,
   } = useShop();
 
   const convex = useConvex();
@@ -74,9 +77,10 @@ export default function CartPage() {
     Math.round((cartSubtotal / freeShippingThreshold) * 100)
   );
 
-  const discountAmount = appliedDiscountQAR || 0;
+  const couponDiscount = appliedDiscountQAR || 0;
+  const totalDiscount = couponDiscount + (bundleDiscountQAR || 0);
   const shippingFee = isFreeShipping || cart.length === 0 ? 0 : 20;
-  const grandTotal = Math.max(0, cartSubtotal - discountAmount + shippingFee);
+  const grandTotal = Math.max(0, cartSubtotal - totalDiscount + shippingFee);
 
   const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -363,7 +367,7 @@ export default function CartPage() {
 
                 {appliedCoupon && (
                   <div className={styles.couponSuccessNotice}>
-                    <span>Coupon <strong>{appliedCoupon}</strong> active (-QAR {discountAmount})</span>
+                    <span>Coupon <strong>{appliedCoupon}</strong> active (-QAR {couponDiscount})</span>
                     <button
                       type="button"
                       onClick={() => setCoupon(null, 0)}
@@ -371,6 +375,12 @@ export default function CartPage() {
                     >
                       Remove
                     </button>
+                  </div>
+                )}
+
+                {bundleDiscountQAR > 0 && (
+                  <div className={styles.couponSuccessNotice} style={{ background: '#ecfdf5', borderColor: '#a7f3d0', color: '#065f46' }}>
+                    <span>🎁 <strong>Tiered Bundle ({bundleTierPercent}% OFF)</strong> active! (-QAR {bundleDiscountQAR.toLocaleString()})</span>
                   </div>
                 )}
 
@@ -383,8 +393,15 @@ export default function CartPage() {
 
                   {appliedCoupon && (
                     <div className={`${styles.summaryRow} ${styles.discountRow}`}>
-                      <span>Promo Discount (10%)</span>
-                      <span>- QAR {discountAmount}</span>
+                      <span>Promo Coupon</span>
+                      <span>- QAR {couponDiscount}</span>
+                    </div>
+                  )}
+
+                  {bundleDiscountQAR > 0 && (
+                    <div className={`${styles.summaryRow} ${styles.discountRow}`} style={{ color: '#16a34a' }}>
+                      <span>Tiered Bundle ({bundleTierPercent}% OFF)</span>
+                      <span>- QAR {bundleDiscountQAR.toLocaleString()}</span>
                     </div>
                   )}
 
