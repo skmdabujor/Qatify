@@ -115,24 +115,36 @@ export const HomeComboDealsSection: React.FC = () => {
     'qat-009',
     'qat-002',
   ]);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const cardSelectedProducts = cardSelectedIds
     .map((id) => PRODUCTS.find((p) => p.id === id))
     .filter(Boolean) as Product[];
 
   const cardSubtotal = cardSelectedProducts.reduce((sum, p) => sum + p.priceQAR, 0);
-  const cardOriginalTotal = cardSelectedProducts.reduce(
-    (sum, p) => sum + (p.originalPriceQAR || p.priceQAR),
-    0
-  );
-  const cardSavings = Math.max(0, cardOriginalTotal - cardSubtotal);
+
+  // Discount rule: Discount only applies when 5 or more items are selected!
+  // If fewer than 5 items (e.g. 1 to 4 items), regular price applies without discount.
+  const cardCount = cardSelectedProducts.length;
+  const cardTierPercent =
+    cardCount >= 20 ? 20 :
+    cardCount >= 15 ? 15 :
+    cardCount >= 10 ? 10 :
+    cardCount >= 5 ? 5 : 0;
+
+  const cardSavings =
+    cardTierPercent > 0 ? Math.round((cardSubtotal * cardTierPercent) / 100) : 0;
+  const cardFinalPrice = Math.max(0, cardSubtotal - cardSavings);
 
   const handleCardPlus = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (isRedirecting) return;
+
     if (cardSelectedIds.length >= 4) {
+      setIsRedirecting(true);
       showToast(
         'Opening Bundle Studio! 🚀',
-        'Add your 5th item in the collection to unlock 5% OFF!',
+        'Redirecting to add your 5th item & unlock 5% OFF...',
         'info'
       );
       router.push(`/bundle-builder?items=${cardSelectedIds.join(',')}`);
@@ -143,6 +155,20 @@ export const HomeComboDealsSection: React.FC = () => {
     if (nextProduct) {
       const updated = [...cardSelectedIds, nextProduct.id];
       setCardSelectedIds(updated);
+
+      if (updated.length >= 4) {
+        setIsRedirecting(true);
+        showToast(
+          'Opening Bundle Studio! 🚀',
+          '4 items selected! Redirecting to add 5th item & unlock 5% OFF...',
+          'info'
+        );
+        setTimeout(() => {
+          router.push(`/bundle-builder?items=${updated.join(',')}`);
+        }, 500);
+        return;
+      }
+
       showToast(
         'Item Added to Bundle! 🛒',
         `${nextProduct.title.slice(0, 30)} added (${updated.length}/4). Add 5 to unlock 5% OFF!`,
@@ -154,6 +180,7 @@ export const HomeComboDealsSection: React.FC = () => {
   const handleCardRemove = (e: React.MouseEvent, productId: string) => {
     e.preventDefault();
     e.stopPropagation();
+    setIsRedirecting(false);
     if (cardSelectedIds.length <= 1) {
       showToast('Minimum 1 Item', 'At least 1 item must remain in preview.', 'warning');
       return;
@@ -163,14 +190,16 @@ export const HomeComboDealsSection: React.FC = () => {
 
   const handleCardCta = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (isRedirecting) return;
     if (cardSelectedIds.length >= 4) {
+      setIsRedirecting(true);
       router.push(`/bundle-builder?items=${cardSelectedIds.join(',')}`);
     } else {
       cardSelectedProducts.forEach((p) => addToCart(p, 1));
       setAddedCombo(true);
       showToast(
-        'Combo Added to Cart! 🛒',
-        `${cardSelectedProducts.length} items added. Add 5 items to unlock 5% OFF!`,
+        'Added to Cart! 🛒',
+        `${cardSelectedProducts.length} items added at regular price. Add 5 items to unlock 5% OFF!`,
         'success'
       );
       setTimeout(() => setAddedCombo(false), 2000);
@@ -379,11 +408,10 @@ export const HomeComboDealsSection: React.FC = () => {
 
             {/* Pricing Row */}
             <div className={styles.pricingRow}>
-              <span className={styles.equalSign}>=</span>
               <div className={styles.totalPrice}>
                 <span className={styles.currency}>QAR</span>
                 <span>
-                  {cardSubtotal.toLocaleString('en-US', {
+                  {cardFinalPrice.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -392,7 +420,7 @@ export const HomeComboDealsSection: React.FC = () => {
               {cardSavings > 0 && (
                 <span className={styles.strikePrice}>
                   QAR{' '}
-                  {cardOriginalTotal.toLocaleString('en-US', {
+                  {cardSubtotal.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -407,8 +435,13 @@ export const HomeComboDealsSection: React.FC = () => {
               type="button"
               className={styles.wideAddToCartBtn}
               onClick={handleCardCta}
+              disabled={isRedirecting}
             >
-              {addedCombo ? (
+              {isRedirecting ? (
+                <>
+                  Redirecting to Bundle Studio... <span className={styles.btnChevron}>▶</span>
+                </>
+              ) : addedCombo ? (
                 <>
                   <Check size={14} /> Added to Cart
                 </>

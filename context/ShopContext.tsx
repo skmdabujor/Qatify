@@ -258,9 +258,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const isFreeShipping = cartSubtotal >= FREE_SHIPPING_THRESHOLD;
   const freeShippingRemaining = Math.max(0, FREE_SHIPPING_THRESHOLD - cartSubtotal);
 
-  // Bundle Promotion Calculation (Qualifying products: priceQAR >= 180)
-  const qualifyingBundleItems = cart.filter((item) => item.product.priceQAR >= 180);
-  const bundleItemCount = qualifyingBundleItems.reduce((acc, item) => acc + item.quantity, 0);
+  // Bundle Promotion Calculation (Qualifying bundle when 5 or more items in cart)
+  const bundleItemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   let bundleTierPercent = 0;
   if (bundleItemCount >= 20) {
@@ -273,7 +272,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     bundleTierPercent = 5;
   }
 
-  const qualifyingBundleSubtotal = qualifyingBundleItems.reduce(
+  const qualifyingBundleSubtotal = cart.reduce(
     (acc, item) => acc + item.product.priceQAR * item.quantity,
     0
   );
