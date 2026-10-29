@@ -83,8 +83,37 @@ export default defineSchema({
     .index("by_isTrending", ["isTrending"])
     .index("by_isBestSeller", ["isBestSeller"])
     .index("by_isUnder99", ["isUnder99"])
+    .index("by_isNewArrival", ["isNewArrival"])
     .index("by_brand", ["brand"])
     .searchIndex("search_products", {
+      searchField: "title",
+      filterFields: ["categorySlug", "brand"],
+    }),
+
+  // 1b. Dedicated Bundle Products Table (Exclusive to Bundle Builder Studio)
+  bundleProducts: defineTable({
+    productId: v.string(), // e.g. 'bnd-001' or 'qat-005'
+    slug: v.string(),
+    title: v.string(),
+    shortDescription: v.string(),
+    category: v.string(),
+    categorySlug: v.string(),
+    subcategory: v.optional(v.string()),
+    brand: v.string(),
+    priceQAR: v.number(), // Standard clean price (discounts only apply through tiered bundle rules)
+    rating: v.number(),
+    reviewCount: v.number(),
+    inStock: v.boolean(),
+    images: v.array(v.string()),
+    specifications: v.record(v.string(), v.string()),
+    packageContents: v.optional(v.array(v.string())),
+    isActive: v.optional(v.boolean()),
+  })
+    .index("by_productId", ["productId"])
+    .index("by_slug", ["slug"])
+    .index("by_categorySlug", ["categorySlug"])
+    .index("by_brand", ["brand"])
+    .searchIndex("search_bundle_products", {
       searchField: "title",
       filterFields: ["categorySlug", "brand"],
     }),

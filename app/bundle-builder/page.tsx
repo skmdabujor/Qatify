@@ -34,6 +34,10 @@ import {
   CheckSquare,
   Square,
   Filter,
+  Tag,
+  Zap,
+  Truck,
+  Lock,
 } from 'lucide-react';
 import { useShop } from '@/context/ShopContext';
 import { PRODUCTS } from '@/data/products';
@@ -70,7 +74,7 @@ const PREDEFINED_PRICE_RANGES = [
 function BundleBuilderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { addBundleToCart, openCart, showToast, toggleCompare, isInCompare } = useShop();
+  const { addBundleToCart, openCart, showToast } = useShop();
 
   // Filter States
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -82,7 +86,6 @@ function BundleBuilderContent() {
   const [maxPriceInput, setMaxPriceInput] = useState<string>('');
   const [activeMinPrice, setActiveMinPrice] = useState<number | null>(null);
   const [activeMaxPrice, setActiveMaxPrice] = useState<number | null>(null);
-  const [inStockOnly, setInStockOnly] = useState<boolean>(true);
   const [minRating, setMinRating] = useState<number>(0);
   const [sortBy, setSortBy] = useState<string>('featured');
   const [mobileFilterOpen, setMobileFilterOpen] = useState<boolean>(false);
@@ -90,28 +93,30 @@ function BundleBuilderContent() {
   // Selected Products for the Bundle (Max 20)
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
 
-  // Query Convex products
-  const convexProducts = useQuery(api.products.getBundleEligibleProducts, {
+  // Query dedicated Convex Bundle Products collection
+  const convexBundleProducts = useQuery(api.bundleProducts.list, {
     categorySlug: selectedCategory === 'all' ? undefined : selectedCategory,
   });
 
-  // Base Products Catalog (strictly 180+ QAR and inStock, with normalized unique ID)
+  // Base Products Catalog (strictly clean standard pricing, no individual discounts)
   const allProducts: Product[] = useMemo(() => {
-    const rawList: any[] =
-      convexProducts && convexProducts.length > 0 ? convexProducts : PRODUCTS;
-
-    return rawList
-      .map((p) => ({
+    if (convexBundleProducts && convexBundleProducts.length > 0) {
+      return convexBundleProducts.map((p: any) => ({
         ...p,
         id: getProductId(p),
-      }))
-      .filter((p) => {
-        const hasValidId = Boolean(p.id);
-        const hasMinPrice = typeof p.priceQAR === 'number' && p.priceQAR >= 180;
-        const isInStock = p.inStock !== false;
-        return hasValidId && hasMinPrice && isInStock;
-      }) as Product[];
-  }, [convexProducts]);
+      })) as Product[];
+    }
+
+    return PRODUCTS.map((p) => ({
+      ...p,
+      id: getProductId(p),
+    })).filter((p) => {
+      const hasValidId = Boolean(p.id);
+      const hasMinPrice = typeof p.priceQAR === 'number' && p.priceQAR >= 180;
+      const isInStock = p.inStock !== false;
+      return hasValidId && hasMinPrice && isInStock;
+    });
+  }, [convexBundleProducts]);
 
   // Read URL query params (?items=qat-004,qat-009...) from homepage card redirect
   useEffect(() => {
@@ -207,7 +212,6 @@ function BundleBuilderContent() {
     setMaxPriceInput('');
     setActiveMinPrice(null);
     setActiveMaxPrice(null);
-    setInStockOnly(true);
     setMinRating(0);
     setSortBy('featured');
   };
@@ -219,8 +223,7 @@ function BundleBuilderContent() {
     pricePreset !== 'all' ||
     activeMinPrice !== null ||
     activeMaxPrice !== null ||
-    minRating > 0 ||
-    !inStockOnly;
+    minRating > 0;
 
   // Filter and Sort Products (strictly >= 180 QAR)
   const filteredProducts = useMemo(() => {
@@ -228,9 +231,6 @@ function BundleBuilderContent() {
       .filter((p) => {
         // Strict 180+ QAR threshold
         if (typeof p.priceQAR !== 'number' || p.priceQAR < 180) return false;
-
-        // In-stock filter
-        if (inStockOnly && p.inStock === false) return false;
 
         // Category filter
         if (selectedCategory !== 'all' && p.categorySlug !== selectedCategory) {
@@ -282,7 +282,6 @@ function BundleBuilderContent() {
       });
   }, [
     allProducts,
-    inStockOnly,
     selectedCategory,
     selectedBrands,
     pricePreset,
@@ -325,39 +324,38 @@ function BundleBuilderContent() {
     const pId = getProductId(product);
     if (!pId) return;
 
-    setSelectedProductIds((prev) => {
-      const isSelected = prev.includes(pId);
-      if (isSelected) {
-        showToast('Removed from Bundle', `${product.title.slice(0, 30)} removed.`, 'info');
-        return prev.filter((id) => id !== pId);
-      } else {
-        if (prev.length >= 20) {
-          showToast(
-            'Maximum 20 Items Reached',
-            'You can select up to 20 items in a single bundle.',
-            'warning'
-          );
-          return prev;
-        }
-        const updated = [...prev, pId];
-        const newCount = updated.length;
-        const unlockMsg =
-          newCount < 5
-            ? `Add ${5 - newCount} more for 5% OFF!`
-            : newCount === 5
-            ? '🎉 5% OFF UNLOCKED!'
-            : newCount === 10
-            ? '🎉 10% OFF UNLOCKED!'
-            : newCount === 15
-            ? '🎉 15% OFF UNLOCKED!'
-            : newCount === 20
-            ? '🏆 20% OFF + VIP GIFT UNLOCKED!'
-            : `${tierPercent}% OFF applied!`;
+    const isCurrentlySelected = selectedProductIds.includes(pId);
 
-        showToast('Item Added to Bundle! 🎯', `${product.title.slice(0, 30)} added. ${unlockMsg}`, 'success');
-        return updated;
+    if (isCurrentlySelected) {
+      setSelectedProductIds((prev) => prev.filter((id) => id !== pId));
+      showToast('Removed from Bundle', `${product.title.slice(0, 30)} removed.`, 'info');
+    } else {
+      if (selectedProductIds.length >= 20) {
+        showToast(
+          'Maximum 20 Items Reached',
+          'You can select up to 20 items in a single bundle.',
+          'warning'
+        );
+        return;
       }
-    });
+
+      const newCount = selectedProductIds.length + 1;
+      const unlockMsg =
+        newCount < 5
+          ? `Add ${5 - newCount} more for 5% OFF!`
+          : newCount === 5
+          ? '🎉 5% OFF UNLOCKED!'
+          : newCount === 10
+          ? '🎉 10% OFF UNLOCKED!'
+          : newCount === 15
+          ? '🎉 15% OFF UNLOCKED!'
+          : newCount === 20
+          ? '🏆 20% OFF + VIP GIFT UNLOCKED!'
+          : `${tierPercent}% OFF applied!`;
+
+      setSelectedProductIds((prev) => (prev.includes(pId) ? prev : [...prev, pId]));
+      showToast('Item Added to Bundle! 🎯', `${product.title.slice(0, 30)} added. ${unlockMsg}`, 'success');
+    }
   };
 
   // Remove a product from the sticky tray directly
@@ -397,7 +395,7 @@ function BundleBuilderContent() {
     if (entries.length === 0) {
       return [
         { label: 'Category', value: p.subcategory || p.category },
-        { label: 'Warranty', value: '1 Year Qatify Warranty' },
+        { label: 'Condition', value: 'Brand New' },
       ];
     }
     return entries.slice(0, 2).map(([k, v]) => ({ label: k, value: v }));
@@ -406,23 +404,27 @@ function BundleBuilderContent() {
   return (
     <div className={styles.pageWrapper}>
       {/* ===================================================================
-          1. HERO HEADER WITH 4-TIER PROGRESS LADDER
+          1. HEADER WITH 4-TIER PROGRESS LADDER (CLEAN WHITE VALUE STUDIO)
       ==================================================================== */}
       <section className={styles.heroHeader}>
         <div className="container">
           <div className={styles.heroContent}>
             <div className={styles.badgeRow}>
               <span className={styles.vipPill}>
-                <Gift size={14} /> Tiered Bundle Builder
+                <Tag size={13} /> QATAR EXCLUSIVE BUNDLE SAVINGS
               </span>
               <span className={styles.minSpendNotice}>
-                Pick 5 to 20 items to unlock up to 20% OFF your entire bundle
+                Auto-applied at checkout • No promo code needed
               </span>
             </div>
 
             <h1 className={styles.heroTitle}>
-              Build Your Custom Bundle &amp; Save
+              Buy More, Pay Less: Save Up to 20% on Every Single Item
             </h1>
+
+            <p className={styles.heroSubtitle}>
+              Pick 5 to 20 items to unlock wholesale-level savings. Discounts apply automatically across your entire bundle with direct express delivery across Qatar.
+            </p>
 
             {/* 4-Tier Ladder Visual */}
             <div className={styles.tierLadderGrid}>
@@ -431,10 +433,12 @@ function BundleBuilderContent() {
                   selectedCount >= 5 && selectedCount < 10 ? styles.activeTier : ''
                 }`}
               >
-                <div className={styles.tierDot}>5</div>
+                <div className={styles.tierDot}>
+                  {selectedCount >= 5 ? <Check size={14} strokeWidth={3} /> : '5'}
+                </div>
                 <div className={styles.tierInfo}>
                   <strong>5 Items: 5% OFF</strong>
-                  <span>Tier 1 Unlocked</span>
+                  <span>{selectedCount >= 5 ? '✓ Tier 1 Unlocked' : 'Starter Bundle'}</span>
                 </div>
               </div>
 
@@ -443,10 +447,12 @@ function BundleBuilderContent() {
                   selectedCount >= 10 && selectedCount < 15 ? styles.activeTier : ''
                 }`}
               >
-                <div className={styles.tierDot}>10</div>
+                <div className={styles.tierDot}>
+                  {selectedCount >= 10 ? <Check size={14} strokeWidth={3} /> : '10'}
+                </div>
                 <div className={styles.tierInfo}>
                   <strong>10 Items: 10% OFF</strong>
-                  <span>Double Savings</span>
+                  <span>{selectedCount >= 10 ? '✓ Double Savings Unlocked' : 'Double Savings 🔥'}</span>
                 </div>
               </div>
 
@@ -455,10 +461,12 @@ function BundleBuilderContent() {
                   selectedCount >= 15 && selectedCount < 20 ? styles.activeTier : ''
                 }`}
               >
-                <div className={styles.tierDot}>15</div>
+                <div className={styles.tierDot}>
+                  {selectedCount >= 15 ? <Check size={14} strokeWidth={3} /> : '15'}
+                </div>
                 <div className={styles.tierInfo}>
                   <strong>15 Items: 15% OFF</strong>
-                  <span>Super Bundle</span>
+                  <span>{selectedCount >= 15 ? '✓ Super Bundle Unlocked' : 'Super Saver'}</span>
                 </div>
               </div>
 
@@ -467,11 +475,29 @@ function BundleBuilderContent() {
                   selectedCount === 20 ? styles.vipTier : ''
                 }`}
               >
-                <div className={styles.tierDot}>20</div>
+                <div className={styles.tierDot}>
+                  {selectedCount === 20 ? <Check size={14} strokeWidth={3} /> : '20'}
+                </div>
                 <div className={styles.tierInfo}>
                   <strong>20 Items: 20% OFF</strong>
-                  <span>+ 20% VIP Coupon Gift 🎁</span>
+                  <span>{selectedCount === 20 ? '✓ Max VIP Tier Unlocked 🎁' : '+ 20% VIP Coupon Gift 🎁'}</span>
                 </div>
+              </div>
+            </div>
+
+            {/* Quick Trust Highlights (Text + Icons) */}
+            <div className={styles.trustBadgeRow}>
+              <div className={styles.trustItem}>
+                <Zap size={14} className={styles.trustIcon} />
+                <span>Instant Auto-Discount at Checkout</span>
+              </div>
+              <div className={styles.trustItem}>
+                <Truck size={14} className={styles.trustIcon} />
+                <span>Direct Air Express to Qatar</span>
+              </div>
+              <div className={styles.trustItem}>
+                <Lock size={14} className={styles.trustIcon} />
+                <span>Secure &amp; Encrypted Payment</span>
               </div>
             </div>
           </div>
@@ -521,20 +547,6 @@ function BundleBuilderContent() {
                   <span>Reset All</span>
                 </button>
               )}
-            </div>
-
-            {/* Quick Toggle: In-Stock Only */}
-            <div className={styles.filterSection}>
-              <label className={styles.toggleRow}>
-                <span className={styles.toggleLabel}>In-Stock Only</span>
-                <input
-                  type="checkbox"
-                  checked={inStockOnly}
-                  onChange={(e) => setInStockOnly(e.target.checked)}
-                  className={styles.switchInput}
-                />
-                <span className={styles.switchSlider} />
-              </label>
             </div>
 
             {/* Price Filter Section */}
@@ -819,7 +831,6 @@ function BundleBuilderContent() {
                       const isSelected = selectedProductIds.includes(pId);
                       const isMaxReached = selectedCount >= 20 && !isSelected;
                       const specs = getProductKeySpecs(product);
-                      const isCompared = isInCompare(pId);
 
                       return (
                         <tr
@@ -856,8 +867,8 @@ function BundleBuilderContent() {
                                 </Link>
 
                                 <div className={styles.badgeRow}>
-                                  <span className={styles.comboOfferBadge}>
-                                    Combo offer {tierPercent > 0 ? `-${tierPercent}%` : '-5%'}
+                                  <span className={styles.bundleEligibleBadge}>
+                                    Bundle Eligible
                                   </span>
                                   {product.inStock !== false && (
                                     <span className={styles.inStockTag}>✓ In Stock</span>
@@ -915,7 +926,7 @@ function BundleBuilderContent() {
                             </div>
                           </td>
 
-                          {/* PRICE COLUMN */}
+                          {/* PRICE COLUMN (Clean standard price, no individual discount) */}
                           <td className={styles.colPrice}>
                             <div className={styles.priceWrap}>
                               <span className={styles.priceValue}>
@@ -925,11 +936,6 @@ function BundleBuilderContent() {
                                   maximumFractionDigits: 2,
                                 })}
                               </span>
-                              {product.originalPriceQAR > product.priceQAR && (
-                                <span className={styles.originalStrike}>
-                                  QAR {product.originalPriceQAR.toFixed(2)}
-                                </span>
-                              )}
                             </div>
                           </td>
 
@@ -958,16 +964,6 @@ function BundleBuilderContent() {
                                   </>
                                 )}
                               </button>
-
-                              {/* Compare Checkbox */}
-                              <label className={styles.compareCheckboxRow}>
-                                <input
-                                  type="checkbox"
-                                  checked={isCompared}
-                                  onChange={() => toggleCompare(product)}
-                                />
-                                <span>Compare</span>
-                              </label>
                             </div>
                           </td>
                         </tr>

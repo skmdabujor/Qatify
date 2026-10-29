@@ -11,6 +11,7 @@
 import type * as adminAuth from "../adminAuth.js";
 import type * as admins from "../admins.js";
 import type * as auth from "../auth.js";
+import type * as bundleProducts from "../bundleProducts.js";
 import type * as categories from "../categories.js";
 import type * as coupons from "../coupons.js";
 import type * as crons from "../crons.js";
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   adminAuth: typeof adminAuth;
   admins: typeof admins;
   auth: typeof auth;
+  bundleProducts: typeof bundleProducts;
   categories: typeof categories;
   coupons: typeof coupons;
   crons: typeof crons;

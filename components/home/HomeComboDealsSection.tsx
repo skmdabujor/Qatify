@@ -9,13 +9,15 @@
 // Includes Carousel Flipping (< >), Working Cart Integration & QAR Pricing
 // =============================================================================
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight, Plus, Check, X } from 'lucide-react';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import { useShop } from '@/context/ShopContext';
 import { PRODUCTS } from '@/data/products';
-import { Product } from '@/types/product';
+import { Product, toProduct } from '@/types/product';
 import styles from './HomeComboDealsSection.module.scss';
 
 // Helper to reliably find a product by ID from Qatify catalog
@@ -206,6 +208,66 @@ export const HomeComboDealsSection: React.FC = () => {
     }
   };
 
+  // ---------------------------------------------------------------------------
+  // CARD 2: DYNAMIC SUPER DEALS UNDER QAR 99 (WITH ACTIVE DISCOUNT)
+  // Queries Convex live database; strictly filters for products with discount.
+  // ---------------------------------------------------------------------------
+  const convexUnder99 = useQuery(api.products.getUnder99Deals, { limit: 25 });
+
+  const shockerDeals = useMemo(() => {
+    if (convexUnder99 && convexUnder99.length > 0) {
+      return convexUnder99.map((p: any) => ({
+        product: toProduct(p),
+        promoNote: p.badge || p.shortDescription || 'Special Super Deal Under QAR 99',
+        priceQAR: p.priceQAR,
+        strikePriceQAR: p.originalPriceQAR || Math.round(p.priceQAR * 1.3),
+      }));
+    }
+    // Fallback to in-stock catalog products that have an active discount
+    const localDeals = PRODUCTS.filter(
+      (p) => p.isUnder99 && p.originalPriceQAR && p.originalPriceQAR > p.priceQAR
+    );
+    if (localDeals.length > 0) {
+      return localDeals.map((p) => ({
+        product: p,
+        promoNote: p.badge || p.shortDescription || 'Special Super Deal Under QAR 99',
+        priceQAR: p.priceQAR,
+        strikePriceQAR: p.originalPriceQAR,
+      }));
+    }
+    return SHOCKER_DEALS;
+  }, [convexUnder99]);
+
+  // ---------------------------------------------------------------------------
+  // CARD 3: DYNAMIC NEW DROP / NEW ARRIVALS (WITH ACTIVE DISCOUNT)
+  // Queries Convex live database; strictly filters for products with discount.
+  // ---------------------------------------------------------------------------
+  const convexNewArrivals = useQuery(api.products.getNewArrivalDeals, { limit: 25 });
+
+  const newDropDeals = useMemo(() => {
+    if (convexNewArrivals && convexNewArrivals.length > 0) {
+      return convexNewArrivals.map((p: any) => ({
+        product: toProduct(p),
+        promoNote: p.badge || p.shortDescription || 'Fresh New Arrival Drop with Discount',
+        priceQAR: p.priceQAR,
+        strikePriceQAR: p.originalPriceQAR || Math.round(p.priceQAR * 1.3),
+      }));
+    }
+    // Fallback to in-stock catalog products that have an active discount (sorted by highest price/value)
+    const localDeals = PRODUCTS.filter(
+      (p) => p.isNewArrival && p.originalPriceQAR && p.originalPriceQAR > p.priceQAR
+    ).sort((a, b) => b.priceQAR - a.priceQAR);
+    if (localDeals.length > 0) {
+      return localDeals.map((p) => ({
+        product: p,
+        promoNote: p.badge || p.shortDescription || 'Fresh New Arrival Drop with Discount',
+        priceQAR: p.priceQAR,
+        strikePriceQAR: p.originalPriceQAR,
+      }));
+    }
+    return NEW_DROP_DEALS;
+  }, [convexNewArrivals]);
+
   const [comboIndex, setComboIndex] = useState(0);
   const [shockerIndex, setShockerIndex] = useState(0);
   const [newDropIndex, setNewDropIndex] = useState(0);
@@ -215,8 +277,21 @@ export const HomeComboDealsSection: React.FC = () => {
   const [addedNewDrop, setAddedNewDrop] = useState(false);
 
   const currentCombo = IN_STOCK_COMBOS[comboIndex];
-  const currentShocker = SHOCKER_DEALS[shockerIndex];
-  const currentNewDrop = NEW_DROP_DEALS[newDropIndex];
+  const currentShocker = shockerDeals[shockerIndex % shockerDeals.length] || shockerDeals[0] || SHOCKER_DEALS[0];
+
+  // Ensure Card 3 (New Drop) NEVER duplicates the product shown in Card 2 (Super Deals)!
+  const currentShockerId = currentShocker?.product?.id;
+  const uniqueNewDropDeals = useMemo(() => {
+    const filtered = newDropDeals.filter(
+      (item) => item.product.id !== currentShockerId
+    );
+    return filtered.length > 0 ? filtered : newDropDeals;
+  }, [newDropDeals, currentShockerId]);
+
+  const currentNewDrop =
+    uniqueNewDropDeals[newDropIndex % uniqueNewDropDeals.length] ||
+    uniqueNewDropDeals[0] ||
+    NEW_DROP_DEALS[0];
 
   // Carousel Handlers
   const handleComboPrev = (e: React.MouseEvent) => {
@@ -230,20 +305,20 @@ export const HomeComboDealsSection: React.FC = () => {
 
   const handleShockerPrev = (e: React.MouseEvent) => {
     e.preventDefault();
-    setShockerIndex((prev) => (prev === 0 ? SHOCKER_DEALS.length - 1 : prev - 1));
+    setShockerIndex((prev) => (prev === 0 ? shockerDeals.length - 1 : prev - 1));
   };
   const handleShockerNext = (e: React.MouseEvent) => {
     e.preventDefault();
-    setShockerIndex((prev) => (prev === SHOCKER_DEALS.length - 1 ? 0 : prev + 1));
+    setShockerIndex((prev) => (prev === shockerDeals.length - 1 ? 0 : prev + 1));
   };
 
   const handleNewDropPrev = (e: React.MouseEvent) => {
     e.preventDefault();
-    setNewDropIndex((prev) => (prev === 0 ? NEW_DROP_DEALS.length - 1 : prev - 1));
+    setNewDropIndex((prev) => (prev === 0 ? uniqueNewDropDeals.length - 1 : prev - 1));
   };
   const handleNewDropNext = (e: React.MouseEvent) => {
     e.preventDefault();
-    setNewDropIndex((prev) => (prev === NEW_DROP_DEALS.length - 1 ? 0 : prev + 1));
+    setNewDropIndex((prev) => (prev === uniqueNewDropDeals.length - 1 ? 0 : prev + 1));
   };
 
   // Add Real In-Stock Combo to Cart
@@ -268,7 +343,7 @@ export const HomeComboDealsSection: React.FC = () => {
     addToCart(currentShocker.product, 1);
     setAddedShocker(true);
     showToast(
-      'Shell Shocker Claimed! 🏷️',
+      'Super Deal Claimed! 🏷️',
       `${currentShocker.product.title.slice(0, 36)}... (QAR ${currentShocker.priceQAR})`,
       'success'
     );
@@ -297,7 +372,7 @@ export const HomeComboDealsSection: React.FC = () => {
         <div className={styles.promoCard}>
           <div>
             <div className={styles.cardHeaderRow}>
-              <div className={styles.categoryTitle}>Gaming & Desk Tech</div>
+              <div className={styles.categoryTitle}>Custom Bundle Studio</div>
               <Link
                 href={`/bundle-builder?items=${cardSelectedIds.join(',')}`}
                 className={styles.headerActionLink}
@@ -465,9 +540,9 @@ export const HomeComboDealsSection: React.FC = () => {
           <div>
             <div className={styles.cardHeaderRow}>
               <div className={styles.shockerTitleGroup}>
-                <span className={styles.shockerText}>Shell Shocker</span>
+                <span className={styles.shockerText}>Super Deals</span>
               </div>
-              <Link href={`/shop?category=${currentShocker.product.categorySlug}`} className={styles.headerActionLink}>
+              <Link href="/shop?filter=under-99" className={styles.headerActionLink}>
                 <span>See all</span>
                 <span className={styles.chevronSmall}>▶</span>
               </Link>
@@ -502,9 +577,9 @@ export const HomeComboDealsSection: React.FC = () => {
                   type="button"
                   className={styles.axisNavBtn}
                   onClick={handleShockerPrev}
-                  aria-label="Previous Shell Shocker deal"
+                  aria-label="Previous Super Deal"
                 >
-                  <ChevronLeft size={20} />
+                  <ChevronLeft size={16} />
                 </button>
 
                 <Link href={`/products/${currentShocker.product.slug}`} className={styles.shockerCardBox}>
@@ -522,9 +597,9 @@ export const HomeComboDealsSection: React.FC = () => {
                   type="button"
                   className={styles.axisNavBtn}
                   onClick={handleShockerNext}
-                  aria-label="Next Shell Shocker deal"
+                  aria-label="Next Super Deal"
                 >
-                  <ChevronRight size={20} />
+                  <ChevronRight size={16} />
                 </button>
               </div>
             </div>
@@ -559,7 +634,7 @@ export const HomeComboDealsSection: React.FC = () => {
               <div className={styles.newDropTitleGroup}>
                 <span className={styles.newDropText}>New Drop</span>
               </div>
-              <Link href={`/shop?category=${currentNewDrop.product.categorySlug}`} className={styles.headerActionLink}>
+              <Link href="/shop?filter=new" className={styles.headerActionLink}>
                 <span>See all</span>
                 <span className={styles.chevronSmall}>▶</span>
               </Link>
@@ -596,7 +671,7 @@ export const HomeComboDealsSection: React.FC = () => {
                   onClick={handleNewDropPrev}
                   aria-label="Previous New Drop deal"
                 >
-                  <ChevronLeft size={20} />
+                  <ChevronLeft size={16} />
                 </button>
 
                 <Link href={`/products/${currentNewDrop.product.slug}`} className={styles.shockerCardBox}>
@@ -616,7 +691,7 @@ export const HomeComboDealsSection: React.FC = () => {
                   onClick={handleNewDropNext}
                   aria-label="Next New Drop deal"
                 >
-                  <ChevronRight size={20} />
+                  <ChevronRight size={16} />
                 </button>
               </div>
             </div>

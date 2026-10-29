@@ -416,7 +416,7 @@
   font-family: $font-mono;
   font-size: 18px;
   font-weight: 800;
-  color: #0a0a0c;
+  color: #ffffff;
   line-height: 1;
 }
 
@@ -424,24 +424,27 @@
   font-family: $font-mono;
   font-size: 19px;
   font-weight: 900;
-  color: #0a0a0c;
+  color: #ffffff;
   letter-spacing: -0.02em;
   line-height: 1;
+  text-shadow: 0 1px 3px rgba(4, 62, 141, 0.45);
 
   .currency {
     font-size: 13px;
     font-weight: 700;
     margin-right: 3px;
+    color: #ffffff;
   }
 }
 
 .strikePrice {
   font-family: $font-mono;
   font-size: 12.5px;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.75);
   text-decoration: line-through;
   font-weight: 500;
   line-height: 1;
+  text-shadow: 0 1px 2px rgba(4, 62, 141, 0.3);
 }
 
 // -----------------------------------------------------------------------------
@@ -580,26 +583,60 @@
 .shockerCarouselContainer {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   flex: 1;
   justify-content: flex-end;
 }
 
+.axisNavBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+
+  &:hover {
+    background: #ffffff;
+    color: #043e8d;
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @include mobile {
+    width: 24px;
+    height: 24px;
+  }
+}
+
 .shockerCardBox {
-  width: 135px;
-  height: 92px;
+  width: 176px;
+  height: 122px;
   background-color: #ffffff;
-  border-radius: 8px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 6px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+  border: 2px solid rgba(255, 255, 255, 0.9);
   position: relative;
   overflow: hidden;
 
   img {
+    width: 100%;
+    height: 100%;
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
@@ -607,11 +644,16 @@
   }
 
   &:hover img {
-    transform: scale(1.05);
+    transform: scale(1.08);
+  }
+
+  @include laptop {
+    width: 156px;
+    height: 112px;
   }
 
   @include mobile {
-    width: 122px;
-    height: 82px;
+    width: 135px;
+    height: 96px;
   }
 }

@@ -235,17 +235,18 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     }
   }, [orders, isHydrated]);
 
-  // Toast Helpers
+  // Toast Helpers (Single-Toast Mode: strictly at most 1 active toast on screen)
   const showToast = (
     title: string,
     description?: string,
     type: 'success' | 'info' | 'warning' | 'error' = 'success'
   ) => {
     const id = Math.random().toString(36).substring(2, 9);
-    setToasts((prev) => [...prev, { id, title, description, type }]);
+    // Replace any previous notifications so only 1 notification is ever visible at a time
+    setToasts([{ id, title, description, type }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3500);
+    }, 2800);
   };
 
   const removeToast = (id: string) => {

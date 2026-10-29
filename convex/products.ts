@@ -81,6 +81,45 @@ export const getUnder99 = query({
   },
 });
 
+// 6b. Fetch Under 99 QAR products with active discounts (for Homepage Super Deals card)
+export const getUnder99Deals = query({
+  args: { limit: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    const takeCount = args.limit ?? 25;
+    const items = await ctx.db
+      .query("products")
+      .withIndex("by_isUnder99", (q) => q.eq("isUnder99", true))
+      .take(takeCount);
+
+    return items.filter(
+      (p) =>
+        (p.originalPriceQAR && p.originalPriceQAR > p.priceQAR) ||
+        (p.discountPercent && p.discountPercent > 0)
+    );
+  },
+});
+
+// 6c. Fetch New Arrival products with active discounts (for Homepage New Drop card)
+// Sorted by highest price/value first so the best premium discounted gear is always featured
+export const getNewArrivalDeals = query({
+  args: { limit: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    const takeCount = args.limit ?? 30;
+    const items = await ctx.db
+      .query("products")
+      .withIndex("by_isNewArrival", (q) => q.eq("isNewArrival", true))
+      .take(takeCount);
+
+    return items
+      .filter(
+        (p) =>
+          (p.originalPriceQAR && p.originalPriceQAR > p.priceQAR) ||
+          (p.discountPercent && p.discountPercent > 0)
+      )
+      .sort((a, b) => b.priceQAR - a.priceQAR);
+  },
+});
+
 // 7. Fetch Bundle-Eligible Products (Price >= 180 QAR, in stock)
 export const getBundleEligibleProducts = query({
   args: {
