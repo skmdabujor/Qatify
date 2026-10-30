@@ -36,7 +36,7 @@ import {
   Cable,
   MessageCircle,
   ArrowRight,
-  TrendingUp,
+  TrendingUp, Layers,
 } from 'lucide-react';
 import { QatifyLogo } from '@/components/brand/QatifyLogo';
 import { AuthModal } from '@/components/auth/AuthModal';
@@ -982,8 +982,10 @@ export const Navbar: React.FC = () => {
               <Link href="/shop?cat=smart-home" className={styles.navLink}>
                 <span>Smart Home</span>
               </Link>
-              <Link href="/shop?filter=bundle" className={styles.navLink}>
-                <span>Bundle Savers</span>
+              <Link href="/bundle-builder" className={`${styles.navLink} ${styles.bundleHighlight}`}>
+                <Layers size={13} />
+                <span>Bundle Studio</span>
+                <span className={styles.bundlePill}>Save 20%</span>
               </Link>
             </div>
 
@@ -1019,6 +1021,14 @@ export const Navbar: React.FC = () => {
                 >
                   <Sparkles size={16} />
                   <span>Super Deals Under QAR 99</span>
+                </Link>
+                <Link
+                  href="/bundle-builder"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`${styles.mobileDrawerLink} ${styles.bundleMobileHighlight}`}
+                >
+                  <Layers size={16} />
+                  <span>Bundle Studio — Build & Save 20%</span>
                 </Link>
                 <Link
                   href="/dashboard"

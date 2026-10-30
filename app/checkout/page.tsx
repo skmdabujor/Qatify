@@ -5,9 +5,9 @@
 // Step 1: Qatar National Address | Step 2: Air Shipping | Step 3: Payment
 // =============================================================================
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useMutation, useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import {
@@ -42,16 +42,21 @@ import styles from './page.module.scss';
 // Feature Flag: Cash on Delivery status (Set to true to re-enable COD on checkout)
 const IS_COD_ENABLED = false;
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isBundleCheckout = searchParams.get('mode') === 'bundle';
+
   const {
     cart,
     cartSubtotal,
     appliedCoupon,
     appliedDiscountQAR,
-    bundleItemCount,
+    bundleCart,
+    bundleSubtotal,
     bundleTierPercent,
     bundleDiscountQAR,
+    clearBundleCart,
     isFreeShipping,
     savedAddresses,
     addAddress,
@@ -114,13 +119,18 @@ export default function CheckoutPage() {
   // Success state / placed order
   const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
 
-  // Calculations
+  // Calculations based on checkout mode (Bundle vs Regular)
+  const checkoutItems = isBundleCheckout ? bundleCart : cart;
+  const checkoutSubtotal = isBundleCheckout ? bundleSubtotal : cartSubtotal;
+  const isEligibleFreeShipping = isBundleCheckout ? false : isFreeShipping;
   const shippingCost =
-    selectedShipping.id === 'standard-air' && isFreeShipping
+    selectedShipping.id === 'standard-air' && isEligibleFreeShipping
       ? 0
       : selectedShipping.priceQAR;
-  const totalDiscount = (appliedDiscountQAR || 0) + (bundleDiscountQAR || 0);
-  const grandTotal = Math.max(0, cartSubtotal + shippingCost - totalDiscount);
+  const totalDiscount = isBundleCheckout
+    ? (bundleDiscountQAR || 0)
+    : (appliedDiscountQAR || 0);
+  const grandTotal = Math.max(0, checkoutSubtotal + shippingCost - totalDiscount);
 
   // Handle address submit -> move to step 2
   const handleAddressSubmit = (e: React.FormEvent) => {
@@ -143,16 +153,22 @@ export default function CheckoutPage() {
 
   // Handle final order placement
   const handlePlaceOrder = async () => {
-    if (cart.length === 0) {
-      showToast('Cart is Empty', 'Please add items before placing an order.', 'warning');
-      router.push('/shop');
+    if (checkoutItems.length === 0) {
+      showToast(
+        'Cart is Empty',
+        isBundleCheckout
+          ? 'Your bundle cart is empty. Please add items in Bundle Studio.'
+          : 'Please add items before placing an order.',
+        'warning'
+      );
+      router.push(isBundleCheckout ? '/bundle-builder' : '/shop');
       return;
     }
 
     try {
       setIsSubmitting(true);
 
-      const itemsPayload = cart.map((item) => ({
+      const itemsPayload = checkoutItems.map((item) => ({
         productId: item.product.id,
         title: item.product.title,
         slug: item.product.slug,
@@ -166,7 +182,7 @@ export default function CheckoutPage() {
       // 1. Create persistent order in Convex database
       const orderResult = await createConvexOrder({
         items: itemsPayload,
-        couponCode: appliedCoupon || undefined,
+        couponCode: (!isBundleCheckout && appliedCoupon) ? appliedCoupon : undefined,
         address: {
           fullName: address.fullName,
           phone: address.phone,
@@ -191,8 +207,8 @@ export default function CheckoutPage() {
 
       // 2. Also save into local ShopContext
       createOrder({
-        items: cart,
-        subtotalQAR: cartSubtotal,
+        items: checkoutItems,
+        subtotalQAR: checkoutSubtotal,
         shippingQAR: shippingCost,
         discountQAR: totalDiscount,
         totalQAR: grandTotal,
@@ -202,8 +218,12 @@ export default function CheckoutPage() {
         estimatedDeliveryWindow: '6–10 Business Days to Qatar',
       });
 
-      // 3. Clear cart
-      clearCart();
+      // 3. Clear the appropriate cart
+      if (isBundleCheckout) {
+        clearBundleCart();
+      } else {
+        clearCart();
+      }
 
       // 4. If Cash on Delivery, route to confirmation
       if (paymentMethod === 'cash_on_delivery') {
@@ -296,9 +316,13 @@ export default function CheckoutPage() {
       <div className="container">
         {/* Header Breadcrumb */}
         <nav className={styles.breadcrumbNav}>
-          <Link href="/cart" className={styles.crumbLink}>Cart</Link>
+          <Link href={isBundleCheckout ? '/bundle-cart' : '/cart'} className={styles.crumbLink}>
+            {isBundleCheckout ? 'Bundle Cart' : 'Cart'}
+          </Link>
           <ChevronRight size={13} className={styles.crumbChevron} />
-          <span className={styles.currentCrumb}>Qatar Express Checkout</span>
+          <span className={styles.currentCrumb}>
+            {isBundleCheckout ? 'Wholesale Bundle Checkout' : 'Qatar Express Checkout'}
+          </span>
         </nav>
 
         {/* 3-Step Visual Progress Bar */}
@@ -785,7 +809,7 @@ export default function CheckoutPage() {
 
               {/* Items List */}
               <div className={styles.summaryItemsList}>
-                {cart.map((item) => (
+                {checkoutItems.map((item) => (
                   <div key={item.id} className={styles.summaryItem}>
                     <img
                       src={item.product.images[0] || '/placeholder.svg'}
@@ -816,17 +840,17 @@ export default function CheckoutPage() {
               <div className={styles.summaryCalculations}>
                 <div className={styles.calcRow}>
                   <span>Subtotal</span>
-                  <span className="price-qar">QAR {cartSubtotal.toLocaleString()}</span>
+                  <span className="price-qar">QAR {checkoutSubtotal.toLocaleString()}</span>
                 </div>
 
-                {bundleDiscountQAR > 0 && (
+                {isBundleCheckout && bundleDiscountQAR > 0 && (
                   <div className={styles.calcRow} style={{ color: '#16a34a' }}>
                     <span>Tiered Bundle ({bundleTierPercent}% OFF)</span>
                     <span className="price-qar">- QAR {bundleDiscountQAR.toLocaleString()}</span>
                   </div>
                 )}
 
-                {appliedDiscountQAR > 0 && (
+                {!isBundleCheckout && appliedDiscountQAR > 0 && (
                   <div className={styles.calcRow} style={{ color: '#16a34a' }}>
                     <span>Promo Coupon</span>
                     <span className="price-qar">- QAR {appliedDiscountQAR.toLocaleString()}</span>
@@ -887,6 +911,14 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '80px 20px', textAlign: 'center' }}>Loading Qatar Checkout...</div>}>
+      <CheckoutContent />
+    </Suspense>
   );
 }
 

@@ -49,8 +49,6 @@ export default function CartPage() {
     appliedDiscountQAR,
     setCoupon,
     bundleItemCount,
-    bundleTierPercent,
-    bundleDiscountQAR,
   } = useShop();
 
   const convex = useConvex();
@@ -78,7 +76,7 @@ export default function CartPage() {
   );
 
   const couponDiscount = appliedDiscountQAR || 0;
-  const totalDiscount = couponDiscount + (bundleDiscountQAR || 0);
+  const totalDiscount = couponDiscount;
   const shippingFee = isFreeShipping || cart.length === 0 ? 0 : 20;
   const grandTotal = Math.max(0, cartSubtotal - totalDiscount + shippingFee);
 
@@ -378,9 +376,28 @@ export default function CartPage() {
                   </div>
                 )}
 
-                {bundleDiscountQAR > 0 && (
-                  <div className={styles.couponSuccessNotice} style={{ background: '#ecfdf5', borderColor: '#a7f3d0', color: '#065f46' }}>
-                    <span>🎁 <strong>Tiered Bundle ({bundleTierPercent}% OFF)</strong> active! (-QAR {bundleDiscountQAR.toLocaleString()})</span>
+                {bundleItemCount > 0 && (
+                  <div
+                    style={{
+                      background: '#fff7ed',
+                      border: '1px solid #fed7aa',
+                      borderRadius: '8px',
+                      padding: '10px 14px',
+                      marginBottom: '16px',
+                      fontSize: '13px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      color: '#9a3412',
+                    }}
+                  >
+                    <span>🎁 You also have <strong>{bundleItemCount} items</strong> in your Bundle Cart</span>
+                    <Link
+                      href="/bundle-cart"
+                      style={{ fontWeight: 600, color: '#c2410c', textDecoration: 'underline' }}
+                    >
+                      View Bundle Cart →
+                    </Link>
                   </div>
                 )}
 
@@ -395,13 +412,6 @@ export default function CartPage() {
                     <div className={`${styles.summaryRow} ${styles.discountRow}`}>
                       <span>Promo Coupon</span>
                       <span>- QAR {couponDiscount}</span>
-                    </div>
-                  )}
-
-                  {bundleDiscountQAR > 0 && (
-                    <div className={`${styles.summaryRow} ${styles.discountRow}`} style={{ color: '#16a34a' }}>
-                      <span>Tiered Bundle ({bundleTierPercent}% OFF)</span>
-                      <span>- QAR {bundleDiscountQAR.toLocaleString()}</span>
                     </div>
                   )}
 

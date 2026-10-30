@@ -314,8 +314,14 @@ export default function ShopHomePage() {
 
             <div className={styles.cargoTrackingWidget}>
               <div className={styles.trackingMockHeader}>
-                <Plane size={16} />
-                <span>Live Delivery Journey</span>
+                <div className={styles.trackingHeaderTitle}>
+                  <Plane size={15} />
+                  <span>Live Delivery Journey</span>
+                </div>
+                <span className={styles.trackingLiveBadge}>
+                  <span className={styles.livePulseDot} />
+                  Live Route
+                </span>
               </div>
               <div className={styles.trackingSteps}>
                 <div className={styles.trackingStep}>

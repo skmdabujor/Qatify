@@ -271,3 +271,54 @@ export function CashOnDeliveryIcon({ width = 44, height = 28, className }: Payme
   );
 }
 
+/**
+ * Authentic Google Pay Vector Mark
+ */
+export function GooglePayIcon({ width = 44, height = 28, className }: PaymentIconProps) {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 120 80"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-label="Google Pay"
+      role="img"
+    >
+      <rect width="120" height="80" rx="8" fill="#FFFFFF" />
+      <rect x="0.75" y="0.75" width="118.5" height="78.5" rx="7.25" stroke="#E2E8F0" strokeWidth="1.5" />
+      {/* Google G */}
+      <path
+        d="M39.6 40.2c0-.85-.07-1.66-.21-2.45H26.5v4.64h7.35c-.32 1.72-1.28 3.17-2.74 4.15v3.45h4.43c2.59-2.39 4.06-5.91 4.06-9.79z"
+        fill="#4285F4"
+      />
+      <path
+        d="M26.5 53.5c3.65 0 6.71-1.21 8.95-3.29l-4.43-3.45c-1.23.83-2.8 1.32-4.52 1.32-3.48 0-6.42-2.35-7.47-5.51H14.4v3.54c2.25 4.47 6.87 7.39 12.1 7.39z"
+        fill="#34A853"
+      />
+      <path
+        d="M19.03 42.57c-.27-.8-.43-1.66-.43-2.57s.16-1.77.43-2.57v-3.54H14.4C13.49 35.7 13 37.79 13 40s.49 4.3 1.4 6.11l4.63-3.54z"
+        fill="#FBBC05"
+      />
+      <path
+        d="M26.5 31.91c1.99 0 3.77.68 5.17 2.03l3.88-3.88C33.2 27.86 30.14 26.5 26.5 26.5c-5.23 0-9.85 2.92-12.1 7.39l4.63 3.54c1.05-3.16 3.99-5.52 7.47-5.52z"
+        fill="#EA4335"
+      />
+      {/* Pay text */}
+      <text
+        x="68"
+        y="47"
+        fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        fontSize="21"
+        fontWeight="600"
+        fill="#5F6368"
+        letterSpacing="-0.3"
+      >
+        Pay
+      </text>
+    </svg>
+  );
+}
+
+

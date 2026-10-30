@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: '%s | Qatify Qatar',
   },
   description:
-    'Shop authentic mobile accessories, GaN fast chargers, ANC earbuds, smartwatches, and smart gadgets in Qatar at the best prices. Enjoy fast express delivery across Doha, Lusail, Al Rayyan, Al Wakrah & Cash on Delivery.',
+    'Shop authentic mobile accessories, GaN fast chargers, ANC earbuds, smartwatches, and smart gadgets in Qatar at the best prices. Enjoy fast direct air express delivery across Doha, Lusail, Al Rayyan, Al Wakrah & safe online checkout.',
   keywords: [
     'online shopping qatar',
     'buy electronics doha',

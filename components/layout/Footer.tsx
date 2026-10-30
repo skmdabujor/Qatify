@@ -28,8 +28,8 @@ import {
   VisaIcon,
   MastercardIcon,
   AmexIcon,
+  GooglePayIcon,
   QarCurrencyIcon,
-  CashOnDeliveryIcon,
 } from '@/components/ui/PaymentIcons';
 import styles from './Footer.module.scss';
 
@@ -120,9 +120,9 @@ export const Footer: React.FC = () => {
                 <CreditCard size={24} />
               </div>
               <div className={styles.trustContent}>
-                <h4 className={styles.trustTitle}>Secure Payments & COD</h4>
+                <h4 className={styles.trustTitle}>Secure Payments & Instant Order</h4>
                 <p className={styles.trustDesc}>
-                  Pay securely in Qatari Riyal (QAR) with Apple Pay, Visa, Mastercard, or Cash on Delivery.
+                  Pay securely in Qatari Riyal (QAR) with Apple Pay, Google Pay, Visa, or Mastercard with zero conversion fees.
                 </p>
               </div>
             </div>
@@ -148,7 +148,7 @@ export const Footer: React.FC = () => {
           <div className={styles.footerGrid}>
             {/* Col 1: Brand Info & Qatar Presence */}
             <div className={styles.brandCol}>
-              <QatifyLogo variant="light" size="lg" showTagline={true} />
+              <QatifyLogo variant="dark" size="lg" showTagline={true} />
               <p className={styles.brandBio}>
                 Qatify is Qatar’s trusted online destination for authentic tech accessories and smart lifestyle electronics. We offer the best prices in Qatar on leading brands including Anker, Baseus, Green Lion, Porodo, and Soundcore, backed by prompt doorstep delivery and local customer support.
               </p>
@@ -211,6 +211,7 @@ export const Footer: React.FC = () => {
                   </button>
                 </li>
                 <li><Link href="/track-order">Track International Shipment</Link></li>
+                <li><Link href="/bundle-builder">Bundle Studio (Save Up to 20%)</Link></li>
                 <li><Link href="/cart">Shopping Cart & Delivery</Link></li>
                 <li><Link href="/dashboard?tab=orders">Order History & Invoices</Link></li>
                 <li><Link href="/shop?filter=under-99">Deals Under QAR 99</Link></li>
@@ -277,6 +278,9 @@ export const Footer: React.FC = () => {
               <span className={styles.payIconCard} title="Apple Pay">
                 <ApplePayIcon />
               </span>
+              <span className={styles.payIconCard} title="Google Pay">
+                <GooglePayIcon />
+              </span>
               <span className={styles.payIconCard} title="Visa">
                 <VisaIcon />
               </span>
@@ -288,9 +292,6 @@ export const Footer: React.FC = () => {
               </span>
               <span className={styles.payIconCard} title="QAR Currency (ر.ق)">
                 <QarCurrencyIcon />
-              </span>
-              <span className={styles.payIconCard} title="Cash on Delivery Across Qatar">
-                <CashOnDeliveryIcon />
               </span>
             </div>
           </div>

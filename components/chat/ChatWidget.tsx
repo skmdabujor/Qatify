@@ -375,7 +375,7 @@ export const ChatWidget: React.FC = () => {
         id,
         sender: 'agent',
         agentName: 'Maryam (Senior Care)',
-        text: 'We accept Apple Pay, Visa, Mastercard, and local Qatar debit cards. All prices and transactions are processed strictly in Qatari Riyal (QAR) with ZERO foreign conversion fees.\n\nCash on Delivery (COD) is also available across all Qatar municipalities.',
+        text: 'We accept Apple Pay, Google Pay, Visa, Mastercard, and local Qatar debit cards. All prices and transactions are processed strictly in Qatari Riyal (QAR) with ZERO foreign conversion fees.\n\n(Note: Cash on Delivery is currently unavailable; orders are processed safely online with 100% buyer protection).',
         timestamp: time,
         actions: [
           {

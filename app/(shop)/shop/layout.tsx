@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Buy Electronics & Smart Gadgets Online in Qatar | Qatify Shop',
   description:
-    'Browse Qatar’s best deals on authentic mobile accessories, GaN fast chargers, smartwatches, ANC earbuds, gaming gear & home tech. Fast doorstep delivery in Doha, Lusail & all Qatar with Cash on Delivery.',
+    'Browse Qatar’s best deals on authentic mobile accessories, GaN fast chargers, smartwatches, ANC earbuds, gaming gear & home tech. Fast doorstep delivery in Doha, Lusail & all Qatar with guaranteed safe & secure checkout.',
   keywords: [
     'buy electronics qatar',
     'online shopping doha',

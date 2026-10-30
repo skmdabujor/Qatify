@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const title = `${product.title} - Best Price in Qatar | Qatify`;
-  const description = `Buy ${product.title} at the best price in Qatar (QR ${product.priceQAR}). 100% Genuine guaranteed, fast express delivery across Doha, Lusail, Al Rayyan & all Qatar municipalities. Cash on Delivery available.`;
+  const description = `Buy ${product.title} at the best price in Qatar (QR ${product.priceQAR}). 100% Genuine guaranteed, fast direct air express delivery across Doha, Lusail, Al Rayyan & all Qatar municipalities with 100% buyer protection.`;
   const canonicalUrl = `https://qatify.qa/products/${slug}`;
   const imageUrl = product.images[0] || 'https://qatify.qa/placeholder.svg';
 

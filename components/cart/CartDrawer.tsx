@@ -41,8 +41,6 @@ export const CartDrawer: React.FC = () => {
     appliedDiscountQAR,
     setCoupon,
     bundleItemCount,
-    bundleTierPercent,
-    bundleDiscountQAR,
   } = useShop();
 
   const convex = useConvex();
@@ -72,7 +70,7 @@ export const CartDrawer: React.FC = () => {
   );
 
   const couponDiscount = appliedDiscountQAR || 0;
-  const totalDiscount = couponDiscount + (bundleDiscountQAR || 0);
+  const totalDiscount = couponDiscount;
   const shippingFee = isFreeShipping || cart.length === 0 ? 0 : 20;
   const grandTotal = Math.max(0, cartSubtotal - totalDiscount + shippingFee);
 
@@ -294,9 +292,29 @@ export const CartDrawer: React.FC = () => {
               </div>
             )}
 
-            {bundleDiscountQAR > 0 && (
-              <div className={styles.couponSuccessPill} style={{ background: '#ecfdf5', borderColor: '#a7f3d0', color: '#065f46' }}>
-                <span>🎁 Bundle Tier ({bundleTierPercent}% OFF) active (-QAR {bundleDiscountQAR.toLocaleString()})</span>
+            {bundleItemCount > 0 && (
+              <div
+                style={{
+                  background: '#fff7ed',
+                  border: '1px solid #fed7aa',
+                  borderRadius: '8px',
+                  padding: '8px 12px',
+                  marginBottom: '10px',
+                  fontSize: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  color: '#9a3412',
+                }}
+              >
+                <span>🎁 Active Bundle ({bundleItemCount} items)</span>
+                <Link
+                  href="/bundle-cart"
+                  onClick={closeCart}
+                  style={{ fontWeight: 600, color: '#c2410c', textDecoration: 'underline' }}
+                >
+                  View Bundle Cart →
+                </Link>
               </div>
             )}
 
@@ -310,12 +328,6 @@ export const CartDrawer: React.FC = () => {
                 <div className={`${styles.summaryLine} ${styles.discountLine}`}>
                   <span>Promo Coupon</span>
                   <span>- QAR {couponDiscount}</span>
-                </div>
-              )}
-              {bundleDiscountQAR > 0 && (
-                <div className={`${styles.summaryLine} ${styles.discountLine}`} style={{ color: '#16a34a' }}>
-                  <span>Tiered Bundle ({bundleTierPercent}% OFF)</span>
-                  <span>- QAR {bundleDiscountQAR.toLocaleString()}</span>
                 </div>
               )}
               <div className={styles.summaryLine}>

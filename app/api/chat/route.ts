@@ -42,8 +42,8 @@ Qatify is Qatar's premier curated online tech & gadget store, delivering high-gr
    - 100% genuine, factory-sealed products. Every unit is inspected before dispatch.
    - Dedicated customer assistance via WhatsApp and live chat for order guidance and questions.
 5. **Payment Methods**:
-   - Cash on Delivery (COD) available across all Qatar municipalities.
-   - Apple Pay, Visa, Mastercard, and Qatar debit cards (QPay). Zero foreign currency conversion markup.
+   - Apple Pay, Google Pay, Visa, Mastercard, and Qatar debit cards. Zero foreign currency conversion markup.
+   - Cash on Delivery (COD) is currently unavailable; all orders are processed via 256-bit encrypted online checkout.
 6. **Support Channels**:
    - WhatsApp Customer Support Hotline: +974 5512 8894 (or Doha office).
    - Orders & Air Tracking Dashboard: /dashboard

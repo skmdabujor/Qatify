@@ -1502,6 +1502,31 @@
     color: $color-accent-yellow;
     font-weight: 700;
   }
+
+  &.bundleHighlight {
+    color: #fb923c;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: color $transition-fast;
+
+    &:hover {
+      color: #fdba74;
+    }
+  }
+}
+
+.bundlePill {
+  display: inline-block;
+  background-color: #ea580c;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 
 .qatarAirPill {
@@ -1583,6 +1608,12 @@
   &.redAccent {
     background-color: #fff1f2;
     color: $color-accent-red;
+  }
+
+  &.bundleMobileHighlight {
+    background-color: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #ffedd5;
   }
 
   &.chatAccent {

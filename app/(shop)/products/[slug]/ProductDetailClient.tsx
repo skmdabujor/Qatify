@@ -31,7 +31,17 @@ import {
   Sparkles,
   Zap,
   MessageCircle,
+  Lock,
+  CreditCard,
 } from 'lucide-react';
+import {
+  ApplePayIcon,
+  VisaIcon,
+  MastercardIcon,
+  AmexIcon,
+  GooglePayIcon,
+  QarCurrencyIcon,
+} from '@/components/ui/PaymentIcons';
 import { PRODUCTS, QATAR_MUNICIPALITIES } from '@/data/products';
 import { ProductCard } from '@/components/product/ProductCard';
 import { useShop } from '@/context/ShopContext';
@@ -362,6 +372,13 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                   <span>Instant WhatsApp & live chat assistance</span>
                 </div>
               </div>
+              <div className={styles.assuranceItem}>
+                <CreditCard size={18} />
+                <div>
+                  <strong>Safe & Flexible Payments</strong>
+                  <span>Apple Pay, Google Pay & Qatar Cards</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -581,6 +598,58 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
               </button>
             </div>
 
+            {/* Guaranteed Safe Checkout & Payment Method Cards */}
+            <div className={styles.paymentTrustCard}>
+              <div className={styles.paymentTrustHeader}>
+                <div className={styles.paymentTrustTitleWrap}>
+                  <ShieldCheck size={16} />
+                  <span>Guaranteed Safe & Secure Checkout</span>
+                </div>
+                <div className={styles.paymentSecurityBadge}>
+                  <Lock size={11} />
+                  <span>256-Bit SSL</span>
+                </div>
+              </div>
+
+              {/* Payment Card Badges Row */}
+              <div className={styles.paymentCardsGrid} aria-label="Accepted Payment Methods in Qatar">
+                <span className={styles.payCardBadge} title="Apple Pay — Touch ID / Face ID Instant Pay">
+                  <ApplePayIcon width={44} height={28} />
+                </span>
+                <span className={styles.payCardBadge} title="Visa Debit & Credit Cards">
+                  <VisaIcon width={44} height={28} />
+                </span>
+                <span className={styles.payCardBadge} title="Mastercard">
+                  <MastercardIcon width={44} height={28} />
+                </span>
+                <span className={styles.payCardBadge} title="American Express">
+                  <AmexIcon width={44} height={28} />
+                </span>
+                <span className={styles.payCardBadge} title="Google Pay">
+                  <GooglePayIcon width={44} height={28} />
+                </span>
+                <span className={styles.payCardBadge} title="Official Qatari Riyal (ر.ق)">
+                  <QarCurrencyIcon width={44} height={28} />
+                </span>
+              </div>
+
+              {/* Payment Trust Bullet Highlights */}
+              <div className={styles.paymentTrustHighlights}>
+                <div className={styles.trustHighlightItem}>
+                  <CheckCircle2 size={12} />
+                  <span>100% Buyer Protection Guaranteed</span>
+                </div>
+                <div className={styles.trustHighlightItem}>
+                  <CheckCircle2 size={12} />
+                  <span>Qatar Debit & Credit Cards</span>
+                </div>
+                <div className={styles.trustHighlightItem}>
+                  <CheckCircle2 size={12} />
+                  <span>Zero Processing Surcharge</span>
+                </div>
+              </div>
+            </div>
+
             {/* INTERACTIVE QATAR DELIVERY TIMELINE CARD */}
             <div className={styles.deliveryTimelineCard}>
               <div className={styles.timelineCardHeader}>
@@ -784,6 +853,14 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                     <h4>Dedicated Qatar Support</h4>
                     <p>
                       Have any questions or need assistance? Contact our Doha support team via WhatsApp or live chat for prompt, dedicated customer service.
+                    </p>
+                  </div>
+
+                  <div className={styles.policyCard}>
+                    <CreditCard size={22} className={styles.policyIcon} />
+                    <h4>Secure Qatar Payments</h4>
+                    <p>
+                      Pay securely with Apple Pay, Google Pay, and local Qatari debit/credit cards with 256-bit bank-grade encryption.
                     </p>
                   </div>
                 </div>

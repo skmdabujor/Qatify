@@ -36,10 +36,17 @@ interface ShopContextType {
   removeFromCart: (itemId: string) => void;
   clearCart: () => void;
 
-  // Bundle Promotion (Tiered 5-20 Items, >= 180 QAR)
+  // Bundle Promotion & Dedicated Bundle Cart (Tiered 5-20 Items, >= 180 QAR)
+  bundleCart: CartItem[];
   bundleItemCount: number;
+  bundleSubtotal: number;
   bundleTierPercent: number;
   bundleDiscountQAR: number;
+  bundleFinalTotal: number;
+  setBundleCart: (products: Product[]) => void;
+  updateBundleQuantity: (itemId: string, delta: number) => void;
+  removeFromBundleCart: (itemId: string) => void;
+  clearBundleCart: () => void;
   addBundleToCart: (products: Product[]) => void;
 
   // Wishlist
@@ -116,6 +123,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
   // Cart
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [bundleCart, setBundleCartState] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [appliedDiscountQAR, setAppliedDiscountQAR] = useState(0);
@@ -170,16 +178,14 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       if (storedCart) {
         setCart(JSON.parse(storedCart));
       } else {
-        // Pre-populate with 1 realistic starter item so cart preview is vibrant
-        setCart([
-          {
-            id: 'qat-001-starter',
-            product: PRODUCTS[0],
-            quantity: 1,
-            selectedColor: 'Obsidian Black',
-            selectedOption: 'Standard Qi Case',
-          },
-        ]);
+        setCart([]);
+      }
+
+      const storedBundleCart = localStorage.getItem('qatify_bundle_cart');
+      if (storedBundleCart) {
+        setBundleCartState(JSON.parse(storedBundleCart));
+      } else {
+        setBundleCartState([]);
       }
 
       const storedWishlist = localStorage.getItem('qatify_wishlist');
@@ -214,6 +220,16 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       }
     }
   }, [cart, isHydrated]);
+
+  useEffect(() => {
+    if (isHydrated) {
+      try {
+        localStorage.setItem('qatify_bundle_cart', JSON.stringify(bundleCart));
+      } catch (e) {
+        console.error('Error saving bundle cart:', e);
+      }
+    }
+  }, [bundleCart, isHydrated]);
 
   useEffect(() => {
     if (isHydrated) {
@@ -253,14 +269,18 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  // Cart Calculations
+  // Regular Cart Calculations
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const cartSubtotal = cart.reduce((acc, item) => acc + item.product.priceQAR * item.quantity, 0);
   const isFreeShipping = cartSubtotal >= FREE_SHIPPING_THRESHOLD;
   const freeShippingRemaining = Math.max(0, FREE_SHIPPING_THRESHOLD - cartSubtotal);
 
-  // Bundle Promotion Calculation (Qualifying bundle when 5 or more items in cart)
-  const bundleItemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+  // Dedicated Bundle Cart Calculations (100% Isolated from Regular Cart)
+  const bundleItemCount = bundleCart.reduce((acc, item) => acc + item.quantity, 0);
+  const bundleSubtotal = bundleCart.reduce(
+    (acc, item) => acc + item.product.priceQAR * item.quantity,
+    0
+  );
 
   let bundleTierPercent = 0;
   if (bundleItemCount >= 20) {
@@ -273,14 +293,12 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     bundleTierPercent = 5;
   }
 
-  const qualifyingBundleSubtotal = cart.reduce(
-    (acc, item) => acc + item.product.priceQAR * item.quantity,
-    0
-  );
   const bundleDiscountQAR =
     bundleTierPercent > 0
-      ? Math.round((qualifyingBundleSubtotal * bundleTierPercent) / 100)
+      ? Math.round((bundleSubtotal * bundleTierPercent) / 100)
       : 0;
+
+  const bundleFinalTotal = Math.max(0, bundleSubtotal - bundleDiscountQAR);
 
   // Cart Actions
   const openCart = () => setIsCartOpen(true);
@@ -351,36 +369,51 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     setCart([]);
   };
 
-  const addBundleToCart = (products: Product[]) => {
-    setCart((prev) => {
-      const next = [...prev];
-      for (const product of products) {
-        const color = product.variants?.colors?.[0]?.name;
-        const option = product.variants?.options?.[0]?.values?.[0];
-        const itemUniqueId = `${product.id}-${color || 'default'}-${option || 'default'}`;
-        const existingIndex = next.findIndex((item) => item.id === itemUniqueId);
-
-        if (existingIndex > -1) {
-          next[existingIndex] = {
-            ...next[existingIndex],
-            quantity: next[existingIndex].quantity + 1,
-          };
-        } else {
-          next.push({
-            id: itemUniqueId,
-            product,
-            quantity: 1,
-            selectedColor: color,
-            selectedOption: option,
-          });
-        }
-      }
-      return next;
+  // Dedicated Bundle Cart Actions
+  const setBundleCart = (products: Product[]) => {
+    const newItems: CartItem[] = products.map((product) => {
+      const color = product.variants?.colors?.[0]?.name;
+      const option = product.variants?.options?.[0]?.values?.[0];
+      const itemUniqueId = `bundle-${product.id}-${color || 'default'}-${option || 'default'}`;
+      return {
+        id: itemUniqueId,
+        product,
+        quantity: 1,
+        selectedColor: color,
+        selectedOption: option,
+      };
     });
+    setBundleCartState(newItems);
+  };
 
+  const updateBundleQuantity = (itemId: string, delta: number) => {
+    setBundleCartState((prev) => {
+      return prev
+        .map((item) => {
+          if (item.id === itemId) {
+            const newQty = item.quantity + delta;
+            return newQty > 0 ? { ...item, quantity: newQty } : null;
+          }
+          return item;
+        })
+        .filter(Boolean) as CartItem[];
+    });
+  };
+
+  const removeFromBundleCart = (itemId: string) => {
+    setBundleCartState((prev) => prev.filter((item) => item.id !== itemId));
+    showToast('Item Removed', 'The item was removed from your bundle.', 'info');
+  };
+
+  const clearBundleCart = () => {
+    setBundleCartState([]);
+  };
+
+  const addBundleToCart = (products: Product[]) => {
+    setBundleCart(products);
     showToast(
-      'Bundle Added to Cart! 🎁',
-      `${products.length} products added with Tiered Bundle Discount.`,
+      'Bundle Saved! 🎁',
+      `${products.length} products placed in your dedicated Bundle Cart.`,
       'success'
     );
   };
@@ -529,9 +562,16 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         removeFromCart,
         clearCart,
+        bundleCart,
         bundleItemCount,
+        bundleSubtotal,
         bundleTierPercent,
         bundleDiscountQAR,
+        bundleFinalTotal,
+        setBundleCart,
+        updateBundleQuantity,
+        removeFromBundleCart,
+        clearBundleCart,
         addBundleToCart,
         wishlist,
         toggleWishlist,

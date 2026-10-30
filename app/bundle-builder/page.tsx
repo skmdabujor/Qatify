@@ -50,17 +50,50 @@ const getProductId = (p: any): string => {
   return String(p.id || p.productId || p._id || '').trim();
 };
 
+// Helper to extract clean regular price (ignoring any individual discounts on product page)
+const getRegularPrice = (p: any): number => {
+  const orig = typeof p.originalPriceQAR === 'number' && !isNaN(p.originalPriceQAR) ? p.originalPriceQAR : 0;
+  const curr = typeof p.priceQAR === 'number' && !isNaN(p.priceQAR) ? p.priceQAR : 0;
+  return Math.max(orig, curr);
+};
+
+// Normalize any catalog product into a bundle-eligible product with clean regular pricing
+const normalizeBundleProduct = (raw: any): Product | null => {
+  if (!raw) return null;
+  const id = getProductId(raw);
+  if (!id) return null;
+
+  const regularPrice = getRegularPrice(raw);
+
+  // Strict 180+ QAR threshold (products below 180 QAR are excluded from bundle builder)
+  if (regularPrice < 180) return null;
+
+  // In-stock items only
+  if (raw.inStock === false) return null;
+
+  return {
+    ...raw,
+    id,
+    priceQAR: regularPrice,
+    originalPriceQAR: regularPrice,
+    discountPercent: 0,
+    isFlashDeal: false,
+  } as Product;
+};
+
 // Categories for Filter Bar
 const BUNDLE_CATEGORIES = [
   { slug: 'all', name: 'All Categories' },
-  { slug: 'gaming-gear', name: 'Gaming & Desk Tech' },
-  { slug: 'chargers-powerbanks', name: 'GaN Chargers & Power' },
-  { slug: 'tws-audio', name: 'TWS & Spatial Audio' },
+  { slug: 'mobile-accessories', name: 'Mobile Accessories' },
   { slug: 'smartwatches', name: 'Smartwatches & Fit' },
-  { slug: 'smart-home', name: 'Smart Home & Projectors' },
+  { slug: 'tws-audio', name: 'TWS & Spatial Audio' },
+  { slug: 'chargers-powerbanks', name: 'GaN Chargers & Power' },
   { slug: 'car-accessories', name: 'Car Tech & Mounts' },
-  { slug: 'laptop-gear', name: 'Laptop Hubs & Stands' },
+  { slug: 'gaming-gear', name: 'Gaming & Desk Tech' },
   { slug: 'drones-cameras', name: 'Drones & Cameras' },
+  { slug: 'smart-home', name: 'Smart Home & Ambience' },
+  { slug: 'laptop-gear', name: 'Laptop Hubs & Stands' },
+  { slug: 'cables-adapters', name: 'Fast Cables & OTG' },
 ];
 
 const PREDEFINED_PRICE_RANGES = [
@@ -74,7 +107,7 @@ const PREDEFINED_PRICE_RANGES = [
 function BundleBuilderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { addBundleToCart, openCart, showToast } = useShop();
+  const { setBundleCart, showToast } = useShop();
 
   // Filter States
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -93,30 +126,27 @@ function BundleBuilderContent() {
   // Selected Products for the Bundle (Max 20)
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
 
-  // Query dedicated Convex Bundle Products collection
-  const convexBundleProducts = useQuery(api.bundleProducts.list, {
-    categorySlug: selectedCategory === 'all' ? undefined : selectedCategory,
-  });
+  // Query live store products directly from Convex product catalog
+  const liveProducts = useQuery(api.products.list, { limit: 250 });
 
-  // Base Products Catalog (strictly clean standard pricing, no individual discounts)
+  // Base Products Catalog (strictly 180+ QAR regular pricing, no individual discounts)
   const allProducts: Product[] = useMemo(() => {
-    if (convexBundleProducts && convexBundleProducts.length > 0) {
-      return convexBundleProducts.map((p: any) => ({
-        ...p,
-        id: getProductId(p),
-      })) as Product[];
+    const rawCatalog: any[] =
+      liveProducts && liveProducts.length > 0 ? liveProducts : PRODUCTS;
+
+    const list: Product[] = [];
+    const seenIds = new Set<string>();
+
+    for (const raw of rawCatalog) {
+      const item = normalizeBundleProduct(raw);
+      if (item && !seenIds.has(item.id)) {
+        seenIds.add(item.id);
+        list.push(item);
+      }
     }
 
-    return PRODUCTS.map((p) => ({
-      ...p,
-      id: getProductId(p),
-    })).filter((p) => {
-      const hasValidId = Boolean(p.id);
-      const hasMinPrice = typeof p.priceQAR === 'number' && p.priceQAR >= 180;
-      const isInStock = p.inStock !== false;
-      return hasValidId && hasMinPrice && isInStock;
-    });
-  }, [convexBundleProducts]);
+    return list;
+  }, [liveProducts]);
 
   // Read URL query params (?items=qat-004,qat-009...) from homepage card redirect
   useEffect(() => {
@@ -294,10 +324,23 @@ function BundleBuilderContent() {
 
   // Selected Products detail objects (matching normalized product ID)
   const selectedProducts = useMemo(() => {
+    const rawCatalog: any[] =
+      liveProducts && liveProducts.length > 0 ? liveProducts : PRODUCTS;
+
     return selectedProductIds
-      .map((id) => allProducts.find((p) => getProductId(p) === id) || PRODUCTS.find((p) => getProductId(p) === id))
+      .map((id) => {
+        const found = allProducts.find((p) => getProductId(p) === id);
+        if (found) return found;
+
+        // Fallback search in catalog in case product was carried over before list populated
+        const fallback = rawCatalog.find((p) => getProductId(p) === id);
+        if (fallback) {
+          return normalizeBundleProduct(fallback);
+        }
+        return null;
+      })
       .filter(Boolean) as Product[];
-  }, [selectedProductIds, allProducts]);
+  }, [selectedProductIds, allProducts, liveProducts]);
 
   const selectedCount = selectedProducts.length;
 
@@ -363,11 +406,16 @@ function BundleBuilderContent() {
     setSelectedProductIds((prev) => prev.filter((id) => id !== productId));
   };
 
-  // Add the entire bundle to Cart
+  // Add the entire bundle to Dedicated Bundle Cart and route to /bundle-cart
   const handleAddBundleToCart = () => {
     if (selectedCount === 0) return;
-    addBundleToCart(selectedProducts);
-    openCart();
+    setBundleCart(selectedProducts);
+    showToast(
+      'Proceeding to Bundle Cart! 🎁',
+      `${selectedCount} items configured in your dedicated wholesale bundle.`,
+      'success'
+    );
+    router.push('/bundle-cart');
   };
 
   // Motivation message
@@ -607,6 +655,7 @@ function BundleBuilderContent() {
                     cat.slug === 'all'
                       ? allProducts.length
                       : categoryCounts[cat.slug] || 0;
+                  if (cat.slug !== 'all' && count === 0) return null;
                   return (
                     <label key={cat.slug} className={styles.categoryRowItem}>
                       <input
@@ -1110,14 +1159,14 @@ function BundleBuilderContent() {
                 {selectedCount === 0 ? (
                   <>Select at least 1 item</>
                 ) : selectedCount < 5 ? (
-                  <>Add to Cart (Regular Price) ➔</>
+                  <>Proceed to Bundle Cart (Regular Price) ➔</>
                 ) : selectedCount === 20 ? (
                   <>
-                    <Gift size={16} /> Claim 20% OFF + VIP Gift ➔
+                    <Gift size={16} /> Proceed to Bundle Cart (20% OFF + VIP Gift) ➔
                   </>
                 ) : (
                   <>
-                    <ShoppingBag size={16} /> Add Bundle to Cart ({tierPercent}% OFF) ➔
+                    <ShoppingBag size={16} /> Proceed to Bundle Cart ({tierPercent}% OFF) ➔
                   </>
                 )}
               </button>
