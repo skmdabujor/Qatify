@@ -24,7 +24,17 @@ import {
   ChevronRight,
   Headset,
   MessageCircle,
+  Lock,
+  CheckCircle2,
 } from 'lucide-react';
+import {
+  ApplePayIcon,
+  VisaIcon,
+  MastercardIcon,
+  AmexIcon,
+  GooglePayIcon,
+  QarCurrencyIcon,
+} from '@/components/ui/PaymentIcons';
 import { useShop } from '@/context/ShopContext';
 import { PRODUCTS } from '@/data/products';
 import styles from './page.module.scss';
@@ -35,9 +45,6 @@ export default function CartPage() {
     cart,
     cartSubtotal,
     cartCount,
-    freeShippingThreshold,
-    freeShippingRemaining,
-    isFreeShipping,
     updateQuantity,
     removeFromCart,
     clearCart,
@@ -70,14 +77,9 @@ export default function CartPage() {
     day: 'numeric',
   })}`;
 
-  const progressPercent = Math.min(
-    100,
-    Math.round((cartSubtotal / freeShippingThreshold) * 100)
-  );
-
   const couponDiscount = appliedDiscountQAR || 0;
   const totalDiscount = couponDiscount;
-  const shippingFee = isFreeShipping || cart.length === 0 ? 0 : 20;
+  const shippingFee = cart.length === 0 ? 0 : 20;
   const grandTotal = Math.max(0, cartSubtotal - totalDiscount + shippingFee);
 
   const handleApplyCoupon = async (e: React.FormEvent) => {
@@ -158,32 +160,6 @@ export default function CartPage() {
           <div className={styles.cartLayout}>
             {/* Left Column: Cart Items & Upsells */}
             <div className={styles.itemsColumn}>
-              {/* Free Shipping Progress Alert */}
-              <div className={styles.shippingAlertCard}>
-                <div className={styles.alertContent}>
-                  <div className={styles.alertIcon}>
-                    <Plane size={20} />
-                  </div>
-                  <div className={styles.alertTextWrap}>
-                    {isFreeShipping ? (
-                      <p className={styles.freeUnlocked}>
-                        🎉 <strong>Free Express Delivery in Qatar unlocked!</strong> Your order qualifies for free delivery.
-                      </p>
-                    ) : (
-                      <p className={styles.freeNeeded}>
-                        Add <strong className="price-qar">QAR {freeShippingRemaining}</strong> more to get <strong>FREE Express Delivery</strong> across Qatar!
-                      </p>
-                    )}
-                    <div className={styles.progressTrack}>
-                      <div
-                        className={styles.progressFill}
-                        style={{ width: `${progressPercent}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               {/* Items List */}
               <div className={styles.cartItemsList}>
                 {cart.map((item) => (
@@ -330,7 +306,7 @@ export default function CartPage() {
                       </div>
                       <button
                         type="button"
-                        onClick={() => addToCart(p, 1)}
+                        onClick={() => addToCart(p, 1, undefined, undefined, false)}
                         className={styles.quickAddBtn}
                       >
                         + Add
@@ -421,11 +397,7 @@ export default function CartPage() {
                       <span className={styles.shippingNotice}>6–10 Days to Qatar</span>
                     </div>
                     <span className="price-qar">
-                      {isFreeShipping ? (
-                        <strong className={styles.freeText}>FREE</strong>
-                      ) : (
-                        `QAR ${shippingFee}`
-                      )}
+                      {cart.length === 0 ? 'QAR 0' : `QAR ${shippingFee}`}
                     </span>
                   </div>
 
@@ -450,6 +422,58 @@ export default function CartPage() {
                 <Link href="/shop" className={styles.continueShoppingLink}>
                   ← Continue Shopping Catalog
                 </Link>
+
+                {/* Guaranteed Safe & Secure Checkout Trust Card with Payment Icons */}
+                <div className={styles.paymentTrustCard}>
+                  <div className={styles.paymentTrustHeader}>
+                    <div className={styles.paymentTrustTitleWrap}>
+                      <ShieldCheck size={15} />
+                      <span>Guaranteed Safe & Secure Checkout</span>
+                    </div>
+                    <div className={styles.paymentSecurityBadge}>
+                      <Lock size={11} />
+                      <span>256-Bit SSL</span>
+                    </div>
+                  </div>
+
+                  {/* Payment Card Badges Row */}
+                  <div className={styles.paymentCardsGrid} aria-label="Accepted Payment Methods in Qatar">
+                    <span className={styles.payCardBadge} title="Apple Pay — Touch ID / Face ID Instant Pay">
+                      <ApplePayIcon width={40} height={26} />
+                    </span>
+                    <span className={styles.payCardBadge} title="Visa Debit & Credit Cards">
+                      <VisaIcon width={40} height={26} />
+                    </span>
+                    <span className={styles.payCardBadge} title="Mastercard">
+                      <MastercardIcon width={40} height={26} />
+                    </span>
+                    <span className={styles.payCardBadge} title="American Express">
+                      <AmexIcon width={40} height={26} />
+                    </span>
+                    <span className={styles.payCardBadge} title="Google Pay">
+                      <GooglePayIcon width={40} height={26} />
+                    </span>
+                    <span className={styles.payCardBadge} title="Official Qatari Riyal (ر.ق)">
+                      <QarCurrencyIcon width={40} height={26} />
+                    </span>
+                  </div>
+
+                  {/* Payment Trust Bullet Highlights */}
+                  <div className={styles.paymentTrustHighlights}>
+                    <div className={styles.trustHighlightItem}>
+                      <CheckCircle2 size={12} />
+                      <span>100% Buyer Protection Guaranteed</span>
+                    </div>
+                    <div className={styles.trustHighlightItem}>
+                      <CheckCircle2 size={12} />
+                      <span>Qatar Debit & Credit Cards</span>
+                    </div>
+                    <div className={styles.trustHighlightItem}>
+                      <CheckCircle2 size={12} />
+                      <span>Zero Processing Surcharge</span>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Assurance Badges */}
                 <div className={styles.summaryTrustBox}>

@@ -31,9 +31,6 @@ export const CartDrawer: React.FC = () => {
     isCartOpen,
     closeCart,
     cartSubtotal,
-    freeShippingThreshold,
-    freeShippingRemaining,
-    isFreeShipping,
     updateQuantity,
     removeFromCart,
     showToast,
@@ -64,14 +61,9 @@ export const CartDrawer: React.FC = () => {
     day: 'numeric',
   })}`;
 
-  const progressPercent = Math.min(
-    100,
-    Math.round((cartSubtotal / freeShippingThreshold) * 100)
-  );
-
   const couponDiscount = appliedDiscountQAR || 0;
   const totalDiscount = couponDiscount;
-  const shippingFee = isFreeShipping || cart.length === 0 ? 0 : 20;
+  const shippingFee = cart.length === 0 ? 0 : 20;
   const grandTotal = Math.max(0, cartSubtotal - totalDiscount + shippingFee);
 
   const handleApplyCoupon = async (e: React.FormEvent) => {
@@ -124,27 +116,6 @@ export const CartDrawer: React.FC = () => {
           >
             <X size={20} />
           </button>
-        </div>
-
-        {/* Free Delivery Progress Bar */}
-        <div className={styles.shippingBarWrap}>
-          <div className={styles.shippingBarStatus}>
-            {isFreeShipping ? (
-              <span className={styles.unlockedText}>
-                🎉 <strong>Free Qatar Direct Air Express</strong> unlocked!
-              </span>
-            ) : (
-              <span>
-                Add <strong className="price-qar">QAR {freeShippingRemaining}</strong> more for <strong>FREE Qatar Air Shipping</strong>!
-              </span>
-            )}
-          </div>
-          <div className={styles.progressBarTrack}>
-            <div
-              className={styles.progressBarFill}
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
         </div>
 
         {/* 6-10 Days Delivery Preview Strip */}
@@ -331,12 +302,9 @@ export const CartDrawer: React.FC = () => {
                 </div>
               )}
               <div className={styles.summaryLine}>
-                <span>
-                  Tracked Air Delivery
-                  {isFreeShipping && <span className={styles.freeTag}>FREE</span>}
-                </span>
+                <span>Tracked Air Delivery</span>
                 <span className="price-qar">
-                  {isFreeShipping ? 'QAR 0' : `QAR ${shippingFee}`}
+                  {cart.length === 0 ? 'QAR 0' : `QAR ${shippingFee}`}
                 </span>
               </div>
               <div className={`${styles.summaryLine} ${styles.totalLine}`}>

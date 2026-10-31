@@ -6,6 +6,7 @@
 // =============================================================================
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import { Product, CartItem, QatarAddress, Order, ShippingMethod } from '@/types/product';
 import { PRODUCTS, MOCK_ORDERS, SHIPPING_METHODS } from '@/data/products';
 
@@ -31,7 +32,13 @@ interface ShopContextType {
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
-  addToCart: (product: Product, quantity?: number, selectedColor?: string, selectedOption?: string) => void;
+  addToCart: (
+    product: Product,
+    quantity?: number,
+    selectedColor?: string,
+    selectedOption?: string,
+    openDrawer?: boolean
+  ) => void;
   updateQuantity: (itemId: string, delta: number) => void;
   removeFromCart: (itemId: string) => void;
   clearCart: () => void;
@@ -118,6 +125,8 @@ const INITIAL_ADDRESSES: QatarAddress[] = [
 ];
 
 export function ShopProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+
   // Hydration guard
   const [isHydrated, setIsHydrated] = useState(false);
 
@@ -125,6 +134,13 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [bundleCart, setBundleCartState] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Auto-close side cart drawer when on full cart or checkout pages
+  useEffect(() => {
+    if (pathname === '/cart' || pathname === '/checkout' || pathname === '/bundle-cart') {
+      setIsCartOpen(false);
+    }
+  }, [pathname]);
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [appliedDiscountQAR, setAppliedDiscountQAR] = useState(0);
 
@@ -272,8 +288,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   // Regular Cart Calculations
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const cartSubtotal = cart.reduce((acc, item) => acc + item.product.priceQAR * item.quantity, 0);
-  const isFreeShipping = cartSubtotal >= FREE_SHIPPING_THRESHOLD;
-  const freeShippingRemaining = Math.max(0, FREE_SHIPPING_THRESHOLD - cartSubtotal);
+  const isFreeShipping = false;
+  const freeShippingRemaining = 0;
 
   // Dedicated Bundle Cart Calculations (100% Isolated from Regular Cart)
   const bundleItemCount = bundleCart.reduce((acc, item) => acc + item.quantity, 0);
@@ -309,7 +325,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     product: Product,
     quantity = 1,
     selectedColor?: string,
-    selectedOption?: string
+    selectedOption?: string,
+    openDrawer?: boolean
   ) => {
     const color = selectedColor || product.variants?.colors?.[0]?.name;
     const option = selectedOption || product.variants?.options?.[0]?.values?.[0];
@@ -343,7 +360,15 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       `${product.title.slice(0, 32)}... (QAR ${product.priceQAR})`,
       'success'
     );
-    setIsCartOpen(true);
+
+    const shouldOpen =
+      openDrawer !== undefined
+        ? openDrawer
+        : pathname !== '/cart' && pathname !== '/checkout' && pathname !== '/bundle-cart';
+
+    if (shouldOpen) {
+      setIsCartOpen(true);
+    }
   };
 
   const updateQuantity = (itemId: string, delta: number) => {
@@ -551,9 +576,9 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         appliedCoupon,
         appliedDiscountQAR,
         setCoupon,
-        freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
-        freeShippingRemaining,
-        isFreeShipping,
+        freeShippingThreshold: 0,
+        freeShippingRemaining: 0,
+        isFreeShipping: false,
         isCartOpen,
         openCart,
         closeCart,

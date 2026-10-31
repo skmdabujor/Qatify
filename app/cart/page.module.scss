@@ -2,6 +2,7 @@
 @use '@/styles/mixins' as *;
 
 .cartPage {
+  width: 100%;
   padding: $space-4 0 $space-8 0;
 
   @include mobile {
@@ -41,6 +42,7 @@
   margin-bottom: $space-4;
   padding-bottom: 12px;
   border-bottom: 1px solid $color-border-subtle;
+  width: 100%;
 }
 
 .headerTitleWrap {
@@ -129,9 +131,12 @@
 // Cart Layout
 .cartLayout {
   display: grid;
-  grid-template-columns: 1fr 360px;
+  grid-template-columns: minmax(0, 1fr) 380px;
   gap: $space-6;
   align-items: start;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 
   @include laptop {
     grid-template-columns: 1fr;
@@ -143,6 +148,9 @@
   display: flex;
   flex-direction: column;
   gap: $space-4;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 .shippingAlertCard {
@@ -150,33 +158,43 @@
   border: 1px solid #fef08a;
   border-radius: $radius-md;
   padding: 12px 16px;
+  min-width: 0;
+  width: 100%;
 }
 
 .alertContent {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .alertIcon {
   color: #ca8a04;
-  margin-top: 2px;
+  margin-top: 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .alertTextWrap {
   flex: 1;
+  min-width: 0;
 }
 
 .freeUnlocked {
   font-size: 12.5px;
   color: #15803d;
   margin-bottom: 6px;
+  word-break: break-word;
 }
 
 .freeNeeded {
   font-size: 12.5px;
   color: #854d0e;
   margin-bottom: 6px;
+  word-break: break-word;
 }
 
 .progressTrack {
@@ -209,6 +227,8 @@
   gap: 14px;
   box-shadow: $shadow-xs;
   transition: border-color $transition-fast;
+  min-width: 0;
+  width: 100%;
 
   &:hover {
     border-color: $color-border-medium;
@@ -247,6 +267,7 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 8px;
+  min-width: 0;
 }
 
 .itemHeader {
@@ -254,12 +275,15 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
+  min-width: 0;
 }
 
 .itemBrandAndTitle {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
+  flex: 1;
 }
 
 .itemBrand {
@@ -272,6 +296,7 @@
 
 .itemTitleLink {
   text-decoration: none;
+  min-width: 0;
 }
 
 .itemTitle {
@@ -280,6 +305,7 @@
   color: $color-ink-black;
   line-height: 1.35;
   transition: color $transition-fast;
+  word-break: break-word;
 
   &:hover {
     color: $color-accent-red;
@@ -293,6 +319,7 @@
   padding: 4px;
   cursor: pointer;
   transition: color $transition-fast;
+  flex-shrink: 0;
 
   &:hover {
     color: $color-accent-red;
@@ -425,6 +452,8 @@
   border: 1px solid $color-border-subtle;
   border-radius: $radius-md;
   padding: 14px 16px;
+  min-width: 0;
+  width: 100%;
 }
 
 .upsellHeader {
@@ -443,8 +472,14 @@
 
 .upsellGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
+  min-width: 0;
+  width: 100%;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
   @include tablet {
     grid-template-columns: 1fr;
@@ -463,6 +498,8 @@
   align-items: center;
   gap: 8px;
   background-color: #fafafa;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .upsellImg {
@@ -470,11 +507,13 @@
   height: 44px;
   object-fit: cover;
   border-radius: $radius-xs;
+  flex-shrink: 0;
 }
 
 .upsellInfo {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .upsellTitle {
@@ -482,6 +521,9 @@
   font-weight: 700;
   color: $color-ink-black;
   @include text-truncate;
+  display: block;
+  width: 100%;
+  max-width: 100%;
 }
 
 .upsellPrice {
@@ -500,6 +542,7 @@
   border-radius: $radius-xs;
   border: none;
   cursor: pointer;
+  flex-shrink: 0;
 
   &:hover {
     background-color: $color-accent-red;
@@ -510,9 +553,13 @@
 .summaryColumn {
   position: sticky;
   top: 90px;
+  min-width: 0;
+  width: 100%;
+  max-width: 380px;
 
   @include laptop {
     position: static;
+    max-width: 100%;
   }
 }
 
@@ -522,6 +569,7 @@
   border-radius: $radius-md;
   padding: 18px;
   box-shadow: $shadow-sm;
+  width: 100%;
 }
 
 .summaryTitle {
@@ -750,6 +798,115 @@
   &:hover {
     background-color: $color-accent-red;
     transform: scale(1.03);
+  }
+}
+
+// Payment Trust Card & Badges in Cart Summary
+.paymentTrustCard {
+  background-color: #fafafa;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    border-color: #d4d4d8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+}
+
+.paymentTrustHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.paymentTrustTitleWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: $color-ink-black;
+
+  svg {
+    color: #10b981;
+    flex-shrink: 0;
+  }
+}
+
+.paymentSecurityBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #059669;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-family: $font-mono;
+}
+
+.paymentCardsGrid {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.payCardBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: transform $transition-fast, box-shadow $transition-fast, border-color $transition-fast;
+  overflow: hidden;
+  cursor: default;
+
+  svg {
+    display: block;
+    width: 40px;
+    height: 26px;
+    border-radius: 5px;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: #ff6900;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.paymentTrustHighlights {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  border-top: 1px dashed #e4e4e7;
+  font-size: 11px;
+  color: $color-text-secondary;
+}
+
+.trustHighlightItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  svg {
+    color: #10b981;
+    flex-shrink: 0;
   }
 }
 

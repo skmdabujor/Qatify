@@ -132,8 +132,8 @@ export default function ShopHomePage() {
                 </div>
               </div>
               <div className={styles.freeDeliveryBadge}>
-                <span className={styles.freeDeliveryPill}>FREE</span>
-                <span className={styles.freeDeliveryText}>DELIVERY</span>
+                <span className={styles.freeDeliveryPill}>AIR</span>
+                <span className={styles.freeDeliveryText}>EXPRESS</span>
               </div>
             </div>
 

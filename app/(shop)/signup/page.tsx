@@ -6,7 +6,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useQuery } from 'convex/react';
+import { useQuery, useConvex } from 'convex/react';
 import { useAuthActions } from '@convex-dev/auth/react';
 import { api } from '@/convex/_generated/api';
 import {
@@ -26,9 +26,11 @@ import Link from 'next/link';
 import { QatifyLogo } from '@/components/brand/QatifyLogo';
 import { useShop } from '@/context/ShopContext';
 import styles from '../login/login.module.scss';
+import { COUNTRY_DIAL_CODES } from '@/components/auth/AuthModal';
 
 export default function SignupPage() {
   const router = useRouter();
+  const convex = useConvex();
   const viewer = useQuery(api.users.viewer);
   const { signIn } = useAuthActions();
   const { showToast } = useShop();
@@ -36,6 +38,7 @@ export default function SignupPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('+974');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -47,6 +50,22 @@ export default function SignupPage() {
       router.replace('/dashboard');
     }
   }, [viewer, router]);
+
+  // Save credentials to browser Credential Management API (Chrome/Edge/Safari/Android)
+  const saveBrowserCredentials = async (userEmail: string, userPass: string, userName?: string) => {
+    if (typeof window !== 'undefined' && 'PasswordCredential' in window) {
+      try {
+        const cred = new (window as any).PasswordCredential({
+          id: userEmail,
+          password: userPass,
+          name: userName || undefined,
+        });
+        await navigator.credentials.store(cred);
+      } catch {
+        // Silently continue if browser blocks or unsupported
+      }
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +90,15 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
+      // 1. Strict Duplicate Account Restriction Pre-Check
+      const emailAlreadyExists = await convex.query(api.users.checkEmailExists, { email: cleanEmail });
+      if (emailAlreadyExists) {
+        setErrorMessage('এই ইমেইল দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট খোলা আছে, অনুগ্রহ করে লগইন করুন।');
+        setLoading(false);
+        return;
+      }
+
+      // 2. Create customer account in Convex Auth
       const params: Record<string, string> = {
         flow: 'signUp',
         email: cleanEmail,
@@ -78,21 +106,33 @@ export default function SignupPage() {
         name: name.trim(),
       };
       if (phone.trim()) {
-        params.phone = `+974 ${phone.trim().replace(/^\+?974\s*/, '')}`;
+        const rawPhone = phone.trim();
+        if (rawPhone.startsWith('+')) {
+          params.phone = rawPhone;
+        } else {
+          params.phone = `${countryCode} ${rawPhone}`;
+        }
       }
       await signIn('password', params);
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('qatify_user_email', cleanEmail);
+        localStorage.setItem('qatify_remembered_email', cleanEmail);
       }
+
+      await saveBrowserCredentials(cleanEmail, password, name.trim());
 
       showToast('Welcome to Qatify! 🇶🇦', `Account created successfully for ${name.trim()}`, 'success');
       router.push('/dashboard');
     } catch (err: any) {
       console.error('Sign up error:', err);
       const msg = err?.message || String(err);
-      if (msg.includes('Account already exists') || msg.includes('user already exists')) {
-        setErrorMessage('An account already exists with this email. Please sign in instead.');
+      if (
+        msg.includes('already exists') ||
+        msg.includes('user already exists') ||
+        (msg.includes('Account') && msg.includes('exists'))
+      ) {
+        setErrorMessage('এই ইমেইল দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট খোলা আছে, অনুগ্রহ করে লগইন করুন।');
       } else {
         setErrorMessage('Failed to create account. Please check your details and try again.');
       }
@@ -126,21 +166,43 @@ export default function SignupPage() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className={styles.form}>
+          <form
+            onSubmit={handleSubmit}
+            className={styles.form}
+            method="post"
+            autoComplete="on"
+          >
             {errorMessage && (
               <div className={styles.errorAlert}>
                 <AlertCircle size={16} />
-                <span>{errorMessage}</span>
+                <div>
+                  <span>{errorMessage}</span>
+                  {errorMessage.includes('ইতিমধ্যে একটি অ্যাকাউন্ট খোলা আছে') && (
+                    <div>
+                      <Link
+                        href="/login"
+                        className={styles.alertActionBtn}
+                      >
+                        লগইন করুন (Sign In) →
+                      </Link>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
             <div className={styles.fieldGroup}>
-              <label className={styles.label}>Full Name *</label>
+              <label htmlFor="signup-name" className={styles.label}>
+                Full Name *
+              </label>
               <div className={styles.inputWrapper}>
                 <User size={16} className={styles.icon} />
                 <input
+                  id="signup-name"
+                  name="name"
                   type="text"
                   required
+                  autoComplete="name"
                   placeholder="e.g. Tariq Al-Mansoor"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -150,12 +212,18 @@ export default function SignupPage() {
             </div>
 
             <div className={styles.fieldGroup}>
-              <label className={styles.label}>Email Address *</label>
+              <label htmlFor="signup-email" className={styles.label}>
+                Email Address *
+              </label>
               <div className={styles.inputWrapper}>
                 <Mail size={16} className={styles.icon} />
                 <input
+                  id="signup-email"
+                  name="username"
                   type="email"
                   required
+                  autoComplete="username webauthn"
+                  inputMode="email"
                   placeholder="tariq@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -164,32 +232,63 @@ export default function SignupPage() {
               </div>
             </div>
 
+            {/* Phone Number (Any Country / Optional) */}
             <div className={styles.fieldGroup}>
-              <label className={styles.label}>Qatar Mobile (Optional)</label>
-              <div className={styles.inputWrapper}>
-                <Phone size={16} className={styles.icon} />
-                <span className={styles.phonePrefix}>+974</span>
-                <input
-                  type="tel"
-                  placeholder="5512 8894"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/[^0-9\s]/g, ''))}
-                  className={`${styles.input} ${styles.phoneInput}`}
-                />
+              <label htmlFor="signup-phone" className={styles.label}>
+                Phone Number (Any Country / Optional)
+              </label>
+              <div className={styles.phoneInputGroup}>
+                <select
+                  className={styles.countryCodeSelect}
+                  value={countryCode}
+                  onChange={(e) => setCountryCode(e.target.value)}
+                  aria-label="Country dial code"
+                >
+                  {COUNTRY_DIAL_CODES.map((item) => (
+                    <option key={item.code + item.name} value={item.code}>
+                      {item.flag} {item.code} ({item.name})
+                    </option>
+                  ))}
+                </select>
+                <div className={styles.phoneFieldWrapper}>
+                  <input
+                    id="signup-phone"
+                    name="tel"
+                    type="tel"
+                    autoComplete="tel"
+                    placeholder={
+                      countryCode === '+974'
+                        ? '5512 8894'
+                        : countryCode === '+880'
+                        ? '1712 345678'
+                        : 'Phone number'
+                    }
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className={styles.phoneTextInput}
+                  />
+                </div>
               </div>
             </div>
 
             <div className={styles.fieldGroup}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <label className={styles.label}>Password *</label>
-                <span style={{ fontSize: '0.75rem', color: '#8A1538', fontWeight: 600 }}>Min 8 chars</span>
+              <div className={styles.passwordLabelRow}>
+                <label htmlFor="signup-password" className={styles.label}>
+                  Password *
+                </label>
+                <span style={{ fontSize: '0.75rem', color: '#8A1538', fontWeight: 600 }}>
+                  Min 8 chars
+                </span>
               </div>
               <div className={styles.inputWrapper}>
                 <Lock size={16} className={styles.icon} />
                 <input
+                  id="signup-password"
+                  name="password"
                   type={showPassword ? 'text' : 'password'}
                   required
                   minLength={8}
+                  autoComplete="new-password"
                   placeholder="Create a strong password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -199,6 +298,7 @@ export default function SignupPage() {
                   type="button"
                   className={styles.toggleBtn}
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>

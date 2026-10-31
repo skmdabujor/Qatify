@@ -122,11 +122,7 @@ function CheckoutContent() {
   // Calculations based on checkout mode (Bundle vs Regular)
   const checkoutItems = isBundleCheckout ? bundleCart : cart;
   const checkoutSubtotal = isBundleCheckout ? bundleSubtotal : cartSubtotal;
-  const isEligibleFreeShipping = isBundleCheckout ? false : isFreeShipping;
-  const shippingCost =
-    selectedShipping.id === 'standard-air' && isEligibleFreeShipping
-      ? 0
-      : selectedShipping.priceQAR;
+  const shippingCost = selectedShipping.priceQAR;
   const totalDiscount = isBundleCheckout
     ? (bundleDiscountQAR || 0)
     : (appliedDiscountQAR || 0);
@@ -578,10 +574,7 @@ function CheckoutContent() {
                 <div className={styles.shippingOptionsList}>
                   {SHIPPING_METHODS.map((method) => {
                     const isSelected = selectedShipping.id === method.id;
-                    const priceDisplay =
-                      method.id === 'standard-air' && isFreeShipping
-                        ? 'FREE (Over QAR 150)'
-                        : `QAR ${method.priceQAR}`;
+                    const priceDisplay = `QAR ${method.priceQAR}`;
 
                     return (
                       <div

@@ -57,3 +57,37 @@ export const updateProfile = mutation({
     return { success: true };
   },
 });
+
+/**
+ * Check if an email is already registered in Convex (Duplicate Account Check).
+ */
+export const checkEmailExists = query({
+  args: { email: v.string() },
+  handler: async (ctx, args) => {
+    const cleanEmail = args.email.trim().toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes("@")) {
+      return false;
+    }
+
+    // Check authAccounts table with provider 'password'
+    const account = await ctx.db
+      .query("authAccounts")
+      .withIndex("providerAndAccountId", (q) =>
+        q.eq("provider", "password").eq("providerAccountId", cleanEmail)
+      )
+      .first();
+
+    if (account) {
+      return true;
+    }
+
+    // Also check users table by email index
+    const user = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", cleanEmail))
+      .first();
+
+    return Boolean(user);
+  },
+});
+

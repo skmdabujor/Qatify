@@ -162,6 +162,112 @@
   gap: 0.375rem;
 }
 
+.passwordLabelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.forgotBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ff6900;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #e05d00;
+    text-decoration: underline;
+  }
+}
+
+.suggestionChip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #f0fdf4;
+  border: 1px dashed #86efac;
+  border-radius: 0.5rem;
+  color: #166534;
+  font-size: 0.75rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all 0.2s ease;
+  margin-top: 0.25rem;
+
+  &:hover {
+    background: #dcfce7;
+    border-color: #4ade80;
+    transform: translateY(-1px);
+  }
+
+  .suggestionIcon {
+    color: #16a34a;
+    flex-shrink: 0;
+  }
+
+  strong {
+    font-weight: 700;
+    color: #14532d;
+  }
+}
+
+.successAlert {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.75rem 1rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.625rem;
+  color: #166534;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+
+  .successRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+  }
+}
+
+.alertActionBtn {
+  margin-top: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  background: #ff6900;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #e05d00;
+  }
+}
+
+.codeInput {
+  letter-spacing: 0.25em !important;
+  font-family: monospace !important;
+  font-size: 1.125rem !important;
+  font-weight: 800 !important;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+
 .label {
   font-size: 0.8125rem;
   font-weight: 600;
@@ -220,18 +326,62 @@
   }
 }
 
-.phonePrefix {
-  position: absolute;
-  left: 2.625rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #71717a;
-  pointer-events: none;
+.phoneInputGroup {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: 100%;
 }
 
-.phoneInput {
-  padding-left: 5.75rem !important;
+.countryCodeSelect {
+  padding: 0.6875rem 0.625rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1.5px solid #e4e4e7;
+  border-radius: 0.625rem;
+  background: #f8fafc;
+  color: #18181b;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:focus {
+    border-color: #ff6900;
+    box-shadow: 0 0 0 3px rgba(255, 105, 0, 0.15);
+    background: #ffffff;
+  }
 }
+
+.phoneFieldWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+
+  .phoneTextInput {
+    width: 100%;
+    padding: 0.6875rem 0.875rem;
+    font-size: 0.875rem;
+    border: 1.5px solid #e4e4e7;
+    border-radius: 0.625rem;
+    background: #ffffff;
+    color: #18181b;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #ff6900;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(255, 105, 0, 0.15);
+    }
+
+    &::placeholder {
+      color: #a1a1aa;
+    }
+  }
+}
+
 
 .submitBtn {
   width: 100%;

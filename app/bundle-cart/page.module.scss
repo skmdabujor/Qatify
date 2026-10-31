@@ -1,4 +1,4 @@
-﻿@use '@/styles/variables' as *;
+@use '@/styles/variables' as *;
 @use '@/styles/mixins' as *;
 
 .bundleCartPage {
@@ -319,9 +319,11 @@
 // Cart Layout
 .cartLayout {
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: minmax(0, 1fr) 380px;
   gap: $space-6;
   align-items: start;
+  width: 100%;
+  max-width: 100%;
 
   @include laptop {
     grid-template-columns: 1fr;
@@ -333,6 +335,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
+  width: 100%;
 }
 
 .cartItemCard {
