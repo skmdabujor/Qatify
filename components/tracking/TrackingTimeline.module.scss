@@ -12,7 +12,7 @@
 // HERO SHIPMENT OVERVIEW BANNER
 // =============================================================================
 .shipmentOverviewBanner {
-  background: linear-gradient(135deg, $color-ink-black 0%, #18181f 100%);
+  background: linear-gradient(135deg, $color-ink-black 0%, #27272a 100%);
   border: 1px solid #27272a;
   border-radius: $radius-lg;
   padding: 24px;
@@ -307,8 +307,8 @@
   }
 
   .stepDone & {
-    background: #10b981;
-    border-color: #10b981;
+    background: #059669;
+    border-color: #059669;
     color: #ffffff;
   }
 
@@ -316,7 +316,7 @@
     background: $color-ink-black;
     border-color: $color-accent-orange;
     color: $color-accent-yellow;
-    box-shadow: 0 0 14px rgba(224, 108, 42, 0.4);
+    box-shadow: 0 0 14px rgba(255, 105, 0, 0.4);
     animation: pulse 1.8s infinite;
   }
 }
@@ -413,8 +413,8 @@
   z-index: 2;
 
   .latest & {
-    border-color: #10b981;
-    background: #10b981;
+    border-color: #059669;
+    background: #059669;
     box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
 
     &::after {
@@ -473,7 +473,7 @@
 
 .checkpointDesc {
   font-size: 13px;
-  color: #52525b;
+  color: #71717a;
   line-height: 1.45;
   margin: 0;
 }
@@ -488,7 +488,7 @@
 }
 
 .emptyCheckpointsNote {
-  background: #f8f9fa;
+  background: #f4f4f5;
   border: 1px dashed #d4d4d8;
   border-radius: $radius-md;
   padding: 24px;

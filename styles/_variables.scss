@@ -1,23 +1,27 @@
 // =============================================================================
 // Qatify — SCSS Design System Variables & Tokens
 // Governed by the Strict 60/30/10 Color Rule & High-Density Regional Retail UX
+// 60% Base: #FAFAFA / #FFFFFF / #E4E4E7 / #FFF4ED
+// 30% Secondary & Typography: #18181B / #27272A / #71717A
+// 10% Brand Accents & Gold: #FF6900 / #E05D00 / #FFB800
+// Zero Blue Policy: Strict replacement of all blue/navy tints
 // =============================================================================
 
-// --- 60% DOMINANT BASE (Clean White, Canvas & Deep Obsidian Black) ---
+// --- 60% DOMINANT BASE (Clean White, Canvas & Crisp Neutral Off-White) ---
 $color-bg-primary: #ffffff;
-$color-bg-canvas: #f8f9fa;
+$color-bg-canvas: #fafafa;
 $color-bg-alt: #fafafa;
-$color-ink-black: #0a0a0c;
-$color-ink-deep: #121216;
+$color-ink-black: #18181b;
+$color-ink-deep: #18181b;
 $color-ink-text: #18181b;
 
 // --- 30% SECONDARY CONTAINERS & SURFACES (Monochrome Neutrals & Soft Tints) ---
 $color-surface-card: #ffffff;
-$color-surface-muted: #f1f3f5;
+$color-surface-muted: #f4f4f5;
 $color-surface-elevated: #ffffff;
-$color-surface-dark: #16161a;
-$color-surface-dark-card: #1e1e24;
-$color-surface-dark-hover: #26262e;
+$color-surface-dark: #18181b;
+$color-surface-dark-card: #27272a;
+$color-surface-dark-hover: #27272a;
 
 // Borders & Dividers
 $color-border-subtle: #e4e4e7;
@@ -26,17 +30,17 @@ $color-border-medium: #d4d4d8;
 $color-border-dark: #27272a;
 
 // Typography Neutrals
-$color-text-primary: #0a0a0c;
-$color-text-secondary: #52525b;
+$color-text-primary: #18181b;
+$color-text-secondary: #71717a;
 $color-text-muted: #71717a;
 $color-text-inverse: #ffffff;
 $color-text-inverse-muted: #a1a1aa;
 
-// --- 10% HIGH-ENERGY ACCENTS (Qatify Signature Orange & Electric Solar Yellow) ---
-$color-accent-orange: #e06c2a;
-$color-accent-orange-hover: #c85718;
-$color-accent-orange-light: #fff1eb;
-$color-accent-orange-glow: rgba(224, 108, 42, 0.22);
+// --- 10% HIGH-ENERGY ACCENTS (Qatify Signature Orange #FF6900 & Warm Gold #FFB800) ---
+$color-accent-orange: #ff6900;
+$color-accent-orange-hover: #e05d00;
+$color-accent-orange-light: #fff4ed;
+$color-accent-orange-glow: rgba(255, 105, 0, 0.22);
 
 // SCSS variables aliased for seamless consistency across all components
 $color-accent-red: $color-accent-orange;
@@ -44,19 +48,19 @@ $color-accent-red-hover: $color-accent-orange-hover;
 $color-accent-red-light: $color-accent-orange-light;
 $color-accent-red-glow: $color-accent-orange-glow;
 
-$color-accent-yellow: #facc15;
-$color-accent-yellow-dark: #eab308;
-$color-accent-yellow-tint: #fef9c3;
-$color-accent-yellow-bg: #fffbeb;
-$color-accent-yellow-glow: rgba(250, 204, 21, 0.25);
+$color-accent-yellow: #ffb800;
+$color-accent-yellow-dark: #ffb800;
+$color-accent-yellow-tint: #fffbeb;
+$color-accent-yellow-bg: #fff4ed;
+$color-accent-yellow-glow: rgba(255, 184, 0, 0.25);
 
-// Functional Status & Badge Colors
+// Functional Status & Badge Colors (Zero Blue Policy - neutral zinc for info)
 $color-success: #10b981;
 $color-success-bg: #ecfdf5;
 $color-warning: #f59e0b;
 $color-warning-bg: #fffbeb;
-$color-info: #0284c7;
-$color-info-bg: #f0f9ff;
+$color-info: #71717a;
+$color-info-bg: #f4f4f5;
 
 // --- SPACING SCALE (4px Base Grid for Medium-High Information Density) ---
 $space-1: 4px;

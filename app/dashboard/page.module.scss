@@ -512,7 +512,7 @@
     transition: border-color $transition-fast, box-shadow $transition-fast, transform $transition-fast;
 
     &:hover {
-      border-color: #cbd5e1;
+      border-color: #d4d4d8;
       box-shadow: $shadow-sm;
       transform: translateY(-1px);
     }
@@ -1760,7 +1760,7 @@
 .greenIcon { color: #10b981; }
 .yellowIcon { color: #ca8a04; }
 .redIcon { color: $color-accent-red; }
-.blueIcon { color: #0284c7; }
+.blueIcon { color: #ff6900; }
 
 // Pipeline Card
 .pipelineCard {
@@ -1985,9 +1985,9 @@
 }
 
 .statusPillBlue {
-  background-color: #f0f9ff;
-  color: #0369a1;
-  border: 1px solid #bae6fd;
+  background-color: #fff4ed;
+  color: #ff6900;
+  border: 1px solid #ffedd5;
   font-size: 10px;
   font-weight: 800;
   padding: 2px 6px;
@@ -2043,7 +2043,7 @@
 
   &:hover {
     border-color: $color-ink-black;
-    background-color: #f8fafc;
+    background-color: #f4f4f5;
     color: $color-ink-black;
   }
 

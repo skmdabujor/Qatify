@@ -59,9 +59,9 @@
 }
 
 .freeShippingBadge {
-  background: rgba(250, 204, 21, 0.18);
-  color: $color-accent-yellow;
-  border: 1px solid rgba(250, 204, 21, 0.35);
+  background: #fff4ed;
+  color: #ff6900;
+  border: 1px solid #ffedd5;
   font-weight: 700;
   padding: 1px 7px;
   border-radius: $radius-full;
@@ -254,7 +254,7 @@
 
   &:focus-within {
     border-color: $color-accent-red;
-    box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.15);
+    box-shadow: 0 0 0 3px rgba(255, 105, 0, 0.15);
   }
 }
 
@@ -333,7 +333,7 @@
 
   &:focus-within {
     border-color: $color-accent-red;
-    box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.15);
+    box-shadow: 0 0 0 3px rgba(255, 105, 0, 0.15);
   }
 }
 
@@ -352,7 +352,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  background-color: #f8fafc;
+  background-color: #f4f4f5;
   color: $color-ink-black;
   border: none;
   border-right: 1px solid $color-border-subtle;
@@ -368,15 +368,15 @@
   white-space: nowrap;
 
   &:hover {
-    background-color: #f1f5f9;
+    background-color: #e4e4e7;
   }
 
   &.active {
-    background-color: #e2e8f0;
+    background-color: #e4e4e7;
   }
 
   &.hasSelection {
-    background-color: #fff1f2;
+    background-color: #fff4ed;
     color: $color-accent-red;
     font-weight: 700;
 
@@ -419,7 +419,7 @@
   background-color: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
-  box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 16px 36px -4px rgba(24, 24, 27, 0.16), 0 4px 12px rgba(0, 0, 0, 0.06);
   z-index: 1000;
   display: flex;
   flex-direction: column;
@@ -443,8 +443,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  background-color: #f8fafc;
-  border-bottom: 1px solid #f1f5f9;
+  background-color: #f4f4f5;
+  border-bottom: 1px solid #e4e4e7;
 }
 
 .categoryMenuTitle {
@@ -459,7 +459,7 @@
   font-size: 10.5px;
   font-weight: 700;
   color: $color-accent-red;
-  background-color: #fff1eb;
+  background-color: #fff4ed;
   padding: 1px 7px;
   border-radius: $radius-full;
   font-family: $font-mono;
@@ -490,16 +490,16 @@
   transition: background-color $transition-fast, color $transition-fast;
 
   &:hover {
-    background-color: #f8fafc;
+    background-color: #f4f4f5;
 
     .catMenuIconWrap {
-      background-color: #e2e8f0;
+      background-color: #e4e4e7;
       color: $color-accent-red;
     }
   }
 
   &.selected {
-    background-color: #fff7ed;
+    background-color: #fff4ed;
     color: $color-accent-red;
 
     .catMenuItemName {
@@ -530,7 +530,7 @@
 
 .categoryMenuDivider {
   height: 1px;
-  background-color: #f1f5f9;
+  background-color: #e4e4e7;
   margin: 4px 6px;
 }
 
@@ -538,7 +538,7 @@
   width: 28px;
   height: 28px;
   border-radius: 6px;
-  background-color: #f1f5f9;
+  background-color: #f4f4f5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -575,7 +575,7 @@
   gap: 6px;
   padding: 8px 12px;
   background-color: #fafafa;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid #e4e4e7;
   font-size: 10.5px;
   color: $color-text-muted;
   font-weight: 500;
@@ -705,7 +705,7 @@
   right: 0;
   background-color: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 20px 45px -8px rgba(15, 23, 42, 0.22), 0 4px 14px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 45px -8px rgba(24, 24, 27, 0.22), 0 4px 14px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.1);
   z-index: 1100;
   overflow: hidden;
@@ -768,8 +768,8 @@
   align-items: center;
   gap: 5px;
   padding: 5px 11px;
-  background-color: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  background-color: #f4f4f5;
+  border: 1px solid #e4e4e7;
   border-radius: $radius-full;
   font-size: 12px;
   font-weight: 600;
@@ -782,7 +782,7 @@
   }
 
   &:hover {
-    background-color: #fff1eb;
+    background-color: #fff4ed;
     border-color: #fed7aa;
     color: $color-accent-red;
 
@@ -794,7 +794,7 @@
 
 .suggestionDivider {
   height: 1px;
-  background-color: #f1f5f9;
+  background-color: #e4e4e7;
   margin: 4px 14px;
 }
 
@@ -815,7 +815,7 @@
   transition: background-color $transition-fast;
 
   &:hover {
-    background-color: #f8fafc;
+    background-color: #f4f4f5;
   }
 }
 
@@ -824,7 +824,7 @@
   height: 36px;
   object-fit: cover;
   border-radius: 6px;
-  background-color: #f1f5f9;
+  background-color: #f4f4f5;
   flex-shrink: 0;
 }
 
@@ -854,16 +854,16 @@
 .quickBadge {
   font-size: 10.5px;
   font-weight: 700;
-  color: #0284c7;
-  background-color: #e0f2fe;
+  color: $color-accent-orange;
+  background-color: #fff4ed;
   padding: 2px 7px;
   border-radius: $radius-full;
   flex-shrink: 0;
 }
 
 .matchingCategoriesSection {
-  background-color: #fafbfc;
-  border-bottom: 1px solid #f1f5f9;
+  background-color: #fafafa;
+  border-bottom: 1px solid #e4e4e7;
 }
 
 .matchingCategoryChips {
@@ -879,7 +879,7 @@
   gap: 6px;
   padding: 4px 10px;
   background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #e4e4e7;
   border-radius: $radius-full;
   font-size: 12px;
   cursor: pointer;
@@ -898,7 +898,7 @@
 
   &:hover {
     border-color: $color-accent-red;
-    background-color: #fff1f2;
+    background-color: #fff4ed;
   }
 }
 
@@ -922,7 +922,7 @@
 
   &:hover,
   &.selected {
-    background-color: #f8fafc;
+    background-color: #f4f4f5;
 
     .productSuggestionTitle {
       color: $color-accent-red;
@@ -936,7 +936,7 @@
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  background-color: #f1f5f9;
+  background-color: #f4f4f5;
   border: 1px solid #e4e4e7;
   flex-shrink: 0;
 }
@@ -997,7 +997,7 @@
 .productCategoryPill {
   font-size: 10.5px;
   font-weight: 600;
-  background-color: #f1f5f9;
+  background-color: #f4f4f5;
   color: $color-text-secondary;
   padding: 1px 6px;
   border-radius: 4px;
@@ -1006,8 +1006,8 @@
 .productBrandPill {
   font-size: 10.5px;
   font-weight: 600;
-  background-color: #e2e8f0;
-  color: #334155;
+  background-color: #f4f4f5;
+  color: $color-text-secondary;
   padding: 1px 6px;
   border-radius: 4px;
 }
@@ -1015,8 +1015,8 @@
 .deliveryPill {
   font-size: 10.5px;
   font-weight: 600;
-  color: $color-accent-yellow-dark;
-  background-color: $color-accent-yellow-bg;
+  color: $color-accent-orange;
+  background-color: #fff4ed;
   padding: 1px 6px;
   border-radius: 4px;
 
@@ -1095,22 +1095,22 @@
   font-size: 11.5px;
   font-weight: 600;
   color: $color-ink-black;
-  background-color: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  background-color: #f4f4f5;
+  border: 1px solid #e4e4e7;
   padding: 4px 10px;
   border-radius: $radius-full;
   cursor: pointer;
   transition: all $transition-fast;
 
   &:hover {
-    background-color: #fff1eb;
+    background-color: #fff4ed;
     border-color: #fed7aa;
     color: $color-accent-red;
   }
 }
 
 .suggestionFooter {
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid #e4e4e7;
   background-color: #fafafa;
   padding: 8px 12px;
 }
@@ -1426,7 +1426,7 @@
   transition: background-color $transition-fast, color $transition-fast;
 
   &:hover {
-    background-color: #fff1f2;
+    background-color: #fff4ed;
     color: $color-accent-red;
   }
 }
@@ -1533,13 +1533,13 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background-color: rgba(250, 204, 21, 0.15);
-  color: $color-accent-yellow;
+  background-color: #fff4ed;
+  color: #ff6900;
   font-size: 11px;
   font-weight: 700;
   padding: 3px 10px;
   border-radius: $radius-full;
-  border: 1px solid rgba(250, 204, 21, 0.3);
+  border: 1px solid #ffedd5;
 
   @include laptop {
     display: none;
@@ -1606,7 +1606,7 @@
   color: $color-ink-black;
 
   &.redAccent {
-    background-color: #fff1f2;
+    background-color: #fff4ed;
     color: $color-accent-red;
   }
 
@@ -1670,7 +1670,7 @@
   width: 26px;
   height: 26px;
   border-radius: 6px;
-  background-color: #f1f5f9;
+  background-color: #f4f4f5;
   color: $color-text-secondary;
 }
 

@@ -10,7 +10,7 @@
 
 // 1. TRUST STRIP
 .trustStrip {
-  background-color: #fafbfc;
+  background-color: #fafafa;
   border-bottom: 1px solid $color-border-subtle;
   padding: $space-6 0;
 
@@ -48,7 +48,7 @@
   &:hover {
     transform: translateY(-2px);
     border-color: $color-accent-orange;
-    box-shadow: 0 4px 12px rgba(224, 108, 42, 0.08);
+    box-shadow: 0 4px 12px rgba(255, 105, 0, 0.08);
   }
 }
 
@@ -230,7 +230,7 @@
 .newsletterForm {
   display: flex;
   align-items: stretch;
-  background-color: #f8f9fa;
+  background-color: #f4f4f5;
   border: 1px solid $color-border-subtle;
   border-radius: $radius-sm;
   overflow: hidden;
@@ -240,7 +240,7 @@
   &:focus-within {
     border-color: $color-accent-orange;
     background-color: #ffffff;
-    box-shadow: 0 0 0 3px rgba(224, 108, 42, 0.12);
+    box-shadow: 0 0 0 3px rgba(255, 105, 0, 0.12);
   }
 }
 
@@ -319,7 +319,7 @@
     background-color: $color-accent-orange;
     border-color: $color-accent-orange;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(224, 108, 42, 0.25);
+    box-shadow: 0 4px 12px rgba(255, 105, 0, 0.25);
 
     svg {
       transform: scale(1.1);
@@ -329,7 +329,7 @@
 
 // 3. BOTTOM UTILITY
 .bottomBar {
-  background-color: #fafbfc;
+  background-color: #fafafa;
   border-top: 1px solid $color-border-subtle;
   padding: 16px 0;
 

@@ -337,7 +337,7 @@
   padding: 13px;
   font-size: 14px;
   gap: 8px;
-  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 105, 0, 0.3);
 }
 
 // Step 2: Shipping Options
@@ -576,7 +576,7 @@
   padding: 13px;
   font-size: 14px;
   gap: 8px;
-  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.4);
+  box-shadow: 0 4px 14px rgba(255, 105, 0, 0.4);
 }
 
 // Right Column: Summary Card
@@ -723,7 +723,7 @@
 
 .checkoutHelpCard {
   margin-top: 14px;
-  background-color: #f8fafc;
+  background-color: #f4f4f5;
   border: 1px dashed $color-border-subtle;
   border-radius: $radius-sm;
   padding: 10px 12px;

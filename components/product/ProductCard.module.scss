@@ -202,7 +202,7 @@
 
 .discountBadge {
   @include badge-discount;
-  box-shadow: 0 2px 4px rgba(225, 29, 72, 0.3);
+  box-shadow: 0 2px 4px rgba(255, 105, 0, 0.3);
   pointer-events: auto;
   width: fit-content;
   align-self: flex-start;
@@ -215,7 +215,7 @@
 }
 
 .customBadge {
-  background-color: $color-ink-black;
+  background-color: #27272a;
   color: #ffffff;
   font-size: 9.5px;
   font-weight: 800;
@@ -269,13 +269,13 @@
 
   &.activeWish {
     color: $color-accent-red;
-    background-color: #fff1f2;
-    border-color: #fecdd3;
+    background-color: #fff4ed;
+    border-color: #ffedd5;
   }
 
   &.activeCompare {
     color: $color-ink-black;
-    background-color: #fef9c3;
+    background-color: #fffbeb;
     border-color: #fde047;
   }
 }
@@ -362,7 +362,7 @@
 }
 
 .starIcon {
-  color: $color-accent-yellow-dark;
+  color: #ffb800;
 }
 
 .ratingScore {
@@ -465,9 +465,9 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  background-color: #fefce8;
-  color: #854d0e;
-  border: 1px solid #fef08a;
+  background-color: #fff4ed;
+  color: #ff6900;
+  border: 1px solid #ffedd5;
   border-radius: $radius-full;
   font-size: 10px;
   font-weight: 700;
@@ -483,7 +483,7 @@
 // Stock progress
 .stockProgressWrap {
   margin-bottom: 10px;
-  background-color: #fff1eb;
+  background-color: #fff4ed;
   border: 1px solid #ffedd5;
   border-radius: $radius-xs;
   padding: 5px 8px;
@@ -525,7 +525,7 @@
 
 .stockBarTrack {
   height: 4px;
-  background-color: #fecdd3;
+  background-color: #fed7aa;
   border-radius: $radius-full;
   overflow: hidden;
 }
@@ -600,7 +600,7 @@
       transform: translateY(calc(100% + 14px));
       opacity: 0;
       pointer-events: none;
-      box-shadow: 0 4px 16px rgba(225, 29, 72, 0.38);
+      box-shadow: 0 4px 16px rgba(255, 105, 0, 0.38);
       transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
                   opacity 0.22s ease,
                   background-color 0.15s ease,
