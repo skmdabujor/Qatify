@@ -75,9 +75,11 @@ $breakpoint-wide: 1440px;
 // Mobile smooth horizontal swipe container mixin
 @mixin touch-scroll-x {
   overflow-x: auto;
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  touch-action: pan-x;
 
   &::-webkit-scrollbar {
     display: none;
@@ -93,7 +95,7 @@ $breakpoint-wide: 1440px;
   padding-left: $space-4;
   padding-right: $space-4;
 
-  @include mobile {
+  @include tablet {
     padding-left: $space-3;
     padding-right: $space-3;
   }

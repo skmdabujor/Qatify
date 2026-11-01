@@ -134,8 +134,8 @@
   opacity: 0;
   transition: opacity 0.25s ease;
 
-  @include mobile {
-    width: 16px;
+  @include tablet {
+    display: none;
   }
 }
 
@@ -207,6 +207,8 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding: 4px 2px 8px;
+  touch-action: pan-x;
+  scroll-padding: 0 12px;
 
   &::-webkit-scrollbar {
     display: none;

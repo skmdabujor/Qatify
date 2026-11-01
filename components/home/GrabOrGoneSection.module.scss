@@ -9,13 +9,13 @@
 .sectionWrapper {
   width: 100%;
   background: transparent;
-  margin-top: $space-5;
-  margin-bottom: $space-7;
+  margin-top: $space-4;
+  margin-bottom: $space-6;
   position: relative;
 
-  @include mobile {
-    margin-top: $space-3;
-    margin-bottom: $space-5;
+  @include tablet {
+    margin-top: 0;
+    margin-bottom: $space-4;
   }
 }
 
@@ -181,9 +181,9 @@
   gap: 16px;
   position: relative;
 
-  @include mobile {
+  @include tablet {
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
   }
 }
 
@@ -234,10 +234,10 @@
     pointer-events: none;
   }
 
-  @include mobile {
+  @include tablet {
     flex: 0 0 auto;
-    min-height: 160px;
-    padding: 18px 16px 14px;
+    min-height: 140px;
+    padding: 16px 14px 12px;
   }
 }
 
@@ -343,20 +343,16 @@
     cursor: not-allowed;
   }
 
+  @include tablet {
+    display: none;
+  }
+
   &.navPrev {
     left: -14px;
-
-    @include mobile {
-      left: -6px;
-    }
   }
 
   &.navNext {
     right: -14px;
-
-    @include mobile {
-      right: -6px;
-    }
   }
 }
 

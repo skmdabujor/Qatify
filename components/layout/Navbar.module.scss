@@ -671,6 +671,25 @@
   font-size: 11px;
   padding-left: 2px;
   @include custom-scrollbar;
+
+  button,
+  .tagBtn {
+    background: none;
+    border: none;
+    color: $color-text-secondary;
+    font-size: 11px;
+    padding: 0 4px;
+    cursor: pointer;
+    transition: color $transition-fast;
+
+    &:hover,
+    &:focus,
+    &:active {
+      color: #ffb800 !important;
+      text-decoration: underline !important;
+      text-decoration-color: #ffb800 !important;
+    }
+  }
 }
 
 .trendingLabel {
@@ -689,9 +708,12 @@
   cursor: pointer;
   transition: color $transition-fast;
 
-  &:hover {
-    color: $color-accent-red;
-    text-decoration: underline;
+  &:hover,
+  &:focus,
+  &:active {
+    color: #ffb800 !important;
+    text-decoration: underline !important;
+    text-decoration-color: #ffb800 !important;
   }
 }
 
@@ -782,12 +804,12 @@
   }
 
   &:hover {
-    background-color: #fdf2f2;
-    border-color: #fed7aa;
-    color: $color-accent-red;
+    background-color: #fffbeb;
+    border-color: #ffb800;
+    color: #ffb800 !important;
 
     svg {
-      color: $color-accent-red;
+      color: #ffb800 !important;
     }
   }
 }
@@ -1103,9 +1125,9 @@
   transition: all $transition-fast;
 
   &:hover {
-    background-color: #fdf2f2;
-    border-color: #fed7aa;
-    color: $color-accent-red;
+    background-color: #fffbeb;
+    border-color: #ffb800;
+    color: #ffb800 !important;
   }
 }
 
@@ -1297,12 +1319,16 @@
   // Fill gap on the left so All Categories touches the edge flush
   > :global(.container) {
     padding-left: 0;
+
+    @include tablet {
+      padding-right: 0;
+    }
   }
 }
 
 .categoryStripInner {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
   gap: $space-3;
   height: 40px;
@@ -1311,7 +1337,7 @@
   min-width: 0;
 
   @include mobile {
-    height: 38px;
+    height: 36px;
     gap: $space-2;
   }
 }
@@ -1319,6 +1345,9 @@
 .allCatWrapper {
   position: relative;
   flex-shrink: 0;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
 }
 
 .allCatBtn {
@@ -1328,7 +1357,10 @@
   background-color: $color-accent-red;
   color: #ffffff;
   padding: 0 14px;
-  height: 40px;
+  height: 100%;
+  align-self: stretch;
+  box-sizing: border-box;
+  overflow: hidden;
   font-family: $font-heading;
   font-weight: 800;
   font-size: 12.5px;
@@ -1337,10 +1369,17 @@
   flex-shrink: 0;
   border: none;
   cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
   transition: background-color $transition-fast;
 
+  &:focus-visible {
+    outline: 2px solid #ffd000;
+    outline-offset: -2px;
+  }
+
   @include mobile {
-    height: 38px;
+    height: 100%;
     padding: 0 10px;
     font-size: 11.5px;
     gap: 5px;
@@ -1375,6 +1414,7 @@
   top: 100%;
   left: 0;
   width: 320px;
+  max-width: calc(100vw - 16px);
   background-color: #ffffff;
   color: $color-ink-black;
   box-shadow: $shadow-xl;
@@ -1383,6 +1423,11 @@
   z-index: $z-dropdown;
   overflow: hidden;
   animation: fadeIn 150ms ease;
+
+  @include mobile {
+    width: 290px;
+    max-width: calc(100vw - 16px);
+  }
 }
 
 @keyframes fadeIn {
@@ -1483,13 +1528,13 @@
 
   @include tablet {
     gap: 10px;
-    padding: 0 4px;
+    padding: 0 8px;
     @include touch-scroll-x;
   }
 
   @include mobile {
     gap: 8px;
-    padding: 0 2px;
+    padding: 0 8px;
     @include touch-scroll-x;
   }
 }

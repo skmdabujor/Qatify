@@ -107,37 +107,16 @@ export const Navbar: React.FC = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isMobileSearchFocused, setIsMobileSearchFocused] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const [hoveredTag, setHoveredTag] = useState<string | null>(null);
 
   const categoryMenuRef = useRef<HTMLDivElement>(null);
-  const categoryMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const searchCategoryRef = useRef<HTMLDivElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const mobileSearchContainerRef = useRef<HTMLDivElement>(null);
 
-  // Clear category hover timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (categoryMenuTimeoutRef.current) {
-        clearTimeout(categoryMenuTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  const handleCategoryMouseEnter = () => {
-    if (categoryMenuTimeoutRef.current) {
-      clearTimeout(categoryMenuTimeoutRef.current);
-      categoryMenuTimeoutRef.current = null;
-    }
-    setIsCategoryMenuOpen(true);
-  };
-
-  const handleCategoryMouseLeave = () => {
-    if (categoryMenuTimeoutRef.current) {
-      clearTimeout(categoryMenuTimeoutRef.current);
-    }
-    categoryMenuTimeoutRef.current = setTimeout(() => {
-      setIsCategoryMenuOpen(false);
-    }, 150);
+  const toggleCategoryMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsCategoryMenuOpen((prev) => !prev);
   };
 
   // Sync localSearch when global searchQuery changes
@@ -217,7 +196,7 @@ export const Navbar: React.FC = () => {
 
   // Close dropdowns on outside click
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       const target = e.target as Node;
       if (categoryMenuRef.current && !categoryMenuRef.current.contains(target)) {
         setIsCategoryMenuOpen(false);
@@ -233,7 +212,11 @@ export const Navbar: React.FC = () => {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
 
   // Close dropdowns on ESC key
@@ -779,16 +762,30 @@ export const Navbar: React.FC = () => {
               {/* Trending Search Tags Strip */}
               <div className={styles.trendingTags}>
                 <span className={styles.trendingLabel}>Trending:</span>
-                {POPULAR_SEARCH_TAGS.map((tag) => (
-                  <button
-                    key={tag}
-                    onClick={() => handleQuickTagClick(tag)}
-                    className={styles.tagBtn}
-                    type="button"
-                  >
-                    {tag}
-                  </button>
-                ))}
+                {POPULAR_SEARCH_TAGS.map((tag) => {
+                  const isHovered = hoveredTag === tag;
+                  return (
+                    <button
+                      key={tag}
+                      onClick={() => handleQuickTagClick(tag)}
+                      onMouseEnter={() => setHoveredTag(tag)}
+                      onMouseLeave={() => setHoveredTag(null)}
+                      className={styles.tagBtn}
+                      type="button"
+                      style={
+                        isHovered
+                          ? {
+                              color: '#ffb800',
+                              textDecoration: 'underline',
+                              textDecorationColor: '#ffb800',
+                            }
+                          : undefined
+                      }
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -915,11 +912,10 @@ export const Navbar: React.FC = () => {
             <div
               className={styles.allCatWrapper}
               ref={categoryMenuRef}
-              onMouseEnter={handleCategoryMouseEnter}
-              onMouseLeave={handleCategoryMouseLeave}
             >
               <button
                 type="button"
+                onClick={toggleCategoryMenu}
                 className={`${styles.allCatBtn} ${isCategoryMenuOpen ? styles.active : ''}`}
                 aria-expanded={isCategoryMenuOpen}
                 aria-haspopup="true"
@@ -931,11 +927,7 @@ export const Navbar: React.FC = () => {
 
               {/* Mega Flyout Dropdown */}
               {isCategoryMenuOpen && (
-                <div
-                  className={styles.megaFlyout}
-                  onMouseEnter={handleCategoryMouseEnter}
-                  onMouseLeave={handleCategoryMouseLeave}
-                >
+                <div className={styles.megaFlyout}>
                   <div className={styles.megaFlyoutHeader}>
                     <span>Popular Dropship Categories</span>
                   </div>

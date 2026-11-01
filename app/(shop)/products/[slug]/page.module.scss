@@ -5,8 +5,8 @@
 .productPage {
   padding: $space-4 0 $space-8 0;
 
-  @include mobile {
-    padding: $space-3 0 120px 0;
+  @include tablet {
+    padding: $space-3 0 calc(76px + env(safe-area-inset-bottom, 0px)) 0;
   }
 }
 
@@ -1503,7 +1503,7 @@
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
   }
 
-  @include mobile {
+  @include tablet {
     bottom: calc(56px + env(safe-area-inset-bottom, 0px));
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
@@ -1532,7 +1532,7 @@
 
   @include mobile {
     padding: 6px 10px;
-    gap: 8px;
+    gap: 6px;
   }
 }
 
@@ -1548,7 +1548,7 @@
   }
 
   @include mobile {
-    gap: 8px;
+    gap: 6px;
     flex: 0 0 auto;
   }
 }
@@ -1568,8 +1568,11 @@
   }
 
   @include mobile {
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
+  }
+  @media (max-width: 380px) {
+    display: none;
   }
 }
 

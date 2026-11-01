@@ -5,7 +5,11 @@
   width: 100%;
   min-height: 100vh;
   background: #fafafa;
-  padding-bottom: 180px; // Clearance for sticky bottom tray
+  padding-bottom: 100px;
+
+  @include tablet {
+    padding-bottom: calc(130px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -1119,6 +1123,12 @@
   box-shadow: 0 -8px 30px rgba(24, 24, 27, 0.08);
   z-index: 100;
   padding: 14px 0;
+
+  @include tablet {
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+    padding: 8px 0;
+    z-index: 1025;
+  }
 }
 
 .trayLayout {

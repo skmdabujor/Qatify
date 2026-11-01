@@ -60,7 +60,7 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
   const paramSlug = routeParams?.slug;
   const slug = propSlug || (typeof paramSlug === 'string' ? paramSlug : Array.isArray(paramSlug) ? paramSlug[0] : '') || '';
 
-  const { addToCart, toggleWishlist, isInWishlist, showToast, openChat } = useShop();
+  const { addToCart, closeCart, toggleWishlist, isInWishlist, showToast, openChat } = useShop();
 
   const liveProduct = useQuery(api.products.getBySlug, slug ? { slug } : 'skip');
   const fallbackProduct = initialProduct || PRODUCTS.find((p) => p.slug === slug);
@@ -232,9 +232,11 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
     );
   };
 
-  // Immediate Buy Now
+  // Immediate Buy Now - redirect directly to checkout without opening the side cart drawer
   const handleBuyNow = () => {
-    addToCart(product, quantity, selectedColor, selectedOption);
+    if (!product) return;
+    closeCart();
+    addToCart(product, quantity, selectedColor, selectedOption, false);
     router.push('/checkout');
   };
 
