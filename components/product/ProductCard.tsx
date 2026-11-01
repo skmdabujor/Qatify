@@ -51,14 +51,39 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     toggleWishlist(product);
   };
 
+  const savings =
+    product.originalPriceQAR > product.priceQAR
+      ? product.originalPriceQAR - product.priceQAR
+      : 0;
+
+  const discountPercent =
+    product.discountPercent > 0
+      ? product.discountPercent
+      : product.originalPriceQAR > product.priceQAR
+      ? Math.round(
+          ((product.originalPriceQAR - product.priceQAR) /
+            product.originalPriceQAR) *
+            100
+        )
+      : 0;
+
+  const hasDiscount = savings > 0 || discountPercent > 0;
+
   return (
     <div className={`${styles.card} ${styles[variant]}`}>
       {/* Top Badges & Actions Overlay */}
       <div className={styles.topBar}>
         <div className={styles.badgesCol}>
-          {product.discountPercent > 0 && (
+          {hasDiscount && (
             <span className={styles.discountBadge}>
-              -{product.discountPercent}%
+              {savings > 0 ? (
+                <>
+                  Save: {savings.toLocaleString()} QAR
+                  {discountPercent > 0 ? ` (-${discountPercent}%)` : ''}
+                </>
+              ) : (
+                <>Save: -{discountPercent}%</>
+              )}
             </span>
           )}
           {product.badge && (
@@ -74,7 +99,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             aria-label={isFavorited ? 'Remove from wishlist' : 'Add to wishlist'}
             title={isFavorited ? 'Remove from wishlist' : 'Save to wishlist'}
           >
-            <Heart size={15} fill={isFavorited ? '#E06C2A' : 'none'} color={isFavorited ? '#E06C2A' : 'currentColor'} />
+            <Heart size={15} fill={isFavorited ? '#950606' : 'none'} color={isFavorited ? '#950606' : 'currentColor'} />
           </button>
         </div>
       </div>

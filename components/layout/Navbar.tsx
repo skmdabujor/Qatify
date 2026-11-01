@@ -36,7 +36,7 @@ import {
   Cable,
   MessageCircle,
   ArrowRight,
-  TrendingUp, Layers,
+  TrendingUp, Layers, Building2,
 } from 'lucide-react';
 import { QatifyLogo } from '@/components/brand/QatifyLogo';
 import { AuthModal } from '@/components/auth/AuthModal';
@@ -967,7 +967,6 @@ export const Navbar: React.FC = () => {
             {/* Quick Links Horizontal Strip */}
             <div className={styles.navLinks}>
               <Link href="/shop?filter=under-99" className={`${styles.navLink} ${styles.dealHighlight}`}>
-                <Sparkles size={13} />
                 <span>Super Deals Under QAR 99</span>
               </Link>
               <Link href="/shop?sort=newest" className={styles.navLink}>
@@ -983,10 +982,52 @@ export const Navbar: React.FC = () => {
                 <span>Smart Home</span>
               </Link>
               <Link href="/bundle-builder" className={`${styles.navLink} ${styles.bundleHighlight}`}>
-                <Layers size={13} />
                 <span>Bundle Studio</span>
                 <span className={styles.bundlePill}>Save 20%</span>
               </Link>
+
+              {/* Wholesale Hub (B2B & Bulk Orders - Coming Soon) */}
+              <div
+                className={styles.wholesaleNavItem}
+                role="button"
+                aria-disabled="true"
+                tabIndex={0}
+                title="Wholesale Hub — B2B & Bulk Orders (Coming Soon)"
+                aria-label="Wholesale Hub - Coming Soon for B2B and bulk buyers"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                  }
+                }}
+              >
+                <div className={styles.wholesaleContentWrap}>
+                  <span className={styles.comingSoonBadge}>Coming Soon</span>
+                  <span className={styles.wholesaleLabelText}>Wholesale Hub</span>
+                </div>
+
+                {/* Hover Tooltip */}
+                <div className={styles.wholesaleTooltip} role="tooltip">
+                  <div className={styles.wholesaleTooltipHeader}>
+                    <span className={styles.wholesaleTooltipTitle}>
+                      <Building2 size={13} />
+                      Wholesale Hub
+                    </span>
+                    <span className={styles.wholesaleTooltipBadge}>Coming Soon</span>
+                  </div>
+                  <p className={styles.wholesaleTooltipDesc}>
+                    Tiered bulk pricing, dedicated commercial logistics & Qatar tax invoicing launching soon.
+                  </p>
+                  <div className={styles.wholesaleTooltipTags}>
+                    <span className={styles.wholesaleTooltipTag}>B2B Wholesale</span>
+                    <span className={styles.wholesaleTooltipTag}>Bulk Tiers</span>
+                    <span className={styles.wholesaleTooltipTag}>Direct Air Freight</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Delivery Guarantee Pill */}
@@ -1030,6 +1071,37 @@ export const Navbar: React.FC = () => {
                   <Layers size={16} />
                   <span>Bundle Studio — Build & Save 20%</span>
                 </Link>
+
+                {/* Wholesale Hub for Mobile Drawer */}
+                <div
+                  className={styles.wholesaleMobileItem}
+                  role="button"
+                  aria-disabled="true"
+                  tabIndex={0}
+                  title="Wholesale Hub — B2B & Bulk Orders (Coming Soon)"
+                  aria-label="Wholesale Hub - Coming Soon for B2B and bulk buyers"
+                  onClick={(e) => {
+                    e.preventDefault();
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                    }
+                  }}
+                >
+                  <div className={styles.wholesaleMobileLeft}>
+                    <Building2 size={16} className={styles.wholesaleMobileIcon} />
+                    <div className={styles.wholesaleMobileTextCol}>
+                      <div className={styles.wholesaleMobileTopRow}>
+                        <span className={styles.wholesaleMobileTitle}>Wholesale Hub</span>
+                        <span className={styles.comingSoonBadgeMobile}>Coming Soon</span>
+                      </div>
+                      <span className={styles.wholesaleMobileSub}>
+                        B2B bulk pricing & Qatar commercial supply launching soon
+                      </span>
+                    </div>
+                  </div>
+                </div>
                 <Link
                   href="/dashboard"
                   onClick={() => setIsMobileMenuOpen(false)}

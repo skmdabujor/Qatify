@@ -1236,7 +1236,7 @@ function DashboardContent() {
                                           style={{
                                             background: 'transparent',
                                             border: 'none',
-                                            color: '#e06c2a',
+                                            color: '#950606',
                                             cursor: 'pointer',
                                             padding: '2px',
                                             display: 'inline-flex',
@@ -1268,9 +1268,9 @@ function DashboardContent() {
                                           type="button"
                                           onClick={() => setLinkingOrder(ord)}
                                           style={{
-                                            background: 'rgba(224, 108, 42, 0.1)',
-                                            color: '#e06c2a',
-                                            border: '1px solid rgba(224, 108, 42, 0.3)',
+                                            background: 'rgba(149, 6, 6, 0.1)',
+                                            color: '#950606',
+                                            border: '1px solid rgba(149, 6, 6, 0.3)',
                                             padding: '2px 8px',
                                             borderRadius: '4px',
                                             fontSize: '11px',

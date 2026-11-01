@@ -555,7 +555,7 @@ export function TelegramAlertsManager() {
                           borderRadius: '6px',
                           border: '1px solid #e4e4e7',
                           backgroundColor: '#ffffff',
-                          color: rec.isActive ? '#ea580c' : '#16a34a',
+                          color: rec.isActive ? '#7a0505' : '#16a34a',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',

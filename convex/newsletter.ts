@@ -99,11 +99,11 @@ export function generateNewsletterEmailHtml(options: NewsletterTemplateOptions =
           <!-- 2. Hero Section: Exclusive Qatar Drops -->
           <tr>
             <td style="background: linear-gradient(180deg, #0a0a0c 0%, #18181b 100%); padding: 36px 28px 32px 28px; text-align: center; color: #ffffff;">
-              <div style="display: inline-block; background: rgba(224, 108, 42, 0.18); border: 1px solid rgba(224, 108, 42, 0.4); color: #f59e0b; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 4px 14px; border-radius: 30px; margin-bottom: 16px;">
+              <div style="display: inline-block; background: rgba(149, 6, 6, 0.18); border: 1px solid rgba(149, 6, 6, 0.4); color: #f59e0b; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 4px 14px; border-radius: 30px; margin-bottom: 16px;">
                 🇶🇦 EXCLUSIVE QATAR DROP &amp; WEEKLY CURATION
               </div>
               <h1 style="margin: 0 0 12px 0; font-size: 26px; font-weight: 900; line-height: 1.25; letter-spacing: -0.5px; color: #ffffff;">
-                Global Trending Finds,<br><span style="color: #e06c2a;">Delivered Direct to Doha</span> ✈️
+                Global Trending Finds,<br><span style="color: #950606;">Delivered Direct to Doha</span> ✈️
               </h1>
               <p style="margin: 0 auto 20px auto; max-width: 480px; font-size: 14px; color: #a1a1aa; line-height: 1.6;">
                 Salam, <strong style="color: #ffffff;">${recipientName}</strong>! Enjoy direct air import access to top-trending lifestyle gadgets, electronics, and viral essentials — inspected at our global hub and flown straight to Hamad Int’l Airport (DOH).
@@ -129,8 +129,8 @@ export function generateNewsletterEmailHtml(options: NewsletterTemplateOptions =
               <!-- Main CTA Button -->
               <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin-top: 24px;">
                 <tr>
-                  <td align="center" style="border-radius: 8px; background-color: #e06c2a;">
-                    <a href="${siteUrl}?ref=newsletter&coupon=${promoCode}" target="_blank" style="display: inline-block; background-color: #e06c2a; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 800; padding: 14px 32px; border-radius: 8px; border: 1px solid #d45917;">
+                  <td align="center" style="border-radius: 8px; background-color: #950606;">
+                    <a href="${siteUrl}?ref=newsletter&coupon=${promoCode}" target="_blank" style="display: inline-block; background-color: #950606; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 800; padding: 14px 32px; border-radius: 8px; border: 1px solid #d45917;">
                       Claim VIP 10% Off &amp; Shop Now →
                     </a>
                   </td>
@@ -143,7 +143,7 @@ export function generateNewsletterEmailHtml(options: NewsletterTemplateOptions =
           <tr>
             <td style="padding: 32px 28px 20px 28px; background-color: #ffffff;">
               <div style="text-align: center; margin-bottom: 24px;">
-                <div style="font-size: 12px; font-weight: 800; color: #e06c2a; text-transform: uppercase; letter-spacing: 1px;">
+                <div style="font-size: 12px; font-weight: 800; color: #950606; text-transform: uppercase; letter-spacing: 1px;">
                   TOP PICKS FOR QATAR
                 </div>
                 <h2 style="margin: 6px 0 0 0; font-size: 20px; font-weight: 800; color: #0a0a0c;">
@@ -167,7 +167,7 @@ export function generateNewsletterEmailHtml(options: NewsletterTemplateOptions =
                     <p style="margin: 0 0 8px 0; font-size: 12px; color: #71717a; line-height: 1.4;">
                       Next-gen ANC headphones, 100W GaN chargers, and magnetic wireless car mounts.
                     </p>
-                    <a href="${siteUrl}/products?category=electronics" target="_blank" style="font-size: 12px; font-weight: 700; color: #e06c2a; text-decoration: none;">
+                    <a href="${siteUrl}/products?category=electronics" target="_blank" style="font-size: 12px; font-weight: 700; color: #950606; text-decoration: none;">
                       Shop Tech Collection &rarr;
                     </a>
                   </td>
@@ -190,7 +190,7 @@ export function generateNewsletterEmailHtml(options: NewsletterTemplateOptions =
                     <p style="margin: 0 0 8px 0; font-size: 12px; color: #71717a; line-height: 1.4;">
                       Daily essentials, lifestyle gear &amp; novelty gadgets under QAR 99 with guaranteed air shipping.
                     </p>
-                    <a href="${siteUrl}/products?filter=under-99" target="_blank" style="font-size: 12px; font-weight: 700; color: #e06c2a; text-decoration: none;">
+                    <a href="${siteUrl}/products?filter=under-99" target="_blank" style="font-size: 12px; font-weight: 700; color: #950606; text-decoration: none;">
                       View Under 99 Deals &rarr;
                     </a>
                   </td>
@@ -213,7 +213,7 @@ export function generateNewsletterEmailHtml(options: NewsletterTemplateOptions =
                     <p style="margin: 0 0 8px 0; font-size: 12px; color: #71717a; line-height: 1.4;">
                       Aesthetic home organizers, smart wearables, and sleek everyday carry upgrades.
                     </p>
-                    <a href="${siteUrl}/products" target="_blank" style="font-size: 12px; font-weight: 700; color: #e06c2a; text-decoration: none;">
+                    <a href="${siteUrl}/products" target="_blank" style="font-size: 12px; font-weight: 700; color: #950606; text-decoration: none;">
                       Browse Catalog &rarr;
                     </a>
                   </td>

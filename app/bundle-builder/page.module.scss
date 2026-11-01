@@ -1,4 +1,4 @@
-﻿@use '@/styles/variables' as *;
+@use '@/styles/variables' as *;
 @use '@/styles/mixins' as *;
 
 .pageWrapper {
@@ -38,9 +38,9 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #fff4ed;
-  border: 1px solid #ffedd5;
-  color: #ff6900;
+  background: #fdf2f2;
+  border: 1px solid #fecaca;
+  color: #950606;
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
@@ -109,28 +109,28 @@
   }
 
   &.activeTier {
-    background: #fff4ed;
-    border-color: #ff6900;
-    box-shadow: 0 4px 14px rgba(255, 105, 0, 0.15);
+    background: #fdf2f2;
+    border-color: #950606;
+    box-shadow: 0 4px 14px rgba(149, 6, 6, 0.15);
 
     .tierDot {
-      background: #ff6900;
-      border-color: #ff6900;
+      background: #950606;
+      border-color: #950606;
       color: #ffffff;
     }
 
     .tierInfo strong {
-      color: #ff6900;
+      color: #950606;
     }
 
     .tierInfo span {
-      color: #ff6900;
+      color: #950606;
       font-weight: 700;
     }
   }
 
   &.vipTier {
-    background: linear-gradient(135deg, #fffbeb 0%, #fff4ed 100%);
+    background: linear-gradient(135deg, #fffbeb 0%, #fdf2f2 100%);
     border-color: #ffb800;
     box-shadow: 0 4px 16px rgba(255, 184, 0, 0.2);
 
@@ -156,14 +156,14 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #fff4ed;
-  border: 1px solid #ffedd5;
+  background: #fdf2f2;
+  border: 1px solid #fecaca;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 13px;
   font-weight: 900;
-  color: #ff6900;
+  color: #950606;
   flex-shrink: 0;
   transition: all 0.2s ease;
 }
@@ -214,7 +214,7 @@
 }
 
 .trustIcon {
-  color: #ff6900;
+  color: #950606;
   flex-shrink: 0;
 }
 
@@ -337,7 +337,7 @@
 .resetAllBtn {
   background: none;
   border: none;
-  color: #ff6900;
+  color: #950606;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -348,7 +348,7 @@
   border-radius: 4px;
 
   &:hover {
-    background: #fff4ed;
+    background: #fdf2f2;
     text-decoration: underline;
   }
 }
@@ -390,7 +390,7 @@
   padding: 0 6px;
 
   &:focus-within {
-    border-color: #ff6900;
+    border-color: #950606;
     background: #ffffff;
   }
 
@@ -432,7 +432,7 @@
   transition: background 0.15s ease;
 
   &:hover {
-    background: #ff6900;
+    background: #950606;
   }
 }
 
@@ -474,7 +474,7 @@
 
     .checkCustomBox,
     .checkCustomRadio {
-      border-color: #ff6900;
+      border-color: #950606;
     }
   }
 
@@ -482,7 +482,7 @@
     display: none;
 
     &:checked + .checkCustomRadio {
-      border-color: #ff6900;
+      border-color: #950606;
 
       &::after {
         opacity: 1;
@@ -500,7 +500,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ff6900;
+  color: #950606;
   flex-shrink: 0;
   transition: all 0.15s ease;
 }
@@ -522,7 +522,7 @@
     content: '';
     width: 7px;
     height: 7px;
-    background: #ff6900;
+    background: #950606;
     border-radius: 50%;
     opacity: 0;
     transition: opacity 0.15s ease;
@@ -552,7 +552,7 @@
 
 .applyFilterMobileBtn {
   width: 100%;
-  background: #ff6900;
+  background: #950606;
   color: #ffffff;
   border: none;
   padding: 12px;
@@ -610,7 +610,7 @@
   transition: all 0.15s ease;
 
   &:focus-within {
-    border-color: #ff6900;
+    border-color: #950606;
     background: #ffffff;
   }
 
@@ -663,7 +663,7 @@
   transition: background 0.15s ease;
 
   &:hover {
-    background: #ff6900;
+    background: #950606;
   }
 }
 
@@ -698,7 +698,7 @@
   outline: none;
 
   &:focus {
-    border-color: #ff6900;
+    border-color: #950606;
   }
 }
 
@@ -753,7 +753,7 @@
 .clearAllLink {
   background: none;
   border: none;
-  color: #ff6900;
+  color: #950606;
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
@@ -850,7 +850,7 @@
 // Selected Row Highlighting (Exactly like Newegg Screenshot #2)
 .rowSelected {
   background: #fffdf5 !important;
-  border-left: 3px solid #ff6900;
+  border-left: 3px solid #950606;
 
   td:first-child {
     padding-left: 11px; // accounts for 3px left border
@@ -879,7 +879,7 @@
   transition: transform 0.15s ease, border-color 0.15s ease;
 
   &:hover {
-    border-color: #ff6900;
+    border-color: #950606;
     transform: scale(1.05);
   }
 
@@ -905,7 +905,7 @@
   transition: color 0.15s ease;
 
   &:hover {
-    color: #ff6900;
+    color: #950606;
     text-decoration: underline;
   }
 }
@@ -1026,7 +1026,7 @@
 .selectButton {
   width: 90px;
   height: 30px;
-  background: #ff6900;
+  background: #950606;
   color: #ffffff;
   border: none;
   border-radius: 4px;
@@ -1041,7 +1041,7 @@
   transition: all 0.15s ease;
 
   &:hover:not(:disabled) {
-    background: #e05d00;
+    background: #7a0505;
   }
 
   &:disabled {
@@ -1101,7 +1101,7 @@
   cursor: pointer;
 
   &:hover {
-    background: #ff6900;
+    background: #950606;
   }
 }
 
@@ -1115,7 +1115,7 @@
   right: 0;
   background: #ffffff;
   color: #18181b;
-  border-top: 2px solid #ff6900;
+  border-top: 2px solid #950606;
   box-shadow: 0 -8px 30px rgba(24, 24, 27, 0.08);
   z-index: 100;
   padding: 14px 0;
@@ -1155,7 +1155,7 @@
   gap: 6px;
   font-size: 13px;
   font-weight: 700;
-  color: #ff6900;
+  color: #950606;
 }
 
 .counterBadge {
@@ -1179,7 +1179,7 @@
 
 .progressBarFill {
   height: 100%;
-  background: linear-gradient(90deg, #ff6900 0%, #ffb800 100%);
+  background: linear-gradient(90deg, #950606 0%, #ffb800 100%);
   border-radius: 6px;
   transition: width 0.3s ease;
 }
@@ -1213,10 +1213,10 @@
   transition: all 0.2s ease;
 
   &.reachedDot {
-    background: #ff6900;
-    border-color: #ff6900;
+    background: #950606;
+    border-color: #950606;
     color: #ffffff;
-    box-shadow: 0 0 8px rgba(255, 105, 0, 0.5);
+    box-shadow: 0 0 8px rgba(149, 6, 6, 0.5);
   }
 }
 
@@ -1331,7 +1331,7 @@
 }
 
 .primaryCtaBtn {
-  background: #ff6900;
+  background: #950606;
   color: #ffffff;
   border: none;
   height: 44px;
@@ -1347,9 +1347,9 @@
   white-space: nowrap;
 
   &:hover:not(:disabled) {
-    background: #e05d00;
+    background: #7a0505;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 105, 0, 0.4);
+    box-shadow: 0 4px 12px rgba(149, 6, 6, 0.4);
   }
 
   &.lockedBtn {
@@ -1359,7 +1359,7 @@
   }
 
   &.vipActiveBtn {
-    background: linear-gradient(135deg, #ff6900 0%, #ffb800 100%);
+    background: linear-gradient(135deg, #950606 0%, #ffb800 100%);
     box-shadow: 0 4px 16px rgba(255, 184, 0, 0.4);
   }
 }

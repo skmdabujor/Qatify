@@ -102,7 +102,7 @@
   @include badge-discount;
   padding: 3px 8px;
   font-size: 12px;
-  box-shadow: 0 2px 6px rgba(255, 105, 0, 0.35);
+  box-shadow: 0 2px 6px rgba(149, 6, 6, 0.35);
   position: absolute;
   top: 12px;
   left: 12px;
@@ -173,7 +173,7 @@
 
   &.activeThumb {
     border-color: $color-accent-red;
-    box-shadow: 0 0 0 2px rgba(255, 105, 0, 0.2);
+    box-shadow: 0 0 0 2px rgba(149, 6, 6, 0.2);
   }
 }
 
@@ -529,7 +529,7 @@
 
   &.activeChip {
     border-color: $color-accent-red;
-    box-shadow: 0 0 0 2px rgba(255, 105, 0, 0.15);
+    box-shadow: 0 0 0 2px rgba(149, 6, 6, 0.15);
   }
 }
 
@@ -656,7 +656,7 @@
   padding: 14px 16px;
   font-size: 14px;
   gap: 8px;
-  box-shadow: 0 4px 14px rgba(255, 105, 0, 0.35);
+  box-shadow: 0 4px 14px rgba(149, 6, 6, 0.35);
 }
 
 .expressBuyNowBtn,
@@ -1075,7 +1075,7 @@
     background-color: $color-accent-red;
     border-color: $color-accent-red;
     transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(255, 105, 0, 0.25);
+    box-shadow: 0 4px 10px rgba(149, 6, 6, 0.25);
   }
 }
 
@@ -1774,7 +1774,7 @@
   border-radius: $radius-sm;
   height: 40px;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(255, 105, 0, 0.25);
+  box-shadow: 0 2px 8px rgba(149, 6, 6, 0.25);
 
   @include tablet {
     padding: 8px 12px;

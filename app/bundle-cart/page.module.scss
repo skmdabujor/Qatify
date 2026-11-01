@@ -21,7 +21,7 @@
 .crumbLink {
   color: $color-text-secondary;
   &:hover {
-    color: #ff6900;
+    color: #950606;
   }
 }
 
@@ -36,8 +36,8 @@
 
 // Isolation Alert Banner
 .isolationAlert {
-  background: linear-gradient(90deg, #fff4ed 0%, #fff4ed 100%);
-  border: 1px solid #ffedd5;
+  background: linear-gradient(90deg, #fdf2f2 0%, #fdf2f2 100%);
+  border: 1px solid #fecaca;
   border-radius: $radius-md;
   padding: 12px 16px;
   margin-bottom: $space-4;
@@ -56,7 +56,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #ff6900;
+  background: #950606;
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -67,11 +67,11 @@
 .isolationText {
   flex: 1;
   font-size: 13px;
-  color: #ff6900;
+  color: #950606;
   line-height: 1.4;
 
   strong {
-    color: #e05d00;
+    color: #7a0505;
   }
 }
 
@@ -102,13 +102,13 @@
 }
 
 .cartCountPill {
-  background-color: #fff4ed;
-  color: #ff6900;
+  background-color: #fdf2f2;
+  color: #950606;
   font-size: 12px;
   font-weight: 800;
   padding: 3px 10px;
   border-radius: $radius-full;
-  border: 1px solid #ffedd5;
+  border: 1px solid #fecaca;
 }
 
 .clearCartBtn {
@@ -148,8 +148,8 @@
   transition: all 0.2s ease;
 
   &.activeTier {
-    background: #fff4ed;
-    border-color: #ff6900;
+    background: #fdf2f2;
+    border-color: #950606;
     box-shadow: 0 2px 8px rgba(234, 88, 12, 0.15);
   }
 
@@ -173,7 +173,7 @@
   flex-shrink: 0;
 
   .activeTier & {
-    background: #ff6900;
+    background: #950606;
     color: #ffffff;
   }
 
@@ -224,7 +224,7 @@
 }
 
 .motivationIcon {
-  color: #ff6900;
+  color: #950606;
   flex-shrink: 0;
 }
 
@@ -233,7 +233,7 @@
   color: $color-ink-black;
 
   strong {
-    color: #ff6900;
+    color: #950606;
   }
 }
 
@@ -241,7 +241,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #ff6900;
+  background: #950606;
   color: #ffffff;
   font-size: 12.5px;
   font-weight: 700;
@@ -252,7 +252,7 @@
   transition: background 0.15s ease;
 
   &:hover {
-    background: #e05d00;
+    background: #7a0505;
   }
 }
 
@@ -273,8 +273,8 @@
   width: 88px;
   height: 88px;
   border-radius: 50%;
-  background-color: #fff4ed;
-  color: #ff6900;
+  background-color: #fdf2f2;
+  color: #950606;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -300,7 +300,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #ff6900;
+  background: #950606;
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;
@@ -311,7 +311,7 @@
   transition: all 0.2s ease;
 
   &:hover {
-    background: #e05d00;
+    background: #7a0505;
     transform: translateY(-1px);
   }
 }
@@ -387,7 +387,7 @@
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  color: #ff6900;
+  color: #950606;
   letter-spacing: 0.05em;
 }
 
@@ -402,7 +402,7 @@
     color: inherit;
     text-decoration: none;
     &:hover {
-      color: #ff6900;
+      color: #950606;
     }
   }
 }
@@ -576,7 +576,7 @@
   .grandPrice {
     font-size: 22px;
     font-weight: 900;
-    color: #ff6900;
+    color: #950606;
   }
 }
 
@@ -586,7 +586,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #ff6900;
+  background: #950606;
   color: #ffffff;
   font-size: 15px;
   font-weight: 800;
@@ -599,7 +599,7 @@
   margin-bottom: 14px;
 
   &:hover {
-    background: #e05d00;
+    background: #7a0505;
     transform: translateY(-1px);
   }
 }
@@ -614,7 +614,7 @@
   margin-bottom: 14px;
 
   &:hover {
-    color: #ff6900;
+    color: #950606;
     text-decoration: underline;
   }
 }
@@ -701,7 +701,7 @@
 
   &:hover {
     transform: translateY(-2px);
-    border-color: #ff6900;
+    border-color: #950606;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
   }
 }

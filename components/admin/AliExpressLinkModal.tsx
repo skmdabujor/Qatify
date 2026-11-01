@@ -171,7 +171,7 @@ export function AliExpressLinkModal({
               width: '36px',
               height: '36px',
               borderRadius: '8px',
-              backgroundColor: '#e06c2a',
+              backgroundColor: '#950606',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -322,7 +322,7 @@ export function AliExpressLinkModal({
               style={{
                 flex: 2,
                 padding: '10px 14px',
-                backgroundColor: '#e06c2a',
+                backgroundColor: '#950606',
                 border: 'none',
                 borderRadius: '8px',
                 color: '#ffffff',

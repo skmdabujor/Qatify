@@ -195,7 +195,7 @@ export function TrackingTimeline({ order, onRefreshSuccess }: TrackingTimelinePr
       {/* 2. 5-STAGE MACRO SHIPMENT TIMELINE */}
       <div className={styles.macroStepperCard}>
         <h4 className={styles.sectionHeading}>
-          <ShieldCheck size={18} color="#e06c2a" />
+          <ShieldCheck size={18} color="#950606" />
           <span>Cross-Border 5-Stage Logistics Pipeline</span>
         </h4>
         <p className={styles.sectionSub}>
@@ -232,7 +232,7 @@ export function TrackingTimeline({ order, onRefreshSuccess }: TrackingTimelinePr
         <div className={styles.checkpointsHeader}>
           <div>
             <h4 className={styles.sectionHeading}>
-              <Clock size={18} color="#e06c2a" />
+              <Clock size={18} color="#950606" />
               <span>Live International Transit Log & Air Cargo Checkpoints</span>
             </h4>
             <p className={styles.sectionSub} style={{ marginBottom: 0 }}>
@@ -276,7 +276,7 @@ export function TrackingTimeline({ order, onRefreshSuccess }: TrackingTimelinePr
                     <p className={styles.checkpointDesc}>{cp.description}</p>
 
                     <div className={styles.checkpointLocationRow}>
-                      <MapPin size={13} color="#e06c2a" />
+                      <MapPin size={13} color="#950606" />
                       <span>{cp.location}</span>
                       {cp.carrier && (
                         <>
@@ -307,7 +307,7 @@ export function TrackingTimeline({ order, onRefreshSuccess }: TrackingTimelinePr
       {order.items && order.items.length > 0 && (
         <div className={styles.macroStepperCard}>
           <h4 className={styles.sectionHeading}>
-            <Package size={17} color="#e06c2a" />
+            <Package size={17} color="#950606" />
             <span>Package Contents ({order.items.length} items)</span>
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '14px' }}>

@@ -350,7 +350,7 @@ function BundleCartContent() {
                   ) : (
                     <div className={styles.summaryLine}>
                       <span>Tier Discount</span>
-                      <span style={{ color: '#ea580c', fontSize: '12px' }}>
+                      <span style={{ color: '#7a0505', fontSize: '12px' }}>
                         Add {5 - bundleItemCount} more for 5% OFF
                       </span>
                     </div>

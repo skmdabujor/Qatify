@@ -225,21 +225,21 @@ $breakpoint-wide: 1440px;
 
 // --- BADGES ---
 @mixin badge-discount {
-  background-color: $color-accent-red;
+  background-color: $color-badge-purple;
   color: #ffffff;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 11px;
-  letter-spacing: 0.02em;
-  padding: 2px 7px;
-  border-radius: $radius-xs;
-  font-family: $font-mono;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  padding: 3px 10px 3px 8px;
+  border-radius: 0 9999px 9999px 0;
+  white-space: nowrap;
+  line-height: 1.25;
 }
 
 @mixin badge-delivery {
-  background-color: #fff4ed;
-  color: #ff6900;
-  border: 1px solid #ffedd5;
+  background-color: #fdf2f2;
+  color: #950606;
+  border: 1px solid #fecaca;
   font-weight: 700;
   font-size: 11px;
   padding: 3px 8px;

@@ -267,12 +267,12 @@
 
       &.ringRed {
         box-shadow: 0 8px 18px rgba(255, 105, 0, 0.28);
-        border-color: #e05d00;
+        border-color: #ffb800;
       }
 
       &.ringGold {
         box-shadow: 0 8px 18px rgba(255, 184, 0, 0.32);
-        border-color: #eab308;
+        border-color: #ffb800;
       }
 
       .productImg {
@@ -324,7 +324,7 @@
 
   // Ring Borders
   &.ringRed {
-    border: 2.5px solid #ff6900;
+    border: 2.5px solid #ffb800;
   }
 
   &.ringGold {

@@ -12,7 +12,6 @@ import { api } from '@/convex/_generated/api';
 import {
   Zap,
   ArrowRight,
-  Plane,
   ShieldCheck,
   CreditCard,
   RotateCcw,
@@ -28,14 +27,13 @@ import {
   Laptop,
   Cable,
   Flame,
-  CheckCircle2,
   ChevronRight,
   TrendingUp,
 } from 'lucide-react';
 import { ProductCard } from '@/components/product/ProductCard';
 import { CircularCategoryNav } from '@/components/category';
 import { FirstTimeDiscountPopup } from '@/components/popup/FirstTimeDiscountPopup';
-import { HomeComboDealsSection } from '@/components/home/HomeComboDealsSection';
+import { GrabOrGoneSection } from '@/components/home/GrabOrGoneSection';
 import { PRODUCTS, CATEGORIES } from '@/data/products';
 import { toProduct, toCategory } from '@/types/product';
 import styles from './page.module.scss';
@@ -284,83 +282,9 @@ export default function ShopHomePage() {
         </section>
 
         {/* ===================================================================
-            SECTION 5: MID-PAGE PROMOTIONAL AIR CARGO BANNER
+            SECTION 5: SPARKLING TECH SUNDAY (2-ROW GRID + PROMO BANNER SHELF)
         ==================================================================== */}
-        <section className={styles.airCargoPromoBanner}>
-          <div className={styles.airCargoInner}>
-            <div className={styles.airCargoContent}>
-              <span className={styles.cargoPill}>🚚 FAST & RELIABLE QATAR DELIVERY</span>
-              <h3 className={styles.cargoTitle}>
-                Direct Doorstep Delivery Across All Qatar Municipalities
-              </h3>
-              <p className={styles.cargoDesc}>
-                We bring you genuine global tech and viral gadget innovations at unbeatable prices. Every product is authenticated, securely packaged, and dispatched with prompt tracked delivery across Qatar.
-              </p>
-              <div className={styles.cargoPerks}>
-                <div className={styles.cargoPerk}>
-                  <CheckCircle2 size={15} />
-                  <span>Doha, Lusail, Al Rayyan, Al Wakrah & Al Khor</span>
-                </div>
-                <div className={styles.cargoPerk}>
-                  <CheckCircle2 size={15} />
-                  <span>Fast express delivery with live tracking</span>
-                </div>
-                <div className={styles.cargoPerk}>
-                  <CheckCircle2 size={15} />
-                  <span>100% genuine guaranteed with local warranty</span>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.cargoTrackingWidget}>
-              <div className={styles.trackingMockHeader}>
-                <div className={styles.trackingHeaderTitle}>
-                  <Plane size={15} />
-                  <span>Live Delivery Journey</span>
-                </div>
-                <span className={styles.trackingLiveBadge}>
-                  <span className={styles.livePulseDot} />
-                  Live Route
-                </span>
-              </div>
-              <div className={styles.trackingSteps}>
-                <div className={styles.trackingStep}>
-                  <div className={`${styles.stepDot} ${styles.done}`} />
-                  <div className={styles.stepInfo}>
-                    <strong>Order Confirmed</strong>
-                    <span>Quality Inspected & Packed</span>
-                  </div>
-                </div>
-                <div className={styles.trackingStep}>
-                  <div className={`${styles.stepDot} ${styles.done}`} />
-                  <div className={styles.stepInfo}>
-                    <strong>Express Air Transit</strong>
-                    <span>Direct Flight to Doha</span>
-                  </div>
-                </div>
-                <div className={styles.trackingStep}>
-                  <div className={`${styles.stepDot} ${styles.current}`} />
-                  <div className={styles.stepInfo}>
-                    <strong>Hamad Int’l Hub</strong>
-                    <span>Customs Clearance</span>
-                  </div>
-                </div>
-                <div className={styles.trackingStep}>
-                  <div className={styles.stepDot} />
-                  <div className={styles.stepInfo}>
-                    <strong>Qatar Doorstep</strong>
-                    <span>Delivered to Your Address</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ===================================================================
-            SECTION 5.5: QATIFY COMBO DEALS & SHELL SHOCKER SPOTLIGHT
-        ==================================================================== */}
-        <HomeComboDealsSection />
+        <GrabOrGoneSection />
 
         {/* ===================================================================
             SECTION 6: BEST-SELLING SMART ACCESSORIES & UNDER QAR 99

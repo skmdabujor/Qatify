@@ -1760,7 +1760,7 @@
 .greenIcon { color: #10b981; }
 .yellowIcon { color: #ca8a04; }
 .redIcon { color: $color-accent-red; }
-.blueIcon { color: #ff6900; }
+.blueIcon { color: #950606; }
 
 // Pipeline Card
 .pipelineCard {
@@ -1871,9 +1871,9 @@
   font-weight: 700;
   padding: 1px 6px;
   border-radius: $radius-xs;
-  background-color: #fff7ed;
+  background-color: #fdf2f2;
   color: #9a3412;
-  border: 1px solid #ffedd5;
+  border: 1px solid #fecaca;
 }
 
 .pipelineStatusGreen {
@@ -1985,9 +1985,9 @@
 }
 
 .statusPillBlue {
-  background-color: #fff4ed;
-  color: #ff6900;
-  border: 1px solid #ffedd5;
+  background-color: #fdf2f2;
+  color: #950606;
+  border: 1px solid #fecaca;
   font-size: 10px;
   font-weight: 800;
   padding: 2px 6px;

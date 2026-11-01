@@ -140,9 +140,9 @@ function CheckoutSuccessContent() {
                 marginBottom: '20px',
                 padding: '18px 20px',
                 borderRadius: '12px',
-                background: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)',
-                border: '2px dashed #e06c2a',
-                boxShadow: '0 4px 16px rgba(224, 108, 42, 0.18)',
+                background: 'linear-gradient(135deg, #fdf2f2 0%, #fecaca 100%)',
+                border: '2px dashed #950606',
+                boxShadow: '0 4px 16px rgba(149, 6, 6, 0.18)',
                 textAlign: 'center',
               }}
             >
@@ -185,7 +185,7 @@ function CheckoutSuccessContent() {
                     fontFamily: 'monospace',
                     fontSize: '18px',
                     fontWeight: 800,
-                    color: '#e06c2a',
+                    color: '#950606',
                     letterSpacing: '0.08em',
                   }}
                 >
@@ -201,7 +201,7 @@ function CheckoutSuccessContent() {
                     }
                   }}
                   style={{
-                    background: '#e06c2a',
+                    background: '#950606',
                     color: '#ffffff',
                     border: 'none',
                     borderRadius: '6px',
