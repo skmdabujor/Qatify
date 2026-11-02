@@ -8,7 +8,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useQuery, useMutation } from 'convex/react';
+import { useQuery, useMutation, useConvex } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import {
   Package,
@@ -40,6 +40,9 @@ import {
   Send,
   RotateCw,
   Edit3,
+  Lock,
+  Key,
+  X,
 } from 'lucide-react';
 import { TelegramAlertsManager } from '@/components/admin/TelegramAlertsManager';
 import { TrackingTimeline } from '@/components/tracking/TrackingTimeline';
@@ -81,6 +84,7 @@ function DashboardContent() {
     'all' | 'analytics' | 'pipeline' | 'orders' | 'telegram'
   >('all');
 
+  const convex = useConvex();
   const viewer = useQuery(api.users.viewer);
   const { signOut } = useAuthActions();
 
@@ -91,6 +95,22 @@ function DashboardContent() {
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [emailInput, setEmailInput] = useState('');
   const [emailError, setEmailError] = useState('');
+
+  // Admin Master Key Authentication State
+  const [adminKey, setAdminKey] = useState<string>('');
+  const [isAdminKeyModalOpen, setIsAdminKeyModalOpen] = useState(false);
+  const [adminKeyInput, setAdminKeyInput] = useState('');
+  const [adminKeyError, setAdminKeyError] = useState('');
+
+  // Hydrate adminKey from sessionStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedKey = sessionStorage.getItem('qatify_admin_key') || '';
+      if (storedKey) {
+        setAdminKey(storedKey);
+      }
+    }
+  }, []);
 
   // Hydrate user email from Convex viewer or localStorage
   useEffect(() => {
@@ -105,13 +125,10 @@ function DashboardContent() {
     }
   }, [viewer]);
 
-
-
-
   // Server-side Dynamic Admin Access Check against Convex `admins` table
   const adminCheck = useQuery(
     api.admins.checkIsAdmin,
-    userEmail ? { email: userEmail } : 'skip'
+    adminKey ? { adminKey } : viewer ? {} : 'skip'
   );
   const isAdmin = Boolean(adminCheck?.isAdmin);
   const adminRole = adminCheck?.role || null;
@@ -140,6 +157,37 @@ function DashboardContent() {
     if (isAdmin) {
       setRole('admin');
       showToast('Store Admin 🛡️', 'Switched to Dropship Operations', 'success');
+    } else {
+      setIsAdminKeyModalOpen(true);
+    }
+  };
+
+  const handleUnlockWithAdminKey = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanKey = adminKeyInput.trim();
+    if (!cleanKey) {
+      setAdminKeyError('Please enter the Admin Secret Key.');
+      return;
+    }
+
+    try {
+      const res = await convex.query(api.admins.checkIsAdmin, { adminKey: cleanKey });
+      if (res.isAdmin) {
+        setAdminKey(cleanKey);
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('qatify_admin_key', cleanKey);
+        }
+        setIsAdminKeyModalOpen(false);
+        setRole('admin');
+        setAdminKeyError('');
+        setAdminKeyInput('');
+        showToast('Admin Access Granted 🛡️', 'Welcome to Dropship Operations', 'success');
+      } else {
+        setAdminKeyError('Invalid Admin Secret Key. Access denied.');
+      }
+    } catch (err: any) {
+      console.error('Admin key verification error:', err);
+      setAdminKeyError('Error verifying Admin Secret Key. Please try again.');
     }
   };
 
@@ -185,7 +233,7 @@ function DashboardContent() {
   // Admin-scoped live orders: strictly fetched only when user is verified in Convex
   const adminLiveOrders = useQuery(
     api.orders.listRecentOrders,
-    isAdmin && userEmail ? { adminEmail: userEmail, limit: 50 } : 'skip'
+    isAdmin ? { adminKey: adminKey || undefined, limit: 50 } : 'skip'
   );
 
   const updateStatus = useMutation(api.orders.updateOrderStatus);
@@ -327,30 +375,30 @@ function DashboardContent() {
             </p>
           </div>
 
-          {/* Role Switcher Pill — ONLY rendered if the email is granted admin access in Convex backend */}
-          {isAdmin && (
-            <div className={styles.roleSwitcherWrap}>
-              <span className={styles.switcherLabel}>View Mode:</span>
-              <div className={styles.rolePillsGroup}>
-                <button
-                  type="button"
-                  onClick={() => setRole('customer')}
-                  className={`${styles.rolePill} ${role === 'customer' ? styles.active : ''}`}
-                  aria-pressed={role === 'customer'}
-                >
-                  Customer Account
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSwitchToAdmin}
-                  className={`${styles.rolePill} ${role === 'admin' ? styles.active : ''}`}
-                  aria-pressed={role === 'admin'}
-                >
-                  🛡️ Store Admin ({adminRole === 'owner' ? 'Owner' : 'Admin'})
-                </button>
-              </div>
+          {/* Role Switcher Pill */}
+          <div className={styles.roleSwitcherWrap}>
+            <span className={styles.switcherLabel}>View Mode:</span>
+            <div className={styles.rolePillsGroup}>
+              <button
+                type="button"
+                onClick={() => setRole('customer')}
+                className={`${styles.rolePill} ${role === 'customer' ? styles.active : ''}`}
+                aria-pressed={role === 'customer'}
+              >
+                Customer Account
+              </button>
+              <button
+                type="button"
+                onClick={handleSwitchToAdmin}
+                className={`${styles.rolePill} ${role === 'admin' ? styles.active : ''}`}
+                aria-pressed={role === 'admin'}
+              >
+                {isAdmin
+                  ? `🛡️ Store Admin (${adminRole === 'owner' ? 'Owner' : 'Admin'})`
+                  : '🔒 Store Admin'}
+              </button>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Dashboard Shell: Dark Sidebar + Clean Canvas */}
@@ -1307,7 +1355,7 @@ function DashboardContent() {
                                         const newStatus = e.target.value as any;
                                         try {
                                           await updateStatus({
-                                            adminEmail: userEmail,
+                                            adminKey: adminKey || undefined,
                                             orderId: ord._id,
                                             status: newStatus,
                                           });
@@ -1371,10 +1419,184 @@ function DashboardContent() {
           onClose={() => setLinkingOrder(null)}
           order={linkingOrder}
           adminEmail={userEmail}
+          adminKey={adminKey}
           onSuccess={() => {
             showToast('Tracking Linked! ✈️', 'AliExpress logistics synced into Qatify timeline', 'success');
           }}
         />
+
+        {/* Master Admin Secret Key Unlock Modal */}
+        {isAdminKeyModalOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(10, 10, 12, 0.75)',
+              backdropFilter: 'blur(6px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 99999,
+              padding: '16px',
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: '#ffffff',
+                borderRadius: '16px',
+                width: '100%',
+                maxWidth: '460px',
+                padding: '28px',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                border: '1px solid #e4e4e7',
+                position: 'relative',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setIsAdminKeyModalOpen(false);
+                  setAdminKeyError('');
+                }}
+                style={{
+                  position: 'absolute',
+                  top: '18px',
+                  right: '18px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#71717a',
+                }}
+              >
+                <X size={20} />
+              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                <div
+                  style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '10px',
+                    backgroundColor: '#fef2f2',
+                    color: '#950606',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Lock size={20} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0a0a0c' }}>
+                    Store Admin Access 🛡️
+                  </h3>
+                  <p style={{ margin: 0, fontSize: '12px', color: '#71717a' }}>
+                    Authorized personnel only
+                  </p>
+                </div>
+              </div>
+
+              <p style={{ fontSize: '13px', color: '#52525b', lineHeight: 1.5, margin: '14px 0 18px 0' }}>
+                Enter your <strong>Master Admin Secret Key</strong> to unlock dropship fulfillment, real-time analytics, and customer logistics management.
+              </p>
+
+              <form onSubmit={handleUnlockWithAdminKey}>
+                <div style={{ marginBottom: '14px' }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      color: '#0a0a0c',
+                      marginBottom: '6px',
+                    }}
+                  >
+                    Admin Secret Key
+                  </label>
+                  <input
+                    type="password"
+                    value={adminKeyInput}
+                    onChange={(e) => {
+                      setAdminKeyInput(e.target.value);
+                      setAdminKeyError('');
+                    }}
+                    placeholder="Enter ADMIN_SECRET_KEY..."
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: '8px',
+                      border: adminKeyError ? '1px solid #ef4444' : '1px solid #cbd5e1',
+                      fontSize: '14px',
+                      fontFamily: 'monospace',
+                      boxSizing: 'border-box',
+                      outline: 'none',
+                    }}
+                  />
+                  {adminKeyError && (
+                    <div
+                      style={{
+                        color: '#ef4444',
+                        fontSize: '12px',
+                        marginTop: '6px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                      }}
+                    >
+                      <AlertCircle size={14} />
+                      <span>{adminKeyError}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAdminKeyModalOpen(false);
+                      setIsEmailModalOpen(true);
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      borderRadius: '8px',
+                      border: '1px solid #e4e4e7',
+                      backgroundColor: '#f4f4f5',
+                      color: '#0a0a0c',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Sign In with Email
+                  </button>
+
+                  <button
+                    type="submit"
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      backgroundColor: '#950606',
+                      color: '#ffffff',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                    }}
+                  >
+                    <Key size={15} />
+                    <span>Unlock Admin</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -25,7 +25,10 @@ export const createCheckoutSession = action({
     }
 
     const polarToken = process.env.POLAR_ACCESS_TOKEN;
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    const siteUrl =
+      process.env.SITE_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      "http://localhost:3000";
     const isSandbox = process.env.POLAR_ENVIRONMENT !== "production";
 
     if (!polarToken) {

@@ -1119,7 +1119,8 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
             <div className={styles.relatedHeader}>
               <h2 className={styles.relatedTitle}>Customers Also Ordered in Qatar</h2>
               <Link href={`/shop?cat=${product.categorySlug}`} className={styles.viewCategoryLink}>
-                More in {product.category} →
+                <span className={styles.desktopMoreText}>More in {product.category} →</span>
+                <span className={styles.mobileMoreText}>More →</span>
               </Link>
             </div>
             <div className={styles.relatedGrid}>

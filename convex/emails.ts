@@ -259,7 +259,10 @@ export const sendOrderConfirmationEmail = internalAction({
     }
 
     const resendApiKey = process.env.RESEND_API_KEY;
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://qatify.qa";
+    const siteUrl =
+      process.env.SITE_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      "https://qatify.qa";
     const recipientEmail =
       order.customerEmail ||
       order.address.email ||
@@ -373,7 +376,10 @@ export const resendOrderConfirmationEmailAction = action({
     }
 
     const resendApiKey = process.env.RESEND_API_KEY;
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://qatify.qa";
+    const siteUrl =
+      process.env.SITE_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      "https://qatify.qa";
     const recipientEmail =
       args.recipientEmail?.trim().toLowerCase() ||
       order.customerEmail ||

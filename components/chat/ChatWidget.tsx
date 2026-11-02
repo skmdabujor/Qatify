@@ -655,7 +655,9 @@ export const ChatWidget: React.FC = () => {
 
       {/* 2. CHAT WINDOW / MODAL */}
       {isChatOpen && (
-        <div className={styles.chatWindow} role="dialog" aria-label="Customer Support Live Chat">
+        <>
+          <div className={styles.chatBackdrop} onClick={closeChat} aria-hidden="true" />
+          <div className={styles.chatWindow} role="dialog" aria-label="Customer Support Live Chat">
           {/* Header */}
           <div className={styles.header}>
             <div className={styles.agentInfo}>
@@ -891,6 +893,7 @@ export const ChatWidget: React.FC = () => {
             </div>
           </div>
         </div>
+        </>
       )}
     </>
   );

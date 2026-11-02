@@ -17,6 +17,9 @@
   align-items: flex-end;
   pointer-events: none;
   transition: bottom 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  will-change: transform;
 
   @include tablet {
     bottom: calc(66px + env(safe-area-inset-bottom, 0px));
@@ -235,9 +238,23 @@
   z-index: 2;
 }
 
-// =============================================================================
+// Backdrop for mobile overlay
+.chatBackdrop {
+  display: none;
+
+  @media (max-width: 640px) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: $z-modal + 15;
+    animation: fadeIn 200ms ease forwards;
+  }
+}
+
 // Chat Window (Pop-up Container)
-// =============================================================================
 .chatWindow {
   position: fixed;
   bottom: 84px;
@@ -256,15 +273,17 @@
   animation: chatWindowOpen 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   @media (max-width: 640px) {
-    bottom: 10px;
-    right: 10px;
-    left: 10px;
+    top: calc(8px + env(safe-area-inset-top, 0px));
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    left: 8px;
+    right: 8px;
     width: auto;
     max-width: none;
-    height: calc(100vh - 20px);
-    max-height: 96vh;
+    height: auto;
+    max-height: calc(100dvh - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     border-radius: 18px;
     z-index: $z-modal + 20;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -282,13 +301,16 @@
 // Window Header
 .header {
   background: #18181b;
-  padding: 14px 16px;
+  padding: 12px 16px;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 2px solid rgba(255, 184, 0, 0.7);
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .agentInfo {
@@ -398,20 +420,23 @@
 }
 
 .closeBtn {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: $radius-full;
-  background-color: rgba(255, 255, 255, 0.1);
-  border: none;
+  background-color: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 160ms ease;
+  flex-shrink: 0;
 
-  &:hover {
+  &:hover,
+  &:active {
     background-color: $color-accent-red;
+    border-color: $color-accent-red;
     transform: rotate(90deg);
   }
 }

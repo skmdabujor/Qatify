@@ -255,7 +255,10 @@ export const sendOrderNotificationTelegram = internalAction({
       return { success: true, sentCount: 0, skippedCount: 0, results: [] };
     }
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://qatify.qa";
+    const siteUrl =
+      process.env.SITE_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      "https://qatify.qa";
     const message = formatOrderTelegramMessage(order, siteUrl);
 
     let sentCount = 0;
@@ -429,7 +432,10 @@ export const sendShipmentStatusTelegram = internalAction({
     }
     if (targets.length === 0) return { success: true };
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://qatify.qa";
+    const siteUrl =
+      process.env.SITE_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      "https://qatify.qa";
     const text = [
       `✈️ <b>[SHIPMENT MILESTONE UPDATE - QATIFY]</b>`,
       `━━━━━━━━━━━━━━━━━━━━━━`,

@@ -19,7 +19,11 @@ export interface NewsletterTemplateOptions {
 
 // 1. Generate Luxury Responsive HTML Email Template for Qatify VIP Newsletter
 export function generateNewsletterEmailHtml(options: NewsletterTemplateOptions = {}): string {
-  const siteUrl = options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL || "https://qatify.qa";
+  const siteUrl =
+    options.siteUrl ||
+    process.env.SITE_URL ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://qatify.qa";
   const promoCode = options.promoCode || "WELCOME10";
   const whatsappNumber = options.whatsappNumber || process.env.WHATSAPP_NUMBER || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801875707255";
   const recipientEmail = options.recipientEmail || "VIP Subscriber";
@@ -390,7 +394,10 @@ export const previewNewsletterHtml = query({
     recipientEmail: v.optional(v.string()),
   },
   handler: async (_ctx, args) => {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://qatify.qa";
+    const siteUrl =
+      process.env.SITE_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      "https://qatify.qa";
     return generateNewsletterEmailHtml({
       recipientEmail: args.recipientEmail || "sheakmohammadabujor@gmail.com",
       promoCode: args.promoCode || "WELCOME10",
@@ -421,7 +428,10 @@ export const sendTestNewsletter = action({
     error?: string;
   }> => {
     const resendApiKey = process.env.RESEND_API_KEY;
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://qatify.qa";
+    const siteUrl =
+      process.env.SITE_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      "https://qatify.qa";
     const promoCode = (args.promoCode || "WELCOME10").trim().toUpperCase();
     const targetEmail = (args.recipientEmail || "sheakmohammadabujor@gmail.com").trim().toLowerCase();
     const emailSubject = args.subject || "✨ Qatify VIP Qatar: 10% Off + Direct Hamad Air Express Drops 🇶🇦";
@@ -517,7 +527,10 @@ export const broadcastNewsletter = action({
     errors: string[];
   }> => {
     const resendApiKey = process.env.RESEND_API_KEY;
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://qatify.qa";
+    const siteUrl =
+      process.env.SITE_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      "https://qatify.qa";
     const promoCode = (args.promoCode || "WELCOME10").trim().toUpperCase();
     const emailSubject = args.subject || "✨ Qatify VIP Qatar: Exclusive Deals & New Air Express Drops 🇶🇦";
 

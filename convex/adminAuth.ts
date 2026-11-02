@@ -1,45 +1,54 @@
 import { QueryCtx, MutationCtx } from "./_generated/server";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 // =============================================================================
 // Qatify — Authoritative Admin Access Verification Helper
 // Validates caller identity against the Convex backend `admins` database table
-// (Dynamic Email-based Access) or against server ADMIN_SECRET_KEY (CLI/Scripts).
+// (Authenticated Session via Convex Auth) or against server ADMIN_SECRET_KEY.
 // =============================================================================
 
 export async function assertAdminAccess(
-  ctx: { db: QueryCtx["db"] | MutationCtx["db"] },
+  ctx: QueryCtx | MutationCtx,
   adminEmail?: string,
   adminKey?: string
 ): Promise<{ email: string; role: "owner" | "admin"; name?: string }> {
-  // 1. Check if email is authorized in Convex `admins` table
-  if (adminEmail && adminEmail.trim()) {
-    const normalized = adminEmail.trim().toLowerCase();
-    const admin = await ctx.db
-      .query("admins")
-      .withIndex("by_email", (q) => q.eq("email", normalized))
-      .first();
+  // 1. Check if caller has an authenticated session with Convex Auth
+  try {
+    const userId = await getAuthUserId(ctx);
+    if (userId) {
+      const user = await ctx.db.get(userId);
+      if (user?.email) {
+        const normalized = user.email.trim().toLowerCase();
+        const admin = await ctx.db
+          .query("admins")
+          .withIndex("by_email", (q) => q.eq("email", normalized))
+          .first();
 
-    if (admin) {
-      return {
-        email: admin.email,
-        role: admin.role,
-        name: admin.name,
-      };
+        if (admin) {
+          return {
+            email: admin.email,
+            role: admin.role,
+            name: admin.name,
+          };
+        }
+      }
     }
+  } catch (err) {
+    // getAuthUserId may fail in environments without auth headers; proceed to key check
   }
 
-  // 2. Fallback: Check if Admin Secret Key matches (for CLI scripts / seed data)
+  // 2. Secret Key check (for CLI scripts / seed data / emergency master access)
   const expected = process.env.ADMIN_SECRET_KEY;
   if (expected && adminKey && adminKey.trim() === expected.trim()) {
     return {
-      email: "system@qatify.qa",
+      email: adminEmail?.trim().toLowerCase() || "system@qatify.qa",
       role: "owner",
-      name: "System Admin",
+      name: "Store Owner",
     };
   }
 
   throw new Error(
-    "Unauthorized: Access denied. This action requires an email authorized in the Convex admins backend."
+    "Unauthorized: Access denied. Please sign in with an authorized admin account or provide a valid Admin Key."
   );
 }
 
@@ -55,3 +64,4 @@ export function assertAdminKey(adminKey?: string): void {
     throw new Error("Unauthorized: Invalid Admin Secret Key.");
   }
 }
+

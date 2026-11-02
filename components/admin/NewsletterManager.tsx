@@ -26,11 +26,16 @@ import {
   RefreshCw,
 } from 'lucide-react';
 
-export function NewsletterManager() {
+interface NewsletterManagerProps {
+  adminKey?: string;
+}
+
+export function NewsletterManager({ adminKey }: NewsletterManagerProps = {}) {
   // Subscribers Query
-  const subscribers = useQuery(api.newsletter.listSubscribers, {
-    adminEmail: 'sheakmohammadabujor@gmail.com',
-  });
+  const subscribers = useQuery(
+    api.newsletter.listSubscribers,
+    adminKey ? { adminKey } : {}
+  );
 
   // Actions & Queries
   const sendTestNewsletter = useAction(api.newsletter.sendTestNewsletter);

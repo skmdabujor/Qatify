@@ -1,41 +1,62 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { assertAdminAccess } from "./adminAuth";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 // =============================================================================
 // Qatify — Dynamic Admin Access Management (Convex)
 // Manages store owner & admin access dynamically in the Convex backend database.
-// No secret keys required on the frontend — access is determined by whether the
-// email is registered and granted access in the `admins` table.
+// Access is verified via authenticated Convex Auth session or master Admin Key.
 // =============================================================================
 
 /**
- * 1. Query: Check whether a given email has Admin privileges.
- * Reactive and real-time. Frontend uses this to conditionally render Store Admin.
+ * 1. Query: Check whether current visitor has Admin privileges.
+ * Checks authenticated session or optional provided adminKey.
  */
 export const checkIsAdmin = query({
-  args: { email: v.string() },
+  args: {
+    email: v.optional(v.string()),
+    adminKey: v.optional(v.string()),
+  },
   handler: async (ctx, args) => {
-    const normalized = args.email.trim().toLowerCase();
-    if (!normalized || !normalized.includes("@")) {
-      return { isAdmin: false, role: null, name: null, email: null };
+    // 1. Check if caller has an active authenticated Convex Auth session
+    try {
+      const userId = await getAuthUserId(ctx);
+      if (userId) {
+        const user = await ctx.db.get(userId);
+        if (user?.email) {
+          const normalized = user.email.trim().toLowerCase();
+          const admin = await ctx.db
+            .query("admins")
+            .withIndex("by_email", (q) => q.eq("email", normalized))
+            .first();
+
+          if (admin) {
+            return {
+              isAdmin: true,
+              role: admin.role,
+              name: admin.name || null,
+              email: admin.email,
+            };
+          }
+        }
+      }
+    } catch {
+      // Ignore auth extraction errors
     }
 
-    const admin = await ctx.db
-      .query("admins")
-      .withIndex("by_email", (q) => q.eq("email", normalized))
-      .first();
-
-    if (!admin) {
-      return { isAdmin: false, role: null, name: null, email: null };
+    // 2. Fallback check for adminKey
+    const expected = process.env.ADMIN_SECRET_KEY;
+    if (expected && args.adminKey && args.adminKey.trim() === expected.trim()) {
+      return {
+        isAdmin: true,
+        role: "owner" as const,
+        name: "Store Owner (Key)",
+        email: "system@qatify.qa",
+      };
     }
 
-    return {
-      isAdmin: true,
-      role: admin.role,
-      name: admin.name || null,
-      email: admin.email,
-    };
+    return { isAdmin: false, role: null, name: null, email: null };
   },
 });
 

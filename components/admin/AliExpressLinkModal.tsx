@@ -37,6 +37,7 @@ interface AliExpressLinkModalProps {
     status: string;
   } | null;
   adminEmail?: string;
+  adminKey?: string;
   onSuccess?: () => void;
 }
 
@@ -45,6 +46,7 @@ export function AliExpressLinkModal({
   onClose,
   order,
   adminEmail,
+  adminKey,
   onSuccess,
 }: AliExpressLinkModalProps) {
   const [trackingInput, setTrackingInput] = useState(
@@ -91,6 +93,7 @@ export function AliExpressLinkModal({
         aliexpressTrackingNumber: cleanCode,
         carrier,
         adminEmail,
+        adminKey,
       });
 
       setStatusMsg({

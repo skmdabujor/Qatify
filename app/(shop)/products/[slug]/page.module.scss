@@ -1399,21 +1399,54 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: $space-4;
+  gap: 12px;
+
+  @include mobile {
+    gap: 8px;
+    align-items: center;
+  }
 }
 
 .relatedTitle {
   font-size: 18px;
   font-weight: 800;
   color: $color-ink-black;
+
+  @include mobile {
+    font-size: 15px;
+    line-height: 1.25;
+  }
 }
 
 .viewCategoryLink {
   font-size: 12.5px;
   font-weight: 700;
   color: $color-accent-red;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
 
   &:hover {
     text-decoration: underline;
+  }
+}
+
+.desktopMoreText {
+  display: inline;
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.mobileMoreText {
+  display: none;
+
+  @include mobile {
+    display: inline;
+    font-size: 13px;
+    font-weight: 700;
   }
 }
 
