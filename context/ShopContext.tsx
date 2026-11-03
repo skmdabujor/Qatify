@@ -99,30 +99,7 @@ const ShopContext = createContext<ShopContextType | undefined>(undefined);
 
 const FREE_SHIPPING_THRESHOLD = 150; // QAR 150 for free air shipping in Qatar
 
-const INITIAL_ADDRESSES: QatarAddress[] = [
-  {
-    id: 'addr-1',
-    fullName: 'Tariq Al-Mansoor',
-    phone: '+974 5512 8894',
-    municipality: 'Lusail City (مدينة لوسيل)',
-    zoneNumber: 'Zone 69',
-    streetNumber: 'Street 312',
-    buildingNumber: 'Building 18 (Fox Hills North)',
-    landmark: 'Near Crescent Park, Apt 402',
-    isDefault: true,
-  },
-  {
-    id: 'addr-2',
-    fullName: 'Tariq Al-Mansoor',
-    phone: '+974 5512 8894',
-    municipality: 'Doha (العاصمة)',
-    zoneNumber: 'Zone 24',
-    streetNumber: 'Street 840',
-    buildingNumber: 'Building 12',
-    landmark: 'Behind Al Meera Rawdat Al Khail',
-    isDefault: false,
-  },
-];
+const INITIAL_ADDRESSES: QatarAddress[] = [];
 
 export function ShopProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -218,7 +195,15 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
       const storedAddresses = localStorage.getItem('qatify_addresses');
       if (storedAddresses) {
-        setSavedAddresses(JSON.parse(storedAddresses));
+        const parsed = JSON.parse(storedAddresses);
+        if (Array.isArray(parsed)) {
+          // Purge legacy mock addresses (addr-1, addr-2, or fake Mohammed Al-Thani)
+          const validUserAddresses = parsed.filter(
+            (a: any) => a.id !== 'addr-1' && a.id !== 'addr-2' && a.firstName !== 'Mohammed'
+          );
+          setSavedAddresses(validUserAddresses);
+          localStorage.setItem('qatify_addresses', JSON.stringify(validUserAddresses));
+        }
       }
     } catch (e) {
       console.error('Error hydrating state from localStorage:', e);
@@ -491,8 +476,15 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
   // Address Actions
   const addAddress = (address: QatarAddress) => {
+    const fullName = address.fullName || `${address.firstName || ''} ${address.lastName || ''}`.trim();
+    const phone = address.phone || `+${address.phoneCountryCode || '974'} ${address.phoneNumber || ''}`.trim();
     const newAddr: QatarAddress = {
       ...address,
+      country: address.country || 'Qatar',
+      fullName,
+      phone,
+      streetNumber: address.streetAddress || address.streetNumber,
+      buildingNumber: address.apartmentSuite || address.buildingNumber,
       id: `addr-${Date.now()}`,
     };
     setSavedAddresses((prev) => [newAddr, ...prev]);

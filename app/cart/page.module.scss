@@ -709,7 +709,7 @@
   font-size: 14px;
   gap: 8px;
   margin-bottom: 10px;
-  box-shadow: 0 4px 12px rgba(149, 6, 6, 0.35);
+  box-shadow: 0 4px 12px rgba(255, 109, 0, 0.35);
 }
 
 .continueShoppingLink {
@@ -883,7 +883,7 @@
 
   &:hover {
     transform: translateY(-2px);
-    border-color: #950606;
+    border-color: #FF6D00;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
   }
 }

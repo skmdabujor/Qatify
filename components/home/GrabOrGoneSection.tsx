@@ -10,7 +10,7 @@
 // - Wishlist & Add-to-Cart buttons operate independently without page navigation
 // =============================================================================
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight, Heart, Plus, Check, ArrowRight } from 'lucide-react';
@@ -53,23 +53,449 @@ interface TimeLeft {
   seconds: string;
 }
 
+// -----------------------------------------------------------------------------
+// Independent Infinite Loop Product Row Slider Component
+// Each row slides, drags, and loops completely independently of the other!
+// -----------------------------------------------------------------------------
+interface ProductRowSliderProps {
+  products: Product[];
+  rowId: string;
+  addedProductId: string | null;
+  onAddToCart: (e: React.MouseEvent, product: Product) => void;
+  onToggleWishlist: (e: React.MouseEvent, product: Product) => void;
+  isInWishlist: (id: string) => boolean;
+}
+
+const ProductRowSlider: React.FC<ProductRowSliderProps> = ({
+  products,
+  rowId,
+  addedProductId,
+  onAddToCart,
+  onToggleWishlist,
+  isInWishlist,
+}) => {
+  const router = useRouter();
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Position & Interaction Refs
+  const currentOffsetRef = useRef(0);
+  const isPointerDownRef = useRef(false);
+  const startXRef = useRef(0);
+  const startYRef = useRef(0);
+  const startOffsetRef = useRef(0);
+  const hasDraggedRef = useRef(false);
+  const isTransitioningRef = useRef(false);
+  const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 5 Sets of products to guarantee seamless, uninterrupted infinite looping
+  const duplicatedProducts = useMemo(() => {
+    if (!products || products.length === 0) return [];
+    const sets: { product: Product; key: string }[] = [];
+    for (let s = 0; s < 5; s++) {
+      products.forEach((p, idx) => {
+        sets.push({ product: p, key: `${rowId}-s${s}-${p.id}-${idx}` });
+      });
+    }
+    return sets;
+  }, [products, rowId]);
+
+  // Dynamically measure card width + gap from layout
+  const getStepSize = useCallback(() => {
+    if (trackRef.current && trackRef.current.children.length >= 2) {
+      const first = trackRef.current.children[0] as HTMLElement;
+      const second = trackRef.current.children[1] as HTMLElement;
+      const diff = second.offsetLeft - first.offsetLeft;
+      if (diff > 50) return diff;
+    }
+    if (typeof window !== 'undefined' && window.innerWidth < 640) {
+      return 180; // 170px width + 10px gap on mobile
+    }
+    return 229; // 215px width + 14px gap on desktop
+  }, []);
+
+  // Seamlessly keep offset centered around Set 2 [2 * setWidth, 3 * setWidth)
+  const normalizeOffset = useCallback(() => {
+    if (!trackRef.current || products.length === 0) return;
+    const step = getStepSize();
+    const setWidth = products.length * step;
+    if (setWidth <= 0) return;
+
+    let current = currentOffsetRef.current;
+    let changed = false;
+
+    while (current >= 3 * setWidth) {
+      current -= setWidth;
+      changed = true;
+    }
+    while (current < 2 * setWidth) {
+      current += setWidth;
+      changed = true;
+    }
+
+    if (changed) {
+      currentOffsetRef.current = current;
+      trackRef.current.style.transition = 'none';
+      trackRef.current.style.transform = `translate3d(-${current}px, 0, 0)`;
+    }
+  }, [getStepSize, products.length]);
+
+  // Initial positioning to middle Set 2
+  useEffect(() => {
+    if (products.length === 0) return;
+    const step = getStepSize();
+    const setWidth = products.length * step;
+    const initialPos = 2 * setWidth;
+    currentOffsetRef.current = initialPos;
+
+    if (trackRef.current) {
+      trackRef.current.style.transition = 'none';
+      trackRef.current.style.transform = `translate3d(-${initialPos}px, 0, 0)`;
+    }
+
+    const handleResize = () => {
+      normalizeOffset();
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (wheelTimeoutRef.current) clearTimeout(wheelTimeoutRef.current);
+    };
+  }, [products.length, getStepSize, normalizeOffset]);
+
+  // Transition End: Normalize silently back into center set
+  const handleTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
+    if (e.target !== trackRef.current) return;
+    isTransitioningRef.current = false;
+    normalizeOffset();
+  };
+
+  // Next Arrow Button Click
+  const slideNext = () => {
+    if (products.length === 0) return;
+    const step = getStepSize();
+    const visibleWidth = viewportRef.current?.clientWidth || 800;
+    const cardsToSlide = visibleWidth < 600 ? 1 : 2;
+    const distance = step * cardsToSlide;
+
+    const nextTarget = currentOffsetRef.current + distance;
+    currentOffsetRef.current = nextTarget;
+    isTransitioningRef.current = true;
+
+    if (trackRef.current) {
+      trackRef.current.style.transition = 'transform 0.32s cubic-bezier(0.25, 1, 0.5, 1)';
+      trackRef.current.style.transform = `translate3d(-${nextTarget}px, 0, 0)`;
+    }
+  };
+
+  // Prev Arrow Button Click
+  const slidePrev = () => {
+    if (products.length === 0) return;
+    const step = getStepSize();
+    const visibleWidth = viewportRef.current?.clientWidth || 800;
+    const cardsToSlide = visibleWidth < 600 ? 1 : 2;
+    const distance = step * cardsToSlide;
+
+    const nextTarget = currentOffsetRef.current - distance;
+    currentOffsetRef.current = nextTarget;
+    isTransitioningRef.current = true;
+
+    if (trackRef.current) {
+      trackRef.current.style.transition = 'transform 0.32s cubic-bezier(0.25, 1, 0.5, 1)';
+      trackRef.current.style.transform = `translate3d(-${nextTarget}px, 0, 0)`;
+    }
+  };
+
+  // Pointer Down (Mouse / Touch / Stylus)
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    const target = e.target as HTMLElement;
+    if (target.closest('button')) return;
+
+    if (!trackRef.current || !viewportRef.current) return;
+
+    isPointerDownRef.current = true;
+    hasDraggedRef.current = false;
+    startXRef.current = e.clientX;
+    startYRef.current = e.clientY;
+
+    // Grab mid-flight without jumping if mid-transition
+    if (trackRef.current) {
+      const style = window.getComputedStyle(trackRef.current);
+      const matrix = new DOMMatrixReadOnly(style.transform);
+      if (!isNaN(matrix.m41) && matrix.m41 !== 0) {
+        currentOffsetRef.current = -matrix.m41;
+      }
+      trackRef.current.style.transition = 'none';
+      trackRef.current.style.transform = `translate3d(-${currentOffsetRef.current}px, 0, 0)`;
+    }
+    startOffsetRef.current = currentOffsetRef.current;
+  };
+
+  // Pointer Move (Mouse / Touch)
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isPointerDownRef.current || !trackRef.current) return;
+
+    const deltaX = e.clientX - startXRef.current;
+    const deltaY = e.clientY - startYRef.current;
+
+    if (!hasDraggedRef.current) {
+      if (Math.abs(deltaX) > 6 && Math.abs(deltaX) > Math.abs(deltaY)) {
+        hasDraggedRef.current = true;
+        setIsDragging(true);
+        try {
+          e.currentTarget.setPointerCapture(e.pointerId);
+        } catch {}
+      } else if (Math.abs(deltaY) > 8) {
+        // Vertical scroll intent on mobile
+        isPointerDownRef.current = false;
+        return;
+      }
+    }
+
+    if (hasDraggedRef.current) {
+      let newOffset = startOffsetRef.current - deltaX;
+      const step = getStepSize();
+      const setWidth = products.length * step;
+      if (setWidth > 0) {
+        while (newOffset >= 3.5 * setWidth) {
+          newOffset -= setWidth;
+          startOffsetRef.current -= setWidth;
+        }
+        while (newOffset < 1.5 * setWidth) {
+          newOffset += setWidth;
+          startOffsetRef.current += setWidth;
+        }
+      }
+      currentOffsetRef.current = newOffset;
+      trackRef.current.style.transform = `translate3d(-${newOffset}px, 0, 0)`;
+    }
+  };
+
+  // Pointer Up (Mouse / Touch release)
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isPointerDownRef.current) return;
+    isPointerDownRef.current = false;
+    setIsDragging(false);
+
+    try {
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      }
+    } catch {}
+
+    if (hasDraggedRef.current) {
+      const deltaX = e.clientX - startXRef.current;
+      const step = getStepSize();
+
+      let target = currentOffsetRef.current;
+      if (Math.abs(deltaX) > 25) {
+        if (deltaX < 0) {
+          target = Math.ceil(target / step) * step;
+        } else {
+          target = Math.floor(target / step) * step;
+        }
+      } else {
+        target = Math.round(target / step) * step;
+      }
+
+      currentOffsetRef.current = target;
+      isTransitioningRef.current = true;
+
+      if (trackRef.current) {
+        trackRef.current.style.transition = 'transform 0.32s cubic-bezier(0.25, 1, 0.5, 1)';
+        trackRef.current.style.transform = `translate3d(-${target}px, 0, 0)`;
+      }
+
+      setTimeout(() => {
+        hasDraggedRef.current = false;
+      }, 150);
+    }
+  };
+
+  const handlePointerCancel = (e: React.PointerEvent<HTMLDivElement>) => {
+    handlePointerUp(e);
+  };
+
+  // Horizontal Wheel / Trackpad support
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 4) {
+      if (trackRef.current) {
+        trackRef.current.style.transition = 'none';
+        let newOffset = currentOffsetRef.current + e.deltaX;
+        const step = getStepSize();
+        const setWidth = products.length * step;
+        if (setWidth > 0) {
+          while (newOffset >= 3.5 * setWidth) newOffset -= setWidth;
+          while (newOffset < 1.5 * setWidth) newOffset += setWidth;
+        }
+        currentOffsetRef.current = newOffset;
+        trackRef.current.style.transform = `translate3d(-${newOffset}px, 0, 0)`;
+
+        if (wheelTimeoutRef.current) clearTimeout(wheelTimeoutRef.current);
+        wheelTimeoutRef.current = setTimeout(() => {
+          const snapped = Math.round(currentOffsetRef.current / step) * step;
+          currentOffsetRef.current = snapped;
+          if (trackRef.current) {
+            trackRef.current.style.transition = 'transform 0.25s cubic-bezier(0.25, 1, 0.5, 1)';
+            trackRef.current.style.transform = `translate3d(-${snapped}px, 0, 0)`;
+          }
+        }, 120);
+      }
+    }
+  };
+
+  // Card click: Navigate only if not dragged
+  const handleCardClick = (product: Product, e: React.MouseEvent) => {
+    if (hasDraggedRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    router.push(`/products/${product.slug}`);
+  };
+
+  return (
+    <div className={styles.sliderRow}>
+      {/* Left Arrow Button */}
+      <button
+        type="button"
+        className={`${styles.navBtn} ${styles.navPrev}`}
+        onClick={slidePrev}
+        aria-label="Scroll left"
+      >
+        <ChevronLeft size={18} />
+      </button>
+
+      {/* Viewport with touch & pointer support */}
+      <div
+        className={`${styles.sliderViewport} ${isDragging ? styles.isDragging : ''}`}
+        ref={viewportRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
+        onWheel={handleWheel}
+      >
+        <div
+          className={styles.sliderTrack}
+          ref={trackRef}
+          onTransitionEnd={handleTransitionEnd}
+        >
+          {duplicatedProducts.map(({ product, key }) => {
+            const isWishlisted = isInWishlist(product.id);
+            const isAdded = addedProductId === product.id;
+            const hasDiscount =
+              product.originalPriceQAR > product.priceQAR &&
+              product.discountPercent >= 15;
+
+            return (
+              <div
+                key={key}
+                className={styles.productCard}
+                onClick={(e) => handleCardClick(product, e)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') router.push(`/products/${product.slug}`);
+                }}
+              >
+                {/* Top-Right Wishlist Heart Button */}
+                <button
+                  type="button"
+                  className={styles.wishlistBtn}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onClick={(e) => onToggleWishlist(e, product)}
+                  aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+                >
+                  <Heart
+                    size={17}
+                    className={isWishlisted ? styles.heartActive : styles.heartDefault}
+                  />
+                </button>
+
+                {/* Centered Product Image */}
+                <div className={styles.imageWrapper}>
+                  <img
+                    src={product.images[0]}
+                    alt={product.title}
+                    className={styles.productImg}
+                    loading="lazy"
+                    draggable={false}
+                  />
+                </div>
+
+                {/* Brand Tag (Left) + Red '+' Button (Right) */}
+                <div className={styles.brandActionRow}>
+                  <span className={styles.brandBadge}>
+                    {product.brand || product.category}
+                  </span>
+                  <button
+                    type="button"
+                    className={`${styles.addBtn} ${isAdded ? styles.added : ''}`}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={(e) => onAddToCart(e, product)}
+                    aria-label={`Add ${product.title} to cart`}
+                  >
+                    {isAdded ? (
+                      <Check size={15} strokeWidth={2.5} />
+                    ) : (
+                      <Plus size={15} strokeWidth={2.5} />
+                    )}
+                  </button>
+                </div>
+
+                {/* Product Title (2-Line Clamped) */}
+                <h3 className={styles.productTitle} title={product.title}>
+                  {product.title}
+                </h3>
+
+                {/* Price Row (Yellow Highlight Badge for Discounts, Normal for Regular) */}
+                <div className={styles.priceRow}>
+                  {hasDiscount ? (
+                    <>
+                      <span className={styles.priceYellowBadge}>
+                        QAR {product.priceQAR.toFixed(2)}
+                      </span>
+                      <span className={styles.priceStrike}>
+                        {product.originalPriceQAR.toFixed(2)}
+                      </span>
+                    </>
+                  ) : (
+                    <span className={styles.priceNormal}>
+                      QAR {product.priceQAR.toFixed(2)}
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Right Arrow Button */}
+      <button
+        type="button"
+        className={`${styles.navBtn} ${styles.navNext}`}
+        onClick={slideNext}
+        aria-label="Scroll right"
+      >
+        <ChevronRight size={18} />
+      </button>
+    </div>
+  );
+};
+
 export const GrabOrGoneSection: React.FC = () => {
   const router = useRouter();
   const { addToCart, toggleWishlist, isInWishlist } = useShop();
 
-  // Scroll Container Ref
-  const scrollRef = useRef<HTMLDivElement>(null);
-
   // States
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
   const [activeSlide, setActiveSlide] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-
-  // Grid Drag-to-Scroll Tracking Refs
-  const isDownRef = useRef(false);
-  const startXRef = useRef(0);
-  const scrollLeftRef = useRef(0);
-  const hasDraggedRef = useRef(false);
 
   // Banner Drag-to-Slide Tracking Refs
   const bannerIsDownRef = useRef(false);
@@ -126,44 +552,7 @@ export const GrabOrGoneSection: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // 3. Global Mouse Drag Listener for the Product Grid
-  useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (!isDownRef.current || !scrollRef.current) return;
-      const deltaX = e.pageX - startXRef.current;
-
-      if (Math.abs(deltaX) > 4) {
-        hasDraggedRef.current = true;
-        setIsDragging(true);
-      }
-
-      if (hasDraggedRef.current) {
-        e.preventDefault();
-        scrollRef.current.scrollLeft = scrollLeftRef.current - deltaX;
-      }
-    };
-
-    const handleGlobalMouseUp = () => {
-      if (isDownRef.current) {
-        isDownRef.current = false;
-        setIsDragging(false);
-        // Retain hasDraggedRef for 120ms so any click event triggered right after mouseup is prevented
-        setTimeout(() => {
-          hasDraggedRef.current = false;
-        }, 120);
-      }
-    };
-
-    window.addEventListener('mousemove', handleGlobalMouseMove);
-    window.addEventListener('mouseup', handleGlobalMouseUp);
-
-    return () => {
-      window.removeEventListener('mousemove', handleGlobalMouseMove);
-      window.removeEventListener('mouseup', handleGlobalMouseUp);
-    };
-  }, []);
-
-  // 4. Fetch products from Convex with catalog fallback
+  // 3. Fetch products from Convex with catalog fallback
   const liveProducts = useQuery(api.products.list, { limit: 20 });
 
   const products: Product[] = useMemo(() => {
@@ -173,49 +562,25 @@ export const GrabOrGoneSection: React.FC = () => {
     return PRODUCTS.slice(0, 16);
   }, [liveProducts]);
 
-  // 5. Arrow navigation scrolling
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const scrollDistance = scrollRef.current.clientWidth * 0.75;
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollDistance : scrollDistance,
-        behavior: 'smooth',
-      });
-    }
-  };
+  // Separate top & bottom rows matching screenshot
+  // Top: Even index items (qat-001 Soundcore, qat-003 Joyroom, qat-005 Green Lion, qat-007 Wanbo, ...)
+  // Bottom: Odd index items (qat-002 Anker, qat-004 Baseus, qat-006 Anker 737, qat-008 Porodo, ...)
+  const topProducts = useMemo(() => {
+    return products.filter((_, idx) => idx % 2 === 0);
+  }, [products]);
 
-  // 6. Grid MouseDown Handler
-  const handleGridMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!scrollRef.current || e.button !== 0) return;
-    const target = e.target as HTMLElement;
-    // Don't initiate scroll drag if clicking Wishlist or Add button directly
-    if (target.closest('button')) return;
+  const bottomProducts = useMemo(() => {
+    return products.filter((_, idx) => idx % 2 === 1);
+  }, [products]);
 
-    isDownRef.current = true;
-    hasDraggedRef.current = false;
-    startXRef.current = e.pageX;
-    scrollLeftRef.current = scrollRef.current.scrollLeft;
-  };
-
-  // 7. Entire Product Card Click Handler
-  const handleCardClick = (product: Product, e: React.MouseEvent) => {
-    // If the user was dragging the grid, do NOT navigate!
-    if (hasDraggedRef.current) {
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-    router.push(`/products/${product.slug}`);
-  };
-
-  // 8. Wishlist Handler
+  // Wishlist Handler
   const handleToggleWishlist = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
     e.stopPropagation();
     toggleWishlist(product);
   };
 
-  // 9. Add to Cart Handler
+  // Add to Cart Handler
   const handleAddToCart = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
     e.stopPropagation();
@@ -226,7 +591,7 @@ export const GrabOrGoneSection: React.FC = () => {
     }, 1500);
   };
 
-  // 10. Left Banner Drag & Touch Handlers
+  // Left Banner Drag & Touch Handlers
   const handleBannerMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return;
     const target = e.target as HTMLElement;
@@ -338,7 +703,7 @@ export const GrabOrGoneSection: React.FC = () => {
         </Link>
       </div>
 
-      {/* MAIN CONTAINER: LEFT BANNER + RIGHT 2-ROW GRID */}
+      {/* MAIN CONTAINER: LEFT BANNER + RIGHT 2 INDEPENDENT SLIDERS */}
       <div className={styles.mainContainer}>
         {/* LEFT VERTICAL PROMO BANNER (Full Drag & Swipe Support) */}
         <div
@@ -383,121 +748,27 @@ export const GrabOrGoneSection: React.FC = () => {
           </div>
         </div>
 
-        {/* RIGHT PRODUCT CAROUSEL WRAPPER */}
+        {/* RIGHT PRODUCT CAROUSEL WRAPPER: 2 INDEPENDENT INFINITE LOOP SLIDERS */}
         <div className={styles.rightCarouselWrapper}>
-          {/* Left Arrow Button */}
-          <button
-            type="button"
-            className={`${styles.navBtn} ${styles.navPrev}`}
-            onClick={() => scroll('left')}
-            aria-label="Scroll left"
-          >
-            <ChevronLeft size={18} />
-          </button>
+          {/* Top Slider Row (Slides independently & loops infinitely) */}
+          <ProductRowSlider
+            products={topProducts}
+            rowId="row-top"
+            addedProductId={addedProductId}
+            onAddToCart={handleAddToCart}
+            onToggleWishlist={handleToggleWishlist}
+            isInWishlist={isInWishlist}
+          />
 
-          {/* 2-Row Grid Track (Native Mouse Drag Enabled) */}
-          <div
-            className={`${styles.gridTrack} ${isDragging ? styles.isDragging : ''}`}
-            ref={scrollRef}
-            onMouseDown={handleGridMouseDown}
-          >
-            {products.map((product) => {
-              const isWishlisted = isInWishlist(product.id);
-              const isAdded = addedProductId === product.id;
-              const hasDiscount =
-                product.originalPriceQAR > product.priceQAR &&
-                product.discountPercent >= 15;
-
-              return (
-                <div
-                  key={product.id}
-                  className={styles.productCard}
-                  onClick={(e) => handleCardClick(product, e)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') router.push(`/products/${product.slug}`);
-                  }}
-                >
-                  {/* Top-Right Wishlist Heart Button */}
-                  <button
-                    type="button"
-                    className={styles.wishlistBtn}
-                    onClick={(e) => handleToggleWishlist(e, product)}
-                    aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-                  >
-                    <Heart
-                      size={17}
-                      className={isWishlisted ? styles.heartActive : styles.heartDefault}
-                    />
-                  </button>
-
-                  {/* Centered Product Image */}
-                  <div className={styles.imageWrapper}>
-                    <img
-                      src={product.images[0]}
-                      alt={product.title}
-                      className={styles.productImg}
-                      loading="lazy"
-                      draggable={false}
-                    />
-                  </div>
-
-                  {/* Brand Tag (Left) + Red '+' Button (Right) */}
-                  <div className={styles.brandActionRow}>
-                    <span className={styles.brandBadge}>
-                      {product.brand || product.category}
-                    </span>
-                    <button
-                      type="button"
-                      className={`${styles.addBtn} ${isAdded ? styles.added : ''}`}
-                      onClick={(e) => handleAddToCart(e, product)}
-                      aria-label={`Add ${product.title} to cart`}
-                    >
-                      {isAdded ? (
-                        <Check size={15} strokeWidth={2.5} />
-                      ) : (
-                        <Plus size={15} strokeWidth={2.5} />
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Product Title (2-Line Clamped) */}
-                  <h3 className={styles.productTitle} title={product.title}>
-                    {product.title}
-                  </h3>
-
-                  {/* Price Row (Yellow Highlight Badge for Discounts, Normal for Regular) */}
-                  <div className={styles.priceRow}>
-                    {hasDiscount ? (
-                      <>
-                        <span className={styles.priceYellowBadge}>
-                          QAR {product.priceQAR.toFixed(2)}
-                        </span>
-                        <span className={styles.priceStrike}>
-                          {product.originalPriceQAR.toFixed(2)}
-                        </span>
-                      </>
-                    ) : (
-                      <span className={styles.priceNormal}>
-                        QAR {product.priceQAR.toFixed(2)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Right Arrow Button */}
-          <button
-            type="button"
-            className={`${styles.navBtn} ${styles.navNext}`}
-            onClick={() => scroll('right')}
-            aria-label="Scroll right"
-          >
-            <ChevronRight size={18} />
-          </button>
+          {/* Bottom Slider Row (Slides independently & loops infinitely) */}
+          <ProductRowSlider
+            products={bottomProducts}
+            rowId="row-bottom"
+            addedProductId={addedProductId}
+            onAddToCart={handleAddToCart}
+            onToggleWishlist={handleToggleWishlist}
+            isInWishlist={isInWishlist}
+          />
         </div>
       </div>
     </section>

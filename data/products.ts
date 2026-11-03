@@ -5,6 +5,134 @@
 
 import { Product, Order, QatarAddress, ShippingMethod } from '@/types/product';
 
+export interface SupportedCountry {
+  name: string;
+  code: string;
+  flag: string;
+  phoneCode: string;
+  defaultPostalCode: string;
+  provinces: string[];
+  zones: Record<string, string[]>;
+}
+
+export const SUPPORTED_COUNTRIES: SupportedCountry[] = [
+  {
+    name: 'Qatar',
+    code: 'QA',
+    flag: '🇶🇦',
+    phoneCode: '974',
+    defaultPostalCode: '00974',
+    provinces: [
+      'Al Daayen',
+      'Doha',
+      'Al Rayyan',
+      'Al Wakrah',
+      'Al Khor',
+      'Umm Salal',
+      'Al Shamal',
+      'Al Shahaniya',
+    ],
+    zones: {
+      'Al Daayen': ['Zone 69', 'Zone 70', 'Zone 68'],
+      'Doha': ['Zone 22', 'Zone 24', 'Zone 45', 'Zone 66', 'Zone 1', 'Zone 2', 'Zone 3', 'Zone 4', 'Zone 5', 'Zone 60', 'Zone 61', 'Zone 62'],
+      'Al Rayyan': ['Zone 51', 'Zone 52', 'Zone 53', 'Zone 54', 'Zone 55', 'Zone 56', 'Zone 57', 'Zone 58', 'Zone 80', 'Zone 81'],
+      'Al Wakrah': ['Zone 90', 'Zone 91', 'Zone 92', 'Zone 93', 'Zone 94', 'Zone 95'],
+      'Al Khor': ['Zone 74', 'Zone 75', 'Zone 76'],
+      'Umm Salal': ['Zone 71', 'Zone 72', 'Zone 73'],
+      'Al Shamal': ['Zone 77', 'Zone 78', 'Zone 79'],
+      'Al Shahaniya': ['Zone 84', 'Zone 85', 'Zone 96', 'Zone 97', 'Zone 98'],
+    },
+  },
+  {
+    name: 'Saudi Arabia',
+    code: 'SA',
+    flag: '🇸🇦',
+    phoneCode: '966',
+    defaultPostalCode: '11564',
+    provinces: [
+      'Riyadh',
+      'Jeddah',
+      'Makkah',
+      'Madinah',
+      'Dammam',
+      'Khobar',
+      'Dhahran',
+      'Tabuk',
+      'Abha',
+      'Taif',
+    ],
+    zones: {
+      'Riyadh': ['Al Olaya', 'Al Malaz', 'Al Nakheel', 'Al Yasmin', 'Al Sahafa', 'Al Sulaimaniyah', 'Hittin', 'Al Murabba'],
+      'Jeddah': ['Al Hamra', 'Al Rawdah', 'Al Zahra', 'Al Shatie', 'Al Salamah', 'Al Mohammadiyah', 'Al Naeem'],
+      'Makkah': ['Al Aziziyah', 'Al Shawqiyyah', 'Al Naseem', 'Al Rusayfah', 'Al Awali'],
+      'Madinah': ['Al Qiblatayn', 'Al Aridh', 'Sayyid Al Shuhada', 'Bani Harithah'],
+      'Dammam': ['Al Faisaliyah', 'Al Rakkah', 'Al Jalawiyah', 'Al Shati', 'Al Badi'],
+      'Khobar': ['Al Khobar Al Shamalia', 'Al Hizam Al Thahabi', 'Al Rakah Al Janubiyah', 'Al Yarmouk'],
+      'Dhahran': ['KFUPM Campus', 'Doha Camp', 'Al Dana', 'Al Rabwah'],
+      'Tabuk': ['Al Muruj', 'Al Faisaliyah', 'Al Woroud', 'Al Qadisiyah'],
+      'Abha': ['Al Manhal', 'Al Khalidiyyah', 'Al Andalous', 'Al Sharaf'],
+      'Taif': ['Al Hawiyah', 'Al Shefa', 'Al Rudaf', 'Shubra'],
+    },
+  },
+  {
+    name: 'UAE (Dubai)',
+    code: 'AE',
+    flag: '🇦🇪',
+    phoneCode: '971',
+    defaultPostalCode: '00000',
+    provinces: [
+      'Dubai',
+      'Abu Dhabi',
+      'Sharjah',
+      'Ajman',
+      'Ras Al Khaimah',
+      'Fujairah',
+      'Umm Al Quwain',
+    ],
+    zones: {
+      'Dubai': ['Downtown Dubai', 'Dubai Marina', 'Business Bay', 'Jumeirah', 'Palm Jumeirah', 'JLT (Jumeirah Lake Towers)', 'Deira', 'Bur Dubai', 'Al Barsha', 'Dubai Hills Estate', 'Mirdif'],
+      'Abu Dhabi': ['Al Reem Island', 'Al Maryah Island', 'Corniche', 'Khalidiya', 'Yas Island', 'Saadiyat Island', 'Al Bateen', 'Mohammed Bin Zayed City'],
+      'Sharjah': ['Al Majaz', 'Al Nahda', 'Al Qasimia', 'Al Taawun', 'Muwailih'],
+      'Ajman': ['Al Nuaimiya', 'Al Rashidiya', 'Ajman Downtown', 'Al Jurf'],
+      'Ras Al Khaimah': ['Al Hamra Village', 'Mina Al Arab', 'Al Nakheel', 'Khuzam'],
+      'Fujairah': ['Al Faseel', 'Fujairah City', 'Al Qala'],
+      'Umm Al Quwain': ['Al Salama', 'Umm Al Quwain Marina', 'Al Rass'],
+    },
+  },
+];
+
+export const ALIEXPRESS_QATAR_MUNICIPALITIES = [
+  'Al Daayen',
+  'Doha',
+  'Al Rayyan',
+  'Al Wakrah',
+  'Al Khor',
+  'Umm Salal',
+  'Al Shamal',
+  'Al Shahaniya',
+] as const;
+
+export const ALIEXPRESS_MUNICIPALITY_ZONES: Record<string, string[]> = {
+  'Al Daayen': ['Zone 69', 'Zone 70', 'Zone 68'],
+  'Doha': [
+    'Zone 22', 'Zone 24', 'Zone 45', 'Zone 66', 'Zone 1', 'Zone 2', 'Zone 3', 'Zone 4', 'Zone 5',
+    'Zone 6', 'Zone 7', 'Zone 8', 'Zone 9', 'Zone 10', 'Zone 11', 'Zone 12', 'Zone 13', 'Zone 14',
+    'Zone 15', 'Zone 16', 'Zone 17', 'Zone 18', 'Zone 19', 'Zone 20', 'Zone 21', 'Zone 23', 'Zone 25',
+    'Zone 26', 'Zone 27', 'Zone 28', 'Zone 30', 'Zone 31', 'Zone 32', 'Zone 33', 'Zone 34', 'Zone 35',
+    'Zone 36', 'Zone 37', 'Zone 38', 'Zone 39', 'Zone 40', 'Zone 41', 'Zone 42', 'Zone 43', 'Zone 44',
+    'Zone 46', 'Zone 47', 'Zone 48', 'Zone 49', 'Zone 50', 'Zone 60', 'Zone 61', 'Zone 62', 'Zone 63',
+    'Zone 64', 'Zone 65', 'Zone 67'
+  ],
+  'Al Rayyan': ['Zone 51', 'Zone 52', 'Zone 53', 'Zone 54', 'Zone 55', 'Zone 56', 'Zone 57', 'Zone 58', 'Zone 59', 'Zone 80', 'Zone 81', 'Zone 82', 'Zone 83'],
+  'Al Wakrah': ['Zone 90', 'Zone 91', 'Zone 92', 'Zone 93', 'Zone 94', 'Zone 95'],
+  'Al Khor': ['Zone 74', 'Zone 75', 'Zone 76'],
+  'Umm Salal': ['Zone 71', 'Zone 72', 'Zone 73'],
+  'Al Shamal': ['Zone 77', 'Zone 78', 'Zone 79'],
+  'Al Shahaniya': ['Zone 84', 'Zone 85', 'Zone 96', 'Zone 97', 'Zone 98'],
+};
+
+export const ALL_QATAR_ZONES = Array.from({ length: 98 }, (_, i) => `Zone ${i + 1}`);
+
 export const QATAR_MUNICIPALITIES = [
   { name: 'Doha (العاصمة)', code: 'DOH', transitDaysOffset: 0, popularZones: ['Zone 22', 'Zone 24', 'Zone 45', 'Zone 66'] },
   { name: 'Lusail City (مدينة لوسيل)', code: 'LUS', transitDaysOffset: 0, popularZones: ['Zone 69', 'Zone 70'] },
@@ -3757,8 +3885,16 @@ export const MOCK_ORDERS: Order[] = [
     discountQAR: 15,
     totalQAR: 237,
     address: {
-      fullName: 'Tariq Al-Mansoor',
-      phone: '+974 5512 8894',
+      country: 'Qatar',
+      firstName: 'Mohammed',
+      lastName: 'Al-Thani',
+      phoneCountryCode: '974',
+      phoneNumber: '44374646',
+      streetAddress: 'Street 230, Al Corniche Street',
+      apartmentSuite: 'Building 45, Apt 3B',
+      postalCode: '00974',
+      fullName: 'Mohammed Al-Thani',
+      phone: '+974 44374646',
       municipality: 'Lusail City (مدينة لوسيل)',
       zoneNumber: 'Zone 69',
       streetNumber: 'Street 312',
@@ -3833,8 +3969,16 @@ export const MOCK_ORDERS: Order[] = [
     discountQAR: 0,
     totalQAR: 149,
     address: {
-      fullName: 'Tariq Al-Mansoor',
-      phone: '+974 5512 8894',
+      country: 'Qatar',
+      firstName: 'Mohammed',
+      lastName: 'Al-Thani',
+      phoneCountryCode: '974',
+      phoneNumber: '44374646',
+      streetAddress: 'Street 230, Al Corniche Street',
+      apartmentSuite: 'Building 45, Apt 3B',
+      postalCode: '00974',
+      fullName: 'Mohammed Al-Thani',
+      phone: '+974 44374646',
       municipality: 'Doha (العاصمة)',
       zoneNumber: 'Zone 24',
       streetNumber: 'Street 840',

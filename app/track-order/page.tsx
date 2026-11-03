@@ -84,7 +84,7 @@ function TrackOrderContent() {
           trackingData === undefined ? (
             <div className={styles.notFoundCard}>
               <div className="spin" style={{ display: 'inline-block', marginBottom: '12px' }}>
-                <Plane size={32} color="#950606" />
+                <Plane size={32} color="#FF6D00" />
               </div>
               <h3 style={{ margin: 0, fontSize: '17px', color: '#0a0a0c' }}>
                 Connecting to Logistics Network...

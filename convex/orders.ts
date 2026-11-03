@@ -58,13 +58,25 @@ export const createOrder = mutation({
       })
     ),
     address: v.object({
-      fullName: v.string(),
-      phone: v.string(),
-      email: v.optional(v.string()),
+      // AliExpress Qatar Dropship Fields
+      country: v.optional(v.string()),
+      firstName: v.optional(v.string()),
+      lastName: v.optional(v.string()),
+      phoneCountryCode: v.optional(v.string()),
+      phoneNumber: v.optional(v.string()),
+      streetAddress: v.optional(v.string()),
+      apartmentSuite: v.optional(v.string()),
       municipality: v.string(),
       zoneNumber: v.string(),
-      streetNumber: v.string(),
-      buildingNumber: v.string(),
+      postalCode: v.optional(v.string()),
+      isDefault: v.optional(v.boolean()),
+
+      // Backward compatibility fields
+      fullName: v.optional(v.string()),
+      phone: v.optional(v.string()),
+      email: v.optional(v.string()),
+      streetNumber: v.optional(v.string()),
+      buildingNumber: v.optional(v.string()),
       unitNumber: v.optional(v.string()),
       landmark: v.optional(v.string()),
     }),
@@ -85,22 +97,38 @@ export const createOrder = mutation({
     couponCode: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // 0. Anti-fraud: Validate recipient identity and Qatar address fields
-    const fullName = (args.address.fullName || "").trim();
-    const phone = (args.address.phone || "").trim();
-    if (fullName.length < 3) {
-      throw new Error("Please enter a valid full name (at least 3 characters)");
+    // 0. Anti-fraud & format normalization: Support AliExpress dropship fields
+    const firstName = (args.address.firstName || "").trim();
+    const lastName = (args.address.lastName || "").trim();
+    const resolvedFullName = (
+      args.address.fullName ||
+      (firstName && lastName ? `${firstName} ${lastName}` : firstName || lastName)
+    ).trim();
+
+    const phoneCode = (args.address.phoneCountryCode || "974").trim().replace(/^\+/, "");
+    const phoneNum = (args.address.phoneNumber || "").trim();
+    const resolvedPhone = (
+      args.address.phone ||
+      (phoneNum ? `+${phoneCode} ${phoneNum}` : "")
+    ).trim();
+
+    if (resolvedFullName.length < 2) {
+      throw new Error("Please enter a valid recipient name (First name & Last name)");
     }
-    const cleanPhoneDigits = phone.replace(/[^0-9]/g, "");
+    const cleanPhoneDigits = resolvedPhone.replace(/[^0-9]/g, "");
     if (cleanPhoneDigits.length < 8) {
       throw new Error("Please enter a valid phone number (at least 8 digits)");
     }
     if (
       !args.address.municipality?.trim() ||
-      !args.address.zoneNumber?.trim() ||
-      !args.address.buildingNumber?.trim()
+      !args.address.zoneNumber?.trim()
     ) {
-      throw new Error("Please complete all required Qatar address fields (Municipality, Zone, Building)");
+      throw new Error("Please select Municipality and Zone");
+    }
+    const street = (args.address.streetAddress || args.address.streetNumber || "").trim();
+    const aptSuite = (args.address.apartmentSuite || args.address.buildingNumber || "").trim();
+    if (!street || !aptSuite) {
+      throw new Error("Please enter Street Address and Apt / Building number");
     }
 
     // Server-side Price Validation & Stock Availability Check
@@ -354,8 +382,27 @@ export const createOrder = mutation({
       bundleItemCount: qualifyingBundleCount > 0 ? qualifyingBundleCount : undefined,
       vipRewardCoupon,
       customerEmail: args.address.email?.toLowerCase(),
-      customerPhone: args.address.phone,
-      address: args.address,
+      customerPhone: resolvedPhone,
+      address: {
+        country: args.address.country || "Qatar",
+        firstName: firstName || resolvedFullName.split(" ")[0] || "Customer",
+        lastName: lastName || resolvedFullName.split(" ").slice(1).join(" ") || "",
+        phoneCountryCode: phoneCode,
+        phoneNumber: phoneNum || resolvedPhone.replace(/^\+?974\s*/, ""),
+        streetAddress: street,
+        apartmentSuite: aptSuite,
+        municipality: args.address.municipality,
+        zoneNumber: args.address.zoneNumber,
+        postalCode: args.address.postalCode || "00974",
+        isDefault: args.address.isDefault ?? true,
+        fullName: resolvedFullName,
+        phone: resolvedPhone,
+        email: args.address.email,
+        streetNumber: street,
+        buildingNumber: aptSuite,
+        unitNumber: args.address.unitNumber,
+        landmark: args.address.landmark,
+      },
       shippingMethod: args.shippingMethod,
       paymentMethod: args.paymentMethod,
       status: "Order Confirmed",
@@ -399,7 +446,7 @@ export const createOrder = mutation({
         {
           stage: "Delivered",
           title: "Delivered to Customer Doorstep",
-          description: `Successfully delivered to Building ${args.address.buildingNumber}, Street ${args.address.streetNumber}, ${args.address.zoneNumber}.`,
+          description: `Successfully delivered to ${aptSuite}, ${street}, ${args.address.zoneNumber}.`,
           location: `${args.address.municipality}, Qatar`,
           date: estWindow,
           completed: false,

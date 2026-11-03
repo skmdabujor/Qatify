@@ -1,9 +1,9 @@
 // =============================================================================
 // Qatify — SCSS Design System Variables & Tokens
 // Governed by the Strict 60/30/10 Color Rule & High-Density Regional Retail UX
-// 60% Base: #FAFAFA / #FFFFFF / #E4E4E7 / #fdf2f2
+// 60% Base: #FAFAFA / #FFFFFF / #E4E4E7 / #fff4ec
 // 30% Secondary & Typography: #18181B / #27272A / #71717A
-// 10% Brand Accents & Gold: #950606 / #7a0505 / #FFB800
+// 10% Brand Accents & Gold: #FF6D00 / #E65100 / #FFB800
 // Zero Blue Policy: Strict replacement of all blue/navy tints
 // =============================================================================
 
@@ -36,11 +36,11 @@ $color-text-muted: #71717a;
 $color-text-inverse: #ffffff;
 $color-text-inverse-muted: #a1a1aa;
 
-// --- 10% HIGH-ENERGY ACCENTS (Qatify Signature Red #950606 & Warm Gold #FFB800) ---
-$color-accent-red: #950606;
-$color-accent-red-hover: #7a0505;
-$color-accent-red-light: #fdf2f2;
-$color-accent-red-glow: rgba(149, 6, 6, 0.22);
+// --- 10% HIGH-ENERGY ACCENTS (Qatify Signature Orange #FF6D00 & Warm Gold #FFB800) ---
+$color-accent-red: #FF6D00;
+$color-accent-red-hover: #E65100;
+$color-accent-red-light: #fff4ec;
+$color-accent-red-glow: rgba(255, 109, 0, 0.22);
 
 // Backwards-compatible aliases
 $color-accent-orange: $color-accent-red;
@@ -51,7 +51,7 @@ $color-accent-orange-glow: $color-accent-red-glow;
 $color-accent-yellow: #ffb800;
 $color-accent-yellow-dark: #ffb800;
 $color-accent-yellow-tint: #fffbeb;
-$color-accent-yellow-bg: #fdf2f2;
+$color-accent-yellow-bg: #fff4ec;
 $color-accent-yellow-glow: rgba(255, 184, 0, 0.25);
 
 // Functional Status & Badge Colors (Zero Blue Policy - neutral zinc for info)

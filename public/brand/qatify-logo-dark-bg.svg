@@ -1,7 +1,7 @@
 <svg width="640" height="240" viewBox="0 0 640 240" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <filter id="glow" x="-10%" y="-10%" width="125%" height="125%">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#E06C2A" flood-opacity="0.3" />
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#FF6D00" flood-opacity="0.3" />
     </filter>
   </defs>
 
@@ -23,20 +23,20 @@
         fill="#FFFFFF" 
       />
       <!-- Rivets -->
-      <circle cx="60" cy="50" r="3.5" fill="#E06C2A" />
-      <circle cx="110" cy="50" r="3.5" fill="#E06C2A" />
+      <circle cx="60" cy="50" r="3.5" fill="#FF6D00" />
+      <circle cx="110" cy="50" r="3.5" fill="#FF6D00" />
 
       <!-- Q Monogram in Bag -->
       <g id="letter-Q">
-        <ellipse cx="85" cy="96" rx="24" ry="28" fill="#E06C2A" />
+        <ellipse cx="85" cy="96" rx="24" ry="28" fill="#FF6D00" />
         <ellipse cx="85" cy="95" rx="13" ry="16" fill="#FFFFFF" />
         <path 
           d="M 86 104 C 95 111, 106 119, 118 128 C 112 131, 103 133, 96 126 Z" 
-          fill="#E06C2A" 
+          fill="#FF6D00" 
         />
         <path 
           d="M 96 112 L 120 130 C 123 132, 121 136, 117 136 L 103 134 Z" 
-          fill="#E06C2A" 
+          fill="#FF6D00" 
         />
       </g>
     </g>
@@ -55,11 +55,11 @@
     <!-- Smiling Face Dot on 'i' in Signature Orange -->
     <g transform="translate(299, 58)">
       <circle cx="0" cy="0" r="13" fill="#FFFFFF" />
-      <circle cx="-4" cy="-2.5" r="1.8" fill="#E06C2A" />
-      <circle cx="4" cy="-2.5" r="1.8" fill="#E06C2A" />
+      <circle cx="-4" cy="-2.5" r="1.8" fill="#FF6D00" />
+      <circle cx="4" cy="-2.5" r="1.8" fill="#FF6D00" />
       <path 
         d="M -5 1.5 Q 0 7.5 5 1.5" 
-        stroke="#E06C2A" 
+        stroke="#FF6D00" 
         stroke-width="2.2" 
         stroke-linecap="round" 
         fill="none" 
@@ -79,7 +79,7 @@
         font-size="12" 
         font-weight="900" 
         letter-spacing="1.8" 
-        fill="#E06C2A" 
+        fill="#FF6D00" 
         text-anchor="middle"
       >SHOP MORE, PAY LESS</text>
       

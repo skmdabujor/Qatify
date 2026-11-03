@@ -99,7 +99,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             aria-label={isFavorited ? 'Remove from wishlist' : 'Add to wishlist'}
             title={isFavorited ? 'Remove from wishlist' : 'Save to wishlist'}
           >
-            <Heart size={15} fill={isFavorited ? '#950606' : 'none'} color={isFavorited ? '#950606' : 'currentColor'} />
+            <Heart size={15} fill={isFavorited ? '#FF6D00' : 'none'} color={isFavorited ? '#FF6D00' : 'currentColor'} />
           </button>
         </div>
       </div>

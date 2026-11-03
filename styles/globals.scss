@@ -75,6 +75,8 @@ main {
   min-width: 0;
   width: 100%;
   max-width: 100%;
+  position: relative;
+  z-index: 10;
 }
 
 h1,
@@ -182,9 +184,9 @@ ol {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: #fdf2f2;
-  color: #950606;
-  border: 1px solid #fecaca;
+  background: #fff4ec;
+  color: #FF6D00;
+  border: 1px solid #fed7aa;
   border-radius: 9999px;
   font-size: 11px;
   font-weight: 700;
@@ -194,7 +196,35 @@ ol {
   svg {
     width: 12px;
     height: 12px;
-    color: #950606;
+    color: #FF6D00;
   }
+}
+
+// Override Chrome/Edge/Safari/Firefox default autofill pale-blue background
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #111827 !important;
+  caret-color: #111827 !important;
+  transition: background-color 50000s ease-in-out 0s !important;
+}
+
+input:autofill,
+input:autofill:hover,
+input:autofill:focus {
+  background-color: #ffffff !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #111827 !important;
+  color: #111827 !important;
+  transition: background-color 50000s ease-in-out 0s !important;
 }
 

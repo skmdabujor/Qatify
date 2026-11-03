@@ -1,9 +1,9 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="iconOrangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#E86E2A" />
-      <stop offset="50%" stop-color="#E06C2A" />
-      <stop offset="100%" stop-color="#D65D1E" />
+      <stop offset="0%" stop-color="#FF7A1A" />
+      <stop offset="50%" stop-color="#FF6D00" />
+      <stop offset="100%" stop-color="#E65100" />
     </linearGradient>
   </defs>
 
@@ -26,21 +26,21 @@
       fill="#FFFFFF" 
     />
     <!-- Rivets / Grommets -->
-    <circle cx="132" cy="122" r="9" fill="#E06C2A" />
-    <circle cx="244" cy="122" r="9" fill="#E06C2A" />
+    <circle cx="132" cy="122" r="9" fill="#FF6D00" />
+    <circle cx="244" cy="122" r="9" fill="#FF6D00" />
 
     <!-- Q Monogram in Signature Orange -->
     <g id="icon-letter-Q">
-      <ellipse cx="188" cy="232" rx="60" ry="70" fill="#E06C2A" />
+      <ellipse cx="188" cy="232" rx="60" ry="70" fill="#FF6D00" />
       <ellipse cx="188" cy="230" rx="31" ry="40" fill="#FFFFFF" />
       <!-- Punchy Q Tail -->
       <path 
         d="M 190 252 C 215 268, 244 288, 272 310 C 258 318, 236 322, 218 306 Z" 
-        fill="#E06C2A" 
+        fill="#FF6D00" 
       />
       <path 
         d="M 214 272 L 276 314 C 282 319, 278 330, 268 330 L 232 325 Z" 
-        fill="#E06C2A" 
+        fill="#FF6D00" 
       />
     </g>
   </g>

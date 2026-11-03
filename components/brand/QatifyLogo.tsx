@@ -103,8 +103,8 @@ export const QatifyLogo: React.FC<QatifyLogoProps> = ({
     },
   }[size];
 
-  const brandOrange = '#E06C2A';
-  const textColor = variant === 'light' ? '#FFFFFF' : '#0A0A0C';
+  const brandOrange = '#FF6D00';
+  const textColor = variant === 'light' ? '#FFFFFF' : '#000032';
   const subtextColor = variant === 'light' ? '#A1A1AA' : '#71717A';
 
   // Shopping Bag SVG with tight bounding box (zero phantom side padding)
@@ -125,7 +125,7 @@ export const QatifyLogo: React.FC<QatifyLogoProps> = ({
       style={{
         flexShrink: 0,
         filter: isDarkVariant
-          ? 'drop-shadow(0 2px 5px rgba(224, 108, 42, 0.32))'
+          ? 'drop-shadow(0 2px 5px rgba(255, 109, 0, 0.32))'
           : 'drop-shadow(0 2px 5px rgba(0, 0, 0, 0.22))',
         display: 'block',
       }}
@@ -133,8 +133,8 @@ export const QatifyLogo: React.FC<QatifyLogoProps> = ({
     >
       <defs>
         <linearGradient id="qatifyBagGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#E86E2A" />
-          <stop offset="100%" stopColor="#D65D1E" />
+          <stop offset="0%" stopColor="#FF6D00" />
+          <stop offset="100%" stopColor="#E65100" />
         </linearGradient>
       </defs>
 
@@ -205,13 +205,13 @@ export const QatifyLogo: React.FC<QatifyLogoProps> = ({
         borderRadius: isBox ? '2px' : '9999px',
         background:
           variant === 'light'
-            ? 'linear-gradient(135deg, #E86E2A 0%, #D65D1E 100%)'
-            : 'linear-gradient(135deg, #E86E2A 0%, #D65D1E 100%)',
+            ? 'linear-gradient(135deg, #FF6D00 0%, #E65100 100%)'
+            : 'linear-gradient(135deg, #FF6D00 0%, #E65100 100%)',
         color: '#FFFFFF',
         boxShadow:
           variant === 'light'
-            ? '0 2px 7px rgba(224, 108, 42, 0.4)'
-            : '0 2px 5px rgba(224, 108, 42, 0.28)',
+            ? '0 2px 7px rgba(255, 109, 0, 0.4)'
+            : '0 2px 5px rgba(255, 109, 0, 0.28)',
         borderTop: '1px solid rgba(255, 255, 255, 0.28)',
         border: variant === 'light' ? '1px solid rgba(255, 255, 255, 0.2)' : undefined,
       };
@@ -224,13 +224,13 @@ export const QatifyLogo: React.FC<QatifyLogoProps> = ({
         borderRadius: '2px',
         background:
           variant === 'light'
-            ? 'rgba(224, 108, 42, 0.2)'
+            ? 'rgba(255, 109, 0, 0.2)'
             : 'linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%)',
-        color: variant === 'light' ? '#FDBA74' : '#E06C2A',
+        color: variant === 'light' ? '#FDBA74' : '#FF6D00',
         border:
           variant === 'light'
-            ? '1px solid rgba(224, 108, 42, 0.5)'
-            : '1px solid rgba(224, 108, 42, 0.3)',
+            ? '1px solid rgba(255, 109, 0, 0.5)'
+            : '1px solid rgba(255, 109, 0, 0.3)',
       };
     }
 
@@ -238,7 +238,7 @@ export const QatifyLogo: React.FC<QatifyLogoProps> = ({
     return {
       ...base,
       padding: '0 1px',
-      color: variant === 'light' ? '#FB923C' : '#E06C2A',
+      color: variant === 'light' ? '#FB923C' : '#FF6D00',
       letterSpacing: '0.22em',
     };
   };

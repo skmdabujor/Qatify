@@ -5,7 +5,9 @@
   padding: $space-4 0 $space-8 0;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  position: relative;
+  z-index: 20;
+  overflow: visible;
 
   @include mobile {
     padding: $space-3 0 $space-4 0;
@@ -234,6 +236,582 @@
   color: $color-text-secondary;
 }
 
+// =============================================================================
+// AliExpress Dropship Qatar Delivery Address Form Styling
+// =============================================================================
+.aliCardWrapper {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 30;
+  overflow: visible;
+}
+
+.aliModalCard {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 28px 32px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 30;
+  overflow: visible;
+
+  @include mobile {
+    padding: 18px 14px;
+    border-radius: 12px;
+  }
+}
+
+.aliModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.aliModalTitle {
+  font-size: 19px;
+  font-weight: 800;
+  color: #111827;
+  text-align: center;
+  letter-spacing: -0.2px;
+  margin: 0;
+}
+
+.aliAddressForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  overflow: visible;
+}
+
+.aliSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.aliSectionTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+// Country/region selector
+.aliCountrySelector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background-color: #ffffff;
+  cursor: pointer;
+  width: 100%;
+  max-width: 320px;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+  user-select: none;
+
+  &:hover {
+    border-color: #9ca3af;
+  }
+
+  &.dropdownActiveTrigger {
+    border-color: #FF6D00;
+    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+  }
+
+  @include mobile {
+    max-width: 100%;
+  }
+}
+
+.aliCountryInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.aliCountryCodeBadge {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #374151;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.aliCountryName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdownChevron {
+  color: #6b7280;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, color 0.15s ease;
+
+  &.chevronOpen {
+    transform: rotate(180deg);
+    color: #FF6D00;
+  }
+}
+
+// Custom Dropdown Floating Popover System
+.customSelectWrapper {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+
+  &.wrapperOpen {
+    z-index: 9999;
+  }
+}
+
+.customSelectTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0;
+  padding: 11px 14px;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+  user-select: none;
+
+  &:hover {
+    border-color: #9ca3af;
+  }
+
+  &.dropdownActiveTrigger {
+    border-color: #FF6D00;
+    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+  }
+}
+
+.selectValueText {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selectPlaceholderText {
+  font-size: 13.5px;
+  color: #9ca3af;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.customDropdownMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.18), 0 6px 16px -2px rgba(0, 0, 0, 0.1);
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 10000;
+  padding: 6px;
+  animation: dropdownFadeDown 0.18s ease-out;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+  }
+}
+
+@keyframes dropdownFadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.customDropdownItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: #374151;
+  transition: all 0.12s ease;
+  user-select: none;
+
+  &:hover {
+    background-color: #f9fafb;
+    color: #111827;
+  }
+
+  &.itemSelected {
+    background-color: rgba(255, 109, 0, 0.08);
+    color: #FF6D00;
+    font-weight: 600;
+  }
+}
+
+.itemLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.itemRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.itemTitle {
+  font-size: 13.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemPhoneCode {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.itemCheckIcon {
+  color: #FF6D00;
+  flex-shrink: 0;
+}
+
+.noItemsMsg {
+  padding: 12px;
+  font-size: 13px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.aliContactGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+// Contact information row: First name | Last name or Email | Phone
+.aliContactRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.aliInputCol {
+  width: 100%;
+  min-width: 0;
+}
+
+.aliTextInput {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 14px;
+  font-size: 14px;
+  color: #111827;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+
+  &::placeholder {
+    color: #9ca3af;
+    font-size: 13.5px;
+  }
+
+  &:focus {
+    border-color: #FF6D00;
+    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+  }
+
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: #111827 !important;
+    caret-color: #111827 !important;
+    transition: background-color 5000000s ease-in-out 0s !important;
+  }
+
+  &:autofill,
+  &:autofill:hover,
+  &:autofill:focus {
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: #111827 !important;
+    color: #111827 !important;
+    transition: background-color 5000000s ease-in-out 0s !important;
+  }
+}
+
+// Phone group with prefix
+.aliPhoneGroup {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background-color: #ffffff;
+  overflow: hidden;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  transition: all 0.15s ease;
+
+  &:focus-within {
+    border-color: #FF6D00;
+    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+  }
+}
+
+.aliPhonePrefix {
+  padding: 11px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  background-color: #f9fafb;
+  border-right: 1px solid #e5e7eb;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.aliPhoneInput {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 14px;
+  font-size: 14px;
+  color: #111827;
+  background-color: #ffffff;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: #9ca3af;
+    font-size: 13.5px;
+  }
+
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: #111827 !important;
+    caret-color: #111827 !important;
+    transition: background-color 5000000s ease-in-out 0s !important;
+  }
+
+  &:autofill,
+  &:autofill:hover,
+  &:autofill:focus {
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: #111827 !important;
+    color: #111827 !important;
+    transition: background-color 5000000s ease-in-out 0s !important;
+  }
+}
+
+// Address Rows
+.aliAddressRow1 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.aliAddressRow2 {
+  display: grid;
+  grid-template-columns: 1.15fr 1.15fr 0.9fr;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+
+  @include tablet {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.aliSelectWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.aliSelectInput {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 36px 11px 14px;
+  font-size: 14px;
+  color: #111827;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+
+  &:focus {
+    border-color: #FF6D00;
+    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+  }
+}
+
+.aliSelectChevron {
+  position: absolute;
+  right: 12px;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+// Checkbox: Set as default shipping address
+.aliCheckboxRow {
+  margin: 6px 0 10px;
+}
+
+.aliCheckLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.aliHiddenCheck {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.aliCustomBox {
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 5px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+
+  &.checked {
+    background-color: #FF6D00;
+    border-color: #FF6D00;
+  }
+}
+
+.aliCheckText {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+// Buttons Row
+.aliBtnRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.aliConfirmBtn {
+  background-color: #FF6D00;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 12px 42px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  box-shadow: 0 2px 10px rgba(255, 109, 0, 0.28);
+
+  &:hover {
+    background-color: #E65100;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
 // Saved Addresses Bar
 .savedAddressesBar {
   display: flex;
@@ -420,7 +998,7 @@
   padding: 13px 16px;
   font-size: 14px;
   gap: 8px;
-  box-shadow: 0 4px 12px rgba(149, 6, 6, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 109, 0, 0.3);
   white-space: normal;
   text-align: center;
   justify-content: center;
@@ -703,7 +1281,7 @@
   padding: 13px 14px;
   font-size: 14px;
   gap: 8px;
-  box-shadow: 0 4px 14px rgba(149, 6, 6, 0.4);
+  box-shadow: 0 4px 14px rgba(255, 109, 0, 0.4);
   white-space: normal;
   text-align: center;
   justify-content: center;

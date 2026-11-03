@@ -586,7 +586,7 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                 onClick={() => toggleWishlist(product)}
                 className={`${styles.auxBtn} ${isFavorited ? styles.activeWish : ''}`}
               >
-                <Heart size={16} fill={isFavorited ? '#950606' : 'none'} color={isFavorited ? '#950606' : 'currentColor'} />
+                <Heart size={16} fill={isFavorited ? '#FF6D00' : 'none'} color={isFavorited ? '#FF6D00' : 'currentColor'} />
                 <span>{isFavorited ? 'Saved in Wishlist' : 'Add to Wishlist'}</span>
               </button>
 
@@ -1030,7 +1030,7 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                       disabled={isSubmittingReview}
                       style={{
                         padding: '10px 20px',
-                        backgroundColor: '#950606',
+                        backgroundColor: '#FF6D00',
                         color: '#ffffff',
                         border: 'none',
                         borderRadius: '6px',

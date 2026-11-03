@@ -1,9 +1,9 @@
 <svg width="640" height="300" viewBox="0 0 640 300" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="qatifyOrangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#E86E2A" />
-      <stop offset="50%" stop-color="#E06C2A" />
-      <stop offset="100%" stop-color="#D65D1E" />
+      <stop offset="0%" stop-color="#FF7A1A" />
+      <stop offset="50%" stop-color="#FF6D00" />
+      <stop offset="100%" stop-color="#E65100" />
     </linearGradient>
     <filter id="cardShadow" x="-10%" y="-10%" width="125%" height="125%">
       <feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#000000" flood-opacity="0.14" />
@@ -32,23 +32,23 @@
         fill="#FFFFFF" 
       />
       <!-- Handle Rivets/Grommets -->
-      <circle cx="60" cy="54" r="3.5" fill="#E06C2A" />
-      <circle cx="110" cy="54" r="3.5" fill="#E06C2A" />
+      <circle cx="60" cy="54" r="3.5" fill="#FF6D00" />
+      <circle cx="110" cy="54" r="3.5" fill="#FF6D00" />
 
-      <!-- Q Monogram in Bag in Signature Orange #E06C2A -->
+      <!-- Q Monogram in Bag in Signature Orange #FF6D00 -->
       <g id="letter-Q">
         <!-- Q Outer Ring -->
-        <ellipse cx="85" cy="102" rx="25" ry="30" fill="#E06C2A" />
+        <ellipse cx="85" cy="102" rx="25" ry="30" fill="#FF6D00" />
         <!-- Q Inner Counter (White) -->
         <ellipse cx="85" cy="101" rx="13" ry="17" fill="#FFFFFF" />
         <!-- Dynamic Q Tail -->
         <path 
           d="M 86 110 C 96 117, 108 125, 120 134 C 114 137, 105 139, 97 132 Z" 
-          fill="#E06C2A" 
+          fill="#FF6D00" 
         />
         <path 
           d="M 96 118 L 122 136 C 125 138, 123 142, 119 142 L 104 140 Z" 
-          fill="#E06C2A" 
+          fill="#FF6D00" 
         />
       </g>
     </g>
@@ -69,12 +69,12 @@
       <!-- White Dot Base -->
       <circle cx="0" cy="0" r="13" fill="#FFFFFF" />
       <!-- Twin Cute Eyes -->
-      <circle cx="-4" cy="-2.5" r="1.8" fill="#E06C2A" />
-      <circle cx="4" cy="-2.5" r="1.8" fill="#E06C2A" />
+      <circle cx="-4" cy="-2.5" r="1.8" fill="#FF6D00" />
+      <circle cx="4" cy="-2.5" r="1.8" fill="#FF6D00" />
       <!-- Happy Smile Arc -->
       <path 
         d="M -5 1.5 Q 0 7.5 5 1.5" 
-        stroke="#E06C2A" 
+        stroke="#FF6D00" 
         stroke-width="2.2" 
         stroke-linecap="round" 
         fill="none" 
@@ -97,7 +97,7 @@
         font-size="12.5" 
         font-weight="900" 
         letter-spacing="2" 
-        fill="#E06C2A" 
+        fill="#FF6D00" 
         text-anchor="middle"
       >SHOP MORE, PAY LESS</text>
       

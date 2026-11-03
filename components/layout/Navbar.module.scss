@@ -59,9 +59,9 @@
 }
 
 .freeShippingBadge {
-  background: #fdf2f2;
-  color: #950606;
-  border: 1px solid #fecaca;
+  background: #fff4ec;
+  color: #FF6D00;
+  border: 1px solid #fed7aa;
   font-weight: 700;
   padding: 1px 7px;
   border-radius: $radius-full;
@@ -254,7 +254,7 @@
 
   &:focus-within {
     border-color: $color-accent-red;
-    box-shadow: 0 0 0 3px rgba(149, 6, 6, 0.15);
+    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
   }
 }
 
@@ -333,7 +333,7 @@
 
   &:focus-within {
     border-color: $color-accent-red;
-    box-shadow: 0 0 0 3px rgba(149, 6, 6, 0.15);
+    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
   }
 }
 
@@ -376,7 +376,7 @@
   }
 
   &.hasSelection {
-    background-color: #fdf2f2;
+    background-color: #fff4ec;
     color: $color-accent-red;
     font-weight: 700;
 
@@ -459,7 +459,7 @@
   font-size: 10.5px;
   font-weight: 700;
   color: $color-accent-red;
-  background-color: #fdf2f2;
+  background-color: #fff4ec;
   padding: 1px 7px;
   border-radius: $radius-full;
   font-family: $font-mono;
@@ -499,7 +499,7 @@
   }
 
   &.selected {
-    background-color: #fdf2f2;
+    background-color: #fff4ec;
     color: $color-accent-red;
 
     .catMenuItemName {
@@ -508,7 +508,7 @@
     }
 
     .catMenuIconWrap {
-      background-color: #fecaca;
+      background-color: #fed7aa;
       color: $color-accent-red;
     }
   }
@@ -877,7 +877,7 @@
   font-size: 10.5px;
   font-weight: 700;
   color: $color-accent-orange;
-  background-color: #fdf2f2;
+  background-color: #fff4ec;
   padding: 2px 7px;
   border-radius: $radius-full;
   flex-shrink: 0;
@@ -920,7 +920,7 @@
 
   &:hover {
     border-color: $color-accent-red;
-    background-color: #fdf2f2;
+    background-color: #fff4ec;
   }
 }
 
@@ -1038,7 +1038,7 @@
   font-size: 10.5px;
   font-weight: 600;
   color: $color-accent-orange;
-  background-color: #fdf2f2;
+  background-color: #fff4ec;
   padding: 1px 6px;
   border-radius: 4px;
 
@@ -1471,7 +1471,7 @@
   transition: background-color $transition-fast, color $transition-fast;
 
   &:hover {
-    background-color: #fdf2f2;
+    background-color: #fff4ec;
     color: $color-accent-red;
   }
 }
@@ -1929,7 +1929,7 @@
   color: $color-ink-black;
 
   &.redAccent {
-    background-color: #fdf2f2;
+    background-color: #fff4ec;
     color: $color-accent-red;
   }
 

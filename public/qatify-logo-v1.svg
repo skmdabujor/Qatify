@@ -2,7 +2,7 @@
   <defs>
     <linearGradient id="brandOrangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#E56926" />
-      <stop offset="60%" stop-color="#E06C2A" />
+      <stop offset="60%" stop-color="#FF6D00" />
       <stop offset="100%" stop-color="#D75C1C" />
     </linearGradient>
     <filter id="softShadow" x="-10%" y="-10%" width="125%" height="125%">
@@ -32,23 +32,23 @@
         fill="#FFFFFF" 
       />
       <!-- Grommets -->
-      <circle cx="64" cy="49" r="3" fill="#E06C2A" />
-      <circle cx="108" cy="49" r="3" fill="#E06C2A" />
+      <circle cx="64" cy="49" r="3" fill="#FF6D00" />
+      <circle cx="108" cy="49" r="3" fill="#FF6D00" />
 
       <!-- Bold 'Q' Monogram in Signature Orange -->
       <g id="bag-q">
         <!-- Q Outer Ring -->
-        <ellipse cx="86" cy="92" rx="23" ry="27" fill="#E06C2A" />
+        <ellipse cx="86" cy="92" rx="23" ry="27" fill="#FF6D00" />
         <!-- Q Inner Counter (White) -->
         <ellipse cx="86" cy="91" rx="12" ry="15" fill="#FFFFFF" />
         <!-- Dynamic Q Tail -->
         <path 
           d="M 87 99 C 96 105, 106 112, 116 120 C 111 123, 103 125, 96 119 Z" 
-          fill="#E06C2A" 
+          fill="#FF6D00" 
         />
         <path 
           d="M 95 106 L 118 122 C 120 124, 119 127, 115 127 L 102 125 Z" 
-          fill="#E06C2A" 
+          fill="#FF6D00" 
         />
       </g>
     </g>
@@ -67,11 +67,11 @@
     <!-- Smiling Face Dot on 'i' covering native dot -->
     <g transform="translate(277, 59)">
       <circle cx="0" cy="0" r="11" fill="#FFFFFF" />
-      <circle cx="-3.5" cy="-2" r="1.5" fill="#E06C2A" />
-      <circle cx="3.5" cy="-2" r="1.5" fill="#E06C2A" />
+      <circle cx="-3.5" cy="-2" r="1.5" fill="#FF6D00" />
+      <circle cx="3.5" cy="-2" r="1.5" fill="#FF6D00" />
       <path 
         d="M -4.5 1.5 Q 0 6 4.5 1.5" 
-        stroke="#E06C2A" 
+        stroke="#FF6D00" 
         stroke-width="1.8" 
         stroke-linecap="round" 
         fill="none" 
@@ -94,7 +94,7 @@
         font-size="11" 
         font-weight="900" 
         letter-spacing="1.5" 
-        fill="#E06C2A" 
+        fill="#FF6D00" 
         text-anchor="middle"
       >SHOP MORE, PAY LESS</text>
       

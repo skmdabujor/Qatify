@@ -70,8 +70,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #fdf2f2;
-  border: 1px solid rgba(149, 6, 6, 0.14);
+  background: #fff4ec;
+  border: 1px solid rgba(255, 109, 0, 0.14);
   padding: 5px 12px;
   border-radius: 30px;
 
@@ -102,11 +102,11 @@
   align-items: center;
   justify-content: center;
   background: #ffffff;
-  border: 1px solid rgba(149, 6, 6, 0.16);
+  border: 1px solid rgba(255, 109, 0, 0.16);
   border-radius: 5px;
   min-width: 32px;
   padding: 2px 4px;
-  box-shadow: 0 1px 3px rgba(149, 6, 6, 0.05);
+  box-shadow: 0 1px 3px rgba(255, 109, 0, 0.05);
 }
 
 .timerNumber {
@@ -305,12 +305,60 @@
 }
 
 // -----------------------------------------------------------------------------
-// 4. RIGHT PRODUCT CAROUSEL WRAPPER (2-Row Grid with Mouse Drag)
+// 4. RIGHT PRODUCT CAROUSEL WRAPPER (Independent Infinite Loop Rows)
 // -----------------------------------------------------------------------------
 .rightCarouselWrapper {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   position: relative;
+  justify-content: space-between;
+
+  @include mobile {
+    gap: 10px;
+  }
+}
+
+.sliderRow {
+  position: relative;
+  width: 100%;
+}
+
+.sliderViewport {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding: 4px 0 8px 0;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+
+  &.isDragging {
+    cursor: grabbing;
+
+    * {
+      cursor: grabbing !important;
+      user-select: none !important;
+    }
+  }
+
+  @include mobile {
+    cursor: default;
+  }
+}
+
+.sliderTrack {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  will-change: transform;
+
+  @include mobile {
+    gap: 10px;
+  }
 }
 
 .navBtn {
@@ -335,7 +383,7 @@
     background: $color-accent-red;
     border-color: $color-accent-red;
     color: #ffffff;
-    box-shadow: 0 6px 16px rgba(149, 6, 6, 0.25);
+    box-shadow: 0 6px 16px rgba(255, 109, 0, 0.25);
   }
 
   &:disabled {
@@ -356,52 +404,13 @@
   }
 }
 
-// 2-Row Grid Track (Native Mouse Drag Enabled)
-.gridTrack {
-  display: grid;
-  grid-template-rows: repeat(2, minmax(285px, 1fr));
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(200px, 215px);
-  gap: 14px;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
-  padding: 4px 2px 8px 2px;
-  -webkit-overflow-scrolling: touch;
-  cursor: grab;
-  user-select: none;
-  -webkit-user-select: none;
-
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  // Active Mouse Dragging State
-  &.isDragging {
-    cursor: grabbing !important;
-    scroll-behavior: auto !important;
-    scroll-snap-type: none !important;
-
-    * {
-      cursor: grabbing !important;
-      user-select: none !important;
-    }
-  }
-
-  @include mobile {
-    grid-template-rows: repeat(2, minmax(260px, 1fr));
-    grid-auto-columns: minmax(165px, 180px);
-    gap: 10px;
-    cursor: default;
-  }
-}
-
 // -----------------------------------------------------------------------------
 // 5. PRODUCT CARD (Entire Card is Clickable + Supports Mouse Drag)
 // -----------------------------------------------------------------------------
 .productCard {
-  scroll-snap-align: start;
+  flex: 0 0 215px;
+  width: 215px;
+  min-height: 285px;
   background: #ffffff;
   border: 1px solid #e4e4e7;
   border-radius: 14px;
@@ -420,7 +429,16 @@
     border-color: #d4d4d8;
   }
 
+  @include tablet {
+    flex: 0 0 190px;
+    width: 190px;
+    min-height: 275px;
+  }
+
   @include mobile {
+    flex: 0 0 170px;
+    width: 170px;
+    min-height: 260px;
     padding: 10px 12px;
     border-radius: 12px;
   }
@@ -498,7 +516,7 @@
 
 .brandBadge {
   display: inline-block;
-  background: #fdf2f2;
+  background: #fff4ec;
   color: $color-accent-red;
   font-size: 11px;
   font-weight: 600;
@@ -531,7 +549,7 @@
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 5px rgba(149, 6, 6, 0.2);
+  box-shadow: 0 2px 5px rgba(255, 109, 0, 0.2);
   z-index: 5;
 
   &:hover {

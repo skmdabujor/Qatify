@@ -76,16 +76,27 @@ export interface CartItem {
 
 export interface QatarAddress {
   id?: string;
-  fullName: string;
+  // AliExpress DropShipping Delivery Details for Qatar
+  country: string; // "Qatar"
+  firstName: string; // e.g. "Mohammed"
+  lastName: string; // e.g. "Al-Thani"
+  phoneCountryCode: string; // e.g. "974"
+  phoneNumber: string; // e.g. "44374646"
+  streetAddress: string; // e.g. "Street 230, Al Corniche Street"
+  apartmentSuite: string; // e.g. "Building 45, Apt 3B"
+  municipality: string; // e.g. "Al Daayen", "Doha"
+  zoneNumber: string; // e.g. "Zone 69"
+  postalCode: string; // e.g. "00974"
+  isDefault?: boolean;
+
+  // Compatibility / legacy fields
+  fullName?: string;
+  phone?: string;
   email?: string;
-  phone: string;
-  municipality: string;
-  zoneNumber: string;
-  streetNumber: string;
-  buildingNumber: string;
+  streetNumber?: string;
+  buildingNumber?: string;
   unitNumber?: string;
   landmark?: string;
-  isDefault?: boolean;
 }
 
 export interface ShippingMethod {

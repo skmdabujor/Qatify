@@ -98,8 +98,8 @@ function CheckoutSuccessContent() {
               <span className={styles.metaLabel}>Delivery Destination</span>
               <span className={styles.metaValue}>
                 {order?.address
-                  ? `${order.address.municipality}, ${order.address.zoneNumber}, Bldg ${order.address.buildingNumber}`
-                  : 'Qatar National Address'}
+                  ? `${order.address.streetAddress || order.address.streetNumber || ''}, ${order.address.apartmentSuite || order.address.buildingNumber || ''}, ${order.address.municipality}, ${order.address.zoneNumber}`
+                  : 'Qatar Delivery Address'}
               </span>
             </div>
 
@@ -140,9 +140,9 @@ function CheckoutSuccessContent() {
                 marginBottom: '20px',
                 padding: '18px 20px',
                 borderRadius: '12px',
-                background: 'linear-gradient(135deg, #fdf2f2 0%, #fecaca 100%)',
-                border: '2px dashed #950606',
-                boxShadow: '0 4px 16px rgba(149, 6, 6, 0.18)',
+                background: 'linear-gradient(135deg, #fff4ec 0%, #fed7aa 100%)',
+                border: '2px dashed #FF6D00',
+                boxShadow: '0 4px 16px rgba(255, 109, 0, 0.18)',
                 textAlign: 'center',
               }}
             >
@@ -185,7 +185,7 @@ function CheckoutSuccessContent() {
                     fontFamily: 'monospace',
                     fontSize: '18px',
                     fontWeight: 800,
-                    color: '#950606',
+                    color: '#FF6D00',
                     letterSpacing: '0.08em',
                   }}
                 >
@@ -201,7 +201,7 @@ function CheckoutSuccessContent() {
                     }
                   }}
                   style={{
-                    background: '#950606',
+                    background: '#FF6D00',
                     color: '#ffffff',
                     border: 'none',
                     borderRadius: '6px',

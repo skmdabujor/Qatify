@@ -29,9 +29,10 @@ export function formatOrderTelegramMessage(
     )
     .join("\n");
 
-  const addressLine = `${order.address.municipality}, Zone ${order.address.zoneNumber}, St ${order.address.streetNumber}, Bldg ${order.address.buildingNumber}${
-    order.address.unitNumber ? `, Unit ${order.address.unitNumber}` : ""
-  }`;
+  const street = order.address.streetAddress || order.address.streetNumber || "";
+  const apt = order.address.apartmentSuite || order.address.buildingNumber || "";
+  const postal = order.address.postalCode ? ` (${order.address.postalCode})` : "";
+  const addressLine = `${order.address.municipality}, ${order.address.zoneNumber}, ${street}, ${apt}${postal}`;
 
   return [
     `🛍️ <b>[NEW ORDER RECEIVED - QATIFY]</b>`,

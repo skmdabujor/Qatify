@@ -18,6 +18,7 @@ import {
   CheckCircle2,
   Lock,
   ChevronRight,
+  ChevronDown,
   ArrowRight,
   MapPin,
   Building,
@@ -26,9 +27,17 @@ import {
   Mail,
   Sparkles,
   MessageCircle,
+  Check,
 } from 'lucide-react';
 import { useShop } from '@/context/ShopContext';
-import { QATAR_MUNICIPALITIES, SHIPPING_METHODS } from '@/data/products';
+import {
+  QATAR_MUNICIPALITIES,
+  SHIPPING_METHODS,
+  SUPPORTED_COUNTRIES,
+  ALIEXPRESS_QATAR_MUNICIPALITIES,
+  ALIEXPRESS_MUNICIPALITY_ZONES,
+  ALL_QATAR_ZONES,
+} from '@/data/products';
 import { QatarAddress, ShippingMethod, Order } from '@/types/product';
 import {
   ApplePayIcon,
@@ -37,6 +46,7 @@ import {
   AmexIcon,
   CashOnDeliveryIcon,
 } from '@/components/ui/PaymentIcons';
+import { CountryFlag } from '@/components/ui/CountryFlags';
 import styles from './page.module.scss';
 
 // Feature Flag: Cash on Delivery status (Set to true to re-enable COD on checkout)
@@ -70,33 +80,70 @@ function CheckoutContent() {
   const createPolarCheckout = useAction(api.polar.createCheckoutSession);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Steps state: 1 = Address, 2 = Shipping, 3 = Payment
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
+  // Steps state: 1 = Address, 2 = Payment
+  const [currentStep, setCurrentStep] = useState<1 | 2>(1);
 
-  // Address State (Qatar National Address format)
-  const defaultAddr = savedAddresses[0] || {
-    fullName: 'Tariq Al-Mansoor',
-    email: 'customer@qatify.qa',
-    phone: '+974 5512 8894',
-    municipality: 'Lusail City (مدينة لوسيل)',
-    zoneNumber: 'Zone 69',
-    streetNumber: 'Street 312',
-    buildingNumber: 'Building 18',
-    unitNumber: 'Apt 402',
-    landmark: 'Fox Hills North, Near Crescent Park',
-  };
-
+  // Address State: Empty by default so all inputs show clean placeholder text
   const [address, setAddress] = useState<QatarAddress>({
-    fullName: defaultAddr.fullName,
-    email: defaultAddr.email || '',
-    phone: defaultAddr.phone,
-    municipality: defaultAddr.municipality,
-    zoneNumber: defaultAddr.zoneNumber,
-    streetNumber: defaultAddr.streetNumber,
-    buildingNumber: defaultAddr.buildingNumber,
-    unitNumber: defaultAddr.unitNumber || '',
-    landmark: defaultAddr.landmark || '',
+    country: 'Qatar',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phoneCountryCode: '974',
+    phoneNumber: '',
+    streetAddress: '',
+    apartmentSuite: '',
+    municipality: '',
+    zoneNumber: '',
+    postalCode: '',
+    isDefault: true,
+    fullName: '',
+    phone: '',
   });
+
+  const currentCountryConfig =
+    SUPPORTED_COUNTRIES.find((c) => c.name === address.country) ||
+    SUPPORTED_COUNTRIES.find((c) => c.code === address.country) ||
+    SUPPORTED_COUNTRIES[0];
+
+  // Custom Dropdown Open States & Refs for Outside Click
+  const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
+  const [municipalityDropdownOpen, setMunicipalityDropdownOpen] = useState(false);
+  const [zoneDropdownOpen, setZoneDropdownOpen] = useState(false);
+
+  const countrySelectRef = React.useRef<HTMLDivElement>(null);
+  const municipalitySelectRef = React.useRef<HTMLDivElement>(null);
+  const zoneSelectRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (countrySelectRef.current && !countrySelectRef.current.contains(target)) {
+        setCountryDropdownOpen(false);
+      }
+      if (municipalitySelectRef.current && !municipalitySelectRef.current.contains(target)) {
+        setMunicipalityDropdownOpen(false);
+      }
+      if (zoneSelectRef.current && !zoneSelectRef.current.contains(target)) {
+        setZoneDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleCountryChange = (countryName: string) => {
+    const found = SUPPORTED_COUNTRIES.find((c) => c.name === countryName) || SUPPORTED_COUNTRIES[0];
+
+    setAddress((prev) => ({
+      ...prev,
+      country: found.name,
+      phoneCountryCode: found.phoneCode,
+      postalCode: '', // Postal code stays empty so user types their own!
+      municipality: '',
+      zoneNumber: '',
+    }));
+  };
 
   const [saveAddressForFuture, setSaveAddressForFuture] = useState(true);
 
@@ -131,20 +178,38 @@ function CheckoutContent() {
   // Handle address submit -> move to step 2
   const handleAddressSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!address.fullName || !address.phone || !address.zoneNumber || !address.streetNumber || !address.buildingNumber) {
-      showToast('Incomplete Address', 'Please fill in all Qatar National Address fields.', 'warning');
+    if (
+      !address.firstName?.trim() ||
+      !address.lastName?.trim() ||
+      !address.phoneNumber?.trim() ||
+      !address.streetAddress?.trim() ||
+      !address.municipality?.trim() ||
+      !address.zoneNumber?.trim()
+    ) {
+      showToast('Incomplete Address', 'Please fill in Name, Phone, Street, City & Zone.', 'warning');
       return;
     }
-    if (saveAddressForFuture) {
-      addAddress(address);
+    if (!address.email?.trim() || !address.email.includes('@') || !address.email.includes('.')) {
+      showToast('Valid Email Required', 'Please enter a valid email address for order notifications.', 'warning');
+      return;
     }
+    const resolvedFullName = `${address.firstName.trim()} ${address.lastName.trim()}`;
+    const resolvedPhone = `+${(address.phoneCountryCode || currentCountryConfig.phoneCode).trim()} ${address.phoneNumber.trim()}`;
+    const updatedAddress: QatarAddress = {
+      ...address,
+      country: address.country || currentCountryConfig.name,
+      fullName: resolvedFullName,
+      phone: resolvedPhone,
+      streetNumber: address.streetAddress,
+      buildingNumber: address.apartmentSuite || '',
+      postalCode: address.postalCode?.trim() || currentCountryConfig.defaultPostalCode,
+      isDefault: saveAddressForFuture,
+    };
+    if (saveAddressForFuture) {
+      addAddress(updatedAddress);
+    }
+    setAddress(updatedAddress);
     setCurrentStep(2);
-  };
-
-  // Handle shipping submit -> move to step 3
-  const handleShippingSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setCurrentStep(3);
   };
 
   // Handle final order placement
@@ -176,17 +241,29 @@ function CheckoutContent() {
       }));
 
       // 1. Create persistent order in Convex database
+      const resolvedFullName = `${address.firstName || ''} ${address.lastName || ''}`.trim() || address.fullName || 'Customer';
+      const resolvedPhone = `+${(address.phoneCountryCode || currentCountryConfig.phoneCode).trim()} ${(address.phoneNumber || '').trim()}`.trim() || address.phone || '+974 44374646';
+
       const orderResult = await createConvexOrder({
         items: itemsPayload,
         couponCode: (!isBundleCheckout && appliedCoupon) ? appliedCoupon : undefined,
         address: {
-          fullName: address.fullName,
-          phone: address.phone,
-          email: address.email || undefined,
+          country: address.country || currentCountryConfig.name,
+          firstName: address.firstName,
+          lastName: address.lastName,
+          phoneCountryCode: address.phoneCountryCode || currentCountryConfig.phoneCode,
+          phoneNumber: address.phoneNumber,
+          streetAddress: address.streetAddress,
+          apartmentSuite: address.apartmentSuite,
           municipality: address.municipality,
           zoneNumber: address.zoneNumber,
-          streetNumber: address.streetNumber,
-          buildingNumber: address.buildingNumber,
+          postalCode: address.postalCode || currentCountryConfig.defaultPostalCode,
+          isDefault: saveAddressForFuture,
+          fullName: resolvedFullName,
+          phone: resolvedPhone,
+          email: address.email?.trim() || undefined,
+          streetNumber: address.streetAddress || address.streetNumber,
+          buildingNumber: address.apartmentSuite || address.buildingNumber,
           unitNumber: address.unitNumber || undefined,
           landmark: address.landmark || undefined,
         },
@@ -275,7 +352,7 @@ function CheckoutContent() {
               <div className={styles.metaRow}>
                 <span className={styles.metaLabel}>Delivery Destination</span>
                 <span className={styles.metaValue}>
-                  {confirmedOrder.address.municipality}, {confirmedOrder.address.zoneNumber}, {confirmedOrder.address.buildingNumber}
+                  {confirmedOrder.address.streetAddress || confirmedOrder.address.streetNumber}, {confirmedOrder.address.apartmentSuite || confirmedOrder.address.buildingNumber}, {confirmedOrder.address.municipality}, {confirmedOrder.address.zoneNumber}
                 </span>
               </div>
               <div className={styles.metaRow}>
@@ -321,7 +398,7 @@ function CheckoutContent() {
           </span>
         </nav>
 
-        {/* 3-Step Visual Progress Bar */}
+        {/* 2-Step Visual Progress Bar */}
         <div className={styles.stepsProgressBar}>
           <button
             type="button"
@@ -337,22 +414,8 @@ function CheckoutContent() {
 
           <div className={`${styles.stepConnector} ${currentStep >= 2 ? styles.active : ''}`} />
 
-          <button
-            type="button"
-            onClick={() => currentStep > 2 && setCurrentStep(2)}
-            className={`${styles.stepIndicator} ${currentStep >= 2 ? styles.active : ''}`}
-          >
+          <div className={`${styles.stepIndicator} ${currentStep === 2 ? styles.active : ''}`}>
             <div className={styles.stepNum}>2</div>
-            <div className={styles.stepLabelCol}>
-              <span className={styles.stepTitle}>Air Freight</span>
-              <span className={styles.stepDesc}>6–10 Days Tracked</span>
-            </div>
-          </button>
-
-          <div className={`${styles.stepConnector} ${currentStep >= 3 ? styles.active : ''}`} />
-
-          <div className={`${styles.stepIndicator} ${currentStep === 3 ? styles.active : ''}`}>
-            <div className={styles.stepNum}>3</div>
             <div className={styles.stepLabelCol}>
               <span className={styles.stepTitle}>Payment</span>
               <span className={styles.stepDesc}>
@@ -367,20 +430,10 @@ function CheckoutContent() {
           {/* Form Column */}
           <div className={styles.formColumn}>
             {/* ===============================================================
-                STEP 1: QATAR NATIONAL ADDRESS FORM
+                STEP 1: ALIEXPRESS QATAR DROPSHIP SHIPPING DETAILS
             ================================================================ */}
             {currentStep === 1 && (
-              <form onSubmit={handleAddressSubmit} className={styles.stepFormCard}>
-                <div className={styles.formCardHeader}>
-                  <MapPin size={20} className={styles.headerIconRed} />
-                  <div>
-                    <h2 className={styles.formCardTitle}>1. Qatar Delivery Address</h2>
-                    <p className={styles.formCardSub}>
-                      Follows standard Qatar National Address format for accurate doorstep delivery.
-                    </p>
-                  </div>
-                </div>
-
+              <div className={styles.aliCardWrapper}>
                 {/* Quick saved addresses selection pills */}
                 {savedAddresses.length > 0 && (
                   <div className={styles.savedAddressesBar}>
@@ -389,254 +442,336 @@ function CheckoutContent() {
                       <button
                         key={idx}
                         type="button"
-                        onClick={() => setAddress(addr)}
+                        onClick={() => {
+                          setAddress({
+                            country: addr.country || 'Qatar',
+                            firstName: addr.firstName || '',
+                            lastName: addr.lastName || '',
+                            email: addr.email || '',
+                            phoneCountryCode: addr.phoneCountryCode || '974',
+                            phoneNumber: addr.phoneNumber || '',
+                            streetAddress: addr.streetAddress || addr.streetNumber || '',
+                            apartmentSuite: addr.apartmentSuite || addr.buildingNumber || '',
+                            municipality: addr.municipality || '',
+                            zoneNumber: addr.zoneNumber || '',
+                            postalCode: addr.postalCode || '',
+                            isDefault: addr.isDefault ?? true,
+                            fullName: addr.fullName || '',
+                            phone: addr.phone || '',
+                          });
+                        }}
                         className={styles.savedAddrPill}
                       >
-                        {addr.municipality.split(' ')[0]} - {addr.zoneNumber}
+                        {addr.firstName || addr.fullName?.split(' ')[0] || 'Address'} • {addr.municipality} ({addr.zoneNumber})
                       </button>
                     ))}
                   </div>
                 )}
 
-                <div className={styles.formGrid}>
-                  {/* Full Name */}
-                  <div className={styles.formGroup}>
-                    <label className={styles.fieldLabel}>
-                      Full Name <span className={styles.req}>*</span>
-                    </label>
-                    <div className={styles.inputWithIcon}>
-                      <User size={15} className={styles.fieldIcon} />
-                      <input
-                        type="text"
-                        required
-                        value={address.fullName}
-                        onChange={(e) => setAddress({ ...address, fullName: e.target.value })}
-                        placeholder="e.g. Tariq Al-Mansoor"
-                        className={styles.textInput}
-                      />
-                    </div>
+                <div className={styles.aliModalCard}>
+                  <div className={styles.aliModalHeader}>
+                    <h2 className={styles.aliModalTitle}>Add new address</h2>
                   </div>
 
-                  {/* Phone with +974 prefix */}
-                  <div className={styles.formGroup}>
-                    <label className={styles.fieldLabel}>
-                      Qatar Mobile Number <span className={styles.req}>*</span>
-                    </label>
-                    <div className={styles.inputWithIcon}>
-                      <Phone size={15} className={styles.fieldIcon} />
-                      <input
-                        type="tel"
-                        required
-                        value={address.phone}
-                        onChange={(e) => setAddress({ ...address, phone: e.target.value })}
-                        placeholder="+974 5512 8894"
-                        className={styles.textInput}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Customer Email Address for Order Confirmation */}
-                  <div className={styles.formGroup}>
-                    <label className={styles.fieldLabel}>
-                      Email Address (for Air Tracking & Receipt) <span className={styles.req}>*</span>
-                    </label>
-                    <div className={styles.inputWithIcon}>
-                      <Mail size={15} className={styles.fieldIcon} />
-                      <input
-                        type="email"
-                        required
-                        value={address.email || ''}
-                        onChange={(e) => setAddress({ ...address, email: e.target.value })}
-                        placeholder="e.g. tariq@example.com"
-                        className={styles.textInput}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Municipality Selection */}
-                  <div className={styles.formGroupFull}>
-                    <label className={styles.fieldLabel}>
-                      Municipality (البلدية) <span className={styles.req}>*</span>
-                    </label>
-                    <select
-                      value={address.municipality}
-                      onChange={(e) => setAddress({ ...address, municipality: e.target.value })}
-                      className={styles.selectInput}
-                    >
-                      {QATAR_MUNICIPALITIES.map((mun) => (
-                        <option key={mun.code} value={mun.name}>
-                          {mun.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Qatar National Address: Zone, Street, Building */}
-                  <div className={styles.formGroup}>
-                    <label className={styles.fieldLabel}>
-                      Zone Number (رقم المنطقة) <span className={styles.req}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={address.zoneNumber}
-                      onChange={(e) => setAddress({ ...address, zoneNumber: e.target.value })}
-                      placeholder="e.g. Zone 69 or Zone 24"
-                      className={styles.textInput}
-                    />
-                  </div>
-
-                  <div className={styles.formGroup}>
-                    <label className={styles.fieldLabel}>
-                      Street Number (رقم الشارع) <span className={styles.req}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={address.streetNumber}
-                      onChange={(e) => setAddress({ ...address, streetNumber: e.target.value })}
-                      placeholder="e.g. Street 312"
-                      className={styles.textInput}
-                    />
-                  </div>
-
-                  <div className={styles.formGroup}>
-                    <label className={styles.fieldLabel}>
-                      Building Number (رقم المبنى) <span className={styles.req}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={address.buildingNumber}
-                      onChange={(e) => setAddress({ ...address, buildingNumber: e.target.value })}
-                      placeholder="e.g. Building 18"
-                      className={styles.textInput}
-                    />
-                  </div>
-
-                  <div className={styles.formGroup}>
-                    <label className={styles.fieldLabel}>Unit / Apartment No.</label>
-                    <input
-                      type="text"
-                      value={address.unitNumber}
-                      onChange={(e) => setAddress({ ...address, unitNumber: e.target.value })}
-                      placeholder="e.g. Apt 402"
-                      className={styles.textInput}
-                    />
-                  </div>
-
-                  <div className={styles.formGroupFull}>
-                    <label className={styles.fieldLabel}>Nearby Landmark / Area Details</label>
-                    <input
-                      type="text"
-                      value={address.landmark}
-                      onChange={(e) => setAddress({ ...address, landmark: e.target.value })}
-                      placeholder="e.g. Fox Hills North, Near Crescent Park / Al Meera"
-                      className={styles.textInput}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.checkboxRow}>
-                  <label className={styles.checkLabel}>
-                    <input
-                      type="checkbox"
-                      checked={saveAddressForFuture}
-                      onChange={(e) => setSaveAddressForFuture(e.target.checked)}
-                      className={styles.customCheck}
-                    />
-                    <span>Save this address for future 1-click orders in Qatar</span>
-                  </label>
-                </div>
-
-                <button type="submit" className={styles.continueStepBtn}>
-                  <span>Continue to Air Shipping Options</span>
-                  <ArrowRight size={16} />
-                </button>
-              </form>
-            )}
-
-            {/* ===============================================================
-                STEP 2: AIR SHIPPING OPTIONS
-            ================================================================ */}
-            {currentStep === 2 && (
-              <form onSubmit={handleShippingSubmit} className={styles.stepFormCard}>
-                <div className={styles.formCardHeader}>
-                  <Plane size={20} className={styles.headerIconRed} />
-                  <div>
-                    <h2 className={styles.formCardTitle}>2. Choose Qatar Delivery Method</h2>
-                    <p className={styles.formCardSub}>
-                      Fast express courier delivery across Doha, Lusail, Al Rayyan, and all Qatar municipalities.
-                    </p>
-                  </div>
-                </div>
-
-                <div className={styles.shippingOptionsList}>
-                  {SHIPPING_METHODS.map((method) => {
-                    const isSelected = selectedShipping.id === method.id;
-                    const priceDisplay = `QAR ${method.priceQAR}`;
-
-                    return (
+                  <form onSubmit={handleAddressSubmit} className={styles.aliAddressForm}>
+                    {/* 1. Country/region */}
+                    <div className={styles.aliSection}>
+                      <label className={styles.aliSectionTitle}>Country/region</label>
                       <div
-                        key={method.id}
-                        onClick={() => setSelectedShipping(method)}
-                        className={`${styles.shippingMethodCard} ${
-                          isSelected ? styles.selectedMethod : ''
-                        }`}
+                        ref={countrySelectRef}
+                        className={`${styles.customSelectWrapper} ${countryDropdownOpen ? styles.wrapperOpen : ''}`}
+                        style={{ maxWidth: '320px' }}
                       >
-                        <div className={styles.methodRadioCol}>
-                          <input
-                            type="radio"
-                            name="shippingMethod"
-                            checked={isSelected}
-                            onChange={() => setSelectedShipping(method)}
+                        <div
+                          className={`${styles.aliCountrySelector} ${countryDropdownOpen ? styles.dropdownActiveTrigger : ''}`}
+                          onClick={() => {
+                            setCountryDropdownOpen(!countryDropdownOpen);
+                            setMunicipalityDropdownOpen(false);
+                            setZoneDropdownOpen(false);
+                          }}
+                        >
+                          <div className={styles.aliCountryInfo}>
+                            <CountryFlag code={currentCountryConfig.code} size={22} />
+                            <span className={styles.aliCountryCodeBadge}>{currentCountryConfig.code}</span>
+                            <span className={styles.aliCountryName}>{currentCountryConfig.name}</span>
+                          </div>
+                          <ChevronDown
+                            size={18}
+                            className={`${styles.dropdownChevron} ${countryDropdownOpen ? styles.chevronOpen : ''}`}
                           />
                         </div>
 
-                        <div className={styles.methodInfoCol}>
-                          <div className={styles.methodTop}>
-                            <strong className={styles.methodName}>{method.name}</strong>
-                            <span className={styles.methodBadge}>{method.badge}</span>
+                        {countryDropdownOpen && (
+                          <div className={styles.customDropdownMenu}>
+                            {SUPPORTED_COUNTRIES.map((c) => {
+                              const isSelected = currentCountryConfig.code === c.code;
+                              return (
+                                <div
+                                  key={c.code}
+                                  className={`${styles.customDropdownItem} ${isSelected ? styles.itemSelected : ''}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleCountryChange(c.name);
+                                    setCountryDropdownOpen(false);
+                                  }}
+                                >
+                                  <div className={styles.itemLeft}>
+                                    <CountryFlag code={c.code} size={20} />
+                                    <span className={styles.aliCountryCodeBadge}>{c.code}</span>
+                                    <span className={styles.itemTitle}>{c.name}</span>
+                                  </div>
+                                  <div className={styles.itemRight}>
+                                    <span className={styles.itemPhoneCode}>+{c.phoneCode}</span>
+                                    {isSelected && <Check size={16} className={styles.itemCheckIcon} />}
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
-                          <p className={styles.methodDesc}>{method.description}</p>
-                          <span className={styles.methodDuration}>
-                            ⏱️ Estimated Delivery: <strong>{method.duration}</strong>
-                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 2. Contact information */}
+                    <div className={styles.aliSection}>
+                      <label className={styles.aliSectionTitle}>Contact information</label>
+                      <div className={styles.aliContactGrid}>
+                        {/* Row 1: First name & Last name */}
+                        <div className={styles.aliContactRow}>
+                          <div className={styles.aliInputCol}>
+                            <input
+                              type="text"
+                              required
+                              value={address.firstName}
+                              onChange={(e) => setAddress({ ...address, firstName: e.target.value })}
+                              placeholder="First name"
+                              className={styles.aliTextInput}
+                            />
+                          </div>
+                          <div className={styles.aliInputCol}>
+                            <input
+                              type="text"
+                              required
+                              value={address.lastName}
+                              onChange={(e) => setAddress({ ...address, lastName: e.target.value })}
+                              placeholder="Last name"
+                              className={styles.aliTextInput}
+                            />
+                          </div>
                         </div>
 
-                        <div className={styles.methodPriceCol}>
-                          <span className={styles.methodPriceText}>{priceDisplay}</span>
+                        {/* Row 2: Email address & Mobile phone number */}
+                        <div className={styles.aliContactRow}>
+                          <div className={styles.aliInputCol}>
+                            <input
+                              type="email"
+                              required
+                              value={address.email || ''}
+                              onChange={(e) => setAddress({ ...address, email: e.target.value })}
+                              placeholder="Email address"
+                              className={styles.aliTextInput}
+                            />
+                          </div>
+                          <div className={styles.aliPhoneGroup}>
+                            <div className={styles.aliPhonePrefix}>{currentCountryConfig.phoneCode}</div>
+                            <input
+                              type="tel"
+                              required
+                              value={address.phoneNumber}
+                              onChange={(e) => {
+                                const val = e.target.value.replace(/[^0-9]/g, '');
+                                setAddress({ ...address, phoneNumber: val });
+                              }}
+                              placeholder="Mobile phone number"
+                              className={styles.aliPhoneInput}
+                            />
+                          </div>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
 
-                <div className={styles.stepButtonRow}>
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(1)}
-                    className={styles.backStepBtn}
-                  >
-                    ← Edit Address
-                  </button>
-                  <button type="submit" className={styles.continueStepBtn}>
-                    <span>Proceed to Payment</span>
-                    <ArrowRight size={16} />
-                  </button>
+                    {/* 3. Address */}
+                    <div className={styles.aliSection}>
+                      <label className={styles.aliSectionTitle}>Address</label>
+
+                      {/* Row 1: Street address & Apt/Suite/Building */}
+                      <div className={styles.aliAddressRow1}>
+                        <input
+                          type="text"
+                          required
+                          value={address.streetAddress}
+                          onChange={(e) => setAddress({ ...address, streetAddress: e.target.value })}
+                          placeholder="Street address, road or house number"
+                          className={styles.aliTextInput}
+                        />
+                        <input
+                          type="text"
+                          value={address.apartmentSuite || ''}
+                          onChange={(e) => setAddress({ ...address, apartmentSuite: e.target.value })}
+                          placeholder="Building, Apt, Suite, Unit (Optional)"
+                          className={styles.aliTextInput}
+                        />
+                      </div>
+
+                      {/* Row 2: Municipality/Province, Zone/District, Postal code */}
+                      <div className={styles.aliAddressRow2}>
+                        {/* Custom Municipality Dropdown */}
+                        <div
+                          ref={municipalitySelectRef}
+                          className={`${styles.customSelectWrapper} ${municipalityDropdownOpen ? styles.wrapperOpen : ''}`}
+                        >
+                          <div
+                            className={`${styles.customSelectTrigger} ${municipalityDropdownOpen ? styles.dropdownActiveTrigger : ''}`}
+                            onClick={() => {
+                              setMunicipalityDropdownOpen(!municipalityDropdownOpen);
+                              setCountryDropdownOpen(false);
+                              setZoneDropdownOpen(false);
+                            }}
+                          >
+                            <span className={address.municipality ? styles.selectValueText : styles.selectPlaceholderText}>
+                              {address.municipality ||
+                                (currentCountryConfig.code === 'QA'
+                                  ? 'Select Municipality'
+                                  : currentCountryConfig.code === 'SA'
+                                    ? 'Select Province / City'
+                                    : 'Select Emirate / City')}
+                            </span>
+                            <ChevronDown
+                              size={16}
+                              className={`${styles.dropdownChevron} ${municipalityDropdownOpen ? styles.chevronOpen : ''}`}
+                            />
+                          </div>
+
+                          {municipalityDropdownOpen && (
+                            <div className={styles.customDropdownMenu}>
+                              {currentCountryConfig.provinces.map((prov) => {
+                                const isSelected = address.municipality === prov;
+                                return (
+                                  <div
+                                    key={prov}
+                                    className={`${styles.customDropdownItem} ${isSelected ? styles.itemSelected : ''}`}
+                                    onClick={() => {
+                                      setAddress({ ...address, municipality: prov, zoneNumber: '' });
+                                      setMunicipalityDropdownOpen(false);
+                                    }}
+                                  >
+                                    <span className={styles.itemTitle}>{prov}</span>
+                                    {isSelected && <Check size={15} className={styles.itemCheckIcon} />}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Custom Zone Dropdown */}
+                        <div
+                          ref={zoneSelectRef}
+                          className={`${styles.customSelectWrapper} ${zoneDropdownOpen ? styles.wrapperOpen : ''}`}
+                        >
+                          <div
+                            className={`${styles.customSelectTrigger} ${zoneDropdownOpen ? styles.dropdownActiveTrigger : ''}`}
+                            onClick={() => {
+                              if (!address.municipality) {
+                                showToast(
+                                  'Select City First',
+                                  'Please choose a municipality or city first to view its zones.',
+                                  'info'
+                                );
+                                return;
+                              }
+                              setZoneDropdownOpen(!zoneDropdownOpen);
+                              setCountryDropdownOpen(false);
+                              setMunicipalityDropdownOpen(false);
+                            }}
+                          >
+                            <span className={address.zoneNumber ? styles.selectValueText : styles.selectPlaceholderText}>
+                              {address.zoneNumber ||
+                                (currentCountryConfig.code === 'QA'
+                                  ? 'Select Zone'
+                                  : currentCountryConfig.code === 'SA'
+                                    ? 'Select District'
+                                    : 'Select Area / Zone')}
+                            </span>
+                            <ChevronDown
+                              size={16}
+                              className={`${styles.dropdownChevron} ${zoneDropdownOpen ? styles.chevronOpen : ''}`}
+                            />
+                          </div>
+
+                          {zoneDropdownOpen && (
+                            <div className={styles.customDropdownMenu}>
+                              {(currentCountryConfig.zones[address.municipality] || []).length > 0 ? (
+                                (currentCountryConfig.zones[address.municipality] || []).map((z) => {
+                                  const isSelected = address.zoneNumber === z;
+                                  return (
+                                    <div
+                                      key={z}
+                                      className={`${styles.customDropdownItem} ${isSelected ? styles.itemSelected : ''}`}
+                                      onClick={() => {
+                                        setAddress({ ...address, zoneNumber: z });
+                                        setZoneDropdownOpen(false);
+                                      }}
+                                    >
+                                      <span className={styles.itemTitle}>{z}</span>
+                                      {isSelected && <Check size={15} className={styles.itemCheckIcon} />}
+                                    </div>
+                                  );
+                                })
+                              ) : (
+                                <div className={styles.noItemsMsg}>No zones available for this city</div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* ZIP / Postal code (Starts empty, placeholder shows clean text) */}
+                        <input
+                          type="text"
+                          value={address.postalCode || ''}
+                          onChange={(e) => setAddress({ ...address, postalCode: e.target.value })}
+                          placeholder="ZIP / Postal code"
+                          className={styles.aliTextInput}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Checkbox: Set as default shipping address */}
+                    <div className={styles.aliCheckboxRow}>
+                      <label className={styles.aliCheckLabel}>
+                        <input
+                          type="checkbox"
+                          checked={saveAddressForFuture}
+                          onChange={(e) => setSaveAddressForFuture(e.target.checked)}
+                          className={styles.aliHiddenCheck}
+                        />
+                        <span className={`${styles.aliCustomBox} ${saveAddressForFuture ? styles.checked : ''}`}>
+                          {saveAddressForFuture && <Check size={13} strokeWidth={3} color="#ffffff" />}
+                        </span>
+                        <span className={styles.aliCheckText}>Set as default shipping address</span>
+                      </label>
+                    </div>
+
+                    {/* Button: Confirm */}
+                    <div className={styles.aliBtnRow}>
+                      <button type="submit" className={styles.aliConfirmBtn}>
+                        Confirm
+                      </button>
+                    </div>
+                  </form>
                 </div>
-              </form>
+              </div>
             )}
 
             {/* ===============================================================
-                STEP 3: PAYMENT METHOD SELECTOR UI
+                STEP 2: PAYMENT METHOD SELECTOR UI
             ================================================================ */}
-            {currentStep === 3 && (
+            {currentStep === 2 && (
               <div className={styles.stepFormCard}>
                 <div className={styles.formCardHeader}>
                   <Lock size={20} className={styles.headerIconRed} />
                   <div>
-                    <h2 className={styles.formCardTitle}>3. Select Secure Payment Method</h2>
+                    <h2 className={styles.formCardTitle}>2. Select Secure Payment Method</h2>
                     <p className={styles.formCardSub}>
                       All transactions are 256-bit encrypted and processed in Qatari Riyal (QAR).
                     </p>
@@ -768,10 +903,10 @@ function CheckoutContent() {
                 <div className={styles.stepButtonRow}>
                   <button
                     type="button"
-                    onClick={() => setCurrentStep(2)}
+                    onClick={() => setCurrentStep(1)}
                     className={styles.backStepBtn}
                   >
-                    ← Edit Shipping
+                    ← Edit Address
                   </button>
                   <button
                     type="button"

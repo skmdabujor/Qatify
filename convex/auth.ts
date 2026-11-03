@@ -71,7 +71,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
               </p>
               <table cellpadding="0" cellspacing="0" border="0" style="margin: 24px 0;">
                 <tr>
-                  <td align="center" style="background-color: #950606; border-radius: 8px;">
+                  <td align="center" style="background-color: #FF6D00; border-radius: 8px;">
                     <a href="${resetUrl}" target="_blank" style="display: inline-block; padding: 14px 28px; font-size: 15px; font-weight: 700; color: #ffffff; text-decoration: none; border-radius: 8px;">
                       Reset Password →
                     </a>
