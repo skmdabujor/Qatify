@@ -41,7 +41,7 @@ export async function assertAdminAccess(
   const expected = process.env.ADMIN_SECRET_KEY;
   if (expected && adminKey && adminKey.trim() === expected.trim()) {
     return {
-      email: adminEmail?.trim().toLowerCase() || "system@qatify.qa",
+      email: adminEmail?.trim().toLowerCase() || "system@shopqatify.com",
       role: "owner",
       name: "Store Owner",
     };

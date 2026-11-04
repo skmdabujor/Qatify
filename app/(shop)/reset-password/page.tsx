@@ -68,7 +68,7 @@ function ResetPasswordForm() {
     try {
       const exists = await convex.query(api.users.checkEmailExists, { email: cleanEmail });
       if (!exists) {
-        setErrorMessage('এই ইমেইল দিয়ে কোনো অ্যাকাউন্ট পাওয়া যায়নি। অনুগ্রহ করে সঠিক ইমেইল দিন অথবা অ্যাকাউন্ট খুলুন।');
+        setErrorMessage('No account found with this email. Please check your email or create an account.');
         setLoading(false);
         return;
       }
@@ -78,10 +78,10 @@ function ResetPasswordForm() {
         email: cleanEmail,
       });
 
-      setSuccessMessage(`পাসওয়ার্ড রিসেট লিংক এবং ভেরিফিকেশন কোড আপনার ইমেইলে (${cleanEmail}) পাঠানো হয়েছে! ইনবক্স চেক করুন।`);
+      setSuccessMessage(`Password reset link and verification code have been sent to your email (${cleanEmail})! Please check your inbox.`);
     } catch (err: any) {
       console.error('Reset request error:', err);
-      setErrorMessage('রিসেট লিংক পাঠাতে সমস্যা হয়েছে। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।');
+      setErrorMessage('Unable to send reset code. Please try again in a few moments.');
     } finally {
       setLoading(false);
     }
@@ -146,9 +146,9 @@ function ResetPasswordForm() {
       console.error('Password reset error:', err);
       const msg = err?.message || String(err);
       if (msg.includes('Invalid code') || msg.includes('incorrect') || msg.includes('code')) {
-        setErrorMessage('ভেরিফিকেশন কোডটি সঠিক নয় বা মেয়াদ শেষ হয়ে গেছে। অনুগ্রহ করে সঠিক কোড দিন বা নতুন লিংক নিন।');
+        setErrorMessage('The verification code is incorrect or expired. Please enter the valid code or request a new link.');
       } else {
-        setErrorMessage('পাসওয়ার্ড আপডেট ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।');
+        setErrorMessage('Password update failed. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -187,7 +187,7 @@ function ResetPasswordForm() {
               <div className={styles.successAlert} style={{ marginBottom: '1.25rem' }}>
                 <div className={styles.successRow}>
                   <CheckCircle2 size={16} color="#16a34a" />
-                  <span>লিংক পাঠানো হয়েছে!</span>
+                  <span>Reset Link Sent!</span>
                 </div>
                 <div>{successMessage}</div>
               </div>

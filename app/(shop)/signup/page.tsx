@@ -93,7 +93,7 @@ export default function SignupPage() {
       // 1. Strict Duplicate Account Restriction Pre-Check
       const emailAlreadyExists = await convex.query(api.users.checkEmailExists, { email: cleanEmail });
       if (emailAlreadyExists) {
-        setErrorMessage('এই ইমেইল দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট খোলা আছে, অনুগ্রহ করে লগইন করুন।');
+        setErrorMessage('An account with this email already exists. Please sign in instead.');
         setLoading(false);
         return;
       }
@@ -132,7 +132,7 @@ export default function SignupPage() {
         msg.includes('user already exists') ||
         (msg.includes('Account') && msg.includes('exists'))
       ) {
-        setErrorMessage('এই ইমেইল দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট খোলা আছে, অনুগ্রহ করে লগইন করুন।');
+        setErrorMessage('An account with this email already exists. Please sign in instead.');
       } else {
         setErrorMessage('Failed to create account. Please check your details and try again.');
       }
@@ -177,13 +177,13 @@ export default function SignupPage() {
                 <AlertCircle size={16} />
                 <div>
                   <span>{errorMessage}</span>
-                  {errorMessage.includes('ইতিমধ্যে একটি অ্যাকাউন্ট খোলা আছে') && (
+                  {errorMessage.includes('already exists') && (
                     <div>
                       <Link
                         href="/login"
                         className={styles.alertActionBtn}
                       >
-                        লগইন করুন (Sign In) →
+                        Sign In Now →
                       </Link>
                     </div>
                   )}
@@ -203,7 +203,7 @@ export default function SignupPage() {
                   type="text"
                   required
                   autoComplete="name"
-                  placeholder="e.g. Tariq Al-Mansoor"
+                  placeholder="Enter your full name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className={styles.input}

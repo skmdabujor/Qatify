@@ -362,6 +362,30 @@
   }
 }
 
+.legalNav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 11.5px;
+}
+
+.legalLink {
+  color: $color-text-secondary;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-accent-orange;
+    text-decoration: underline;
+  }
+}
+
+.legalDot {
+  color: $color-border-medium;
+  font-size: 10px;
+}
+
 .paymentMethods {
   display: flex;
   align-items: center;

@@ -6,8 +6,8 @@
 // - Floating bottom-right launcher with pulsing active status
 // - Proactive Doha support invitation bubble
 // - In-app conversational assistant for orders, shipping, payment, tech specs
-// - Direct WhatsApp 1-tap handoff (+974 5512 8894)
-// - Direct Doha hotline link (+974 4492 8100)
+// - Direct WhatsApp 1-tap handoff (+880 1304 564836)
+// - 24/7 Live AI Customer Concierge
 // - Real-time order lookup from active shop context
 // - Quick FAQ suggestion chips & typing simulator
 // - Persistent chat history with localStorage

@@ -9,7 +9,7 @@ import React from 'react';
 import styles from './WhatsAppButton.module.scss';
 
 interface WhatsAppButtonProps {
-  /** Phone number (e.g., '01875707255', '8801875707255', or '+8801875707255') */
+  /** Phone number (e.g., '01304564836', '8801304564836', or '+8801304564836') */
   phoneNumber?: string;
   /** Optional pre-filled inquiry text */
   defaultMessage?: string;
@@ -37,7 +37,7 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   const activeNumber =
     phoneNumber ||
     (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_WHATSAPP_NUMBER) ||
-    '01875707255';
+    '01304564836';
   const normalizedNumber = normalizeWhatsAppNumber(activeNumber);
 
   if (!normalizedNumber) {

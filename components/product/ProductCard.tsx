@@ -2,7 +2,7 @@
 
 // =============================================================================
 // Qatify — Reusable High-Conversion Product Card Component
-// Tuned for Qatar Dropshipping Retail Density ("হালকা ঘন")
+// Tuned for Qatar Dropshipping Retail Density (Clean Medium-High Layout)
 // =============================================================================
 
 import React from 'react';

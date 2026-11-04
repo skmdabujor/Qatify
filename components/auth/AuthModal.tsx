@@ -168,7 +168,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       try {
         const exists = await convex.query(api.users.checkEmailExists, { email: cleanEmail });
         if (!exists) {
-          setErrorMessage('এই ইমেইল দিয়ে কোনো অ্যাকাউন্ট পাওয়া যায়নি। অনুগ্রহ করে সঠিক ইমেইল দিন অথবা অ্যাকাউন্ট খুলুন।');
+          setErrorMessage('No account found with this email. Please check your email or create an account.');
           setLoading(false);
           return;
         }
@@ -178,15 +178,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           email: cleanEmail,
         });
 
-        setSuccessMessage(`পাসওয়ার্ড রিসেট লিংক এবং কোড আপনার ইমেইলে (${cleanEmail}) পাঠানো হয়েছে!`);
+        setSuccessMessage(`Password reset link and verification code have been sent to your email (${cleanEmail})!`);
         setMode('resetSent');
       } catch (err: any) {
         console.error('Password reset request error:', err);
         const msg = err?.message || String(err);
         if (msg.includes('Cannot find') || msg.includes('InvalidAccountId')) {
-          setErrorMessage('এই ইমেইল দিয়ে কোনো অ্যাকাউন্ট পাওয়া যায়নি। অনুগ্রহ করে সঠিক ইমেইল দিন।');
+          setErrorMessage('No account found with this email. Please enter a valid registered email.');
         } else {
-          setErrorMessage('পাসওয়ার্ড রিসেট লিংক পাঠাতে সমস্যা হয়েছে। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।');
+          setErrorMessage('Unable to send password reset code. Please try again in a few moments.');
         }
       } finally {
         setLoading(false);
@@ -230,9 +230,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         console.error('Password reset verification error:', err);
         const msg = err?.message || String(err);
         if (msg.includes('Invalid code') || msg.includes('incorrect') || msg.includes('code')) {
-          setErrorMessage('ভেরিফিকেশন কোডটি সঠিক নয় বা মেয়াদ শেষ হয়ে গেছে। অনুগ্রহ করে সঠিক কোড দিন।');
+          setErrorMessage('The verification code is incorrect or expired. Please enter the valid code.');
         } else {
-          setErrorMessage('পাসওয়ার্ড আপডেট ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।');
+          setErrorMessage('Password update failed. Please try again.');
         }
       } finally {
         setLoading(false);
@@ -260,7 +260,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       try {
         const emailAlreadyExists = await convex.query(api.users.checkEmailExists, { email: cleanEmail });
         if (emailAlreadyExists) {
-          setErrorMessage('এই ইমেইল দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট খোলা আছে, অনুগ্রহ করে লগইন করুন।');
+          setErrorMessage('An account with this email already exists. Please sign in instead.');
           setLoading(false);
           return;
         }
@@ -299,7 +299,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           msg.includes('user already exists') ||
           (msg.includes('Account') && msg.includes('exists'))
         ) {
-          setErrorMessage('এই ইমেইল দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট খোলা আছে, অনুগ্রহ করে লগইন করুন।');
+          setErrorMessage('An account with this email already exists. Please sign in instead.');
         } else {
           setErrorMessage('Failed to create account. Please check your details and try again.');
         }
@@ -442,7 +442,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <AlertCircle size={16} />
               <div>
                 <span>{errorMessage}</span>
-                {errorMessage.includes('ইতিমধ্যে একটি অ্যাকাউন্ট খোলা আছে') && (
+                {errorMessage.includes('already exists') && (
                   <div>
                     <button
                       type="button"
@@ -452,7 +452,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         setErrorMessage('');
                       }}
                     >
-                      লগইন করুন (Sign In Now) →
+                      Sign In Now →
                     </button>
                   </div>
                 )}
@@ -464,7 +464,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <div className={styles.successAlert}>
               <div className={styles.successRow}>
                 <CheckCircle2 size={16} color="#16a34a" />
-                <span>লিংক পাঠানো হয়েছে!</span>
+                <span>Verification Link Sent!</span>
               </div>
               <div>{successMessage}</div>
             </div>
@@ -484,7 +484,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   type="text"
                   required
                   autoComplete="name"
-                  placeholder="e.g. Tariq Al-Mansoor"
+                  placeholder="Enter your full name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className={styles.textInput}

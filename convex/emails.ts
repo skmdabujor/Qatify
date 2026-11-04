@@ -6,7 +6,7 @@ import { Doc } from "./_generated/dataModel";
 // Helper: Generate responsive branded HTML email template for Qatify
 export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): string {
   const trackingUrl = `${siteUrl}/dashboard?order=${encodeURIComponent(order.orderNumber)}`;
-  const whatsappNumber = process.env.WHATSAPP_NUMBER || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801875707255";
+  const whatsappNumber = process.env.WHATSAPP_NUMBER || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801304564836";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi Qatify, I have an inquiry regarding Order #${order.orderNumber}`)}`;
 
   const itemsHtml = order.items
@@ -51,32 +51,12 @@ export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): s
         <!-- Main Email Container -->
         <table cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e4e4e7;">
           
-          <!-- 1. Header with Dark Obsidian Brand Canvas & Authentic Logo -->
+          <!-- 1. Header with Authentic Brand Logo -->
           <tr>
-            <td style="background-color: #0a0a0c; padding: 18px 24px;">
-              <table cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td valign="middle" style="padding-right: 12px;">
-                    <img src="https://mellow-puma-618.eu-west-1.convex.cloud/api/storage/kg2bvtt5c9jz56hv42td27x8318h40pk" width="40" height="40" alt="Qatify" style="display: block; border-radius: 10px;" />
-                  </td>
-                  <td valign="middle">
-                    <table cellpadding="0" cellspacing="0" border="0">
-                      <tr>
-                        <td valign="middle">
-                          <span style="font-size: 24px; font-weight: 900; letter-spacing: -0.5px; color: #ffffff; text-transform: uppercase;">
-                            QATIFY
-                          </span>
-                        </td>
-                        <td valign="middle" style="padding-left: 8px;">
-                          <span style="background-color: #facc15; color: #0a0a0c; font-size: 11px; font-weight: 900; padding: 2px 7px; border-radius: 4px; font-family: monospace; display: inline-block;">
-                            .QA
-                          </span>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
+            <td align="center" style="background-color: #ffffff; padding: 22px 24px; border-bottom: 2px solid #f1f3f5; border-top: 4px solid #FF6D00; text-align: center;">
+              <a href="${siteUrl}" target="_blank" style="text-decoration: none; display: inline-block;">
+                <img src="https://shocking-armadillo-116.convex.cloud/api/storage/43c1a105-5334-4bb8-a12f-8dff85502631" height="42" alt="Shop Qatify" style="display: block; height: 42px; width: auto; max-width: 220px; border: 0; margin: 0 auto;" />
+              </a>
             </td>
           </tr>
 
@@ -212,12 +192,27 @@ export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): s
                 Need help with your order or delivery?
               </div>
               <div style="margin-bottom: 16px;">
-                <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background-color: #25d366; color: #ffffff; font-size: 13px; font-weight: 700; text-decoration: none; padding: 8px 16px; border-radius: 20px;">
-                  💬 Chat on WhatsApp (01875707255)
-                </a>
+                <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 0 auto;">
+                  <tr>
+                    <td style="background-color: #25d366; border-radius: 24px; padding: 10px 22px;">
+                      <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: block;">
+                        <table cellpadding="0" cellspacing="0" border="0">
+                          <tr>
+                            <td valign="middle" style="padding-right: 8px; line-height: 0;">
+                              <img src="https://shocking-armadillo-116.convex.cloud/api/storage/kg2010gb4b42karz6bn2f01pc98hkksf" width="18" height="18" alt="WhatsApp" style="display: block; width: 18px; height: 18px; border: 0;" />
+                            </td>
+                            <td valign="middle" style="color: #ffffff; font-size: 14px; font-weight: 700; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1;">
+                              Chat on WhatsApp
+                            </td>
+                          </tr>
+                        </table>
+                      </a>
+                    </td>
+                  </tr>
+                </table>
               </div>
               <div style="font-size: 12px; color: #71717a; line-height: 1.5;">
-                Hotline: +974 4492 8100 &nbsp;|&nbsp; Email: support@qatify.qa<br>
+                WhatsApp Support: +880 1304 564836 &nbsp;|&nbsp; Email: support@shopqatify.com<br>
                 100% Quality Inspected Before Flight Dispatch &nbsp;•&nbsp; 24/7 Dedicated Support<br>
                 <span style="font-size: 11px; color: #52525b; margin-top: 8px; display: block;">© 2026 Qatify Technologies W.L.L. Doha, State of Qatar.</span>
               </div>
@@ -260,7 +255,7 @@ export const sendOrderConfirmationEmail = internalAction({
     const siteUrl =
       process.env.SITE_URL ||
       process.env.NEXT_PUBLIC_SITE_URL ||
-      "https://qatify.qa";
+      "https://shopqatify.com";
     const recipientEmail =
       order.customerEmail ||
       order.address.email ||
@@ -295,7 +290,7 @@ export const sendOrderConfirmationEmail = internalAction({
           subject: `Order Confirmed: ${order.orderNumber} | Qatify Qatar`,
           html: emailHtml,
           text: `Shukran! Your Qatify order ${order.orderNumber} is confirmed. Total: QAR ${order.totalQAR}. Track your shipment live at: ${siteUrl}/dashboard?order=${order.orderNumber}`,
-          reply_to: "support@qatify.qa",
+          reply_to: "support@shopqatify.com",
         }),
       });
 
@@ -377,7 +372,7 @@ export const resendOrderConfirmationEmailAction = action({
     const siteUrl =
       process.env.SITE_URL ||
       process.env.NEXT_PUBLIC_SITE_URL ||
-      "https://qatify.qa";
+      "https://shopqatify.com";
     const recipientEmail =
       args.recipientEmail?.trim().toLowerCase() ||
       order.customerEmail ||
@@ -409,7 +404,7 @@ export const resendOrderConfirmationEmailAction = action({
           subject: `Order Confirmed: ${order.orderNumber} | Qatify Qatar`,
           html: emailHtml,
           text: `Shukran! Your Qatify order ${order.orderNumber} is confirmed. Total: QAR ${order.totalQAR}. Track your shipment live at: ${siteUrl}/dashboard?order=${order.orderNumber}`,
-          reply_to: "support@qatify.qa",
+          reply_to: "support@shopqatify.com",
         }),
       });
 

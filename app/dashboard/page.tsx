@@ -45,6 +45,7 @@ import {
   X,
   ChevronDown,
   Check,
+  Mail,
 } from 'lucide-react';
 import { TelegramAlertsManager } from '@/components/admin/TelegramAlertsManager';
 import { TrackingTimeline } from '@/components/tracking/TrackingTimeline';
@@ -1373,22 +1374,22 @@ function DashboardContent() {
                     </p>
 
                     <div className={styles.supportChannelsGrid}>
-                      <a href="tel:+97444928100" className={styles.channelCard}>
-                        <Phone size={22} className={styles.channelIcon} />
-                        <h4>Direct Doha Hotline</h4>
-                        <p>+974 4492 8100</p>
-                        <span>8:00 AM – 11:00 PM (GMT+3) • Tap to Call</span>
+                      <a href="mailto:support@shopqatify.com" className={styles.channelCard}>
+                        <Mail size={22} className={styles.channelIcon} />
+                        <h4>Official Support Email</h4>
+                        <p>support@shopqatify.com</p>
+                        <span>Response within 6–12h • Tap to Email</span>
                       </a>
 
                       <a
-                        href="https://wa.me/8801875707255?text=Hi%20Qatify%2C%20I%20need%20assistance%20with%20my%20order"
+                        href="https://wa.me/8801304564836?text=Hi%20Qatify%2C%20I%20need%20assistance%20with%20my%20order"
                         target="_blank"
                         rel="noopener noreferrer"
                         className={styles.channelCard}
                       >
                         <Headphones size={22} className={styles.channelIcon} />
                         <h4>WhatsApp Concierge</h4>
-                        <p>01875707255</p>
+                        <p>01304564836</p>
                         <span>Instant order tracking updates • Tap to Chat</span>
                       </a>
                     </div>

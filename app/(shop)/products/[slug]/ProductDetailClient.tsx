@@ -973,7 +973,7 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                           required
                           value={reviewName}
                           onChange={(e) => setReviewName(e.target.value)}
-                          placeholder="e.g. Tariq Al-Mansoor"
+                          placeholder="Your name"
                           style={{
                             width: '100%',
                             padding: '8px 12px',
@@ -991,7 +991,7 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                           type="text"
                           value={reviewLocation}
                           onChange={(e) => setReviewLocation(e.target.value)}
-                          placeholder="e.g. Lusail, Qatar"
+                          placeholder="Your city or area"
                           style={{
                             width: '100%',
                             padding: '8px 12px',

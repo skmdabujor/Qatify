@@ -259,7 +259,7 @@ export const sendOrderNotificationTelegram = internalAction({
     const siteUrl =
       process.env.SITE_URL ||
       process.env.NEXT_PUBLIC_SITE_URL ||
-      "https://qatify.qa";
+      "https://shopqatify.com";
     const message = formatOrderTelegramMessage(order, siteUrl);
 
     let sentCount = 0;
@@ -436,7 +436,7 @@ export const sendShipmentStatusTelegram = internalAction({
     const siteUrl =
       process.env.SITE_URL ||
       process.env.NEXT_PUBLIC_SITE_URL ||
-      "https://qatify.qa";
+      "https://shopqatify.com";
     const text = [
       `✈️ <b>[SHIPMENT MILESTONE UPDATE - QATIFY]</b>`,
       `━━━━━━━━━━━━━━━━━━━━━━`,

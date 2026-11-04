@@ -15,7 +15,11 @@ import { WhatsAppButton } from '@/components/ui/WhatsAppButton';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://qatify.qa'),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL && !process.env.NEXT_PUBLIC_SITE_URL.includes('localhost')
+      ? process.env.NEXT_PUBLIC_SITE_URL
+      : 'https://shopqatify.com'
+  ),
   title: {
     default: 'Qatify Qatar | Best Online Shopping for Mobiles, Electronics & Gadgets',
     template: '%s | Qatify Qatar',
@@ -41,7 +45,7 @@ export const metadata: Metadata = {
     title: 'Qatify Qatar | Best Online Shopping for Mobiles, Electronics & Gadgets',
     description:
       'Shop authentic mobile accessories, GaN chargers, ANC earbuds & smartwatches in Qatar. Best price guarantee with fast delivery across Doha.',
-    url: 'https://qatify.qa',
+    url: 'https://shopqatify.com',
     siteName: 'Qatify Qatar',
     locale: 'en_QA',
     type: 'website',
@@ -96,7 +100,7 @@ export default function RootLayout({
             <CartDrawer />
             <ToastContainer />
             <ChatWidget />
-            <WhatsAppButton phoneNumber="01875707255" />
+            <WhatsAppButton phoneNumber="01304564836" />
             <main>{children}</main>
             <Footer />
             <MobileBottomNav />

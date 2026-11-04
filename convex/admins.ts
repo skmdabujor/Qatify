@@ -52,7 +52,7 @@ export const checkIsAdmin = query({
         isAdmin: true,
         role: "owner" as const,
         name: "Store Owner (Key)",
-        email: "system@qatify.qa",
+        email: "system@shopqatify.com",
       };
     }
 

@@ -1,0 +1,518 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.wrapper {
+  background-color: $color-bg-canvas;
+  min-height: 100vh;
+  padding-bottom: $space-16;
+}
+
+// 1. HERO HEADER
+.hero {
+  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+  border-bottom: 1px solid $color-border-subtle;
+  padding: $space-8 0 $space-10;
+
+  @include mobile {
+    padding: $space-6 0 $space-6;
+  }
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: $color-text-muted;
+  margin-bottom: $space-4;
+
+  a {
+    color: $color-text-secondary;
+    transition: color $transition-fast;
+
+    &:hover {
+      color: $color-accent-orange;
+    }
+  }
+
+  .separator {
+    color: $color-border-medium;
+  }
+
+  .current {
+    color: $color-text-primary;
+    font-weight: 600;
+  }
+}
+
+.heroContent {
+  max-width: 780px;
+}
+
+.badgePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #fff4ec;
+  color: $color-accent-orange;
+  border: 1px solid #fed7aa;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: $space-3;
+}
+
+.title {
+  font-size: 34px;
+  font-weight: 800;
+  color: $color-ink-black;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin-bottom: $space-3;
+
+  @include mobile {
+    font-size: 26px;
+  }
+}
+
+.subtitle {
+  font-size: 15.5px;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+// 2. MAIN 2-COL LAYOUT
+.contactGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 32px;
+  margin-top: $space-8;
+  align-items: start;
+
+  @include laptop {
+    grid-template-columns: 1fr;
+    gap: $space-6;
+  }
+}
+
+// 3. LEFT COLUMN: DIRECT CHANNELS
+.channelCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: $space-6;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.channelCard {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-lg;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all $transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: $color-accent-orange;
+    box-shadow: 0 4px 12px rgba(255, 109, 0, 0.08);
+  }
+}
+
+.channelIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-md;
+  background-color: #fff4ec;
+  color: $color-accent-orange;
+  margin-bottom: 4px;
+}
+
+.channelTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: $color-ink-black;
+}
+
+.channelInfo {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: $color-text-primary;
+  word-break: break-word;
+}
+
+.channelSub {
+  font-size: 12px;
+  color: $color-text-muted;
+  line-height: 1.4;
+}
+
+.channelBtn {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: $color-accent-orange;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-accent-orange-hover;
+  }
+}
+
+// Office Hub Card
+.hubCard {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-lg;
+  padding: 22px;
+  margin-bottom: $space-6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.hubHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.hubTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: $color-ink-black;
+}
+
+.hubDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  color: $color-text-secondary;
+  line-height: 1.5;
+}
+
+.hubRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: $color-accent-orange;
+  }
+}
+
+// Live Chat Banner
+.chatBanner {
+  background: linear-gradient(135deg, #18181b 0%, #27272a 100%);
+  color: #ffffff;
+  border-radius: $radius-lg;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.chatBannerText {
+  h4 {
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 4px;
+  }
+
+  p {
+    font-size: 12.5px;
+    color: #a1a1aa;
+    margin: 0;
+  }
+}
+
+.chatBannerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background-color: $color-accent-orange;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: $radius-md;
+  white-space: nowrap;
+  transition: all $transition-fast;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $color-accent-orange-hover;
+    transform: translateY(-1px);
+  }
+}
+
+// 4. RIGHT COLUMN: INTERACTIVE FORM
+.formContainer {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-xl;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+
+  @include mobile {
+    padding: 20px 16px;
+    border-radius: $radius-lg;
+  }
+}
+
+.formHeader {
+  margin-bottom: 24px;
+
+  h3 {
+    font-size: 20px;
+    font-weight: 800;
+    color: $color-ink-black;
+    margin-bottom: 6px;
+  }
+
+  p {
+    font-size: 13.5px;
+    color: $color-text-secondary;
+  }
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+
+  &.fullWidth {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: $color-ink-black;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .required {
+      color: $color-accent-orange;
+    }
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid $color-border-medium;
+    border-radius: $radius-md;
+    font-size: 13.5px;
+    color: $color-text-primary;
+    background-color: #ffffff;
+    transition: all $transition-fast;
+    outline: none;
+
+    &:focus {
+      border-color: $color-accent-orange;
+      box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.12);
+    }
+
+    &::placeholder {
+      color: $color-text-muted;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.5;
+  }
+}
+
+.submitBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px 20px;
+  background-color: $color-accent-orange;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+  box-shadow: 0 4px 12px rgba(255, 109, 0, 0.2);
+
+  &:hover:not(:disabled) {
+    background-color: $color-accent-orange-hover;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(255, 109, 0, 0.28);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
+
+.successAlert {
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: $radius-md;
+  padding: 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  .successIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #10b981;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  h4 {
+    font-size: 17px;
+    font-weight: 800;
+    color: #065f46;
+  }
+
+  p {
+    font-size: 13.5px;
+    color: #047857;
+    max-width: 420px;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  button {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #065f46;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+// 5. FAQ SECTION
+.faqSection {
+  margin-top: $space-16;
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-xl;
+  padding: 36px 40px;
+
+  @include mobile {
+    padding: 24px 18px;
+    margin-top: $space-10;
+  }
+}
+
+.faqHeader {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 32px;
+
+  h3 {
+    font-size: 24px;
+    font-weight: 800;
+    color: $color-ink-black;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 14px;
+    color: $color-text-secondary;
+  }
+}
+
+.faqGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  @include tablet {
+    grid-template-columns: 1fr;
+  }
+}
+
+.faqCard {
+  background-color: #fafafa;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: $color-accent-orange;
+    background-color: #fff4ec;
+  }
+}
+
+.faqQuestion {
+  font-size: 15px;
+  font-weight: 700;
+  color: $color-ink-black;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  svg {
+    color: $color-accent-orange;
+    flex-shrink: 0;
+  }
+}
+
+.faqAnswer {
+  font-size: 13px;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+

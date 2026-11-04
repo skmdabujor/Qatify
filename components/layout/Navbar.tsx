@@ -1,7 +1,7 @@
 'use client';
 
 // =============================================================================
-// Qatify — Sticky Two-Tier Header & Mega-Menu (Medium-High Density "হালকা ঘন")
+// Qatify — Sticky Two-Tier Header & Mega-Menu (Medium-High Density Layout)
 // Top Utility Bar + Predictive Search + Category Strip + Cart Counter
 // =============================================================================
 

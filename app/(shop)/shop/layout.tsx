@@ -16,13 +16,13 @@ export const metadata: Metadata = {
     'smartwatch price qatar',
   ],
   alternates: {
-    canonical: 'https://qatify.qa/shop',
+    canonical: 'https://shopqatify.com/shop',
   },
   openGraph: {
     title: 'Buy Electronics & Smart Gadgets Online in Qatar | Qatify Shop',
     description:
       'Browse Qatar’s best deals on authentic mobile accessories, GaN fast chargers, smartwatches, ANC earbuds & gaming gear. Fast delivery in Doha & Lusail.',
-    url: 'https://qatify.qa/shop',
+    url: 'https://shopqatify.com/shop',
     siteName: 'Qatify Qatar',
     locale: 'en_QA',
     type: 'website',

@@ -26,8 +26,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const title = `${product.title} - Best Price in Qatar | Qatify`;
   const description = `Buy ${product.title} at the best price in Qatar (QR ${product.priceQAR}). 100% Genuine guaranteed, fast direct air express delivery across Doha, Lusail, Al Rayyan & all Qatar municipalities with 100% buyer protection.`;
-  const canonicalUrl = `https://qatify.qa/products/${slug}`;
-  const imageUrl = product.images[0] || 'https://qatify.qa/placeholder.svg';
+  const canonicalUrl = `https://shopqatify.com/products/${slug}`;
+  const imageUrl = product.images[0] || 'https://shopqatify.com/placeholder.svg';
 
   return {
     title,
@@ -88,19 +88,19 @@ export default async function ProductDetailPage({ params }: PageProps) {
             '@type': 'ListItem',
             position: 1,
             name: 'Home',
-            item: 'https://qatify.qa',
+            item: 'https://shopqatify.com',
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: product.category,
-            item: `https://qatify.qa/shop?cat=${product.categorySlug}`,
+            item: `https://shopqatify.com/shop?cat=${product.categorySlug}`,
           },
           {
             '@type': 'ListItem',
             position: 3,
             name: product.title,
-            item: `https://qatify.qa/products/${slug}`,
+            item: `https://shopqatify.com/products/${slug}`,
           },
         ],
       },
@@ -117,7 +117,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
         },
         offers: {
           '@type': 'Offer',
-          url: `https://qatify.qa/products/${slug}`,
+          url: `https://shopqatify.com/products/${slug}`,
           priceCurrency: 'QAR',
           price: product.priceQAR.toString(),
           priceValidUntil: '2027-12-31',

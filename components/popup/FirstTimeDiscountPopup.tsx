@@ -256,7 +256,7 @@ export const FirstTimeDiscountPopup: React.FC = () => {
                       <input
                         id="first-order-email"
                         type="email"
-                        placeholder="Enter your email (e.g. name@domain.com)"
+                        placeholder="Enter your email address"
                         value={email}
                         onChange={(e) => {
                           setEmail(e.target.value);

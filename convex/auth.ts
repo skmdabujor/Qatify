@@ -25,7 +25,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
           const siteUrl =
             process.env.SITE_URL ||
             process.env.NEXT_PUBLIC_SITE_URL ||
-            "https://qatify.qa";
+            "https://shopqatify.com";
           const resetUrl = `${siteUrl}/reset-password?code=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`;
 
           console.log(`[Password Reset] Dispatched reset link for ${email}: ${resetUrl} (Code: ${token})`);
@@ -119,7 +119,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
               subject: "Reset Your Qatify Password 🇶🇦",
               html: emailHtml,
               text: `Reset your Qatify password: ${resetUrl}\n\nYour reset code is: ${token}\n(Expires in 1 hour)`,
-              reply_to: "support@qatify.qa",
+              reply_to: "support@shopqatify.com",
             }),
           });
 

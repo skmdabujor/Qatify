@@ -23,13 +23,13 @@ export function generateNewsletterEmailHtml(options: NewsletterTemplateOptions =
     options.siteUrl ||
     process.env.SITE_URL ||
     process.env.NEXT_PUBLIC_SITE_URL ||
-    "https://qatify.qa";
+    "https://shopqatify.com";
   const promoCode = options.promoCode || "WELCOME10";
-  const whatsappNumber = options.whatsappNumber || process.env.WHATSAPP_NUMBER || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801875707255";
+  const whatsappNumber = options.whatsappNumber || process.env.WHATSAPP_NUMBER || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801304564836";
   const recipientEmail = options.recipientEmail || "VIP Subscriber";
   const recipientName = recipientEmail.includes("@") ? recipientEmail.split("@")[0] : "VIP Member";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi Qatify VIP, I would like to inquire about the newsletter deals and coupon ${promoCode}`)}`;
-  const logoUrl = "https://mellow-puma-618.eu-west-1.convex.cloud/api/storage/kg2bvtt5c9jz56hv42td27x8318h40pk";
+  const logoUrl = "https://shocking-armadillo-116.convex.cloud/api/storage/43c1a105-5334-4bb8-a12f-8dff85502631";
 
   return `
 <!DOCTYPE html>
@@ -278,9 +278,24 @@ export function generateNewsletterEmailHtml(options: NewsletterTemplateOptions =
               <p style="margin: 0 0 16px 0; font-size: 13px; color: #71717a;">
                 Our bilingual support team in Doha is available 24/7 on WhatsApp.
               </p>
-              <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background-color: #25d366; color: #ffffff; text-decoration: none; font-size: 13px; font-weight: 700; padding: 10px 22px; border-radius: 24px;">
-                💬 Chat with Doha Concierge on WhatsApp
-              </a>
+              <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 0 auto;">
+                <tr>
+                  <td style="background-color: #25d366; border-radius: 24px; padding: 10px 22px;">
+                    <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: block;">
+                      <table cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td valign="middle" style="padding-right: 8px; line-height: 0;">
+                            <img src="https://shocking-armadillo-116.convex.cloud/api/storage/kg2010gb4b42karz6bn2f01pc98hkksf" width="18" height="18" alt="WhatsApp" style="display: block; width: 18px; height: 18px; border: 0;" />
+                          </td>
+                          <td valign="middle" style="color: #ffffff; font-size: 14px; font-weight: 700; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1;">
+                            Chat on WhatsApp
+                          </td>
+                        </tr>
+                      </table>
+                    </a>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
@@ -288,11 +303,11 @@ export function generateNewsletterEmailHtml(options: NewsletterTemplateOptions =
           <tr>
             <td style="background-color: #0a0a0c; padding: 24px; text-align: center; color: #a1a1aa; border-top: 1px solid #18181b;">
               <div style="font-size: 12px; color: #71717a; line-height: 1.6; margin-bottom: 12px;">
-                Hotline: +974 4492 8100 &nbsp;|&nbsp; WhatsApp: +880 1875 707255 &nbsp;|&nbsp; Email: support@qatify.qa<br>
+                WhatsApp Concierge: +880 1304 564836 &nbsp;|&nbsp; Email: support@shopqatify.com<br>
                 Commercial Registration: Doha, State of Qatar
               </div>
               <div style="font-size: 11px; color: #52525b; line-height: 1.5;">
-                You are receiving this VIP digest because you subscribed at Qatify.qa.<br>
+                You are receiving this VIP digest because you subscribed at ShopQatify.com.<br>
                 <a href="${siteUrl}/dashboard" target="_blank" style="color: #a1a1aa; text-decoration: underline;">Manage Preferences</a>
                 &nbsp;•&nbsp;
                 <a href="${siteUrl}" target="_blank" style="color: #a1a1aa; text-decoration: underline;">Visit Store</a>
@@ -397,7 +412,7 @@ export const previewNewsletterHtml = query({
     const siteUrl =
       process.env.SITE_URL ||
       process.env.NEXT_PUBLIC_SITE_URL ||
-      "https://qatify.qa";
+      "https://shopqatify.com";
     return generateNewsletterEmailHtml({
       recipientEmail: args.recipientEmail || "sheakmohammadabujor@gmail.com",
       promoCode: args.promoCode || "WELCOME10",
@@ -431,7 +446,7 @@ export const sendTestNewsletter = action({
     const siteUrl =
       process.env.SITE_URL ||
       process.env.NEXT_PUBLIC_SITE_URL ||
-      "https://qatify.qa";
+      "https://shopqatify.com";
     const promoCode = (args.promoCode || "WELCOME10").trim().toUpperCase();
     const targetEmail = (args.recipientEmail || "sheakmohammadabujor@gmail.com").trim().toLowerCase();
     const emailSubject = args.subject || "✨ Qatify VIP Qatar: 10% Off + Direct Hamad Air Express Drops 🇶🇦";
@@ -467,7 +482,7 @@ export const sendTestNewsletter = action({
           subject: emailSubject,
           html: emailHtml,
           text: `Salam! Enjoy 10% OFF with code ${promoCode} on Qatify Qatar. Direct flight to Hamad Int'l Airport (DOH) & doorstep delivery across Qatar. Shop now at: ${siteUrl}`,
-          reply_to: "support@qatify.qa",
+          reply_to: "support@shopqatify.com",
         }),
       });
 
@@ -530,7 +545,7 @@ export const broadcastNewsletter = action({
     const siteUrl =
       process.env.SITE_URL ||
       process.env.NEXT_PUBLIC_SITE_URL ||
-      "https://qatify.qa";
+      "https://shopqatify.com";
     const promoCode = (args.promoCode || "WELCOME10").trim().toUpperCase();
     const emailSubject = args.subject || "✨ Qatify VIP Qatar: Exclusive Deals & New Air Express Drops 🇶🇦";
 
@@ -569,7 +584,7 @@ export const broadcastNewsletter = action({
             subject: emailSubject,
             html: emailHtml,
             text: `Salam! Enjoy 10% OFF with code ${promoCode} on Qatify Qatar. Shop now: ${siteUrl}`,
-            reply_to: "support@qatify.qa",
+            reply_to: "support@shopqatify.com",
           }),
         });
 

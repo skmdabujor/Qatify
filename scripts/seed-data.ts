@@ -5,7 +5,10 @@ import * as fs from "fs";
 import * as path from "path";
 
 // Read NEXT_PUBLIC_CONVEX_URL and ADMIN_SECRET_KEY from environment or .env.local
-let convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+const isProd = process.argv.includes("--prod");
+const PROD_CONVEX_URL = "https://shocking-armadillo-116.convex.cloud";
+
+let convexUrl = isProd ? PROD_CONVEX_URL : process.env.NEXT_PUBLIC_CONVEX_URL;
 let adminKey = process.env.ADMIN_SECRET_KEY || "";
 
 if (!convexUrl || !adminKey) {

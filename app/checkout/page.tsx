@@ -926,6 +926,30 @@ function CheckoutContent() {
                     </span>
                   </button>
                 </div>
+
+                <p
+                  style={{
+                    fontSize: '11.5px',
+                    color: '#71717a',
+                    textAlign: 'center',
+                    marginTop: '12px',
+                    lineHeight: '1.45',
+                  }}
+                >
+                  By placing your order, you agree to Qatify&apos;s{' '}
+                  <Link href="/terms" style={{ color: '#FF6D00', textDecoration: 'underline' }}>
+                    Terms &amp; Conditions
+                  </Link>
+                  ,{' '}
+                  <Link href="/privacy" style={{ color: '#FF6D00', textDecoration: 'underline' }}>
+                    Privacy Policy
+                  </Link>
+                  , and{' '}
+                  <Link href="/refund-policy" style={{ color: '#FF6D00', textDecoration: 'underline' }}>
+                    Refund &amp; Return Policy
+                  </Link>
+                  . Covered by our 100% Lost Parcel Money-Back Guarantee (Insha&apos;Allah).
+                </p>
               </div>
             )}
           </div>

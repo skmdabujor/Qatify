@@ -64,7 +64,7 @@ function TrackOrderContent() {
             <Search size={18} color="#71717a" />
             <input
               type="text"
-              placeholder="Enter Order Ref (e.g. QA-123456) or Tracking Code..."
+              placeholder="Enter order reference or tracking code..."
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               className={styles.searchInput}
@@ -121,7 +121,7 @@ function TrackOrderContent() {
         {/* 3. ASSISTANCE FOOTNOTE */}
         <div className={styles.supportHelpRow}>
           <span>Need assistance with your delivery in Qatar? </span>
-          <a href="https://wa.me/97450000000" target="_blank" rel="noopener noreferrer">
+          <a href="https://wa.me/8801304564836?text=Hi%20Qatify%2C%20I%20need%20assistance%20tracking%20my%20order" target="_blank" rel="noopener noreferrer">
             Contact VIP Concierge on WhatsApp
           </a>
         </div>
