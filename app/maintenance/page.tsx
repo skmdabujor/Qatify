@@ -2,12 +2,11 @@
 
 // =============================================================================
 // Qatify — Scheduled Maintenance Page
-// Premium, reassuring downtime screen with bilingual messaging, WhatsApp contact & Order Tracking
+// 100% English — Premium Qatar Dropship Downtime Experience
 // =============================================================================
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import {
   Wrench,
   Clock,
@@ -18,13 +17,11 @@ import {
   X,
   Sparkles,
   ArrowRight,
-  ExternalLink,
 } from 'lucide-react';
 import { QatifyLogo } from '@/components/brand/QatifyLogo';
 import styles from './page.module.scss';
 
 export default function MaintenancePage() {
-  const router = useRouter();
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [secretKeyInput, setSecretKeyInput] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -54,7 +51,7 @@ export default function MaintenancePage() {
         <header className={styles.brandHeader}>
           <QatifyLogo variant="light" size="lg" showTagline={false} />
           <span className={styles.storeBadge}>
-            <Sparkles size={12} /> Scheduled Maintenance & System Upgrade
+            <Sparkles size={13} /> Scheduled Maintenance & System Upgrade
           </span>
         </header>
 
@@ -66,20 +63,15 @@ export default function MaintenancePage() {
 
         {/* Main Headline */}
         <h1 className={styles.headline}>
-          We Are <span className={styles.highlight}>Upgrading</span> For You!
+          We Are <span className={styles.highlight}>Upgrading</span> Our Store
         </h1>
 
-        {/* Bilingual Reassuring Messaging */}
-        <div className={styles.bilingualText}>
-          <p className={styles.englishText}>
-            We are currently optimizing our logistics network, warehouse inventory, and store
-            experience to bring you genuine electronics and faster delivery across Qatar. Online
-            orders are temporarily paused.
-          </p>
-          <p className={styles.bengaliText}>
-            আমাদের ডেলিভারি সিস্টেম ও নতুন প্রোডাক্ট স্টক আরও উন্নত করতে ওয়েবসাইট সাময়িক বিরতিতে
-            আছে। আগামী <strong>৭–৮ দিনের মধ্যে</strong> নতুন অফার ও গ্যাজেট কালেকশন নিয়ে আমরা পুনরায়
-            চালু হব।
+        {/* English Only Description */}
+        <div className={styles.descriptionText}>
+          <p>
+            Qatify is currently undergoing scheduled platform upgrades, logistics enhancement,
+            and warehouse inventory optimization to serve our customers across Qatar with a faster,
+            premium shopping experience. Online orders are temporarily paused.
           </p>
         </div>
 
@@ -91,7 +83,9 @@ export default function MaintenancePage() {
             </div>
             <div className={styles.cardTitle}>Expected Reopening</div>
             <div className={styles.cardValue}>In 7 – 8 Days</div>
-            <p className={styles.cardSub}>Orders & Express Delivery will resume immediately</p>
+            <p className={styles.cardSub}>
+              Full store, flash deals, and express checkout will resume
+            </p>
           </div>
 
           <div className={styles.infoCard}>
@@ -99,17 +93,21 @@ export default function MaintenancePage() {
               <Truck size={20} />
             </div>
             <div className={styles.cardTitle}>Existing Orders</div>
-            <div className={styles.cardValue}>Tracking Live</div>
-            <p className={styles.cardSub}>Already ordered? All active shipments are in transit</p>
+            <div className={styles.cardValue}>Tracking Live & Active</div>
+            <p className={styles.cardSub}>
+              Already ordered? All active shipments are moving as scheduled
+            </p>
           </div>
 
           <div className={styles.infoCard}>
             <div className={styles.cardIcon}>
               <MessageCircle size={20} />
             </div>
-            <div className={styles.cardTitle}>Direct Support</div>
-            <div className={styles.cardValue}>WhatsApp Active</div>
-            <p className={styles.cardSub}>Our support desk is online 24/7 for all queries</p>
+            <div className={styles.cardTitle}>Customer Support</div>
+            <div className={styles.cardValue}>WhatsApp Online 24/7</div>
+            <p className={styles.cardSub}>
+              Questions about shipments or urgent inquiries are answered live
+            </p>
           </div>
         </div>
 
@@ -193,10 +191,24 @@ export default function MaintenancePage() {
               </div>
             </form>
 
-            <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
+            <div
+              style={{
+                marginTop: '1rem',
+                paddingTop: '1rem',
+                borderTop: '1px solid rgba(255,255,255,0.08)',
+                textAlign: 'center',
+              }}
+            >
               <Link
                 href="/dashboard"
-                style={{ color: '#ff9e00', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                style={{
+                  color: '#ff9e00',
+                  fontSize: '0.85rem',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                }}
               >
                 Go to Operations Dashboard <ArrowRight size={14} />
               </Link>
@@ -207,4 +219,3 @@ export default function MaintenancePage() {
     </div>
   );
 }
-

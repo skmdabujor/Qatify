@@ -3,21 +3,33 @@ import type { NextRequest } from 'next/server';
 import { MAINTENANCE_CONFIG } from '@/config/maintenance';
 
 export function middleware(request: NextRequest) {
+  const { pathname, searchParams } = request.nextUrl;
+  const host = request.headers.get('host') || request.nextUrl.host || '';
+
+  // 1. NEVER block Localhost / Local Development
+  // You can always code, test, and develop freely on localhost without maintenance interruption!
+  const isLocalhost =
+    host.includes('localhost') ||
+    host.includes('127.0.0.1') ||
+    process.env.NODE_ENV !== 'production';
+
+  if (isLocalhost) {
+    return NextResponse.next();
+  }
+
+  // 2. Check if Maintenance Mode is enabled for Production
   const isMaintenanceMode =
     MAINTENANCE_CONFIG.enabled ||
     process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true';
-  const { pathname, searchParams } = request.nextUrl;
 
-  // 1. If Maintenance Mode is OFF
   if (!isMaintenanceMode) {
-    // If someone explicitly goes to /maintenance when mode is off, redirect to homepage
     if (pathname === '/maintenance') {
       return NextResponse.redirect(new URL('/', request.url));
     }
     return NextResponse.next();
   }
 
-  // 2. Allowed static assets and internal Next.js endpoints
+  // 3. Allowed static assets and internal Next.js endpoints
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
@@ -28,7 +40,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3. Allowed routes during maintenance (Admin Dashboard and Order Tracking for existing buyers)
+  // 4. Allowed routes during maintenance (Admin Dashboard and Order Tracking for existing buyers)
   if (
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/track-order') ||
@@ -37,7 +49,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 4. Secret Admin Bypass via query param: ?bypass=qatify or ?bypass=ADMIN_KEY
+  // 5. Secret Admin Bypass via query param: ?bypass=qatify or ?bypass=ADMIN_KEY
   const bypassParam = searchParams.get('bypass');
   if (
     bypassParam === 'qatify' ||
@@ -56,19 +68,19 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  // 5. If Admin has already unlocked with bypass cookie
+  // 6. If Admin has already unlocked with bypass cookie
   if (request.cookies.get('maintenance_bypass')?.value === 'true') {
     return NextResponse.next();
   }
 
-  // 6. If already on the maintenance page, let it render
+  // 7. If already on the maintenance page, let it render
   if (pathname === '/maintenance') {
     const response = NextResponse.next();
     response.headers.set('Retry-After', '604800'); // 7 days in seconds for search engine crawlers
     return response;
   }
 
-  // 7. Redirect all public store requests to /maintenance
+  // 8. Redirect all public store requests to /maintenance
   const maintenanceUrl = new URL('/maintenance', request.url);
   const response = NextResponse.redirect(maintenanceUrl, 307);
   response.headers.set('Retry-After', '604800');
@@ -86,4 +98,3 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };
-
