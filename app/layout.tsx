@@ -6,13 +6,7 @@ import type { Metadata, Viewport } from 'next';
 import '@/styles/globals.scss';
 import { ConvexClientProvider } from '@/components/providers/ConvexClientProvider';
 import { ShopProvider } from '@/context/ShopContext';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
-import { CartDrawer } from '@/components/cart/CartDrawer';
-import { ToastContainer } from '@/components/ui/Toast';
-import { ChatWidget } from '@/components/chat/ChatWidget';
-import { WhatsAppButton } from '@/components/ui/WhatsAppButton';
-import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+import { AppLayoutShell } from '@/components/layout/AppLayoutShell';
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -96,14 +90,7 @@ export default function RootLayout({
       <body>
         <ConvexClientProvider>
           <ShopProvider>
-            <Navbar />
-            <CartDrawer />
-            <ToastContainer />
-            <ChatWidget />
-            <WhatsAppButton phoneNumber="01304564836" />
-            <main>{children}</main>
-            <Footer />
-            <MobileBottomNav />
+            <AppLayoutShell>{children}</AppLayoutShell>
           </ShopProvider>
         </ConvexClientProvider>
       </body>
