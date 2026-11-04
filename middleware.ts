@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { MAINTENANCE_CONFIG } from '@/config/maintenance';
 
 export function middleware(request: NextRequest) {
-  const isMaintenanceMode = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true';
+  const isMaintenanceMode =
+    MAINTENANCE_CONFIG.enabled ||
+    process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true';
   const { pathname, searchParams } = request.nextUrl;
 
   // 1. If Maintenance Mode is OFF
