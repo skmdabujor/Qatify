@@ -12,8 +12,8 @@ import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/components/cart/CartDrawer';
 import { ToastContainer } from '@/components/ui/Toast';
 import { ChatWidget } from '@/components/chat/ChatWidget';
-import { WhatsAppButton } from '@/components/ui/WhatsAppButton';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+import { SubscribeNotificationBanner } from '@/components/popup/SubscribeNotificationBanner';
 
 export function AppLayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -34,7 +34,7 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
       <CartDrawer />
       <ToastContainer />
       <ChatWidget />
-      <WhatsAppButton phoneNumber="01304564836" />
+      <SubscribeNotificationBanner />
       <main>{children}</main>
       <Footer />
       <MobileBottomNav />

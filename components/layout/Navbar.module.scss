@@ -1246,11 +1246,12 @@
   border-radius: $radius-sm;
   border: 1px solid #18181b;
   cursor: pointer;
-  transition: background-color $transition-fast, transform 100ms ease;
+  transition: transform 100ms ease;
 
   &:hover {
-    background-color: $color-accent-red;
-    border-color: $color-accent-red;
+    background-color: $color-ink-black;
+    border-color: #18181b;
+    color: #ffffff;
   }
 
   &:active {

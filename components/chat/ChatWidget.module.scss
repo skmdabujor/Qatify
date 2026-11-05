@@ -22,15 +22,13 @@
   will-change: transform;
 
   @include tablet {
-    bottom: calc(66px + env(safe-area-inset-bottom, 0px));
-    right: 14px;
-    pointer-events: none;
+    display: none !important;
   }
 }
 
 :global(body.has-sticky-cart) .launcherWrapper {
   @include tablet {
-    bottom: calc(118px + env(safe-area-inset-bottom, 0px)); // Floats above bottom nav (56px) + sticky cart (~50px)
+    display: none !important;
   }
 }
 

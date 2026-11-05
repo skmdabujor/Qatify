@@ -41,30 +41,59 @@ export const FirstTimeDiscountPopup: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [hasDismissed, setHasDismissed] = useState(false);
 
-  // Initialize and check first-time visitor status
+  // Initialize and check first-time visitor status with sequential triggering
   useEffect(() => {
     setIsHydrated(true);
 
-    try {
-      const alreadyClaimed = localStorage.getItem('qatify_user_signed_up');
-      const alreadyDismissed = localStorage.getItem('qatify_signup_popup_closed');
+    const handleOpenFromNotification = () => {
+      try {
+        const alreadyClaimed = localStorage.getItem('qatify_user_signed_up');
+        const alreadyDismissed = localStorage.getItem('qatify_signup_popup_closed');
+        if (alreadyClaimed || alreadyDismissed) return;
 
-      if (alreadyClaimed) {
-        setIsSubmitted(true);
-        setHasDismissed(true);
-      } else if (alreadyDismissed) {
-        setHasDismissed(true);
-      } else {
-        // First-time visitor: open popup with a gentle delay after page loads
-        const timer = setTimeout(() => {
+        // Smooth delay after user acts on the Subscribe banner (Later or Subscribe)
+        setTimeout(() => {
           setIsOpen(true);
-        }, 1200);
+        }, 800);
+      } catch {}
+    };
 
-        return () => clearTimeout(timer);
-      }
-    } catch {
-      // Safe fallback if localStorage is unavailable
+    if (typeof window !== 'undefined') {
+      window.addEventListener('qatify:open-discount-popup', handleOpenFromNotification);
+
+      try {
+        const alreadyClaimed = localStorage.getItem('qatify_user_signed_up');
+        const alreadyDismissed = localStorage.getItem('qatify_signup_popup_closed');
+
+        if (alreadyClaimed) {
+          setIsSubmitted(true);
+          setHasDismissed(true);
+        } else if (alreadyDismissed) {
+          setHasDismissed(true);
+        } else {
+          // If the user already handled the notification banner in a prior session,
+          // then show this first-time discount popup after a gentle delay
+          const notifAlreadyActed =
+            localStorage.getItem('qatify_subscribed') === 'true' ||
+            localStorage.getItem('qatify_notif_later') ||
+            localStorage.getItem('qatify_user_email');
+
+          if (notifAlreadyActed) {
+            const timer = setTimeout(() => {
+              setIsOpen(true);
+            }, 2500);
+            return () => clearTimeout(timer);
+          }
+          // Otherwise, strictly wait for the user to act on the Subscribe notification banner!
+        }
+      } catch {}
     }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('qatify:open-discount-popup', handleOpenFromNotification);
+      }
+    };
   }, []);
 
   // Handle Close
@@ -169,20 +198,6 @@ export const FirstTimeDiscountPopup: React.FC = () => {
 
   return (
     <>
-      {/* Floating Re-Open Launcher Badge (Allows user to reopen voucher if closed) */}
-      {!isOpen && (
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className={styles.floatingReopenBadge}
-          title="Open First-Time 10% Discount Offer"
-          aria-label="Open 10% Discount Offer"
-        >
-          <Gift size={18} className={styles.badgeGiftIcon} />
-          <span>{isSubmitted ? 'Your 10% OFF Voucher' : 'Get 10% OFF 🎁'}</span>
-        </button>
-      )}
-
       {/* Main Modal Backdrop & Container */}
       {isOpen && (
         <div

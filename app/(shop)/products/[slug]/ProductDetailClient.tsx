@@ -131,6 +131,10 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
   // Active information tab
   const [activeTab, setActiveTab] = useState<'specs' | 'contents' | 'shipping' | 'reviews'>('specs');
 
+  // Collapsible accordion states in Technical Specifications tab (+ / - toggle)
+  const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
+  const [isSpecsOpen, setIsSpecsOpen] = useState(true);
+
   // Related products from Convex or mock fallback
   const liveRelated = useQuery(
     api.products.list,
@@ -301,9 +305,6 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
           {/* LEFT: Image Gallery Stage */}
           <div className={styles.galleryColumn}>
             <div className={styles.mainStage}>
-              {product.badge && (
-                <span className={styles.galleryBadge}>{product.badge}</span>
-              )}
               {product.discountPercent > 0 && (
                 <span className={styles.galleryDiscountBadge}>
                   -{product.discountPercent}% OFF
@@ -794,23 +795,117 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
           </div>
 
           <div className={styles.tabContentCard}>
-            {/* Tab 1: Specifications Table */}
+            {/* Tab 1: Technical Specifications & Product Description Accordions */}
             {activeTab === 'specs' && (
               <div className={styles.specsTab}>
-                <h3 className={styles.tabHeading}>Hardware & Engineering Specifications</h3>
-                <table className={styles.specsTable}>
-                  <tbody>
-                    {Object.entries(product.specifications || {}).map(([key, value], idx) => (
-                      <tr
-                        key={key}
-                        className={idx % 2 === 0 ? styles.evenRow : styles.oddRow}
-                      >
-                        <td className={styles.specKey}>{key}</td>
-                        <td className={styles.specVal}>{value}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                {/* 1. Collapsible Product Description Section (+ to open, - to close) */}
+                <div className={styles.specsAccordionItem}>
+                  <button
+                    type="button"
+                    className={styles.specsAccordionHeader}
+                    onClick={() => setIsDescriptionOpen((prev) => !prev)}
+                    aria-expanded={isDescriptionOpen}
+                  >
+                    <div className={styles.specsAccordionTitleWrap}>
+                      <h3 className={styles.specsAccordionTitle}>Product Description</h3>
+                      {!isDescriptionOpen && (
+                        <span className={styles.specsAccordionHint}>
+                          Click to expand description & key details
+                        </span>
+                      )}
+                    </div>
+                    <span
+                      className={styles.specsAccordionToggleBtn}
+                      aria-label={isDescriptionOpen ? 'Close product description' : 'Open product description'}
+                    >
+                      {isDescriptionOpen ? <Minus size={18} /> : <Plus size={18} />}
+                    </span>
+                  </button>
+
+                  {isDescriptionOpen && (
+                    <div className={styles.specsAccordionBody}>
+                      <div className={styles.productDescriptionContent}>
+                        {product.shortDescription && product.shortDescription !== product.fullDescription && (
+                          <div className={styles.descHighlightBox}>
+                            <p className={styles.descHighlightText}>{product.shortDescription}</p>
+                          </div>
+                        )}
+
+                        <div className={styles.descParagraphs}>
+                          {(product.fullDescription || (product as any).description || product.shortDescription || '')
+                            .split('\n\n')
+                            .map((para: string, i: number) => (
+                              <p key={i} className={styles.descParagraph}>
+                                {para}
+                              </p>
+                            ))}
+                        </div>
+
+                        {product.tags && product.tags.length > 0 && (
+                          <div className={styles.descTagsRow}>
+                            <span className={styles.tagsLabel}>Highlights:</span>
+                            <div className={styles.tagPills}>
+                              {product.tags.map((tag: string, idx: number) => (
+                                <span key={idx} className={styles.descTagPill}>
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. Collapsible Hardware & Engineering Specifications Section */}
+                <div className={styles.specsAccordionItem}>
+                  <button
+                    type="button"
+                    className={styles.specsAccordionHeader}
+                    onClick={() => setIsSpecsOpen((prev) => !prev)}
+                    aria-expanded={isSpecsOpen}
+                  >
+                    <div className={styles.specsAccordionTitleWrap}>
+                      <h3 className={styles.specsAccordionTitle}>Hardware & Engineering Specifications</h3>
+                      {!isSpecsOpen && (
+                        <span className={styles.specsAccordionHint}>
+                          Click to view technical specifications table
+                        </span>
+                      )}
+                    </div>
+                    <span
+                      className={styles.specsAccordionToggleBtn}
+                      aria-label={isSpecsOpen ? 'Close hardware specifications' : 'Open hardware specifications'}
+                    >
+                      {isSpecsOpen ? <Minus size={18} /> : <Plus size={18} />}
+                    </span>
+                  </button>
+
+                  {isSpecsOpen && (
+                    <div className={styles.specsAccordionBody}>
+                      {product.specifications && Object.keys(product.specifications).length > 0 ? (
+                        <table className={styles.specsTable}>
+                          <tbody>
+                            {Object.entries(product.specifications).map(([key, value], idx) => (
+                              <tr
+                                key={key}
+                                className={idx % 2 === 0 ? styles.evenRow : styles.oddRow}
+                              >
+                                <td className={styles.specKey}>{key}</td>
+                                <td className={styles.specVal}>{value}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <p className={styles.noSpecsText}>
+                          Detailed engineering specifications will be provided with the manufacturer box shipment.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 

@@ -111,6 +111,7 @@
 
   .highlight {
     background: linear-gradient(135deg, #ff9e00 0%, #ff6d00 100%);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }

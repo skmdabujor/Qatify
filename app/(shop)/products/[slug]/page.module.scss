@@ -100,12 +100,12 @@
 .discountBadge,
 .galleryDiscountBadge {
   @include badge-discount;
-  padding: 3px 8px;
+  padding: 4px 10px 4px 8px;
   font-size: 12px;
-  box-shadow: 0 2px 6px rgba(255, 109, 0, 0.35);
+  box-shadow: none;
   position: absolute;
   top: 12px;
-  left: 12px;
+  left: 0;
   z-index: 2;
 }
 
@@ -1152,6 +1152,188 @@
   @include mobile {
     font-size: 14.5px;
   }
+}
+
+// Specs & Accordion System
+.specsTab {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.specsAccordionItem {
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background-color: #ffffff;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    border-color: $color-border-medium;
+  }
+}
+
+.specsAccordionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background-color: $color-surface-muted;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: #ededf0;
+  }
+
+  @include mobile {
+    padding: 12px 14px;
+  }
+}
+
+.specsAccordionTitleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.specsAccordionTitle {
+  font-family: $font-heading;
+  font-size: 15px;
+  font-weight: 800;
+  color: $color-ink-black;
+  margin: 0;
+
+  @include mobile {
+    font-size: 14px;
+  }
+}
+
+.specsAccordionHint {
+  font-size: 12px;
+  color: $color-text-secondary;
+  font-weight: 500;
+}
+
+.specsAccordionToggleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  color: $color-ink-black;
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
+  transition: color $transition-fast, transform $transition-fast;
+
+  &.toggleOpen,
+  &.toggleClosed {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: $color-ink-black;
+  }
+}
+
+.specsAccordionBody {
+  padding: 16px 18px;
+  border-top: 1px solid $color-border-subtle;
+  background-color: #ffffff;
+
+  @include mobile {
+    padding: 12px 12px;
+  }
+}
+
+// Product Description Content within Accordion
+.productDescriptionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.descHighlightBox {
+  padding: 12px 16px;
+  background-color: $color-accent-red-light;
+  border-left: 3px solid $color-accent-red;
+  border-radius: $radius-xs;
+}
+
+.descHighlightText {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: $color-ink-black;
+  line-height: 1.55;
+  margin: 0;
+
+  @include mobile {
+    font-size: 12.5px;
+  }
+}
+
+.descParagraphs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.descParagraph {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #3f3f46;
+  margin: 0;
+
+  @include mobile {
+    font-size: 12.5px;
+  }
+}
+
+.descTagsRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed $color-border-subtle;
+}
+
+.tagsLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-text-secondary;
+}
+
+.tagPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.descTagPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  background-color: $color-surface-muted;
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-full;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: $color-ink-black;
+}
+
+.noSpecsText {
+  font-size: 13px;
+  color: $color-text-secondary;
+  font-style: italic;
+  margin: 0;
 }
 
 // Specs Table

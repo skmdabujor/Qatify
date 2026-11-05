@@ -51,7 +51,7 @@ export default function MaintenancePage() {
         <header className={styles.brandHeader}>
           <QatifyLogo variant="light" size="lg" showTagline={false} />
           <span className={styles.storeBadge}>
-            <Sparkles size={13} /> Scheduled Maintenance & System Upgrade
+            <Sparkles size={13} /> Online Store System & Logistics Upgrade
           </span>
         </header>
 
@@ -63,15 +63,15 @@ export default function MaintenancePage() {
 
         {/* Main Headline */}
         <h1 className={styles.headline}>
-          We Are <span className={styles.highlight}>Upgrading</span> Our Store
+          We Are <span className={styles.highlight}>Upgrading</span> Our Online Store
         </h1>
 
-        {/* English Only Description */}
+        {/* Honest & Transparent Description */}
         <div className={styles.descriptionText}>
           <p>
-            Qatify is currently undergoing scheduled platform upgrades, logistics enhancement,
-            and warehouse inventory optimization to serve our customers across Qatar with a faster,
-            premium shopping experience. Online orders are temporarily paused.
+            Qatify is refreshing its digital platform and optimizing direct express air delivery
+            routes to bring Qatar shoppers authentic gadgets and electronics with faster delivery
+            times. Online orders are temporarily paused.
           </p>
         </div>
 
@@ -84,7 +84,7 @@ export default function MaintenancePage() {
             <div className={styles.cardTitle}>Expected Reopening</div>
             <div className={styles.cardValue}>In 7 – 8 Days</div>
             <p className={styles.cardSub}>
-              Full store, flash deals, and express checkout will resume
+              Fresh gadget arrivals & special promotions will resume
             </p>
           </div>
 
@@ -95,7 +95,7 @@ export default function MaintenancePage() {
             <div className={styles.cardTitle}>Existing Orders</div>
             <div className={styles.cardValue}>Tracking Live & Active</div>
             <p className={styles.cardSub}>
-              Already ordered? All active shipments are moving as scheduled
+              Already ordered? All active direct air shipments are in transit
             </p>
           </div>
 
@@ -103,10 +103,10 @@ export default function MaintenancePage() {
             <div className={styles.cardIcon}>
               <MessageCircle size={20} />
             </div>
-            <div className={styles.cardTitle}>Customer Support</div>
-            <div className={styles.cardValue}>WhatsApp Online 24/7</div>
+            <div className={styles.cardTitle}>Online Customer Care</div>
+            <div className={styles.cardValue}>8:00 AM – 11:00 PM</div>
             <p className={styles.cardSub}>
-              Questions about shipments or urgent inquiries are answered live
+              GMT+3 Doha Time · Live WhatsApp Assistance
             </p>
           </div>
         </div>
@@ -130,7 +130,7 @@ export default function MaintenancePage() {
         {/* Footer & Secret Admin Access */}
         <footer className={styles.footerSection}>
           <p className={styles.copyright}>
-            © {new Date().getFullYear()} Qatify Qatar. All rights reserved. Doha, Qatar.
+            © {new Date().getFullYear()} Qatify. Dedicated Online Gadget Store Serving Qatar.
           </p>
 
           <button

@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Under Scheduled Maintenance | Qatify Qatar',
+  title: 'Online Store System Upgrade | Qatify',
   description:
-    'Qatify is currently undergoing scheduled maintenance and system upgrades to serve Qatar better. Online orders will resume shortly.',
+    'Qatify is refreshing its digital platform and direct express delivery network for Qatar shoppers. Online orders will resume shortly.',
   robots: {
     index: false,
     follow: false,
