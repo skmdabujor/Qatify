@@ -56,7 +56,7 @@ export default function PrivacyPolicyPage() {
       {/* 1. INTRODUCTION */}
       <section id="introduction">
         <h2>
-          <Lock size={22} color="#FF6D00" />
+          <Lock size={22} color="#ffb800" />
           1. Introduction & Who We Are
         </h2>
         <p>
@@ -70,7 +70,7 @@ export default function PrivacyPolicyPage() {
       {/* 2. DATA WE COLLECT */}
       <section id="data-we-collect">
         <h2>
-          <Database size={22} color="#FF6D00" />
+          <Database size={22} color="#ffb800" />
           2. The Personal Information We Collect
         </h2>
         <p>We only collect information necessary to fulfill your orders, provide customer assistance, and ensure a seamless shopping experience:</p>
@@ -96,7 +96,7 @@ export default function PrivacyPolicyPage() {
       {/* 3. HOW WE USE DATA */}
       <section id="how-we-use-data">
         <h2>
-          <FileCheck size={22} color="#FF6D00" />
+          <FileCheck size={22} color="#ffb800" />
           3. Why & How We Use Your Data
         </h2>
         <p>We process your personal information strictly for legitimate commercial and fulfillment purposes:</p>
@@ -112,7 +112,7 @@ export default function PrivacyPolicyPage() {
       {/* 4. PAYMENT SECURITY */}
       <section id="payment-security">
         <h2>
-          <CreditCard size={22} color="#FF6D00" />
+          <CreditCard size={22} color="#ffb800" />
           4. Payment Security & Strict Zero Card Storage
         </h2>
         <div className={styles.calloutGuarantee}>
@@ -132,7 +132,7 @@ export default function PrivacyPolicyPage() {
       {/* 5. DATA SHARING */}
       <section id="data-sharing">
         <h2>
-          <UserCheck size={22} color="#FF6D00" />
+          <UserCheck size={22} color="#ffb800" />
           5. Sharing With Logistics Partners (Strict Anti-Sale Policy)
         </h2>
         <p>
@@ -150,7 +150,7 @@ export default function PrivacyPolicyPage() {
       {/* 6. COOKIES & TRACKING */}
       <section id="cookies-tracking">
         <h2>
-          <Eye size={22} color="#FF6D00" />
+          <Eye size={22} color="#ffb800" />
           6. Cookies & Local Session Storage
         </h2>
         <p>
@@ -169,7 +169,7 @@ export default function PrivacyPolicyPage() {
       {/* 7. YOUR RIGHTS UNDER QATAR PDPPL */}
       <section id="your-rights">
         <h2>
-          <ShieldCheck size={22} color="#FF6D00" />
+          <ShieldCheck size={22} color="#ffb800" />
           7. Your Rights Under Qatar PDPPL (Law No. 13 of 2016)
         </h2>
         <p>Under the Qatar Personal Data Privacy Protection Law, you hold specific, enforceable rights over your personal data:</p>
@@ -184,7 +184,7 @@ export default function PrivacyPolicyPage() {
       {/* 8. DATA RETENTION & SECURITY */}
       <section id="data-retention">
         <h2>
-          <Server size={22} color="#FF6D00" />
+          <Server size={22} color="#ffb800" />
           8. Data Retention & Safeguards
         </h2>
         <p>
@@ -198,7 +198,7 @@ export default function PrivacyPolicyPage() {
       {/* 9. CONTACT DPO */}
       <section id="contact-dpo">
         <h2>
-          <HelpCircle size={22} color="#FF6D00" />
+          <HelpCircle size={22} color="#ffb800" />
           9. Contact Our Data Protection Team
         </h2>
         <p>
@@ -206,7 +206,7 @@ export default function PrivacyPolicyPage() {
         </p>
         <ul>
           <li><strong>Email:</strong> <code>support@shopqatify.com</code> (Subject: <em>Data Privacy Officer</em>)</li>
-          <li><strong>Online Help Desk:</strong> Submit an inquiry via our <Link href="/contact" style={{ color: '#FF6D00', textDecoration: 'underline' }}>Contact Us</Link> portal or Live Chat.</li>
+          <li><strong>Online Help Desk:</strong> Submit an inquiry via our <Link href="/contact" style={{ color: '#ffb800', textDecoration: 'underline' }}>Contact Us</Link> portal or Live Chat.</li>
           <li><strong>Operating Model:</strong> Digital E-Commerce Platform providing direct express air deliveries across the State of Qatar.</li>
         </ul>
       </section>

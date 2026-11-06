@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 50% 20%, rgba(255, 109, 0, 0.12) 0%, rgba(10, 13, 20, 0.98) 70%), #0a0d14;
+  background: radial-gradient(circle at 50% 20%, rgba(255, 184, 0, 0.12) 0%, rgba(10, 13, 20, 0.98) 70%), #0a0d14;
   color: #f8fafc;
   padding: 2.5rem 1.25rem;
   font-family: 'Plus Jakarta Sans', var(--font-body, system-ui, sans-serif);
@@ -23,7 +23,7 @@
     transform: translateX(-50%);
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, rgba(255, 109, 0, 0.2) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 184, 0, 0.2) 0%, transparent 70%);
     filter: blur(80px);
     pointer-events: none;
     z-index: 0;
@@ -54,8 +54,8 @@
     gap: 0.4rem;
     padding: 0.25rem 0.75rem;
     border-radius: 9999px;
-    background: rgba(255, 109, 0, 0.15);
-    border: 1px solid rgba(255, 109, 0, 0.3);
+    background: rgba(255, 184, 0, 0.15);
+    border: 1px solid rgba(255, 184, 0, 0.3);
     color: #ff9e00;
     font-size: 0.75rem;
     font-weight: 700;
@@ -69,25 +69,25 @@
   width: 88px;
   height: 88px;
   border-radius: 28px;
-  background: linear-gradient(135deg, rgba(255, 109, 0, 0.25) 0%, rgba(255, 158, 0, 0.1) 100%);
-  border: 1px solid rgba(255, 109, 0, 0.4);
+  background: linear-gradient(135deg, rgba(255, 184, 0, 0.25) 0%, rgba(255, 158, 0, 0.1) 100%);
+  border: 1px solid rgba(255, 184, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 1.75rem;
-  box-shadow: 0 16px 36px rgba(255, 109, 0, 0.2);
+  box-shadow: 0 16px 36px rgba(255, 184, 0, 0.2);
 
   .pulseRing {
     position: absolute;
     inset: -6px;
     border-radius: 34px;
-    border: 2px dashed rgba(255, 109, 0, 0.35);
+    border: 2px dashed rgba(255, 184, 0, 0.35);
     animation: rotateSlow 20s linear infinite;
   }
 
   .icon {
-    color: #ff6d00;
-    filter: drop-shadow(0 0 12px rgba(255, 109, 0, 0.6));
+    color: #ffb800;
+    filter: drop-shadow(0 0 12px rgba(255, 184, 0, 0.6));
   }
 }
 
@@ -110,7 +110,7 @@
   text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 
   .highlight {
-    background: linear-gradient(135deg, #ff9e00 0%, #ff6d00 100%);
+    background: linear-gradient(135deg, #ff9e00 0%, #ffb800 100%);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -148,14 +148,14 @@
 
   &:hover {
     transform: translateY(-2px);
-    border-color: rgba(255, 109, 0, 0.3);
+    border-color: rgba(255, 184, 0, 0.3);
   }
 
   .cardIcon {
     width: 36px;
     height: 36px;
     border-radius: 10px;
-    background: rgba(255, 109, 0, 0.12);
+    background: rgba(255, 184, 0, 0.12);
     color: #ff9e00;
     display: flex;
     align-items: center;
@@ -345,8 +345,8 @@
       outline: none;
 
       &:focus {
-        border-color: #ff6d00;
-        box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+        border-color: #ffb800;
+        box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.15);
       }
     }
 
@@ -375,7 +375,7 @@
     }
 
     .submitBtn {
-      background: #ff6d00;
+      background: #ffb800;
       border: none;
       color: #ffffff;
       padding: 0.6rem 1.25rem;
@@ -384,7 +384,7 @@
       font-size: 0.85rem;
       font-weight: 700;
       &:hover {
-        background: #e65100;
+        background: #eab308;
       }
     }
   }

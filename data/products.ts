@@ -147,7 +147,7 @@ export const QATAR_MUNICIPALITIES = [
 export const CATEGORIES = [
   { id: 'mobile-acc', name: 'Mobile Accessories', slug: 'mobile-accessories', icon: 'Smartphone', count: 42 },
   { id: 'smartwatches', name: 'Smartwatches & Fit', slug: 'smartwatches', icon: 'Watch', count: 28 },
-  { id: 'tws-audio', name: 'TWS & Spatial Audio', slug: 'tws-audio', icon: 'Headphones', count: 35 },
+  { id: 'toys-kids-learning', name: 'Toys-Kids Learning', slug: 'toys-kids-learning', icon: 'ToyBrick', count: 28 },
   { id: 'power-chargers', name: 'GaN Chargers & Banks', slug: 'chargers-powerbanks', icon: 'Zap', count: 29 },
   { id: 'car-tech', name: 'Car Tech & Mounts', slug: 'car-accessories', icon: 'Car', count: 19 },
   { id: 'gaming-gear', name: 'Gaming & Desk Tech', slug: 'gaming-gear', icon: 'Gamepad2', count: 24 },
@@ -164,8 +164,8 @@ export const PRODUCTS: Product[] = [
     title: 'Soundcore by Anker Liberty 4 NC Wireless Noise Cancelling Earbuds (48dB Hybrid ANC)',
     shortDescription: 'Adaptive 48dB active noise cancellation, Hi-Res wireless LDAC audio, 50h total playtime, and Qi wireless fast charging.',
     fullDescription: 'Engineered for crystal-clear sound anywhere in Qatar. The Soundcore Liberty 4 NC reduces environmental noise by up to 98.5% with high-sensitivity in-ear sound sensors and customized acoustic chambers. Features 6 beamforming microphones with AI noise reduction for crystal-clear phone calls in Doha traffic or breezy corniche strolls.',
-    category: 'TWS & Spatial Audio',
-    categorySlug: 'tws-audio',
+    category: 'Mobile Accessories',
+    categorySlug: 'mobile-accessories',
     subcategory: 'Earbuds',
     brand: 'Soundcore',
     priceQAR: 149,
@@ -698,7 +698,7 @@ export const PRODUCTS: Product[] = [
     stockPercent: 82,
     inStock: true,
     isFlashDeal: false,
-    isTrending: false,
+    isTrending: true,
     isBestSeller: false,
     isUnder99: false,
     isNewArrival: true,
@@ -1313,8 +1313,8 @@ export const PRODUCTS: Product[] = [
     title: 'Baseus Bowie E16 True Wireless Stereo Earbuds with Bluetooth 5.3',
     shortDescription: '30-hour battery life with 13mm dynamic neodymium drivers and ultra-lightweight 3.8g ergonomic design.',
     fullDescription: 'High quality wireless audio at an unbelievable price point. Built with 13mm dynamic drivers delivering punchy bass and clear vocals. Bluetooth 5.3 ensures low latency gaming and instant auto-pairing when you pop open the clamshell case.',
-    category: 'TWS & Spatial Audio',
-    categorySlug: 'tws-audio',
+    category: 'Mobile Accessories',
+    categorySlug: 'mobile-accessories',
     subcategory: 'Earbuds',
     brand: 'Baseus',
     priceQAR: 69,
@@ -1702,8 +1702,8 @@ export const PRODUCTS: Product[] = [
     "title": "Sony WH-1000XM5 Wireless Industry-Leading Noise Cancelling Over-Ear Headphones",
     "shortDescription": "Dual-processor Auto NC Optimizer, 8 beamforming microphones, 30-hour battery life, and ultra-comfortable soft fit leather.",
     "fullDescription": "The pinnacle of acoustic silence in Doha. Featuring two processors controlling eight microphones, the Sony WH-1000XM5 provides unparalleled noise cancellation for air travel, office focus, and everyday luxury audio.",
-    "category": "TWS & Spatial Audio",
-    "categorySlug": "tws-audio",
+    "category": "Mobile Accessories",
+    "categorySlug": "mobile-accessories",
     "subcategory": "Headphones",
     "brand": "Sony",
     "priceQAR": 1199,
@@ -2213,8 +2213,8 @@ export const PRODUCTS: Product[] = [
     "title": "Bose QuietComfort Ultra Wireless Spatial Noise Cancelling In-Ear Earbuds",
     "shortDescription": "Breakthrough Bose Immersive Audio, world-class noise cancellation, and CustomTune personalized ear fit.",
     "fullDescription": "Experience groundbreaking spatial audio that places what you hear right in front of you. CustomTune technology automatically analyzes your unique ear canal acoustics to calibrate noise cancellation in real-time.",
-    "category": "TWS & Spatial Audio",
-    "categorySlug": "tws-audio",
+    "category": "Mobile Accessories",
+    "categorySlug": "mobile-accessories",
     "subcategory": "Earbuds",
     "brand": "Bose",
     "priceQAR": 949,
@@ -3165,8 +3165,8 @@ export const PRODUCTS: Product[] = [
     "title": "Kanto YU2 Powered Desktop Reference Bookshelf Audio Speakers (Built-in USB DAC & Sub Out)",
     "shortDescription": "100W peak power, 3\" Kevlar drivers, 3/4\" silk dome tweeters, internal digital USB soundcard, and sub output.",
     "fullDescription": "Audiophile acoustics tailored for modern desk spaces. The Kanto YU2 connects directly to your Mac or PC via USB, bypassing noisy onboard computer audio cards for crystalline highs and warm acoustic mids.",
-    "category": "TWS & Spatial Audio",
-    "categorySlug": "tws-audio",
+    "category": "Gaming & Desk Tech",
+    "categorySlug": "gaming-gear",
     "subcategory": "Speakers",
     "brand": "Kanto",
     "priceQAR": 799,
@@ -3545,8 +3545,8 @@ export const PRODUCTS: Product[] = [
     "title": "Marshall Emberton II Portable Bluetooth Speaker with True Stereophonic 360 Sound (30+ Hours Playtime)",
     "shortDescription": "Signature Marshall vintage brass knob, IP67 dust & water resistance, Stack Mode pairing, and 30+ hours of battery life.",
     "fullDescription": "Rich, clear, and loud sound wherever life takes you across Qatar. Emberton II utilizes True Stereophonic, a unique form of multi-directional 360-degree sound from Marshall that fills the room completely.",
-    "category": "TWS & Spatial Audio",
-    "categorySlug": "tws-audio",
+    "category": "Mobile Accessories",
+    "categorySlug": "mobile-accessories",
     "subcategory": "Speakers",
     "brand": "Marshall",
     "priceQAR": 579,
@@ -3837,7 +3837,497 @@ export const PRODUCTS: Product[] = [
       "qualityInspected": true,
       "hubOrigin": "Regional Tech Distribution Hub"
     }
+  },
+{
+  "id": "qat-054",
+  "slug": "kids-10-inch-lcd-writing-drawing-tablet",
+  "title": "Kids 10.5-Inch LCD Writing & Drawing Tablet with Lock Key & Stylus (Eye-Protection Color Doodle Board)",
+  "shortDescription": "Zero-radiation color screen, one-touch instant erase, anti-loss stylus holder, and replaceable button battery lasting 1+ year.",
+  "fullDescription": "Encourage creativity and screen-free learning across Qatar with this vibrant 10.5-inch LCD doodle board. Perfect for car rides, schoolwork, and bedtime drawing without ink stains or blue light eye strain.",
+  "category": "Toys-Kids Learning",
+  "categorySlug": "toys-kids-learning",
+  "subcategory": "Learning Tablets",
+  "brand": "Xiaomi Mijia",
+  "priceQAR": 49,
+  "originalPriceQAR": 89,
+  "discountPercent": 45,
+  "rating": 4.88,
+  "reviewCount": 215,
+  "soldCount": 680,
+  "stockPercent": 88,
+  "inStock": true,
+  "isFlashDeal": true,
+  "isTrending": true,
+  "isBestSeller": true,
+  "isUnder99": true,
+  "isNewArrival": true,
+  "badge": "KIDS FAVORITE",
+  "images": [
+    "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=800&auto=format&fit=crop&q=80"
+  ],
+  "tags": [
+    "Kids Learning",
+    "LCD Tablet",
+    "Drawing Board",
+    "STEM Toys",
+    "Eye Protection",
+    "Under QAR 99"
+  ],
+  "variants": {
+    "colors": [
+      {
+        "name": "Ocean Blue",
+        "hex": "#0284c7"
+      },
+      {
+        "name": "Pastel Pink",
+        "hex": "#f472b6"
+      },
+      {
+        "name": "Teal Green",
+        "hex": "#0d9488"
+      }
+    ],
+    "options": [
+      {
+        "name": "Size",
+        "values": [
+          "10.5 Inch Standard",
+          "12 Inch XL (+QAR 15)"
+        ]
+      }
+    ]
+  },
+  "volumeDiscounts": [
+    {
+      "quantity": 1,
+      "pricePerUnitQAR": 49,
+      "savingsText": "Single Tablet"
+    },
+    {
+      "quantity": 2,
+      "pricePerUnitQAR": 44,
+      "savingsText": "Save QAR 10 (Sibling Pack)"
+    },
+    {
+      "quantity": 3,
+      "pricePerUnitQAR": 39,
+      "savingsText": "Save QAR 30 (Best Gift Value)"
+    }
+  ],
+  "specifications": {
+    "Display": "10.5-inch Pressure-Sensitive Flexible Color LCD Screen",
+    "Battery": "CR2025 Coin Cell (Included, Replaceable, 100,000+ Erases)",
+    "Safety": "Rounded Drop-Resistant ABS Corners & Screwed Battery Compartment",
+    "Weight": "180g Ultra Lightweight"
+  },
+  "packageContents": [
+    "10.5\" LCD Writing Tablet",
+    "Ergonomic Stylus Pen with Lanyard",
+    "Pre-installed CR2025 Battery",
+    "Quick Guide"
+  ],
+  "dropshipInfo": {
+    "dispatchHours": 24,
+    "shippingDaysMin": 6,
+    "shippingDaysMax": 8,
+    "freeShippingThresholdQAR": 150,
+    "shippingCostQAR": 20,
+    "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+    "qualityInspected": true,
+    "hubOrigin": "Regional Tech Distribution Hub"
   }
+},
+{
+  "id": "qat-055",
+  "slug": "smart-stem-interactive-programmable-coding-robot",
+  "title": "Smart STEM Interactive Programmable Coding Robot for Kids (Voice, Gesture & App Remote Controlled)",
+  "shortDescription": "Visual Scratch drag-and-drop block coding, 50+ obstacle avoidance movements, customizable LED face matrix, and rechargeable USB-C battery.",
+  "fullDescription": "Introduce young minds to STEM coding and robotics through play. Children can guide this friendly companion using hand gestures, voice commands, or via the interactive tablet app to solve maze challenges and dance routines.",
+  "category": "Toys-Kids Learning",
+  "categorySlug": "toys-kids-learning",
+  "subcategory": "Robotics & STEM",
+  "brand": "Makeblock",
+  "priceQAR": 169,
+  "originalPriceQAR": 249,
+  "discountPercent": 32,
+  "rating": 4.92,
+  "reviewCount": 140,
+  "soldCount": 390,
+  "stockPercent": 79,
+  "inStock": true,
+  "isFlashDeal": false,
+  "isTrending": true,
+  "isBestSeller": false,
+  "isUnder99": false,
+  "isNewArrival": true,
+  "badge": "STEM CERTIFIED",
+  "images": [
+    "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=800&auto=format&fit=crop&q=80"
+  ],
+  "tags": [
+    "STEM Robot",
+    "Coding for Kids",
+    "Interactive Toy",
+    "Educational Tech",
+    "Programmable"
+  ],
+  "variants": {
+    "colors": [
+      {
+        "name": "Cyber White & Blue",
+        "hex": "#0284c7"
+      },
+      {
+        "name": "Solar Orange",
+        "hex": "#ea580c"
+      }
+    ]
+  },
+  "volumeDiscounts": [
+    {
+      "quantity": 1,
+      "pricePerUnitQAR": 169,
+      "savingsText": "Complete Kit"
+    }
+  ],
+  "specifications": {
+    "Sensors": "Ultrasonic Obstacle Avoidance + Infrared Gesture Sensors",
+    "Connectivity": "Bluetooth 5.0 Low Energy (iOS & Android Compatible)",
+    "Battery": "1200mAh Lithium Rechargeable (Up to 4 Hours Continuous Play)",
+    "Age Group": "Recommended for Ages 6–14"
+  },
+  "packageContents": [
+    "Interactive Smart STEM Robot",
+    "2.4G Infrared Remote Controller",
+    "USB-C Fast Charging Cable",
+    "Robotics Coding Mission Map & Activity Book"
+  ],
+  "dropshipInfo": {
+    "dispatchHours": 24,
+    "shippingDaysMin": 6,
+    "shippingDaysMax": 8,
+    "freeShippingThresholdQAR": 150,
+    "shippingCostQAR": 0,
+    "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+    "qualityInspected": true,
+    "hubOrigin": "Regional Tech Distribution Hub"
+  }
+},
+{
+  "id": "qat-056",
+  "slug": "kids-instant-print-digital-camera-thermal-paper",
+  "title": "Kids Instant Print Digital Camera with Zero-Ink Thermal Paper (1080P HD Photo Video & 32GB SD Card)",
+  "shortDescription": "Zero-ink thermal paper instant prints in 3 seconds, 1080P video recording, selfie dual lens, and 30+ built-in cartoon frames.",
+  "fullDescription": "Let your child capture memorable family milestones and Corniche moments instantly. Uses safe, non-toxic zero-ink thermal printing so photos develop immediately in black-and-white for children to color with included markers.",
+  "category": "Toys-Kids Learning",
+  "categorySlug": "toys-kids-learning",
+  "subcategory": "Kids Cameras",
+  "brand": "VTech",
+  "priceQAR": 139,
+  "originalPriceQAR": 219,
+  "discountPercent": 36,
+  "rating": 4.9,
+  "reviewCount": 198,
+  "soldCount": 520,
+  "stockPercent": 84,
+  "inStock": true,
+  "isFlashDeal": false,
+  "isTrending": true,
+  "isBestSeller": true,
+  "isUnder99": false,
+  "isNewArrival": true,
+  "badge": "INSTANT PRINT",
+  "images": [
+    "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=800&auto=format&fit=crop&q=80"
+  ],
+  "tags": [
+    "Kids Camera",
+    "Instant Print",
+    "Thermal Paper",
+    "Creative Toys",
+    "Gift for Kids"
+  ],
+  "variants": {
+    "colors": [
+      {
+        "name": "Dino Green",
+        "hex": "#15803d"
+      },
+      {
+        "name": "Bunny Pink",
+        "hex": "#ec4899"
+      }
+    ]
+  },
+  "volumeDiscounts": [
+    {
+      "quantity": 1,
+      "pricePerUnitQAR": 139,
+      "savingsText": "Gift Box Edition"
+    }
+  ],
+  "specifications": {
+    "Print Technology": "Thermal Zero-Ink Black & White (No Cartridges Needed)",
+    "Camera Sensor": "48MP Interpolated Stills, 1080P Full HD Video Recording",
+    "Storage": "32GB High-Speed MicroSD Card Included (Holds 10,000+ Photos)",
+    "Battery": "1000mAh Rechargeable Lithium-ion"
+  },
+  "packageContents": [
+    "Instant Print Camera",
+    "3 Rolls of Zero-Ink BPA-Free Thermal Paper (Over 200 Photos)",
+    "32GB High-Speed MicroSD Card",
+    "Cartoon Stickers & 5 Color Markers",
+    "Anti-Drop Neck Lanyard",
+    "USB-C Charging Cable"
+  ],
+  "dropshipInfo": {
+    "dispatchHours": 24,
+    "shippingDaysMin": 6,
+    "shippingDaysMax": 8,
+    "freeShippingThresholdQAR": 150,
+    "shippingCostQAR": 20,
+    "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+    "qualityInspected": true,
+    "hubOrigin": "Regional Tech Distribution Hub"
+  }
+},
+{
+  "id": "qat-057",
+  "slug": "bilingual-arabic-english-early-learning-talking-flashcards",
+  "title": "Bilingual Arabic & English Early Learning Talking Flashcards Machine (510 Sight Words for Toddlers)",
+  "shortDescription": "Clear authentic Arabic & English pronunciation, animal sound effects, 255 double-sided flashcards, and eye-protecting screen-free audio device.",
+  "fullDescription": "Specially adapted for families in Qatar. Inserting any double-sided card plays crisp Arabic and English vocabulary with real-world sounds (animals, vehicles, foods, body parts) to accelerate toddler speech development naturally.",
+  "category": "Toys-Kids Learning",
+  "categorySlug": "toys-kids-learning",
+  "subcategory": "Language Learning",
+  "brand": "EduPlay",
+  "priceQAR": 65,
+  "originalPriceQAR": 109,
+  "discountPercent": 40,
+  "rating": 4.86,
+  "reviewCount": 280,
+  "soldCount": 920,
+  "stockPercent": 91,
+  "inStock": true,
+  "isFlashDeal": false,
+  "isTrending": true,
+  "isBestSeller": true,
+  "isUnder99": true,
+  "isNewArrival": false,
+  "badge": "BILINGUAL AR/EN",
+  "images": [
+    "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1544717305-2782549b5136?w=800&auto=format&fit=crop&q=80"
+  ],
+  "tags": [
+    "Flashcards",
+    "Bilingual Learning",
+    "Arabic English",
+    "Toddler Toys",
+    "Under QAR 99"
+  ],
+  "variants": {
+    "colors": [
+      {
+        "name": "Sky Blue",
+        "hex": "#38bdf8"
+      },
+      {
+        "name": "Sweet Pink",
+        "hex": "#f472b6"
+      }
+    ]
+  },
+  "volumeDiscounts": [
+    {
+      "quantity": 1,
+      "pricePerUnitQAR": 65,
+      "savingsText": "Starter Kit (510 Words)"
+    },
+    {
+      "quantity": 2,
+      "pricePerUnitQAR": 58,
+      "savingsText": "Save QAR 14 (Twin Pack)"
+    }
+  ],
+  "specifications": {
+    "Audio Content": "510 Audio Words across 31 Categories in Arabic and English",
+    "Speaker": "Soft Anti-High Volume Safe Kids Acoustic Speaker",
+    "Battery": "USB Rechargeable (4.5 Hours Continuous Play per Charge)"
+  },
+  "packageContents": [
+    "Talking Flashcards Pocket Device",
+    "255 Double-Sided Flashcards (510 Words)",
+    "USB Charging Cable",
+    "Arabic & English Quick Guide"
+  ],
+  "dropshipInfo": {
+    "dispatchHours": 24,
+    "shippingDaysMin": 6,
+    "shippingDaysMax": 8,
+    "freeShippingThresholdQAR": 150,
+    "shippingCostQAR": 20,
+    "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+    "qualityInspected": true,
+    "hubOrigin": "Regional Tech Distribution Hub"
+  }
+},
+{
+  "id": "qat-058",
+  "slug": "kids-smart-learning-watch-dual-cameras-sos",
+  "title": "Kids Smart Game & Learning Watch with Dual HD Cameras, Voice Chat, Pedometer & SOS",
+  "shortDescription": "16 educational puzzle games, dual selfie cameras, torch light, habit alarm clock, calculator, and audio music player without SIM required.",
+  "fullDescription": "A feature-packed smart companion designed safely for kids aged 4–12. Features dual cameras for creative photos, built-in interactive math games, audio story player, and parental time-control limits.",
+  "category": "Toys-Kids Learning",
+  "categorySlug": "toys-kids-learning",
+  "subcategory": "Kids Smartwatches",
+  "brand": "Garmin Jr",
+  "priceQAR": 95,
+  "originalPriceQAR": 159,
+  "discountPercent": 40,
+  "rating": 4.85,
+  "reviewCount": 175,
+  "soldCount": 460,
+  "stockPercent": 82,
+  "inStock": true,
+  "isFlashDeal": false,
+  "isTrending": false,
+  "isBestSeller": false,
+  "isUnder99": true,
+  "isNewArrival": true,
+  "badge": "SAFE FOR KIDS",
+  "images": [
+    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&auto=format&fit=crop&q=80"
+  ],
+  "tags": [
+    "Kids Smartwatch",
+    "SOS",
+    "Educational Watch",
+    "Games for Kids",
+    "Under QAR 99"
+  ],
+  "variants": {
+    "colors": [
+      {
+        "name": "Cosmic Blue",
+        "hex": "#1e40af"
+      },
+      {
+        "name": "Berry Purple",
+        "hex": "#7e22ce"
+      },
+      {
+        "name": "Shadow Black",
+        "hex": "#18181b"
+      }
+    ]
+  },
+  "volumeDiscounts": [
+    {
+      "quantity": 1,
+      "pricePerUnitQAR": 95,
+      "savingsText": "Best Kids Watch Deal"
+    }
+  ],
+  "specifications": {
+    "Screen": "1.54-inch HD IPS Touchscreen (240x240 Resolution)",
+    "Battery": "400mAh High-Density Li-Po (3–5 Days Standby)",
+    "Strap": "Food-Grade Soft Anti-Allergy Silicone"
+  },
+  "packageContents": [
+    "Kids Learning Smartwatch",
+    "Magnetic USB Charging Cable",
+    "Screen Protector (Pre-Applied)",
+    "Instruction Manual"
+  ],
+  "dropshipInfo": {
+    "dispatchHours": 24,
+    "shippingDaysMin": 6,
+    "shippingDaysMax": 8,
+    "freeShippingThresholdQAR": 150,
+    "shippingCostQAR": 20,
+    "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+    "qualityInspected": true,
+    "hubOrigin": "Regional Tech Distribution Hub"
+  }
+},
+{
+  "id": "qat-059",
+  "slug": "12-in-1-solar-powered-stem-robotic-science-kit",
+  "title": "12-in-1 Solar Powered STEM Robotic Science Engineering Kit (DIY Building Experiments)",
+  "shortDescription": "190 DIY snap-together pieces, working solar panel motor (no batteries required), land and water crawl modes, and step-by-step experiment blueprint.",
+  "fullDescription": "Powered completely by the glorious Qatar sun. Children can assemble 12 different mechanical robots—from walking beetles and rowboats to wheeled racers—learning green energy and mechanical gearing through hands-on discovery.",
+  "category": "Toys-Kids Learning",
+  "categorySlug": "toys-kids-learning",
+  "subcategory": "Robotics & STEM",
+  "brand": "Thames & Kosmos",
+  "priceQAR": 85,
+  "originalPriceQAR": 139,
+  "discountPercent": 38,
+  "rating": 4.89,
+  "reviewCount": 160,
+  "soldCount": 410,
+  "stockPercent": 86,
+  "inStock": true,
+  "isFlashDeal": false,
+  "isTrending": true,
+  "isBestSeller": false,
+  "isUnder99": true,
+  "isNewArrival": false,
+  "badge": "SOLAR POWERED",
+  "images": [
+    "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800&auto=format&fit=crop&q=80"
+  ],
+  "tags": [
+    "Solar Kit",
+    "DIY STEM",
+    "Science Toy",
+    "Building Kit",
+    "Under QAR 99"
+  ],
+  "variants": {
+    "colors": [
+      {
+        "name": "Solar Yellow & Grey",
+        "hex": "#eab308"
+      }
+    ]
+  },
+  "volumeDiscounts": [
+    {
+      "quantity": 1,
+      "pricePerUnitQAR": 85,
+      "savingsText": "12-in-1 Complete Set"
+    }
+  ],
+  "specifications": {
+    "Power Source": "Direct High-Efficiency Solar Panel (Alternative Battery Mode Included)",
+    "Pieces": "190 Durable Non-Toxic ABS Mechanical Gears & Chassis",
+    "Recommended Age": "8–16 Years (Family Friendly)"
+  },
+  "packageContents": [
+    "190-Piece Robotic Building Set",
+    "High-Efficiency Solar Motor Unit",
+    "Full Illustrated 12-Robot Assembly Manual",
+    "Sorting Trays & Safety Tool"
+  ],
+  "dropshipInfo": {
+    "dispatchHours": 24,
+    "shippingDaysMin": 6,
+    "shippingDaysMax": 8,
+    "freeShippingThresholdQAR": 150,
+    "shippingCostQAR": 20,
+    "airCarrier": "Express Air Freight to Hamad Int’l (DOH)",
+    "qualityInspected": true,
+    "hubOrigin": "Regional Tech Distribution Hub"
+  }
+}
 ];
 
 export const SHIPPING_METHODS: ShippingMethod[] = [

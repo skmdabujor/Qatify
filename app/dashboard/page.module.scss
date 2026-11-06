@@ -1639,8 +1639,8 @@
   }
 
   &.dropdownActiveTrigger {
-    border-color: #FF6D00;
-    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+    border-color: #ffb800;
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.15);
   }
 
   @include mobile {
@@ -1683,7 +1683,7 @@
 
   &.chevronOpen {
     transform: rotate(180deg);
-    color: #FF6D00;
+    color: #ffb800;
   }
 }
 
@@ -1718,8 +1718,8 @@
   }
 
   &.dropdownActiveTrigger {
-    border-color: #FF6D00;
-    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+    border-color: #ffb800;
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.15);
   }
 }
 
@@ -1796,8 +1796,8 @@
   }
 
   &.itemSelected {
-    background-color: rgba(255, 109, 0, 0.08);
-    color: #FF6D00;
+    background-color: rgba(255, 184, 0, 0.08);
+    color: #ffb800;
     font-weight: 600;
   }
 }
@@ -1830,7 +1830,7 @@
 }
 
 .itemCheckIcon {
-  color: #FF6D00;
+  color: #ffb800;
   flex-shrink: 0;
 }
 
@@ -1884,8 +1884,8 @@
   }
 
   &:focus {
-    border-color: #FF6D00;
-    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+    border-color: #ffb800;
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.15);
   }
 
   &:-webkit-autofill,
@@ -1922,8 +1922,8 @@
   min-width: 0;
 
   &:focus-within {
-    border-color: #FF6D00;
-    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+    border-color: #ffb800;
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.15);
   }
 }
 
@@ -2024,8 +2024,8 @@
   box-sizing: border-box;
 
   &:focus {
-    border-color: #FF6D00;
-    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+    border-color: #ffb800;
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.15);
   }
 }
 
@@ -2067,8 +2067,8 @@
   transition: all 0.15s ease;
 
   &.checked {
-    background-color: #FF6D00;
-    border-color: #FF6D00;
+    background-color: #ffb800;
+    border-color: #ffb800;
   }
 }
 
@@ -2086,7 +2086,7 @@
 }
 
 .aliConfirmBtn {
-  background-color: #FF6D00;
+  background-color: #ffb800;
   color: #ffffff;
   border: none;
   border-radius: 9999px;
@@ -2094,11 +2094,11 @@
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 2px 10px rgba(255, 109, 0, 0.28);
+  box-shadow: 0 2px 10px rgba(255, 184, 0, 0.28);
   transition: background-color 0.15s ease, transform 0.1s ease;
 
   &:hover {
-    background-color: #E65100;
+    background-color: #eab308;
     transform: translateY(-1px);
   }
 
@@ -2311,7 +2311,7 @@
 .greenIcon { color: #10b981; }
 .yellowIcon { color: #ca8a04; }
 .redIcon { color: $color-accent-red; }
-.blueIcon { color: #FF6D00; }
+.blueIcon { color: #ffb800; }
 
 // Pipeline Card
 .pipelineCard {
@@ -2422,9 +2422,9 @@
   font-weight: 700;
   padding: 1px 6px;
   border-radius: $radius-xs;
-  background-color: #fff4ec;
+  background-color: #fffbeb;
   color: #9a3412;
-  border: 1px solid #fed7aa;
+  border: 1px solid #fef08a;
 }
 
 .pipelineStatusGreen {
@@ -2536,9 +2536,9 @@
 }
 
 .statusPillBlue {
-  background-color: #fff4ec;
-  color: #FF6D00;
-  border: 1px solid #fed7aa;
+  background-color: #fffbeb;
+  color: #ffb800;
+  border: 1px solid #fef08a;
   font-size: 10px;
   font-weight: 800;
   padding: 2px 6px;

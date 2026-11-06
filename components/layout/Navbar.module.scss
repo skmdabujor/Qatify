@@ -59,9 +59,9 @@
 }
 
 .freeShippingBadge {
-  background: #fff4ec;
-  color: #FF6D00;
-  border: 1px solid #fed7aa;
+  background: #fffbeb;
+  color: #ffb800;
+  border: 1px solid rgba(255, 184, 0, 0.4);
   font-weight: 700;
   padding: 1px 7px;
   border-radius: $radius-full;
@@ -974,7 +974,7 @@
   bottom: 2px;
   left: 2px;
   background-color: $color-accent-red;
-  color: #ffffff;
+  color: #111111;
   font-size: 9.5px;
   font-weight: 800;
   padding: 1px 4px;
@@ -1068,7 +1068,7 @@
 .currencyLabel {
   font-size: 10.5px;
   font-weight: 700;
-  color: $color-accent-red;
+  color: #d52b1e;
 }
 
 .priceNumber {
@@ -1213,7 +1213,7 @@
   top: -5px;
   right: -8px;
   background-color: $color-accent-red;
-  color: #ffffff;
+  color: #111111;
   font-size: 10px;
   font-weight: 800;
   min-width: 16px;
@@ -1355,8 +1355,8 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  background-color: $color-accent-red;
-  color: #ffffff;
+  background-color: #ffb800;
+  color: #111111;
   padding: 0 14px;
   height: 100%;
   align-self: stretch;
@@ -1375,7 +1375,7 @@
   transition: background-color $transition-fast;
 
   &:focus-visible {
-    outline: 2px solid #ffd000;
+    outline: 2px solid #111111;
     outline-offset: -2px;
   }
 
@@ -1397,7 +1397,8 @@
 
   &:hover,
   &.active {
-    background-color: $color-accent-red-hover;
+    background-color: #e5a600;
+    color: #111111;
   }
 
   .chevron {

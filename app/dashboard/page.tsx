@@ -1591,7 +1591,7 @@ function DashboardContent() {
                                           style={{
                                             background: 'transparent',
                                             border: 'none',
-                                            color: '#FF6D00',
+                                            color: '#ffb800',
                                             cursor: 'pointer',
                                             padding: '2px',
                                             display: 'inline-flex',
@@ -1623,9 +1623,9 @@ function DashboardContent() {
                                           type="button"
                                           onClick={() => setLinkingOrder(ord)}
                                           style={{
-                                            background: 'rgba(255, 109, 0, 0.1)',
-                                            color: '#FF6D00',
-                                            border: '1px solid rgba(255, 109, 0, 0.3)',
+                                            background: 'rgba(255, 184, 0, 0.1)',
+                                            color: '#ffb800',
+                                            border: '1px solid rgba(255, 184, 0, 0.3)',
                                             padding: '2px 8px',
                                             borderRadius: '4px',
                                             fontSize: '11px',
@@ -1784,8 +1784,8 @@ function DashboardContent() {
                     width: '38px',
                     height: '38px',
                     borderRadius: '10px',
-                    backgroundColor: '#fff4ec',
-                    color: '#FF6D00',
+                    backgroundColor: '#fffbeb',
+                    color: '#ffb800',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -1885,7 +1885,7 @@ function DashboardContent() {
                       padding: '12px',
                       borderRadius: '8px',
                       border: 'none',
-                      backgroundColor: '#FF6D00',
+                      backgroundColor: '#ffb800',
                       color: '#ffffff',
                       fontSize: '13px',
                       fontWeight: 700,

@@ -57,7 +57,7 @@ export default function TermsPage() {
       {/* 1. AGREEMENT */}
       <section id="agreement">
         <h2>
-          <Scale size={22} color="#FF6D00" />
+          <Scale size={22} color="#ffb800" />
           1. Agreement to Terms
         </h2>
         <p>
@@ -71,7 +71,7 @@ export default function TermsPage() {
       {/* 2. BUSINESS MODEL */}
       <section id="business-model">
         <h2>
-          <ShoppingBag size={22} color="#FF6D00" />
+          <ShoppingBag size={22} color="#ffb800" />
           2. Direct Cross-Border Air Fulfillment Model
         </h2>
         <p>
@@ -85,7 +85,7 @@ export default function TermsPage() {
       {/* 3. PRICING & CURRENCY */}
       <section id="pricing-currency">
         <h2>
-          <CreditCard size={22} color="#FF6D00" />
+          <CreditCard size={22} color="#ffb800" />
           3. Pricing & Currency (Qatari Riyal — QAR)
         </h2>
         <p>
@@ -100,7 +100,7 @@ export default function TermsPage() {
       {/* 4. ORDERS & ACCEPTANCE */}
       <section id="orders-acceptance">
         <h2>
-          <CheckCircle2 size={22} color="#FF6D00" />
+          <CheckCircle2 size={22} color="#ffb800" />
           4. Orders, Acceptance & Cancellations
         </h2>
         <p>
@@ -114,7 +114,7 @@ export default function TermsPage() {
       {/* 5. CUSTOMER ADDRESS OBLIGATIONS */}
       <section id="customer-obligations">
         <h2>
-          <Truck size={22} color="#FF6D00" />
+          <Truck size={22} color="#ffb800" />
           5. Customer Responsibilities: Qatar Address Accuracy
         </h2>
         <p>
@@ -130,7 +130,7 @@ export default function TermsPage() {
       {/* 6. DELIVERY & MISSING COURIER GUARANTEE */}
       <section id="shipping-risk">
         <h2>
-          <Truck size={22} color="#FF6D00" />
+          <Truck size={22} color="#ffb800" />
           6. Delivery, Transit Times & The Missing Courier Guarantee
         </h2>
         <p>
@@ -154,7 +154,7 @@ export default function TermsPage() {
       {/* 7. 14-DAY RETURNS */}
       <section id="returns-warranties">
         <h2>
-          <RotateCcw size={22} color="#FF6D00" />
+          <RotateCcw size={22} color="#ffb800" />
           7. 14-Day Returns & Product Quality
         </h2>
         <p>
@@ -165,7 +165,7 @@ export default function TermsPage() {
       {/* 8. INTELLECTUAL PROPERTY */}
       <section id="intellectual-property">
         <h2>
-          <FileText size={22} color="#FF6D00" />
+          <FileText size={22} color="#ffb800" />
           8. Intellectual Property & Brand Names
         </h2>
         <p>
@@ -179,7 +179,7 @@ export default function TermsPage() {
       {/* 9. LIMITATION OF LIABILITY */}
       <section id="limitation-liability">
         <h2>
-          <AlertCircle size={22} color="#FF6D00" />
+          <AlertCircle size={22} color="#ffb800" />
           9. Limitation of Liability & Force Majeure
         </h2>
         <p>
@@ -193,7 +193,7 @@ export default function TermsPage() {
       {/* 10. GOVERNING LAW */}
       <section id="governing-law">
         <h2>
-          <Scale size={22} color="#FF6D00" />
+          <Scale size={22} color="#ffb800" />
           10. Governing Law & Dispute Resolution
         </h2>
         <p>
@@ -211,7 +211,7 @@ export default function TermsPage() {
           <span>Questions or Legal Inquiries?</span>
         </div>
         <p>
-          For questions regarding these Terms, contract queries, or commercial terms, reach out to our legal and operations desk at <strong>support@shopqatify.com</strong> or contact us via our online <Link href="/contact" style={{ color: '#FF6D00', textDecoration: 'underline' }}>Contact Us</Link> portal.
+          For questions regarding these Terms, contract queries, or commercial terms, reach out to our legal and operations desk at <strong>support@shopqatify.com</strong> or contact us via our online <Link href="/contact" style={{ color: '#ffb800', textDecoration: 'underline' }}>Contact Us</Link> portal.
         </p>
       </div>
     </PolicyShell>

@@ -140,12 +140,12 @@ export function NewsletterManager({ adminKey }: NewsletterManagerProps = {}) {
               width: '46px',
               height: '46px',
               borderRadius: '12px',
-              backgroundColor: '#FF6D00',
+              backgroundColor: '#ffb800',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: '#ffffff',
-              boxShadow: '0 4px 12px rgba(255, 109, 0, 0.25)',
+              boxShadow: '0 4px 12px rgba(255, 184, 0, 0.25)',
             }}
           >
             <Mail size={22} />
@@ -208,7 +208,7 @@ export function NewsletterManager({ adminKey }: NewsletterManagerProps = {}) {
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              backgroundColor: '#FF6D00',
+              backgroundColor: '#ffb800',
               border: 'none',
               borderRadius: '8px',
               padding: '9px 16px',
@@ -217,7 +217,7 @@ export function NewsletterManager({ adminKey }: NewsletterManagerProps = {}) {
               color: '#ffffff',
               cursor: isSending ? 'not-allowed' : 'pointer',
               opacity: isSending ? 0.7 : 1,
-              boxShadow: '0 2px 8px rgba(255, 109, 0, 0.3)',
+              boxShadow: '0 2px 8px rgba(255, 184, 0, 0.3)',
             }}
           >
             {isSending ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
@@ -311,7 +311,7 @@ export function NewsletterManager({ adminKey }: NewsletterManagerProps = {}) {
               marginBottom: '14px',
             }}
           >
-            <Send size={16} color="#FF6D00" />
+            <Send size={16} color="#ffb800" />
             <span>Instant Test Dispatch</span>
           </div>
 
@@ -530,7 +530,7 @@ export function NewsletterManager({ adminKey }: NewsletterManagerProps = {}) {
                   style={{
                     fontSize: '18px',
                     fontWeight: 900,
-                    color: '#FF6D00',
+                    color: '#ffb800',
                     fontFamily: 'monospace',
                     marginTop: '6px',
                   }}
@@ -678,7 +678,7 @@ export function NewsletterManager({ adminKey }: NewsletterManagerProps = {}) {
                           padding: '4px 10px',
                           fontSize: '12px',
                           fontWeight: 600,
-                          color: '#FF6D00',
+                          color: '#ffb800',
                           cursor: 'pointer',
                         }}
                       >
@@ -810,7 +810,7 @@ export function NewsletterManager({ adminKey }: NewsletterManagerProps = {}) {
                 style={{
                   padding: '8px 18px',
                   borderRadius: '8px',
-                  backgroundColor: '#FF6D00',
+                  backgroundColor: '#ffb800',
                   border: 'none',
                   color: '#ffffff',
                   fontSize: '13px',

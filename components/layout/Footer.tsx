@@ -185,7 +185,7 @@ export const Footer: React.FC = () => {
               <ul className={styles.linksList}>
                 <li><Link href="/shop?cat=mobile-accessories">Mobile & MagSafe</Link></li>
                 <li><Link href="/shop?cat=chargers-powerbanks">GaN Chargers & Banks</Link></li>
-                <li><Link href="/shop?cat=tws-audio">TWS & Spatial Audio</Link></li>
+                <li><Link href="/shop?cat=toys-kids-learning">Toys-Kids Learning</Link></li>
                 <li><Link href="/shop?cat=smartwatches">Smartwatches & Fitness</Link></li>
                 <li><Link href="/shop?cat=car-accessories">Car Tech & Mounts</Link></li>
                 <li><Link href="/shop?cat=gaming-gear">Gaming & Desk Gear</Link></li>

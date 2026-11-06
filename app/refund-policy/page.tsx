@@ -55,7 +55,7 @@ export default function RefundPolicyPage() {
       {/* 1. LOST IN TRANSIT PLEDGE */}
       <section id="lost-transit-guarantee">
         <h2>
-          <ShieldCheck size={22} color="#FF6D00" />
+          <ShieldCheck size={22} color="#ffb800" />
           1. Our Core Promise: 100% Lost in Courier Transit Guarantee
         </h2>
         <p>
@@ -87,7 +87,7 @@ export default function RefundPolicyPage() {
       {/* 2. 14-DAY RETURN WINDOW */}
       <section id="14-day-returns">
         <h2>
-          <RotateCcw size={22} color="#FF6D00" />
+          <RotateCcw size={22} color="#ffb800" />
           2. 14-Day Return Window
         </h2>
         <p>
@@ -101,7 +101,7 @@ export default function RefundPolicyPage() {
       {/* 3. ELIGIBILITY */}
       <section id="eligibility">
         <h2>
-          <CheckCircle2 size={22} color="#FF6D00" />
+          <CheckCircle2 size={22} color="#ffb800" />
           3. What Is Eligible for Return?
         </h2>
         <p>To ensure a smooth and fair inspection for everyone, returned items must satisfy the following conditions:</p>
@@ -124,7 +124,7 @@ export default function RefundPolicyPage() {
       {/* 4. NON-RETURNABLE ITEMS */}
       <section id="non-returnable">
         <h2>
-          <PackageX size={22} color="#FF6D00" />
+          <PackageX size={22} color="#ffb800" />
           4. Non-Returnable Items
         </h2>
         <p>For hygiene, safety, and operational reasons, the following scenarios cannot be accepted for refund:</p>
@@ -139,7 +139,7 @@ export default function RefundPolicyPage() {
       {/* 5. HOW TO CLAIM */}
       <section id="how-to-claim">
         <h2>
-          <Sparkles size={22} color="#FF6D00" />
+          <Sparkles size={22} color="#ffb800" />
           5. How to Initiate a Return or Refund (3 Simple Steps)
         </h2>
         <p>
@@ -176,7 +176,7 @@ export default function RefundPolicyPage() {
       {/* 6. REFUND TIMELINE & PAYMENT METHODS */}
       <section id="refund-timeline">
         <h2>
-          <CreditCard size={22} color="#FF6D00" />
+          <CreditCard size={22} color="#ffb800" />
           6. Refund Processing Times & Methods
         </h2>
         <p>
@@ -224,7 +224,7 @@ export default function RefundPolicyPage() {
       {/* 7. DAMAGED OR WRONG ITEM RECEIVED */}
       <section id="damaged-defective">
         <h2>
-          <AlertTriangle size={22} color="#FF6D00" />
+          <AlertTriangle size={22} color="#ffb800" />
           7. Damaged or Wrong Item Received
         </h2>
         <p>
@@ -243,7 +243,7 @@ export default function RefundPolicyPage() {
       {/* 8. ORDER CANCELLATIONS */}
       <section id="order-cancellation">
         <h2>
-          <RotateCcw size={22} color="#FF6D00" />
+          <RotateCcw size={22} color="#ffb800" />
           8. Order Cancellations
         </h2>
         <p>
@@ -266,7 +266,7 @@ export default function RefundPolicyPage() {
           <span>Need Help With a Return or Missing Shipment?</span>
         </div>
         <p>
-          Our online customer care team is dedicated to resolving your issue personally and swiftly. Reach out via Live Chat, submit an inquiry on our <Link href="/contact" style={{ color: '#FF6D00', textDecoration: 'underline' }}>Contact page</Link>, or email us anytime at <strong>support@shopqatify.com</strong>.
+          Our online customer care team is dedicated to resolving your issue personally and swiftly. Reach out via Live Chat, submit an inquiry on our <Link href="/contact" style={{ color: '#ffb800', textDecoration: 'underline' }}>Contact page</Link>, or email us anytime at <strong>support@shopqatify.com</strong>.
         </p>
       </div>
     </PolicyShell>

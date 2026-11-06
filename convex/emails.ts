@@ -53,7 +53,7 @@ export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): s
           
           <!-- 1. Header with Authentic Brand Logo -->
           <tr>
-            <td align="center" style="background-color: #ffffff; padding: 22px 24px; border-bottom: 2px solid #f1f3f5; border-top: 4px solid #FF6D00; text-align: center;">
+            <td align="center" style="background-color: #ffffff; padding: 22px 24px; border-bottom: 2px solid #f1f3f5; border-top: 4px solid #ffb800; text-align: center;">
               <a href="${siteUrl}" target="_blank" style="text-decoration: none; display: inline-block;">
                 <img src="https://shocking-armadillo-116.convex.cloud/api/storage/43c1a105-5334-4bb8-a12f-8dff85502631" height="42" alt="Shop Qatify" style="display: block; height: 42px; width: auto; max-width: 220px; border: 0; margin: 0 auto;" />
               </a>
@@ -90,7 +90,7 @@ export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): s
                 <tr>
                   <td>
                     <div style="font-size: 12px; font-weight: 700; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px;">Air Express Tracking Number</div>
-                    <div style="font-size: 16px; font-weight: 800; color: #FF6D00; font-family: monospace; margin: 4px 0 12px 0;">${order.trackingNumber}</div>
+                    <div style="font-size: 16px; font-weight: 800; color: #ffb800; font-family: monospace; margin: 4px 0 12px 0;">${order.trackingNumber}</div>
                     
                     <div style="font-size: 13px; color: #0a0a0c; margin-bottom: 14px; line-height: 1.4;">
                       ⏱️ <strong>Estimated Doorstep Arrival:</strong> ${order.estimatedDeliveryWindow} (via Hamad Int’l Airport DOH)
@@ -100,7 +100,7 @@ export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): s
                     <table cellpadding="0" cellspacing="0" border="0" width="100%">
                       <tr>
                         <td align="center">
-                          <a href="${trackingUrl}" target="_blank" style="display: block; background-color: #FF6D00; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; text-align: center; padding: 12px 20px; border-radius: 8px;">
+                          <a href="${trackingUrl}" target="_blank" style="display: block; background-color: #ffb800; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; text-align: center; padding: 12px 20px; border-radius: 8px;">
                             Track Your Air Shipment Live →
                           </a>
                         </td>
@@ -153,7 +153,7 @@ export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): s
                     <table cellpadding="0" cellspacing="0" border="0" width="100%">
                       <tr>
                         <td style="font-size: 16px; font-weight: 800; color: #0a0a0c;">Total Amount</td>
-                        <td align="right" style="font-size: 18px; font-weight: 800; color: #FF6D00;">QAR ${order.totalQAR.toLocaleString()}</td>
+                        <td align="right" style="font-size: 18px; font-weight: 800; color: #ffb800;">QAR ${order.totalQAR.toLocaleString()}</td>
                       </tr>
                       <tr>
                         <td colspan="2" style="font-size: 12px; color: #64748b; padding-top: 4px;">

@@ -36,22 +36,22 @@ $color-text-muted: #71717a;
 $color-text-inverse: #ffffff;
 $color-text-inverse-muted: #a1a1aa;
 
-// --- 10% HIGH-ENERGY ACCENTS (Qatify Signature Orange #FF6D00 & Warm Gold #FFB800) ---
-$color-accent-red: #FF6D00;
-$color-accent-red-hover: #E65100;
-$color-accent-red-light: #fff4ec;
-$color-accent-red-glow: rgba(255, 109, 0, 0.22);
+// --- 10% HIGH-ENERGY ACCENTS (Warm Gold #FFB800) ---
+$color-accent-red: #ffb800;
+$color-accent-red-hover: #eab308;
+$color-accent-red-light: #fffbeb;
+$color-accent-red-glow: rgba(255, 184, 0, 0.25);
 
 // Backwards-compatible aliases
-$color-accent-orange: $color-accent-red;
-$color-accent-orange-hover: $color-accent-red-hover;
-$color-accent-orange-light: $color-accent-red-light;
-$color-accent-orange-glow: $color-accent-red-glow;
+$color-accent-orange: #ffb800;
+$color-accent-orange-hover: #eab308;
+$color-accent-orange-light: #fffbeb;
+$color-accent-orange-glow: rgba(255, 184, 0, 0.25);
 
 $color-accent-yellow: #ffb800;
-$color-accent-yellow-dark: #ffb800;
+$color-accent-yellow-dark: #eab308;
 $color-accent-yellow-tint: #fffbeb;
-$color-accent-yellow-bg: #fff4ec;
+$color-accent-yellow-bg: #fffbeb;
 $color-accent-yellow-glow: rgba(255, 184, 0, 0.25);
 
 // Functional Status & Badge Colors (Zero Blue Policy - neutral zinc for info)

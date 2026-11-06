@@ -2,7 +2,7 @@
 
 // =============================================================================
 // Qatify — Web Push & Deals Notification Subscribe Prompt
-// 100% Native Qatify Brand (Signature Sunset Orange #FF6D00)
+// 100% Native Qatify Brand (Signature Sunset Orange #ffb800)
 // Sequential Action Trigger: Upon Later/Subscribe, triggers First-Time Discount Popup
 // =============================================================================
 

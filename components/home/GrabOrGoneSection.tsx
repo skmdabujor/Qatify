@@ -39,19 +39,12 @@ const PROMO_SLIDES = [
   },
   {
     id: 3,
-    title: "Spatial Audio &\nANC Earbuds",
-    subtitle: 'Up to 45% OFF flagship wireless audio',
-    imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
-    link: '/shop?category=tws-audio',
+    title: "Toys & Kids\nLearning Tech",
+    subtitle: 'Interactive STEM & educational gadgets',
+    imageUrl: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=800&auto=format&fit=crop&q=80',
+    link: '/shop?category=toys-kids-learning',
   },
 ];
-
-interface TimeLeft {
-  days: string;
-  hours: string;
-  minutes: string;
-  seconds: string;
-}
 
 // -----------------------------------------------------------------------------
 // Independent Infinite Loop Product Row Slider Component
@@ -502,46 +495,6 @@ export const GrabOrGoneSection: React.FC = () => {
   const bannerStartXRef = useRef(0);
   const bannerHasDraggedRef = useRef(false);
 
-  // 1. Live Countdown Timer State
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    days: '01',
-    hours: '02',
-    minutes: '00',
-    seconds: '09',
-  });
-
-  useEffect(() => {
-    const getTargetTime = () => {
-      const now = new Date();
-      return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 23, 59, 59).getTime();
-    };
-
-    const targetTime = getTargetTime();
-
-    const updateTimer = () => {
-      const now = new Date().getTime();
-      const difference = targetTime - now;
-
-      if (difference > 0) {
-        const d = Math.floor(difference / (1000 * 60 * 60 * 24));
-        const h = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((difference % (1000 * 60)) / 1000);
-
-        setTimeLeft({
-          days: String(d).padStart(2, '0'),
-          hours: String(h).padStart(2, '0'),
-          minutes: String(m).padStart(2, '0'),
-          seconds: String(s).padStart(2, '0'),
-        });
-      }
-    };
-
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
   // 2. Auto-cycle banner slides (every 7 seconds)
   useEffect(() => {
     const timer = setInterval(() => {
@@ -668,32 +621,6 @@ export const GrabOrGoneSection: React.FC = () => {
         <div className={styles.titleArea}>
           <h2 className={styles.heading}>Grab Or Gone!</h2>
           <p className={styles.subtitle}>Today&apos;s Top Deals</p>
-        </div>
-
-        {/* Live Countdown Timer */}
-        <div className={styles.timerContainer} role="timer" aria-live="polite">
-          <span className={styles.timerLabel}>ENDS IN</span>
-          <div className={styles.timerBlocks}>
-            <div className={styles.timerBox}>
-              <span className={styles.timerNumber}>{timeLeft.days}</span>
-              <span className={styles.timerUnit}>DAYS</span>
-            </div>
-            <span className={styles.timerColon}>:</span>
-            <div className={styles.timerBox}>
-              <span className={styles.timerNumber}>{timeLeft.hours}</span>
-              <span className={styles.timerUnit}>HRS</span>
-            </div>
-            <span className={styles.timerColon}>:</span>
-            <div className={styles.timerBox}>
-              <span className={styles.timerNumber}>{timeLeft.minutes}</span>
-              <span className={styles.timerUnit}>MIN</span>
-            </div>
-            <span className={styles.timerColon}>:</span>
-            <div className={styles.timerBox}>
-              <span className={styles.timerNumber}>{timeLeft.seconds}</span>
-              <span className={styles.timerUnit}>SEC</span>
-            </div>
-          </div>
         </div>
 
         {/* View All Action */}

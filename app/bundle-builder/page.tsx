@@ -86,7 +86,7 @@ const BUNDLE_CATEGORIES = [
   { slug: 'all', name: 'All Categories' },
   { slug: 'mobile-accessories', name: 'Mobile Accessories' },
   { slug: 'smartwatches', name: 'Smartwatches & Fit' },
-  { slug: 'tws-audio', name: 'TWS & Spatial Audio' },
+  { slug: 'toys-kids-learning', name: 'Toys-Kids Learning' },
   { slug: 'chargers-powerbanks', name: 'GaN Chargers & Power' },
   { slug: 'car-accessories', name: 'Car Tech & Mounts' },
   { slug: 'gaming-gear', name: 'Gaming & Desk Tech' },

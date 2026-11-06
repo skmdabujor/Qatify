@@ -937,15 +937,15 @@ function CheckoutContent() {
                   }}
                 >
                   By placing your order, you agree to Qatify&apos;s{' '}
-                  <Link href="/terms" style={{ color: '#FF6D00', textDecoration: 'underline' }}>
+                  <Link href="/terms" style={{ color: '#ffb800', textDecoration: 'underline' }}>
                     Terms &amp; Conditions
                   </Link>
                   ,{' '}
-                  <Link href="/privacy" style={{ color: '#FF6D00', textDecoration: 'underline' }}>
+                  <Link href="/privacy" style={{ color: '#ffb800', textDecoration: 'underline' }}>
                     Privacy Policy
                   </Link>
                   , and{' '}
-                  <Link href="/refund-policy" style={{ color: '#FF6D00', textDecoration: 'underline' }}>
+                  <Link href="/refund-policy" style={{ color: '#ffb800', textDecoration: 'underline' }}>
                     Refund &amp; Return Policy
                   </Link>
                   . Covered by our 100% Lost Parcel Money-Back Guarantee (Insha&apos;Allah).

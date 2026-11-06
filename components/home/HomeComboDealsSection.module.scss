@@ -29,7 +29,7 @@
     left: -60px;
     width: 220px;
     height: 220px;
-    background: radial-gradient(circle, rgba(255, 109, 0, 0.04) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 184, 0, 0.04) 0%, transparent 70%);
     pointer-events: none;
     border-radius: 50%;
   }
@@ -105,7 +105,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border: 1px solid #fed7aa;
+  border: 1px solid #fef08a;
   box-shadow: 0 4px 18px rgba(239, 68, 68, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   min-height: 290px;
@@ -201,7 +201,7 @@
   transition: color 0.2s ease, transform 0.2s ease;
 
   &:hover {
-    color: #FF6D00;
+    color: #ffb800;
     transform: translateX(2px);
   }
 
@@ -216,7 +216,7 @@
   font-family: $font-heading;
   font-size: 13.5px;
   font-weight: 700;
-  color: #FF6D00;
+  color: #ffb800;
   margin-bottom: 10px;
   letter-spacing: -0.01em;
 
@@ -289,7 +289,7 @@
   text-decoration: none;
 
   &:hover {
-    color: #FF6D00;
+    color: #ffb800;
   }
 }
 
@@ -317,19 +317,19 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: #FF6D00;
-  color: #ffffff;
+  background: #ffb800;
+  color: #111111;
   border: none;
   border-radius: 12px;
   padding: 3px 10px;
   font-size: 10.5px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(255, 109, 0, 0.35);
+  box-shadow: 0 1px 4px rgba(255, 184, 0, 0.35);
   transition: all 0.2s ease;
 
   &:hover {
-    background: #E65100;
+    background: #eab308;
     transform: scale(1.05);
   }
 }
@@ -388,8 +388,8 @@
 
   &:hover {
     background: #ffffff;
-    border-color: #FF6D00;
-    color: #FF6D00;
+    border-color: #ffb800;
+    color: #ffb800;
     transform: scale(1.02);
   }
 }
@@ -428,7 +428,7 @@
   text-decoration: none;
 
   &:hover {
-    color: #FF6D00;
+    color: #ffb800;
   }
 }
 
@@ -637,7 +637,7 @@
 
   &:hover {
     background: #f4f4f5;
-    color: #FF6D00;
+    color: #ffb800;
     transform: scale(1.1);
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
   }

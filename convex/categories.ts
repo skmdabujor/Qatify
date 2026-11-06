@@ -43,6 +43,15 @@ export const seedCategories = mutation({
     await assertAdminAccess(ctx, args.adminEmail, args.adminKey);
 
     let inserted = 0;
+    // Clean up obsolete categories not present in items
+    const existingCategories = await ctx.db.query("categories").collect();
+    const incomingSlugs = new Set(args.items.map((i) => i.slug));
+    for (const existingCat of existingCategories) {
+      if (!incomingSlugs.has(existingCat.slug)) {
+        await ctx.db.delete(existingCat._id);
+      }
+    }
+
     for (const item of args.items) {
       const existing = await ctx.db
         .query("categories")
@@ -52,8 +61,53 @@ export const seedCategories = mutation({
       if (!existing) {
         await ctx.db.insert("categories", item);
         inserted++;
+      } else {
+        await ctx.db.patch(existing._id, item);
+        inserted++;
       }
     }
     return { success: true, count: inserted };
+  },
+});
+
+// 4. One-time or Admin migration to replace TWS with Toys-Kids Learning
+export const replaceTwsWithToysKids = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const twsCategory = await ctx.db
+      .query("categories")
+      .withIndex("by_slug", (q) => q.eq("slug", "tws-audio"))
+      .first();
+
+    if (twsCategory) {
+      await ctx.db.patch(twsCategory._id, {
+        categoryId: "toys-kids-learning",
+        name: "Toys-Kids Learning",
+        slug: "toys-kids-learning",
+        icon: "ToyBrick",
+        count: 24,
+      });
+    } else {
+      const existing = await ctx.db
+        .query("categories")
+        .withIndex("by_slug", (q) => q.eq("slug", "toys-kids-learning"))
+        .first();
+
+      if (existing) {
+        await ctx.db.patch(existing._id, {
+          icon: "ToyBrick",
+        });
+      } else {
+        await ctx.db.insert("categories", {
+          categoryId: "toys-kids-learning",
+          name: "Toys-Kids Learning",
+          slug: "toys-kids-learning",
+          icon: "ToyBrick",
+          count: 24,
+        });
+      }
+    }
+
+    return { success: true };
   },
 });

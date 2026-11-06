@@ -7,6 +7,10 @@
 @use '@/styles/variables' as *;
 @use '@/styles/mixins' as *;
 
+// Preserve signature category bar orange as requested
+$cat-orange: #FF6D00;
+$cat-orange-glow: rgba(255, 109, 0, 0.25);
+
 .navSection {
   position: relative;
   width: 100%;
@@ -71,7 +75,7 @@
   font-family: $font-heading;
   font-size: 12px;
   font-weight: 700;
-  color: $color-accent-red;
+  color: #111111;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -79,7 +83,7 @@
   transition: color $transition-fast, transform $transition-fast;
 
   &:hover {
-    color: $color-accent-red-hover;
+    color: #000000;
     transform: translateX(2px);
   }
 }
@@ -105,10 +109,10 @@
   transition: all $transition-fast;
 
   &:hover:not(:disabled) {
-    background-color: $color-accent-red;
-    border-color: $color-accent-red;
+    background-color: $cat-orange;
+    border-color: $cat-orange;
     color: #ffffff;
-    box-shadow: 0 2px 8px $color-accent-red-glow;
+    box-shadow: 0 2px 8px $cat-orange-glow;
   }
 
   &:disabled {
@@ -177,9 +181,9 @@
   justify-content: center;
 
   &:hover {
-    background-color: $color-accent-red;
+    background-color: $cat-orange;
     color: #ffffff;
-    border-color: $color-accent-red;
+    border-color: $cat-orange;
     transform: translateY(-50%) scale(1.08);
     box-shadow: 0 6px 16px rgba(255, 105, 0, 0.35);
   }
@@ -287,7 +291,7 @@
     }
 
     .title {
-      color: $color-accent-red;
+      color: $cat-orange;
     }
   }
 

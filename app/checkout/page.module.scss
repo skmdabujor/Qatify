@@ -333,8 +333,8 @@
   }
 
   &.dropdownActiveTrigger {
-    border-color: #FF6D00;
-    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+    border-color: #ffb800;
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.15);
   }
 
   @include mobile {
@@ -377,7 +377,7 @@
 
   &.chevronOpen {
     transform: rotate(180deg);
-    color: #FF6D00;
+    color: #ffb800;
   }
 }
 
@@ -412,8 +412,8 @@
   }
 
   &.dropdownActiveTrigger {
-    border-color: #FF6D00;
-    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+    border-color: #ffb800;
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.15);
   }
 }
 
@@ -490,8 +490,8 @@
   }
 
   &.itemSelected {
-    background-color: rgba(255, 109, 0, 0.08);
-    color: #FF6D00;
+    background-color: rgba(255, 184, 0, 0.08);
+    color: #ffb800;
     font-weight: 600;
   }
 }
@@ -524,7 +524,7 @@
 }
 
 .itemCheckIcon {
-  color: #FF6D00;
+  color: #ffb800;
   flex-shrink: 0;
 }
 
@@ -579,8 +579,8 @@
   }
 
   &:focus {
-    border-color: #FF6D00;
-    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+    border-color: #ffb800;
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.15);
   }
 
   &:-webkit-autofill,
@@ -619,8 +619,8 @@
   transition: all 0.15s ease;
 
   &:focus-within {
-    border-color: #FF6D00;
-    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+    border-color: #ffb800;
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.15);
   }
 }
 
@@ -727,8 +727,8 @@
   transition: all 0.15s ease;
 
   &:focus {
-    border-color: #FF6D00;
-    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+    border-color: #ffb800;
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.15);
   }
 }
 
@@ -771,8 +771,8 @@
   transition: all 0.15s ease;
 
   &.checked {
-    background-color: #FF6D00;
-    border-color: #FF6D00;
+    background-color: #ffb800;
+    border-color: #ffb800;
   }
 }
 
@@ -791,8 +791,8 @@
 }
 
 .aliConfirmBtn {
-  background-color: #FF6D00;
-  color: #ffffff;
+  background-color: #ffb800;
+  color: #111111;
   border: none;
   border-radius: 9999px;
   padding: 12px 42px;
@@ -800,10 +800,10 @@
   font-weight: 700;
   cursor: pointer;
   transition: background-color 0.15s ease, transform 0.1s ease;
-  box-shadow: 0 2px 10px rgba(255, 109, 0, 0.28);
+  box-shadow: 0 2px 10px rgba(255, 184, 0, 0.28);
 
   &:hover {
-    background-color: #E65100;
+    background-color: #eab308;
     transform: translateY(-1px);
   }
 
@@ -998,7 +998,7 @@
   padding: 13px 16px;
   font-size: 14px;
   gap: 8px;
-  box-shadow: 0 4px 12px rgba(255, 109, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 184, 0, 0.3);
   white-space: normal;
   text-align: center;
   justify-content: center;
@@ -1281,7 +1281,7 @@
   padding: 13px 14px;
   font-size: 14px;
   gap: 8px;
-  box-shadow: 0 4px 14px rgba(255, 109, 0, 0.4);
+  box-shadow: 0 4px 14px rgba(255, 184, 0, 0.4);
   white-space: normal;
   text-align: center;
   justify-content: center;

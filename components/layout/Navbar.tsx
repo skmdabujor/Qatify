@@ -34,6 +34,9 @@ import {
   Home,
   Laptop,
   Cable,
+  ToyBrick,
+  Baby,
+  Puzzle,
   MessageCircle,
   ArrowRight,
   TrendingUp, Layers, Building2,
@@ -76,6 +79,12 @@ const getCategoryIcon = (iconName?: string, size = 15) => {
       return <Laptop size={size} />;
     case 'Cable':
       return <Cable size={size} />;
+    case 'ToyBrick':
+      return <ToyBrick size={size} />;
+    case 'Baby':
+      return <Baby size={size} />;
+    case 'Puzzle':
+      return <Puzzle size={size} />;
     default:
       return <LayoutGrid size={size} />;
   }

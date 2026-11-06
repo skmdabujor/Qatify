@@ -516,11 +516,11 @@
 
 .brandBadge {
   display: inline-block;
-  background: #fff4ec;
-  color: $color-accent-red;
+  background: #f4f4f5;
+  color: #18181b;
   font-size: 11px;
-  font-weight: 600;
-  padding: 2px 7px;
+  font-weight: 700;
+  padding: 2px 8px;
   border-radius: 5px;
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -531,7 +531,7 @@
 
   @include mobile {
     font-size: 10px;
-    padding: 1px 5px;
+    padding: 1px 6px;
     max-width: 95px;
   }
 }
@@ -540,8 +540,8 @@
   width: 26px;
   height: 26px;
   border-radius: 6px;
-  background: $color-accent-red;
-  color: #ffffff;
+  background: #ffb800;
+  color: #18181b;
   border: none;
   display: flex;
   align-items: center;
@@ -549,16 +549,17 @@
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 5px rgba(255, 109, 0, 0.2);
+  box-shadow: 0 2px 6px rgba(255, 184, 0, 0.25);
   z-index: 5;
 
   &:hover {
-    background: $color-accent-red-hover;
+    background: #eab308;
     transform: scale(1.08);
   }
 
   &.added {
     background: #10b981;
+    color: #ffffff;
   }
 
   @include mobile {

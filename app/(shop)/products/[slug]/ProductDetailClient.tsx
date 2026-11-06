@@ -28,7 +28,6 @@ import {
   Flame,
   Plus,
   Minus,
-  Sparkles,
   Zap,
   MessageCircle,
   Lock,
@@ -449,7 +448,6 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
             {product.volumeDiscounts && product.volumeDiscounts.length > 0 && (
               <div className={styles.volumeDiscountsBox}>
                 <div className={styles.volumeHeader}>
-                  <Sparkles size={14} />
                   <span>Multi-Buy Savings (Buy More, Save More)</span>
                 </div>
                 <div className={styles.volumeTiersList}>
@@ -587,7 +585,7 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                 onClick={() => toggleWishlist(product)}
                 className={`${styles.auxBtn} ${isFavorited ? styles.activeWish : ''}`}
               >
-                <Heart size={16} fill={isFavorited ? '#FF6D00' : 'none'} color={isFavorited ? '#FF6D00' : 'currentColor'} />
+                <Heart size={16} fill={isFavorited ? '#ffb800' : 'none'} color={isFavorited ? '#ffb800' : 'currentColor'} />
                 <span>{isFavorited ? 'Saved in Wishlist' : 'Add to Wishlist'}</span>
               </button>
 
@@ -1024,7 +1022,7 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                       cursor: 'pointer',
                     }}
                   >
-                    {showReviewForm ? 'Cancel' : '✍️ Write a Review'}
+                    {showReviewForm ? 'Cancel' : 'Write a Review'}
                   </button>
                 </div>
 
@@ -1125,8 +1123,8 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                       disabled={isSubmittingReview}
                       style={{
                         padding: '10px 20px',
-                        backgroundColor: '#FF6D00',
-                        color: '#ffffff',
+                        backgroundColor: '#ffb800',
+                        color: '#111111',
                         border: 'none',
                         borderRadius: '6px',
                         fontSize: '13px',

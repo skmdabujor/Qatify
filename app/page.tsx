@@ -26,9 +26,10 @@ import {
   Home,
   Laptop,
   Cable,
-  Flame,
   ChevronRight,
-  TrendingUp,
+  ToyBrick,
+  Baby,
+  Puzzle,
 } from 'lucide-react';
 import { ProductCard } from '@/components/product/ProductCard';
 import { CircularCategoryNav } from '@/components/category';
@@ -61,6 +62,12 @@ const getCategoryIcon = (iconName: string) => {
       return <Laptop size={16} />;
     case 'Cable':
       return <Cable size={16} />;
+    case 'ToyBrick':
+      return <ToyBrick size={16} />;
+    case 'Baby':
+      return <Baby size={16} />;
+    case 'Puzzle':
+      return <Puzzle size={16} />;
     default:
       return <Sparkles size={16} />;
   }
@@ -262,10 +269,6 @@ export default function ShopHomePage() {
         <section className={styles.shelfSection}>
           <div className={styles.shelfHeaderRow}>
             <div className={styles.shelfTitleGroup}>
-              <div className={styles.shelfTag}>
-                <TrendingUp size={14} />
-                <span>POPULAR IN QATAR</span>
-              </div>
               <h2 className={styles.shelfHeading}>Trending in Doha This Week</h2>
             </div>
             <Link href="/shop?sort=trending" className={styles.viewMoreBtn}>
@@ -292,10 +295,6 @@ export default function ShopHomePage() {
         <section className={styles.shelfSection}>
           <div className={styles.shelfHeaderRow}>
             <div className={styles.shelfTitleGroup}>
-              <div className={styles.shelfTagYellow}>
-                <Sparkles size={14} />
-                <span>POCKET-FRIENDLY FINDS</span>
-              </div>
               <h2 className={styles.shelfHeading}>Super Deals Under QAR 99</h2>
             </div>
             <Link href="/shop?filter=under-99" className={styles.viewMoreBtn}>
@@ -317,10 +316,6 @@ export default function ShopHomePage() {
         <section className={styles.shelfSection}>
           <div className={styles.shelfHeaderRow}>
             <div className={styles.shelfTitleGroup}>
-              <div className={styles.shelfTag}>
-                <Flame size={14} />
-                <span>TOP RATED BY CUSTOMERS</span>
-              </div>
               <h2 className={styles.shelfHeading}>Best-Selling Flagships</h2>
             </div>
             <Link href="/shop?sort=rating" className={styles.viewMoreBtn}>

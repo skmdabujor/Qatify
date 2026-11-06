@@ -450,7 +450,7 @@ export default function LoginPage() {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#FF6D00',
+                    color: '#ffb800',
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',

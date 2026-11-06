@@ -349,7 +349,7 @@ function ResetPasswordForm() {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#FF6D00',
+                      color: '#ffb800',
                       fontSize: '0.8125rem',
                       fontWeight: 600,
                       cursor: 'pointer',
@@ -369,7 +369,7 @@ function ResetPasswordForm() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.25rem',
-                  color: '#FF6D00',
+                  color: '#ffb800',
                   fontWeight: 700,
                   textDecoration: 'none',
                 }}

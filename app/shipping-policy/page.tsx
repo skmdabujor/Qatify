@@ -55,7 +55,7 @@ export default function ShippingPolicyPage() {
       {/* 1. DIRECT GLOBAL AIR EXPRESS MODEL */}
       <section id="air-model">
         <h2>
-          <Plane size={22} color="#FF6D00" />
+          <Plane size={22} color="#ffb800" />
           1. How Direct Global Air Express Works
         </h2>
         <p>
@@ -78,7 +78,7 @@ export default function ShippingPolicyPage() {
       {/* 2. 6-10 DAYS TIMELINE BREAKDOWN */}
       <section id="timeline-breakdown">
         <h2>
-          <Clock size={22} color="#FF6D00" />
+          <Clock size={22} color="#ffb800" />
           2. The 6–10 Business Days Timeline: Day by Day
         </h2>
         <p>
@@ -141,7 +141,7 @@ export default function ShippingPolicyPage() {
       {/* 3. COVERAGE ACROSS QATAR */}
       <section id="coverage-zones">
         <h2>
-          <MapPin size={22} color="#FF6D00" />
+          <MapPin size={22} color="#ffb800" />
           3. Complete Coverage Across All Qatar Municipalities
         </h2>
         <p>
@@ -159,7 +159,7 @@ export default function ShippingPolicyPage() {
       {/* 4. RATES & FREE SHIPPING */}
       <section id="rates-thresholds">
         <h2>
-          <Truck size={22} color="#FF6D00" />
+          <Truck size={22} color="#ffb800" />
           4. Shipping Rates & Free Delivery Threshold
         </h2>
         <p>We keep our delivery pricing clear and straightforward with no hidden handling or airport fees:</p>
@@ -195,7 +195,7 @@ export default function ShippingPolicyPage() {
       {/* 5. REALTIME TRACKING */}
       <section id="realtime-tracking">
         <h2>
-          <Search size={22} color="#FF6D00" />
+          <Search size={22} color="#ffb800" />
           5. Live Tracking Your Air Shipment
         </h2>
         <p>
@@ -222,7 +222,7 @@ export default function ShippingPolicyPage() {
       {/* 6. CUSTOMS & IMPORT CLEARANCE */}
       <section id="customs-handling">
         <h2>
-          <ShieldCheck size={22} color="#FF6D00" />
+          <ShieldCheck size={22} color="#ffb800" />
           6. Customs & Import Clearance (Hamad International Airport)
         </h2>
         <p>
@@ -236,7 +236,7 @@ export default function ShippingPolicyPage() {
       {/* 7. LOST COURIER PARCEL GUARANTEE */}
       <section id="lost-transit-pledge">
         <h2>
-          <ShieldCheck size={22} color="#FF6D00" />
+          <ShieldCheck size={22} color="#ffb800" />
           7. Missing or Lost in Courier Transit Guarantee (Insha’Allah)
         </h2>
         <div className={styles.calloutGuarantee}>

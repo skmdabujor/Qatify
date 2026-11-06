@@ -1,6 +1,6 @@
 // =============================================================================
 // Qatify — Web Push & Deals Subscribe Notification Banner Styles
-// 100% Native Qatify Brand Aesthetic (Signature Sunset Orange #FF6D00)
+// 100% Native Qatify Brand Aesthetic (Signature Sunset Orange #ffb800)
 // =============================================================================
 
 .bannerWrapper {
@@ -35,7 +35,7 @@
   background: #ffffff;
   border-radius: 14px;
   border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 16px 36px -6px rgba(15, 23, 42, 0.14), 0 4px 12px rgba(255, 109, 0, 0.06);
+  box-shadow: 0 16px 36px -6px rgba(15, 23, 42, 0.14), 0 4px 12px rgba(255, 184, 0, 0.06);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
@@ -56,12 +56,12 @@
   width: 50px;
   height: 50px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #ff6d00 0%, #ff9e00 100%);
+  background: linear-gradient(135deg, #ffb800 0%, #ff9e00 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(255, 109, 0, 0.35);
+  box-shadow: 0 4px 14px rgba(255, 184, 0, 0.35);
   color: #ffffff;
   position: relative;
   overflow: hidden;
@@ -128,7 +128,7 @@
 
 // Qatify Signature Orange CTA Button
 .subscribeBtn {
-  background: linear-gradient(135deg, #ff6d00 0%, #ff8500 100%);
+  background: linear-gradient(135deg, #ffb800 0%, #ff8500 100%);
   color: #ffffff;
   border: none;
   font-size: 13.5px;
@@ -136,12 +136,12 @@
   padding: 8px 22px;
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 3px 12px rgba(255, 109, 0, 0.3);
+  box-shadow: 0 3px 12px rgba(255, 184, 0, 0.3);
   transition: all 180ms ease;
 
   &:hover {
-    background: #e65100;
-    box-shadow: 0 6px 18px rgba(255, 109, 0, 0.45);
+    background: #eab308;
+    box-shadow: 0 6px 18px rgba(255, 184, 0, 0.45);
     transform: translateY(-1px);
   }
 
@@ -169,14 +169,14 @@
     transition: border-color 150ms ease;
 
     &:focus {
-      border-color: #ff6d00;
-      box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.12);
+      border-color: #ffb800;
+      box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.12);
       background: #ffffff;
     }
   }
 
   .confirmBtn {
-    background: #ff6d00;
+    background: #ffb800;
     color: #ffffff;
     border: none;
     border-radius: 8px;
@@ -188,7 +188,7 @@
     transition: background-color 150ms ease;
 
     &:hover {
-      background: #e65100;
+      background: #eab308;
     }
 
     &:disabled {

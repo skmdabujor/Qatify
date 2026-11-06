@@ -215,7 +215,7 @@ export const ContactClient: React.FC = () => {
             {/* Online Store Model Details */}
             <div className={styles.hubCard}>
               <div className={styles.hubHeader}>
-                <Plane size={20} color="#FF6D00" />
+                <Plane size={20} color="#ffb800" />
                 <h3 className={styles.hubTitle}>100% Online Cross-Border Store for Qatar</h3>
               </div>
               <div className={styles.hubDetails}>
@@ -400,7 +400,7 @@ export const ContactClient: React.FC = () => {
                   style={{
                     fontSize: '12.5px',
                     fontWeight: 700,
-                    color: '#FF6D00',
+                    color: '#ffb800',
                     marginTop: 'auto',
                     paddingTop: '6px',
                   }}

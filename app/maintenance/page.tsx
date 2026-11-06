@@ -150,7 +150,7 @@ export default function MaintenancePage() {
           <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h3>
-                <ShieldCheck size={18} color="#ff6d00" /> Store Owner Bypass
+                <ShieldCheck size={18} color="#ffb800" /> Store Owner Bypass
               </h3>
               <button onClick={() => setIsAdminModalOpen(false)}>
                 <X size={18} />

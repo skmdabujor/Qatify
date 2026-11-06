@@ -24,6 +24,9 @@ import {
   Gamepad2,
   Home,
   Zap,
+  ToyBrick,
+  Baby,
+  Puzzle,
 } from 'lucide-react';
 import { CIRCULAR_CATEGORIES, CircularCategory } from './categoryData';
 import styles from './CircularCategoryNav.module.scss';
@@ -66,6 +69,12 @@ const renderElectricFallbackIcon = (iconName?: string) => {
       return <Camera {...iconProps} />;
     case 'Zap':
       return <Zap {...iconProps} />;
+    case 'ToyBrick':
+      return <ToyBrick {...iconProps} />;
+    case 'Baby':
+      return <Baby {...iconProps} />;
+    case 'Puzzle':
+      return <Puzzle {...iconProps} />;
     case 'ChevronsRight':
       return <ChevronsRight size={22} strokeWidth={3} />;
     default:

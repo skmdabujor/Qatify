@@ -163,7 +163,7 @@ $breakpoint-wide: 1440px;
 @mixin btn-primary-red {
   @include button-reset;
   background-color: $color-accent-red;
-  color: #ffffff;
+  color: #111111;
   font-weight: 700;
   font-family: $font-heading;
   border-radius: $radius-sm;
@@ -171,6 +171,7 @@ $breakpoint-wide: 1440px;
 
   &:hover {
     background-color: $color-accent-red-hover;
+    color: #111111;
     box-shadow: 0 4px 12px $color-accent-red-glow;
   }
 
@@ -239,9 +240,9 @@ $breakpoint-wide: 1440px;
 }
 
 @mixin badge-delivery {
-  background-color: #fff4ec;
-  color: #FF6D00;
-  border: 1px solid #fed7aa;
+  background-color: #fffbeb;
+  color: #ffb800;
+  border: 1px solid rgba(255, 184, 0, 0.4);
   font-weight: 700;
   font-size: 11px;
   padding: 3px 8px;

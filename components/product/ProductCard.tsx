@@ -11,7 +11,6 @@ import {
   Star,
   Heart,
   ShoppingCart,
-  Plane,
   Flame,
   Check,
 } from 'lucide-react';
@@ -99,7 +98,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             aria-label={isFavorited ? 'Remove from wishlist' : 'Add to wishlist'}
             title={isFavorited ? 'Remove from wishlist' : 'Save to wishlist'}
           >
-            <Heart size={15} fill={isFavorited ? '#FF6D00' : 'none'} color={isFavorited ? '#FF6D00' : 'currentColor'} />
+            <Heart size={15} fill={isFavorited ? '#ffb800' : 'none'} color={isFavorited ? '#ffb800' : 'currentColor'} />
           </button>
         </div>
       </div>
@@ -170,12 +169,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 QAR {product.originalPriceQAR}
               </span>
             )}
-          </div>
-
-          {/* Air Express Badge */}
-          <div className={styles.airDeliveryPill}>
-            <Plane size={11} />
-            <span>6–10d Air</span>
           </div>
         </div>
 
