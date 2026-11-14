@@ -1,0 +1,21 @@
+{
+  "name": "Qatify Qatar - Online Shopping for Mobiles & Electronics",
+  "short_name": "Qatify",
+  "description": "Qatar premier online store for authentic mobile accessories, chargers, earbuds & smart gadgets.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0C",
+  "theme_color": "#E06C2A",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

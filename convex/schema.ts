@@ -125,6 +125,7 @@ export default defineSchema({
     slug: v.string(),
     icon: v.string(),
     count: v.number(),
+    image: v.optional(v.string()),
   }).index("by_slug", ["slug"]),
 
   // 3. Orders Table
@@ -188,6 +189,7 @@ export default defineSchema({
     paymentMethod: v.union(
       v.literal("credit_card"),
       v.literal("apple_pay"),
+      v.literal("google_pay"),
       v.literal("cash_on_delivery"),
       v.literal("polar")
     ),

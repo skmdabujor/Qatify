@@ -24,7 +24,7 @@
   position: relative;
   background: linear-gradient(180deg, #ffe53b 0%, #ffd000 55%, #ffb700 100%);
   border: 2px solid #f59e0b;
-  border-radius: 14px;
+  border-radius: 0;
   box-shadow: 0 4px 18px rgba(245, 158, 11, 0.28), inset 0 2px 0 rgba(255, 255, 255, 0.7);
   padding: 12px 18px;
   display: flex;
@@ -796,7 +796,7 @@
 .categoryRibbonCard {
   background-color: #ffffff;
   border: 1px solid $color-border-subtle;
-  border-radius: $radius-sm;
+  border-radius: 0;
   padding: 10px 12px;
   display: flex;
   align-items: center;
@@ -875,20 +875,19 @@
 .promoBannerLink {
   display: block;
   width: 100%;
-  border-radius: $radius-md;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border: 1px solid $color-border-subtle;
-  transition: transform $transition-fast, box-shadow $transition-fast, border-color $transition-fast;
+  border: none;
+  box-shadow: none;
+  outline: none;
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(255, 109, 0, 0.15);
-    border-color: rgba(255, 109, 0, 0.3);
-  }
-
+  &:hover,
+  &:focus,
   &:active {
-    transform: translateY(0);
+    transform: none;
+    box-shadow: none;
+    border: none;
+    outline: none;
   }
 }
 
@@ -897,7 +896,7 @@
   height: auto;
   display: block;
   object-fit: cover;
-  border-radius: $radius-md;
+  border-radius: 0;
 }
 
 // =============================================================================
@@ -1045,35 +1044,29 @@
   }
 }
 
-.shelfGrid4Col {
+.shelfGrid4Col,
+.shelfGrid6Col {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
 
-  @media (max-width: 1200px) {
-    grid-template-columns: repeat(4, 1fr);
+  @media (max-width: 1280px) {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
   }
 
   @include laptop {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
   }
 
   @include tablet {
-    grid-template-columns: repeat(2, 1fr);
-
-    // When total items are odd in a 2-column view, hide the last item so count is always even
-    > :nth-child(odd):last-child {
-      display: none !important;
-    }
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
   }
 
   @include mobile {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
-
-    // Ensure mobile screen always shows an even number of products with zero empty grid space
-    > :nth-child(odd):last-child {
-      display: none !important;
-    }
   }
 }

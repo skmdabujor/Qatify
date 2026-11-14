@@ -10,6 +10,10 @@
   border-top: 1px solid $color-border-subtle;
 }
 
+.homeFooter {
+  border-top: none;
+}
+
 // 1. TRUST STRIP
 .trustStrip {
   background-color: #fafafa;
@@ -49,13 +53,13 @@
 
   &:hover {
     transform: translateY(-2px);
-    border-color: $color-accent-orange;
-    box-shadow: 0 4px 12px rgba(255, 109, 0, 0.08);
+    border-color: #4cae4f;
+    box-shadow: 0 4px 12px rgba(76, 174, 79, 0.1);
   }
 }
 
 .trustIconWrap {
-  color: $color-accent-orange;
+  color: #4cae4f;
   flex-shrink: 0;
   margin-top: 2px;
   display: flex;
@@ -63,8 +67,9 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: $radius-sm;
-  background-color: $color-accent-orange-light;
+  border-radius: 8px;
+  background-color: #f0fdf4;
+  border: 1px solid #dcfce7;
 }
 
 .trustContent {

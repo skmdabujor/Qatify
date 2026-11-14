@@ -221,9 +221,9 @@ export default function LoginPage() {
         {/* Card */}
         <div className={styles.authCard}>
           <div className={styles.cardHeader}>
-            <Link href="/" className={styles.logoLink}>
-              <QatifyLogo size="md" />
-            </Link>
+            <div className={styles.logoLink}>
+              <QatifyLogo size="md" href="/" />
+            </div>
             <h1 className={styles.title}>
               {mode === 'signIn' && 'Sign In to Qatify'}
               {mode === 'forgotPassword' && 'Forgot Password'}

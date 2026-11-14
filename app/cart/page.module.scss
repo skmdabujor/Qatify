@@ -666,6 +666,12 @@
   justify-content: space-between;
   font-size: 13px;
   color: $color-text-secondary;
+
+  .summaryVal {
+    font-weight: 400;
+    font-size: 13px;
+    color: $color-ink-black;
+  }
 }
 
 .shippingLabelCol {
@@ -699,7 +705,7 @@
 .grandTotalValue {
   font-size: 20px;
   font-family: $font-mono;
-  color: $color-accent-red;
+  color: $color-ink-black;
 }
 
 .checkoutSubmitBtn {

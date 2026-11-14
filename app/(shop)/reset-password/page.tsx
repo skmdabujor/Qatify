@@ -162,9 +162,9 @@ function ResetPasswordForm() {
       <div className={styles.authContainer}>
         <div className={styles.authCard}>
           <div className={styles.cardHeader}>
-            <Link href="/" className={styles.logoLink}>
-              <QatifyLogo size="md" />
-            </Link>
+            <div className={styles.logoLink}>
+              <QatifyLogo size="md" href="/" />
+            </div>
             <h1 className={styles.title}>
               {hasCode ? 'Set New Password' : 'Reset Your Password'}
             </h1>

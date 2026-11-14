@@ -16,7 +16,6 @@ import {
   Minus,
   Trash2,
   ArrowRight,
-  Plane,
   ShieldCheck,
   Tag,
   ShoppingBag,
@@ -37,7 +36,6 @@ export const CartDrawer: React.FC = () => {
     appliedCoupon,
     appliedDiscountQAR,
     setCoupon,
-    bundleItemCount,
   } = useShop();
 
   const convex = useConvex();
@@ -45,21 +43,6 @@ export const CartDrawer: React.FC = () => {
   const [isValidating, setIsValidating] = useState(false);
 
   if (!isCartOpen) return null;
-
-  // Calculate delivery window (6 to 10 days from today)
-  const today = new Date();
-  const minDeliveryDate = new Date(today);
-  minDeliveryDate.setDate(today.getDate() + 6);
-  const maxDeliveryDate = new Date(today);
-  maxDeliveryDate.setDate(today.getDate() + 10);
-
-  const deliveryDateString = `${minDeliveryDate.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  })} – ${maxDeliveryDate.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  })}`;
 
   const couponDiscount = appliedDiscountQAR || 0;
   const totalDiscount = couponDiscount;
@@ -116,15 +99,6 @@ export const CartDrawer: React.FC = () => {
           >
             <X size={20} />
           </button>
-        </div>
-
-        {/* 6-10 Days Delivery Preview Strip */}
-        <div className={styles.deliveryEstimateStrip}>
-          <Plane size={14} className={styles.planeIcon} />
-          <div className={styles.deliveryEstimateText}>
-            <span>Direct Air Delivery to Qatar:</span>
-            <strong>{deliveryDateString}</strong>
-          </div>
         </div>
 
         {/* Cart Items List */}
@@ -263,47 +237,21 @@ export const CartDrawer: React.FC = () => {
               </div>
             )}
 
-            {bundleItemCount > 0 && (
-              <div
-                style={{
-                  background: '#fff7ed',
-                  border: '1px solid #fed7aa',
-                  borderRadius: '8px',
-                  padding: '8px 12px',
-                  marginBottom: '10px',
-                  fontSize: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  color: '#9a3412',
-                }}
-              >
-                <span>🎁 Active Bundle ({bundleItemCount} items)</span>
-                <Link
-                  href="/bundle-cart"
-                  onClick={closeCart}
-                  style={{ fontWeight: 600, color: '#c2410c', textDecoration: 'underline' }}
-                >
-                  View Bundle Cart →
-                </Link>
-              </div>
-            )}
-
             {/* Calculations Breakdown */}
             <div className={styles.summaryLines}>
               <div className={styles.summaryLine}>
                 <span>Subtotal</span>
-                <span className="price-qar">QAR {cartSubtotal.toLocaleString()}</span>
+                <span className={styles.summaryVal}>QAR {cartSubtotal.toLocaleString()}</span>
               </div>
               {appliedCoupon && (
                 <div className={`${styles.summaryLine} ${styles.discountLine}`}>
                   <span>Promo Coupon</span>
-                  <span>- QAR {couponDiscount}</span>
+                  <span className={styles.summaryVal}>- QAR {couponDiscount}</span>
                 </div>
               )}
               <div className={styles.summaryLine}>
                 <span>Tracked Air Delivery</span>
-                <span className="price-qar">
+                <span className={styles.summaryVal}>
                   {cart.length === 0 ? 'QAR 0' : `QAR ${shippingFee}`}
                 </span>
               </div>

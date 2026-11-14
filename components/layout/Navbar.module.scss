@@ -11,167 +11,90 @@
   max-width: 100%;
 }
 
-// 1. TOP UTILITY BAR
+// 1. TOP UTILITY BAR (Ecobazar Dark Charcoal Style)
 .topUtilityBar {
-  background-color: $color-ink-black;
-  color: #ffffff;
+  background-color: #262930;
+  color: #cbd5e1;
   font-size: 11.5px;
-  border-bottom: 1px solid #1f1f24;
-  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 0;
   letter-spacing: -0.01em;
+
+  @include tablet {
+    display: none;
+  }
 }
 
 .topUtilityInner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: $space-4;
-
-  @include mobile {
-    justify-content: center;
-  }
+  width: 100%;
 }
 
-.topDeliveryHighlight {
+.topUtilityLeft {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 11.5px;
-
-  @include mobile {
-    font-size: 10.5px;
-    gap: 4px;
-    text-align: center;
-  }
+  gap: 14px;
 }
 
-.planeIcon {
-  font-size: 12px;
-}
-
-.deliveryText {
-  color: #d4d4d8;
-
-  strong {
-    color: #ffffff;
-    font-weight: 700;
-  }
-}
-
-.freeShippingBadge {
-  background: #fffbeb;
-  color: #ffb800;
-  border: 1px solid rgba(255, 184, 0, 0.4);
-  font-weight: 700;
-  padding: 1px 7px;
-  border-radius: $radius-full;
-  font-size: 10.5px;
-
-  @include laptop {
-    display: none;
-  }
-}
-
-.topUtilityLinks {
+.topUtilityMeta {
   display: flex;
   align-items: center;
-  gap: 12px;
-  color: #a1a1aa;
-
-  @include tablet {
-    display: none;
-  }
+  gap: 14px;
+  color: #94a3b8;
 }
 
-.utilityLink {
+.metaDropdown {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #d4d4d8;
-  transition: color $transition-fast;
-
-  &:hover {
-    color: $color-accent-yellow;
-  }
-}
-
-.utilityChatBtn {
-  background: none;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: #ffffff;
-  font-size: 11.5px;
-  font-family: inherit;
-  font-weight: 600;
+  color: #cbd5e1;
   cursor: pointer;
-  padding: 0;
+  font-size: 11.5px;
   transition: color $transition-fast;
 
   &:hover {
-    color: $color-accent-yellow;
+    color: #ffffff;
   }
 }
 
-.chatPulseGreen {
-  width: 7px;
-  height: 7px;
-  border-radius: $radius-full;
-  background-color: #10b981;
-  box-shadow: 0 0 0 1.5px rgba(16, 185, 129, 0.4);
-  animation: pulseGreenNav 2s infinite ease-in-out;
+.topDivider {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 11px;
 }
 
-@keyframes pulseGreenNav {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-  }
-}
-
-.utilityDivider {
-  color: #3f3f46;
-}
-
-.currencyBadge {
+.topAuthLink {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  color: #ffffff;
+  background: none;
+  border: none;
+  color: #cbd5e1;
   font-size: 11.5px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  transition: color $transition-fast;
 
-  .currencyQAR {
-    color: $color-accent-yellow;
-    font-weight: 700;
-    font-family: $font-mono;
-    background: #18181b;
-    padding: 1px 5px;
-    border-radius: $radius-xs;
-    border: 1px solid #27272a;
+  &:hover {
+    color: #ffb800;
   }
 }
 
 // 2. MAIN NAV
 .mainNav {
   background-color: #ffffff;
-  padding: 6px 0 0 0;
+  padding: 16px 0;
   border-bottom: none;
 
   @include tablet {
-    padding: 5px 0 0 0;
+    padding: 10px 0;
   }
 
   @include mobile {
-    padding: 4px 0 0 0;
+    padding: 8px 0;
   }
 }
 
@@ -203,6 +126,21 @@
 
 .logoWrap {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+
+  img {
+    height: 52px !important;
+    width: auto !important;
+
+    @include tablet {
+      height: 46px !important;
+    }
+
+    @include mobile {
+      height: 38px !important;
+    }
+  }
 }
 
 // Predictive Search (Desktop / Laptop)
@@ -324,16 +262,17 @@
 .searchForm {
   display: flex;
   align-items: stretch;
-  border: 2px solid $color-ink-black;
-  border-radius: $radius-md;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
   background-color: #ffffff;
   height: 44px;
   position: relative;
+  overflow: hidden;
   transition: border-color $transition-fast, box-shadow $transition-fast;
 
   &:focus-within {
-    border-color: $color-accent-red;
-    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+    border-color: #ffb800;
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.18);
   }
 }
 
@@ -586,41 +525,43 @@
   }
 }
 
-.searchInputWrap {
+.searchInputGroup {
   flex: 1;
   display: flex;
   align-items: center;
+  gap: 10px;
   height: 100%;
-  padding: 0 6px 0 12px;
+  padding: 0 10px 0 16px;
   background-color: #ffffff;
+  min-width: 0;
+}
 
-  @include laptop {
-    border-top-left-radius: $radius-sm;
-    border-bottom-left-radius: $radius-sm;
-  }
+.searchInnerIcon {
+  color: #64748b;
+  flex-shrink: 0;
 }
 
 .searchInput {
   flex: 1;
   width: 100%;
   height: 100%;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 500;
   border: none;
   outline: none;
-  color: $color-ink-black;
+  color: #0f172a;
   background: transparent;
 
   &::placeholder {
-    color: #a1a1aa;
-    font-size: 12.5px;
+    color: #94a3b8;
+    font-size: 13px;
   }
 }
 
 .clearSearchBtn {
   background: none;
   border: none;
-  color: #a1a1aa;
+  color: #94a3b8;
   cursor: pointer;
   padding: 4px;
   border-radius: $radius-full;
@@ -630,35 +571,33 @@
   transition: all $transition-fast;
 
   &:hover {
-    color: $color-ink-black;
-    background-color: #f4f4f5;
+    color: #0f172a;
+    background-color: #f1f5f9;
   }
 }
 
 .searchSubmitBtn {
   flex-shrink: 0;
-  width: 54px;
-  height: calc(100% + 4px);
-  margin: -2px -2px -2px 0;
-  background-color: $color-ink-black;
-  color: #ffffff;
+  height: 100%;
+  padding: 0 24px;
+  background-color: #ffb800;
+  color: #111111;
   border: none;
-  border-top-right-radius: $radius-md;
-  border-bottom-right-radius: $radius-md;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  z-index: 1;
-  transition: background-color $transition-fast, transform 100ms ease;
+  transition: background-color $transition-fast;
+  white-space: nowrap;
 
   &:hover {
-    background-color: $color-accent-red;
+    background-color: #e5a600;
   }
 
   &:active {
-    transform: scale(0.97);
+    background-color: #d99b00;
   }
 }
 
@@ -782,7 +721,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 6px 14px 12px;
+  padding: 12px 14px 10px;
 }
 
 .popularTagPill {
@@ -869,7 +808,7 @@
 .quickPrice {
   font-size: 12px;
   font-weight: 800;
-  color: $color-accent-red;
+  color: #0a0a0c;
   font-family: $font-mono;
 }
 
@@ -1068,7 +1007,7 @@
 .currencyLabel {
   font-size: 10.5px;
   font-weight: 700;
-  color: #d52b1e;
+  color: #0a0a0c;
 }
 
 .priceNumber {
@@ -1178,26 +1117,26 @@
 .actionItems {
   display: flex;
   align-items: center;
-  gap: $space-3;
+  gap: 0;
   flex-shrink: 0;
-
-  @include mobile {
-    gap: $space-2;
-  }
 }
 
-
-.actionIconBtn {
+.wishlistBtn {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  color: $color-ink-black;
+  justify-content: center;
+  color: #1e293b;
+  padding: 8px;
+  border-radius: 8px;
   text-decoration: none;
-  padding: 2px 6px;
-  transition: color $transition-fast;
+  transition: color $transition-fast, transform 100ms ease;
 
   &:hover {
-    color: $color-accent-red;
+    color: #ef4444;
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 }
 
@@ -1210,72 +1149,11 @@
 
 .badge {
   position: absolute;
-  top: -5px;
+  top: -6px;
   right: -8px;
-  background-color: $color-accent-red;
-  color: #111111;
-  font-size: 10px;
-  font-weight: 800;
-  min-width: 16px;
-  height: 16px;
-  border-radius: $radius-full;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: $font-mono;
-}
-
-.iconLabel {
-  font-size: 10.5px;
-  font-weight: 600;
-  margin-top: 2px;
-
-  @include laptop {
-    display: none;
-  }
-}
-
-// Cart Trigger Button
-.cartTriggerBtn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background-color: $color-ink-black;
+  background-color: #ef4444;
   color: #ffffff;
-  padding: 6px 12px;
-  border-radius: $radius-sm;
-  border: 1px solid #18181b;
-  cursor: pointer;
-  transition: transform 100ms ease;
-
-  &:hover {
-    background-color: $color-ink-black;
-    border-color: #18181b;
-    color: #ffffff;
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-
-  @include mobile {
-    padding: 6px 9px;
-  }
-}
-
-.cartIconWrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.cartCountBadge {
-  position: absolute;
-  top: -8px;
-  right: -10px;
-  background-color: $color-accent-yellow;
-  color: $color-ink-black;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 800;
   min-width: 17px;
   height: 17px;
@@ -1284,13 +1162,71 @@
   align-items: center;
   justify-content: center;
   font-family: $font-mono;
+  border: 1.5px solid #ffffff;
+}
+
+.actionDivider {
+  width: 1px;
+  height: 28px;
+  background-color: #e2e8f0;
+  margin: 0 16px;
+
+  @include mobile {
+    margin: 0 8px;
+  }
+}
+
+.cartGroupBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 8px;
+  transition: opacity $transition-fast;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  @include mobile {
+    gap: 6px;
+    padding: 4px;
+  }
+}
+
+.cartIconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: #1e293b;
+}
+
+.cartCountBadge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background-color: #ffb800;
+  color: #111111;
+  font-size: 10px;
+  font-weight: 800;
+  min-width: 17px;
+  height: 17px;
+  border-radius: $radius-full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-mono;
+  border: 1.5px solid #ffffff;
 }
 
 .cartPriceCol {
   display: flex;
   flex-direction: column;
   text-align: left;
-  line-height: 1.1;
+  line-height: 1.2;
 
   @include mobile {
     display: none;
@@ -1298,48 +1234,43 @@
 }
 
 .cartPriceLabel {
-  font-size: 10px;
-  color: #a1a1aa;
-  text-transform: uppercase;
-  font-weight: 600;
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 400;
 }
 
 .cartPriceValue {
-  font-size: 12.5px;
-  font-weight: 800;
-  font-family: $font-mono;
-  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.01em;
 }
 
-// 3. SECONDARY CATEGORY STRIP (Obsidian Black Accent with White & Yellow)
+// 3. SECONDARY CATEGORY STRIP (Ecobazar Style: Light Clean Bar with Gold Accent)
 .categoryStrip {
-  background-color: $color-ink-black;
-  color: #ffffff;
-  border-top: none;
+  background-color: #f8fafc;
+  color: #1e293b;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
 
-  // Fill gap on the left so All Categories touches the edge flush
-  > :global(.container) {
-    padding-left: 0;
-
-    @include tablet {
-      padding-right: 0;
-    }
+  @include tablet {
+    display: none;
   }
 }
 
 .categoryStripInner {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: space-between;
-  gap: $space-3;
-  height: 40px;
+  gap: 24px;
+  height: 48px;
   width: 100%;
   max-width: 100%;
   min-width: 0;
 
   @include mobile {
-    height: 36px;
-    gap: $space-2;
+    height: 42px;
+    gap: 12px;
   }
 }
 
@@ -1354,41 +1285,31 @@
 .allCatBtn {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 10px;
   background-color: #ffb800;
   color: #111111;
-  padding: 0 14px;
+  padding: 0 20px;
   height: 100%;
   align-self: stretch;
   box-sizing: border-box;
-  overflow: hidden;
-  font-family: $font-heading;
-  font-weight: 800;
-  font-size: 12.5px;
-  letter-spacing: 0.01em;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: -0.01em;
   white-space: nowrap;
   flex-shrink: 0;
   border: none;
   cursor: pointer;
   outline: none;
-  -webkit-tap-highlight-color: transparent;
   transition: background-color $transition-fast;
 
-  &:focus-visible {
-    outline: 2px solid #111111;
-    outline-offset: -2px;
-  }
-
   @include mobile {
-    height: 100%;
-    padding: 0 10px;
-    font-size: 11.5px;
-    gap: 5px;
+    padding: 0 12px;
+    font-size: 12px;
+    gap: 6px;
   }
 
   span {
     white-space: nowrap;
-    display: inline-block;
   }
 
   svg {
@@ -1415,43 +1336,32 @@
   position: absolute;
   top: 100%;
   left: 0;
-  width: 320px;
+  width: 280px;
   max-width: calc(100vw - 16px);
   background-color: #ffffff;
   color: $color-ink-black;
-  box-shadow: $shadow-xl;
-  border: 1px solid $color-border-subtle;
+  box-shadow: 0 16px 36px -4px rgba(24, 24, 27, 0.16), 0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  border-top: none;
   border-radius: 0 0 $radius-md $radius-md;
   z-index: $z-dropdown;
   overflow: hidden;
   animation: fadeIn 150ms ease;
 
   @include mobile {
-    width: 290px;
-    max-width: calc(100vw - 16px);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+    width: 260px;
   }
 }
 
 .megaFlyoutHeader {
-  padding: 10px 14px;
-  background-color: $color-surface-muted;
+  padding: 10px 16px;
+  background-color: #f8fafc;
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: $color-text-secondary;
-  border-bottom: 1px solid $color-border-subtle;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .megaGrid {
@@ -1466,15 +1376,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
-  border-bottom: 1px solid #f4f4f5;
+  padding: 10px 16px;
+  border-bottom: 1px solid #f1f5f9;
   font-size: 13px;
   font-weight: 600;
-  transition: background-color $transition-fast, color $transition-fast;
+  color: #334155;
+  text-decoration: none;
+  transition: all $transition-fast;
 
   &:hover {
-    background-color: #fff4ec;
-    color: $color-accent-red;
+    background-color: #fffbeb;
+    color: #b45309;
+    padding-left: 20px;
   }
 }
 
@@ -1482,23 +1395,18 @@
   color: inherit;
 }
 
-.megaItemCount {
-  font-size: 11px;
-  color: $color-text-muted;
-  font-family: $font-mono;
-}
-
 .megaFlyoutFooter {
-  padding: 10px 14px;
-  background-color: #fafafa;
-  border-top: 1px solid $color-border-subtle;
+  padding: 10px 16px;
+  background-color: #f8fafc;
+  border-top: 1px solid #e2e8f0;
   text-align: center;
 }
 
 .viewAllCatalogLink {
   font-size: 12px;
   font-weight: 700;
-  color: $color-accent-red;
+  color: #b45309;
+  text-decoration: none;
 
   &:hover {
     text-decoration: underline;
@@ -1508,7 +1416,7 @@
 .navLinks {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 22px;
   overflow-x: auto;
   white-space: nowrap;
   flex: 1;
@@ -1520,22 +1428,12 @@
     display: none;
   }
 
-  @media (min-width: 1025px) {
-    overflow: visible; // Allows hover tooltip to display gracefully without clipping
-  }
-
   @include laptop {
-    gap: 12px;
+    gap: 16px;
   }
 
   @include tablet {
-    gap: 10px;
-    padding: 0 8px;
-    @include touch-scroll-x;
-  }
-
-  @include mobile {
-    gap: 8px;
+    gap: 12px;
     padding: 0 8px;
     @include touch-scroll-x;
   }
@@ -1544,80 +1442,81 @@
 .navLink {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #e4e4e7;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+  text-decoration: none;
   transition: color $transition-fast;
+  padding: 6px 0;
+  letter-spacing: 0;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #FFB800;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform $transition-fast;
+    border-radius: 2px;
+  }
 
   &:hover {
-    color: #ffb800;
+    color: #FFB800;
+
+    &::after {
+      transform: scaleX(1);
+    }
   }
 
   &.dealHighlight {
-    color: #ffb800;
-    font-weight: 700;
+    color: #4b5563;
+    font-weight: 500;
 
     &:hover {
-      color: #ffb800;
-    }
-  }
-
-  &.bundleHighlight {
-    color: #ffb800;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    transition: color $transition-fast;
-
-    &:hover {
-      color: #ffb800;
-
-      .bundlePill {
-        background-color: #ffb800;
-        color: #18181b;
-      }
+      color: #FFB800;
     }
   }
 }
 
-.bundlePill {
-  display: inline-block;
-  background-color: #ffb800;
-  color: #18181b;
-  font-size: 10px;
-  font-weight: 800;
-  padding: 1px 6px;
-  border-radius: 999px;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-  transition: background-color $transition-fast, color $transition-fast;
+.navHotline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #1e293b;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color $transition-fast;
+
+  @include tablet {
+    display: none;
+  }
+
+  &:hover {
+    color: #ffb800;
+
+    .hotlineIcon {
+      color: #ffb800;
+    }
+  }
 }
 
-.qatarAirPill {
-  display: none;
-  align-self: center;
-  margin-top: auto;
-  margin-bottom: auto;
+.hotlineIcon {
+  color: #1e293b;
+  flex-shrink: 0;
+  transition: color $transition-fast;
+}
 
-  @media (min-width: 1440px) {
-    display: inline-flex;
-    align-items: center;
-    align-self: center;
-    gap: 6px;
-    background-color: rgba(255, 184, 0, 0.12);
-    color: #ffb800;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: $radius-full;
-    border: 1px solid rgba(255, 184, 0, 0.35);
-    flex-shrink: 0;
-    margin-top: auto;
-    margin-bottom: auto;
-    line-height: normal;
-  }
+.hotlineNumber {
+  letter-spacing: 0;
+  font-weight: 500;
 }
 
 // Wholesale Hub (B2B & Bulk Orders - Desktop & Mobile Strip)

@@ -180,7 +180,7 @@ export const PRODUCTS: Product[] = [
     isTrending: true,
     isBestSeller: true,
     isUnder99: false,
-    isNewArrival: false,
+    isNewArrival: true,
     badge: 'HOT DEAL',
     images: [
       'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80',
@@ -251,7 +251,7 @@ export const PRODUCTS: Product[] = [
     isTrending: true,
     isBestSeller: true,
     isUnder99: false,
-    isNewArrival: false,
+    isNewArrival: true,
     badge: 'TOP RATED',
     images: [
       'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&auto=format&fit=crop&q=80',
@@ -381,7 +381,7 @@ export const PRODUCTS: Product[] = [
     isTrending: true,
     isBestSeller: false,
     isUnder99: false,
-    isNewArrival: false,
+    isNewArrival: true,
     badge: 'BEST FOR WORKSPACE',
     images: [
       'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?w=800&auto=format&fit=crop&q=80',
@@ -444,7 +444,7 @@ export const PRODUCTS: Product[] = [
     isTrending: true,
     isBestSeller: true,
     isUnder99: false,
-    isNewArrival: false,
+    isNewArrival: true,
     badge: 'POPULAR IN DOHA',
     images: [
       'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80',
@@ -512,7 +512,7 @@ export const PRODUCTS: Product[] = [
     isTrending: true,
     isBestSeller: true,
     isUnder99: false,
-    isNewArrival: false,
+    isNewArrival: true,
     badge: 'AIRLINE APPROVED',
     images: [
       'https://images.unsplash.com/photo-1525858907241-d230b66fb9fa?w=800&auto=format&fit=crop&q=80',
@@ -639,7 +639,7 @@ export const PRODUCTS: Product[] = [
     isTrending: true,
     isBestSeller: true,
     isUnder99: true,
-    isNewArrival: false,
+    isNewArrival: true,
     badge: 'BEST VALUE',
     images: [
       'https://images.unsplash.com/photo-1681382659831-2f3b16748a64?w=800&auto=format&fit=crop&q=80',
@@ -832,7 +832,7 @@ export const PRODUCTS: Product[] = [
     isTrending: false,
     isBestSeller: true,
     isUnder99: true,
-    isNewArrival: false,
+    isNewArrival: true,
     badge: 'UNDER QAR 50',
     images: [
       'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=800&auto=format&fit=crop&q=80',
@@ -895,7 +895,7 @@ export const PRODUCTS: Product[] = [
     isTrending: true,
     isBestSeller: true,
     isUnder99: true,
-    isNewArrival: false,
+    isNewArrival: true,
     badge: 'SUPER SELLER',
     images: [
       'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&auto=format&fit=crop&q=80',
@@ -1797,7 +1797,7 @@ export const PRODUCTS: Product[] = [
     "isNewArrival": true,
     "badge": "BESTSELLER",
     "images": [
-      "https://images.unsplash.com/photo-1609592426815-f5b2fa012017?w=800&auto=format&fit=crop&q=80"
+      "/products/power-bank-200w.jpg"
     ],
     "tags": [
       "Anker",
@@ -2381,7 +2381,7 @@ export const PRODUCTS: Product[] = [
     "isNewArrival": false,
     "badge": "APPLE CERTIFIED",
     "images": [
-      "https://images.unsplash.com/photo-1622445262464-84b1456045b6?w=800&auto=format&fit=crop&q=80"
+      "/products/gan-chargers-banks.jpg"
     ],
     "tags": [
       "Belkin",
@@ -3113,7 +3113,7 @@ export const PRODUCTS: Product[] = [
     "isNewArrival": false,
     "badge": "ULTRA SLIM",
     "images": [
-      "https://images.unsplash.com/photo-1609592426815-f5b2fa012017?w=800&auto=format&fit=crop&q=80"
+      "/products/power-bank-200w.jpg"
     ],
     "tags": [
       "Baseus",
@@ -4281,8 +4281,7 @@ export const PRODUCTS: Product[] = [
   "isNewArrival": false,
   "badge": "SOLAR POWERED",
   "images": [
-    "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800&auto=format&fit=crop&q=80"
+    "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80"
   ],
   "tags": [
     "Solar Kit",

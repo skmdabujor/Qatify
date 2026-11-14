@@ -120,6 +120,18 @@ export const getNewArrivalDeals = query({
   },
 });
 
+// 6d. Fetch all New Arrival products (for Homepage New Arrivals Shelf & Grid)
+export const getNewArrivals = query({
+  args: { limit: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    const takeCount = args.limit ?? 16;
+    return await ctx.db
+      .query("products")
+      .withIndex("by_isNewArrival", (q) => q.eq("isNewArrival", true))
+      .take(takeCount);
+  },
+});
+
 // 7. Fetch Bundle-Eligible Products (Price >= 180 QAR, in stock)
 export const getBundleEligibleProducts = query({
   args: {

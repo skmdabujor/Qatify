@@ -381,13 +381,13 @@ export default function CartPage() {
                 <div className={styles.summaryRowsList}>
                   <div className={styles.summaryRow}>
                     <span>Items Subtotal</span>
-                    <span className="price-qar">QAR {cartSubtotal.toLocaleString()}</span>
+                    <span className={styles.summaryVal}>QAR {cartSubtotal.toLocaleString()}</span>
                   </div>
 
                   {appliedCoupon && (
                     <div className={`${styles.summaryRow} ${styles.discountRow}`}>
                       <span>Promo Coupon</span>
-                      <span>- QAR {couponDiscount}</span>
+                      <span className={styles.summaryVal}>- QAR {couponDiscount}</span>
                     </div>
                   )}
 
@@ -396,7 +396,7 @@ export default function CartPage() {
                       <span>Direct Tracked Air Express</span>
                       <span className={styles.shippingNotice}>6–10 Days to Qatar</span>
                     </div>
-                    <span className="price-qar">
+                    <span className={styles.summaryVal}>
                       {cart.length === 0 ? 'QAR 0' : `QAR ${shippingFee}`}
                     </span>
                   </div>

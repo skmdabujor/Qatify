@@ -2,7 +2,7 @@
 
 // =============================================================================
 // Qatify — Reusable High-Conversion Product Card Component
-// Tuned for Qatar Dropshipping Retail Density (Clean Medium-High Layout)
+// Modern 6-column marketplace retail card (Tokopedia/Shopee density tuned for Qatar)
 // =============================================================================
 
 import React from 'react';
@@ -13,6 +13,7 @@ import {
   ShoppingCart,
   Flame,
   Check,
+  BadgeCheck,
 } from 'lucide-react';
 import { Product } from '@/types/product';
 import { useShop } from '@/context/ShopContext';
@@ -23,6 +24,45 @@ interface ProductCardProps {
   variant?: 'grid' | 'list' | 'compact';
   showStockBar?: boolean;
 }
+
+const VERIFIED_BRANDS = [
+  'anker',
+  'soundcore',
+  'baseus',
+  'porodo',
+  'green lion',
+  'ugreen',
+  'apple',
+  'samsung',
+  'xiaomi',
+  'sony',
+  'dji',
+];
+
+const QATAR_REGIONS = [
+  'Doha, Qatar',
+  'Lusail, Qatar',
+  'Al Rayyan, Qatar',
+  'Al Wakrah, Qatar',
+  'West Bay, Doha',
+];
+
+const getRegionName = (id: string) => {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash << 5) - hash + id.charCodeAt(i);
+  }
+  return QATAR_REGIONS[Math.abs(hash) % QATAR_REGIONS.length];
+};
+
+const formatSoldCount = (count?: number) => {
+  if (!count || count <= 0) return '100+ sold';
+  if (count >= 1000) {
+    const k = (count / 1000).toFixed(count >= 10000 ? 0 : 1);
+    return `${k.replace('.0', '')}k+ sold`;
+  }
+  return `${count} sold`;
+};
 
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
@@ -68,21 +108,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   const hasDiscount = savings > 0 || discountPercent > 0;
 
+  const isOfficial =
+    product.brand &&
+    VERIFIED_BRANDS.some((b) => product.brand.toLowerCase().includes(b));
+
+  const promoBenefit =
+    savings > 0
+      ? `Save QAR ${savings} with Deal`
+      : product.priceQAR >= 150
+      ? 'Free Express Delivery'
+      : product.isFlashDeal
+      ? 'Limited Flash Deal'
+      : 'Direct Air Express';
+
   return (
     <div className={`${styles.card} ${styles[variant]}`}>
       {/* Top Badges & Actions Overlay */}
       <div className={styles.topBar}>
         <div className={styles.badgesCol}>
-          {hasDiscount && (
+          {hasDiscount && discountPercent > 0 && (
             <span className={styles.discountBadge}>
-              {savings > 0 ? (
-                <>
-                  Save: {savings.toLocaleString()} QAR
-                  {discountPercent > 0 ? ` (-${discountPercent}%)` : ''}
-                </>
-              ) : (
-                <>Save: -{discountPercent}%</>
-              )}
+              {discountPercent}%
             </span>
           )}
           {product.badge && (
@@ -98,12 +144,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             aria-label={isFavorited ? 'Remove from wishlist' : 'Add to wishlist'}
             title={isFavorited ? 'Remove from wishlist' : 'Save to wishlist'}
           >
-            <Heart size={15} fill={isFavorited ? '#ffb800' : 'none'} color={isFavorited ? '#ffb800' : 'currentColor'} />
+            <Heart
+              size={13}
+              fill={isFavorited ? '#ffb800' : 'none'}
+              color={isFavorited ? '#ffb800' : 'currentColor'}
+            />
           </button>
         </div>
       </div>
 
-      {/* Product Image Stage */}
+      {/* Product Image Stage (1:1 Ratio) */}
       <Link href={`/products/${product.slug}`} className={styles.imageLink}>
         <div className={styles.imageWrapper}>
           <img
@@ -137,19 +187,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Product Information Body */}
       <div className={styles.content}>
-        {/* Category & Brand info */}
-        <div className={styles.metaRow}>
-          <span className={styles.brandName}>{product.brand}</span>
-          <div className={styles.ratingWrap}>
-            <Star size={12} className={styles.starIcon} fill="#FACC15" />
-            <span className={styles.ratingScore}>{product.rating}</span>
-            <span className={styles.soldCount}>({product.soldCount} sold)</span>
-          </div>
-        </div>
-
         {/* Product Title */}
         <Link href={`/products/${product.slug}`} className={styles.titleLink}>
-          <h3 className={styles.title}>{product.title}</h3>
+          <h3 className={styles.title} title={product.title}>
+            {product.title}
+          </h3>
         </Link>
 
         {/* List variant extra description */}
@@ -159,17 +201,47 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Pricing Strip */}
         <div className={styles.priceRow}>
-          <div className={styles.priceBlock}>
+          <div className={styles.priceMain}>
             <span className={styles.priceQAR}>
               <span className={styles.currency}>QAR</span>
-              {product.priceQAR}
+              {product.priceQAR.toLocaleString()}
             </span>
-            {product.originalPriceQAR > product.priceQAR && (
-              <span className={styles.originalPrice}>
-                QAR {product.originalPriceQAR}
-              </span>
-            )}
           </div>
+          {product.originalPriceQAR > product.priceQAR && (
+            <span className={styles.originalPrice}>
+              QAR {product.originalPriceQAR.toLocaleString()}
+            </span>
+          )}
+        </div>
+
+        {/* Promo Benefit Tag (Hemat s.d Bonus / Bisa COD style) */}
+        <div className={styles.promoRow}>
+          <span className={styles.promoText} title={promoBenefit}>
+            {promoBenefit}
+          </span>
+        </div>
+
+        {/* Rating & Sold Row */}
+        <div className={styles.ratingRow}>
+          <Star size={11} className={styles.starIcon} fill="#f59e0b" color="#f59e0b" />
+          <span className={styles.ratingScore}>{product.rating.toFixed(1)}</span>
+          <span className={styles.dotSeparator}>·</span>
+          <span className={styles.soldCount}>{formatSoldCount(product.soldCount)}</span>
+        </div>
+
+        {/* Store / Location Row (Bottom line) */}
+        <div className={styles.storeRow}>
+          {isOfficial ? (
+            <span className={styles.officialStore} title={`${product.brand} Official Store`}>
+              <BadgeCheck size={12} className={styles.officialCheckIcon} />
+              <span className={styles.storeName}>{product.brand} Official Store</span>
+            </span>
+          ) : (
+            <span className={styles.locationStore} title="Direct Air Delivery to Qatar">
+              <span className={styles.locationDot} />
+              <span className={styles.storeName}>{getRegionName(product.id)}</span>
+            </span>
+          )}
         </div>
 
         {/* Stock Progress Bar (Optional) */}
@@ -180,7 +252,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 <Flame size={12} className={styles.flameIcon} />
                 <strong>{product.stockPercent}% Claimed</strong>
               </span>
-              <span className={styles.airBatchTag}>Limited Air Batch</span>
+              <span className={styles.airBatchTag}>Air Batch</span>
             </div>
             <div className={styles.stockBarTrack}>
               <div
@@ -191,7 +263,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
 
-        {/* Action Button: Add to Cart */}
+        {/* Action Button: Add to Cart (Desktop slide-up on hover, mobile tap) */}
         <button
           type="button"
           onClick={handleAddToCart}
@@ -200,14 +272,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         >
           {isAdded ? (
             <>
-              <Check size={14} />
-              <span>Added to Cart!</span>
+              <Check size={13} />
+              <span>Added!</span>
             </>
           ) : (
             <>
-              <ShoppingCart size={14} />
+              <ShoppingCart size={13} />
               <span>Add to Cart</span>
-              <span className={styles.btnPrice}>• QAR {product.priceQAR}</span>
             </>
           )}
         </button>
@@ -215,4 +286,3 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     </div>
   );
 };
-

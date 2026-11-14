@@ -37,11 +37,23 @@ interface ShopContextType {
     quantity?: number,
     selectedColor?: string,
     selectedOption?: string,
-    openDrawer?: boolean
+    openDrawer?: boolean,
+    notify?: boolean
   ) => void;
   updateQuantity: (itemId: string, delta: number) => void;
   removeFromCart: (itemId: string) => void;
   clearCart: () => void;
+
+  // Instant Buy Now (Direct Checkout without touching regular Cart)
+  buyNowItem: CartItem | null;
+  setBuyNowItem: (item: CartItem | null) => void;
+  clearBuyNow: () => void;
+  initiateBuyNow: (
+    product: Product,
+    quantity?: number,
+    selectedColor?: string,
+    selectedOption?: string
+  ) => void;
 
   // Bundle Promotion & Dedicated Bundle Cart (Tiered 5-20 Items, >= 180 QAR)
   bundleCart: CartItem[];
@@ -110,6 +122,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   // Cart
   const [cart, setCart] = useState<CartItem[]>([]);
   const [bundleCart, setBundleCartState] = useState<CartItem[]>([]);
+  const [buyNowItem, setBuyNowItem] = useState<CartItem | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   // Auto-close side cart drawer when on full cart or checkout pages
@@ -181,6 +194,15 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         setBundleCartState([]);
       }
 
+      const storedBuyNow = localStorage.getItem('qatify_buynow_item');
+      if (storedBuyNow) {
+        try {
+          setBuyNowItem(JSON.parse(storedBuyNow));
+        } catch {
+          setBuyNowItem(null);
+        }
+      }
+
       const storedWishlist = localStorage.getItem('qatify_wishlist');
       if (storedWishlist) {
         setWishlist(JSON.parse(storedWishlist));
@@ -231,6 +253,20 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       }
     }
   }, [bundleCart, isHydrated]);
+
+  useEffect(() => {
+    if (isHydrated) {
+      try {
+        if (buyNowItem) {
+          localStorage.setItem('qatify_buynow_item', JSON.stringify(buyNowItem));
+        } else {
+          localStorage.removeItem('qatify_buynow_item');
+        }
+      } catch (e) {
+        console.error('Error syncing buy now item:', e);
+      }
+    }
+  }, [buyNowItem, isHydrated]);
 
   useEffect(() => {
     if (isHydrated) {
@@ -311,7 +347,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     quantity = 1,
     selectedColor?: string,
     selectedOption?: string,
-    openDrawer?: boolean
+    openDrawer?: boolean,
+    notify: boolean = false
   ) => {
     const color = selectedColor || product.variants?.colors?.[0]?.name;
     const option = selectedOption || product.variants?.options?.[0]?.values?.[0];
@@ -339,12 +376,6 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         ];
       }
     });
-
-    showToast(
-      'Added to Cart! 🛒',
-      `${product.title.slice(0, 32)}... (QAR ${product.priceQAR})`,
-      'success'
-    );
 
     const shouldOpen =
       openDrawer !== undefined
@@ -377,6 +408,42 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
   const clearCart = () => {
     setCart([]);
+  };
+
+  // Instant Buy Now Actions (Completely isolated from regular cart)
+  const clearBuyNow = () => {
+    setBuyNowItem(null);
+    try {
+      localStorage.removeItem('qatify_buynow_item');
+    } catch (e) {
+      console.error('Error clearing buy now item:', e);
+    }
+  };
+
+  const initiateBuyNow = (
+    product: Product,
+    quantity = 1,
+    selectedColor?: string,
+    selectedOption?: string
+  ) => {
+    const color = selectedColor || product.variants?.colors?.[0]?.name;
+    const option = selectedOption || product.variants?.options?.[0]?.values?.[0];
+    const itemUniqueId = `buynow-${product.id}-${color || 'default'}-${option || 'default'}`;
+
+    const item: CartItem = {
+      id: itemUniqueId,
+      product,
+      quantity,
+      selectedColor: color,
+      selectedOption: option,
+    };
+
+    setBuyNowItem(item);
+    try {
+      localStorage.setItem('qatify_buynow_item', JSON.stringify(item));
+    } catch (e) {
+      console.error('Error saving buy now item:', e);
+    }
   };
 
   // Dedicated Bundle Cart Actions
@@ -579,6 +646,10 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         removeFromCart,
         clearCart,
+        buyNowItem,
+        setBuyNowItem,
+        clearBuyNow,
+        initiateBuyNow,
         bundleCart,
         bundleItemCount,
         bundleSubtotal,

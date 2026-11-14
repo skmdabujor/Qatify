@@ -20,7 +20,6 @@ import {
   Star,
   SlidersHorizontal,
   Check,
-  Plane,
 } from 'lucide-react';
 import { ProductCard } from '@/components/product/ProductCard';
 import { PRODUCTS, CATEGORIES } from '@/data/products';
@@ -35,12 +34,14 @@ function ShopContent() {
 
   // URL query params initialization
   const initialCategory = searchParams.get('cat') || '';
+  const initialSubcategory = searchParams.get('sub') || '';
   const initialSearch = searchParams.get('q') || '';
   const initialFilter = searchParams.get('filter') || '';
   const initialSort = (searchParams.get('sort') as SortOption) || 'trending';
 
   // State
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>(initialSubcategory);
   const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
   const [selectedPriceTier, setSelectedPriceTier] = useState<string>(
     initialFilter === 'under-99'
@@ -67,6 +68,7 @@ function ShopContent() {
   // Reset all filters
   const handleResetFilters = () => {
     setSelectedCategory('');
+    setSelectedSubcategory('');
     setSearchQuery('');
     setSelectedPriceTier('all');
     setSelectedBrands([]);
@@ -96,6 +98,14 @@ function ShopContent() {
     return allProducts.filter((product) => {
       // Category filter
       if (selectedCategory && product.categorySlug !== selectedCategory) {
+        return false;
+      }
+
+      // Subcategory filter
+      if (
+        selectedSubcategory &&
+        (product.subcategory || '').toLowerCase() !== selectedSubcategory.toLowerCase()
+      ) {
         return false;
       }
 
@@ -155,7 +165,9 @@ function ShopContent() {
       }
     });
   }, [
+    allProducts,
     selectedCategory,
+    selectedSubcategory,
     searchQuery,
     selectedPriceTier,
     selectedBrands,
@@ -168,6 +180,7 @@ function ShopContent() {
   // Active filters count for badges
   const activeFiltersCount =
     (selectedCategory ? 1 : 0) +
+    (selectedSubcategory ? 1 : 0) +
     (selectedPriceTier !== 'all' ? 1 : 0) +
     selectedBrands.length +
     (minRating > 0 ? 1 : 0) +
@@ -192,11 +205,6 @@ function ShopContent() {
             <p className={styles.catalogDesc}>
               Direct air freight fulfillment from certified export hubs to Hamad International Airport. 6–10 Days tracked delivery across Doha, Lusail, Al Rayyan, Al Wakrah, and Al Khor.
             </p>
-          </div>
-
-          <div className={styles.quickQatarAssurance}>
-            <Plane size={16} />
-            <span>Tracked Air Express • Hamad Airport Customs Pre-Clearance</span>
           </div>
         </div>
 
@@ -296,7 +304,10 @@ function ShopContent() {
                       type="radio"
                       name="category"
                       checked={selectedCategory === ''}
-                      onChange={() => setSelectedCategory('')}
+                      onChange={() => {
+                        setSelectedCategory('');
+                        setSelectedSubcategory('');
+                      }}
                     />
                     <span className={styles.radioLabel}>All Categories</span>
                   </label>
@@ -306,7 +317,10 @@ function ShopContent() {
                         type="radio"
                         name="category"
                         checked={selectedCategory === cat.slug}
-                        onChange={() => setSelectedCategory(cat.slug)}
+                        onChange={() => {
+                          setSelectedCategory(cat.slug);
+                          setSelectedSubcategory('');
+                        }}
                       />
                       <span className={styles.radioLabel}>{cat.name}</span>
                     </label>
@@ -477,8 +491,22 @@ function ShopContent() {
                   <span className={styles.filterTag}>
                     Category: {selectedCategory}
                     <button
-                      onClick={() => setSelectedCategory('')}
+                      onClick={() => {
+                        setSelectedCategory('');
+                        setSelectedSubcategory('');
+                      }}
                       aria-label="Remove category filter"
+                    >
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+                {selectedSubcategory && (
+                  <span className={styles.filterTag}>
+                    Type: {selectedSubcategory}
+                    <button
+                      onClick={() => setSelectedSubcategory('')}
+                      aria-label="Remove subcategory filter"
                     >
                       <X size={12} />
                     </button>

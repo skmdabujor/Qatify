@@ -1,0 +1,893 @@
+// =============================================================================
+// Qatify — Homepage 3-Panel Bento Hero Section SCSS
+// Square-cornered 3-panel hero layout matching reference design:
+// - Left (~70%): Full-height interactive slider with arrows & bottom dots
+// - Right (~30%): 2 stacked promo cards (Weekly Offers + Price Slash Zone)
+// =============================================================================
+
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.heroBentoSection {
+  margin-bottom: $space-5;
+
+  @include mobile {
+    margin-bottom: $space-4;
+  }
+}
+
+.heroBentoGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.38fr) minmax(280px, 1fr);
+  gap: 10px;
+  height: 300px;
+
+  @media (max-width: 1180px) {
+    height: 270px;
+    grid-template-columns: minmax(0, 2.2fr) minmax(250px, 1fr);
+  }
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: 8px;
+  }
+}
+
+// =============================================================================
+// PANEL 1: LEFT MAIN SLIDER CARD (Square Corners, Full Height)
+// =============================================================================
+.sliderCard {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 0;
+  background-color: #1b5e52;
+
+  @media (max-width: 900px) {
+    height: 235px;
+  }
+
+  @include mobile {
+    height: 190px;
+  }
+}
+
+.slidesTrack {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.slide {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 56px 22px 62px;
+  text-decoration: none;
+  color: #ffffff;
+  overflow: hidden;
+
+  @media (max-width: 1180px) {
+    padding: 16px 48px 18px 52px;
+  }
+
+  @include tablet {
+    padding: 14px 44px 18px 46px;
+  }
+
+  @include mobile {
+    padding: 12px 36px 20px 38px;
+  }
+}
+
+// Slide Background Themes
+.themeTeal {
+  background: linear-gradient(110deg, #1b5e52 0%, #2a786a 52%, #558e82 100%);
+}
+
+.themeCrimson {
+  background: linear-gradient(110deg, #991b1b 0%, #dc2626 52%, #f97316 100%);
+}
+
+.themeRoyal {
+  background: linear-gradient(110deg, #1e3a8a 0%, #1d4ed8 52%, #0284c7 100%);
+}
+
+.themeObsidian {
+  background: linear-gradient(110deg, #18181b 0%, #27272a 55%, #3f3f46 100%);
+}
+
+.slideGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 75% 45%, rgba(255, 255, 255, 0.14) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+.slideTextCol {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  max-width: 56%;
+
+  @include tablet {
+    max-width: 62%;
+  }
+
+  @include mobile {
+    max-width: 65%;
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+.slideTopPill {
+  display: inline-block;
+  background-color: #f59e0b;
+  color: #18181b;
+  font-family: $font-heading;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  padding: 5px 18px;
+  border-radius: 9999px;
+  margin-bottom: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+  white-space: nowrap;
+
+  @media (max-width: 1180px) {
+    font-size: 11.5px;
+    padding: 4px 14px;
+    margin-bottom: 8px;
+  }
+
+  @include mobile {
+    font-size: 9.5px;
+    padding: 3px 10px;
+    margin-bottom: 6px;
+  }
+}
+
+.slideOfferRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 10px;
+
+  @media (max-width: 1180px) {
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  @include mobile {
+    gap: 7px;
+    margin-bottom: 6px;
+  }
+}
+
+.offerLeftBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.offerBigNumberWrap {
+  display: flex;
+  align-items: flex-start;
+  line-height: 0.92;
+}
+
+.offerBigNumber {
+  font-family: $font-heading;
+  font-size: 56px;
+  font-weight: 950;
+  color: #f59e0b;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9), 0 4px 12px rgba(0, 0, 0, 0.25);
+  letter-spacing: -0.03em;
+
+  @media (max-width: 1180px) {
+    font-size: 46px;
+  }
+
+  @include tablet {
+    font-size: 38px;
+  }
+
+  @include mobile {
+    font-size: 28px;
+  }
+}
+
+.offerBigUnit {
+  font-family: $font-heading;
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffffff;
+  margin-top: 4px;
+  margin-left: 2px;
+
+  @include mobile {
+    font-size: 12px;
+    margin-top: 2px;
+  }
+}
+
+.offerLeftLabel {
+  font-family: $font-heading;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+  margin-top: 4px;
+
+  @include mobile {
+    font-size: 8.5px;
+    margin-top: 2px;
+  }
+}
+
+.offerPlusSign {
+  font-family: $font-heading;
+  font-size: 34px;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+  margin-bottom: 10px;
+
+  @include tablet {
+    font-size: 26px;
+  }
+
+  @include mobile {
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+}
+
+.offerRightBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  line-height: 1.1;
+}
+
+.offerRightValue {
+  font-family: $font-heading;
+  font-size: 42px;
+  font-weight: 950;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1;
+
+  @media (max-width: 1180px) {
+    font-size: 34px;
+  }
+
+  @include tablet {
+    font-size: 28px;
+  }
+
+  @include mobile {
+    font-size: 20px;
+  }
+}
+
+.offerRightLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  max-width: 145px;
+  margin-top: 3px;
+
+  @include mobile {
+    font-size: 8.5px;
+    max-width: 105px;
+  }
+}
+
+.slideTagsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+
+  @include mobile {
+    gap: 5px;
+    margin-bottom: 0;
+  }
+}
+
+.tagRed {
+  background-color: #dc2626;
+  color: #ffffff;
+  font-family: $font-heading;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 12px;
+  border-radius: 9999px;
+
+  @include mobile {
+    font-size: 8.5px;
+    padding: 2px 8px;
+  }
+}
+
+.tagWhite {
+  background-color: #ffffff;
+  color: #18181b;
+  font-family: $font-heading;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 12px;
+  border-radius: 9999px;
+
+  @include mobile {
+    font-size: 8.5px;
+    padding: 2px 8px;
+  }
+}
+
+.slideFootnote {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.86);
+  line-height: 1.3;
+  max-width: 440px;
+
+  @include mobile {
+    display: none;
+  }
+}
+
+// Right Product Showcase inside Slider
+.slideVisualCol {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38%;
+  height: 100%;
+
+  @include mobile {
+    width: 34%;
+  }
+}
+
+.showcaseBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.showcaseItemsRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin-bottom: -14px;
+  z-index: 2;
+
+  @include mobile {
+    margin-bottom: -10px;
+  }
+}
+
+.showcaseItem {
+  width: 66px;
+  height: 66px;
+  background: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  transform: rotate(-6deg);
+  margin: 0 -6px;
+
+  &:last-child {
+    transform: rotate(6deg);
+  }
+
+  &.showcaseItemCenter {
+    width: 82px;
+    height: 82px;
+    transform: translateY(-10px);
+    z-index: 3;
+    border-color: #fde047;
+  }
+
+  @media (max-width: 1180px) {
+    width: 56px;
+    height: 56px;
+
+    &.showcaseItemCenter {
+      width: 70px;
+      height: 70px;
+    }
+  }
+
+  @include mobile {
+    width: 38px;
+    height: 38px;
+    border-width: 1.5px;
+
+    &.showcaseItemCenter {
+      width: 48px;
+      height: 48px;
+      transform: translateY(-6px);
+    }
+  }
+}
+
+.showcaseImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.showcaseCrateBase {
+  width: 196px;
+  height: 54px;
+  background: linear-gradient(180deg, #1d4ed8 0%, #1e40af 100%);
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  z-index: 3;
+
+  @media (max-width: 1180px) {
+    width: 168px;
+    height: 46px;
+  }
+
+  @include mobile {
+    width: 108px;
+    height: 32px;
+    padding: 3px 6px;
+  }
+}
+
+.showcaseBrandTag {
+  font-family: $font-heading;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  white-space: nowrap;
+
+  @include mobile {
+    font-size: 7.5px;
+    letter-spacing: 0.04em;
+  }
+}
+
+// Slider Navigation Arrows
+.navArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(24, 24, 27, 0.12);
+  color: #18181b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+  transition: background-color $transition-fast, transform $transition-fast;
+
+  &:hover {
+    background-color: #ffffff;
+    transform: translateY(-50%) scale(1.08);
+  }
+
+  @include mobile {
+    width: 26px;
+    height: 26px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+}
+
+.prevArrow {
+  left: 12px;
+
+  @include mobile {
+    left: 6px;
+  }
+}
+
+.nextArrow {
+  right: 12px;
+
+  @include mobile {
+    right: 6px;
+  }
+}
+
+// Bottom-Right Dots
+.dotsBar {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  @include mobile {
+    bottom: 8px;
+    right: 10px;
+    gap: 5px;
+  }
+}
+
+.dotBtn {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.45);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: width 0.2s ease, background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+
+  &.dotActive {
+    width: 18px;
+    background-color: #ffffff;
+  }
+
+  @include mobile {
+    width: 6px;
+    height: 6px;
+
+    &.dotActive {
+      width: 14px;
+    }
+  }
+}
+
+// =============================================================================
+// RIGHT COLUMN: 2 STACKED PROMO CARDS (Square Corners)
+// =============================================================================
+.rightColumnStack {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+  height: 100%;
+  min-width: 0;
+
+  @media (max-width: 900px) {
+    grid-template-rows: auto;
+    grid-template-columns: 1fr 1fr;
+    height: auto;
+    gap: 8px;
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+// PANEL 2: TOP RIGHT RED-ORANGE CARD
+.topPromoCard {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: linear-gradient(120deg, #dc2626 0%, #ef4444 45%, #f97316 100%);
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 0;
+  overflow: hidden;
+  transition: transform $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.28);
+
+    .miniClusterImgFront {
+      transform: scale(1.06);
+    }
+  }
+
+  @media (max-width: 900px) {
+    min-height: 132px;
+  }
+
+  @include mobile {
+    min-height: 120px;
+  }
+}
+
+.topPromoContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 56%;
+}
+
+.topPromoEyebrow {
+  font-family: $font-heading;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.92);
+  margin-bottom: 2px;
+  white-space: nowrap;
+}
+
+.topPromoDiscount {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  line-height: 0.95;
+  margin-bottom: 4px;
+}
+
+.topPromoNumber {
+  font-family: $font-heading;
+  font-size: 38px;
+  font-weight: 950;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+
+  @media (max-width: 1180px) {
+    font-size: 32px;
+  }
+}
+
+.topPromoPercentCol {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.topPromoPercent {
+  font-family: $font-heading;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.topPromoOff {
+  font-family: $font-heading;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.topPromoSub {
+  font-size: 9.5px;
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.topPromoVisual {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 44%;
+}
+
+.pedestalGlow {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-40%);
+  width: 110px;
+  height: 46px;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 75%);
+  pointer-events: none;
+}
+
+.miniProductCluster {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  margin-top: 2px;
+}
+
+.miniClusterImgBack {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border: 1.5px solid #ffffff;
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+  transform: rotate(-8deg);
+  margin-right: -10px;
+}
+
+.miniClusterImgFront {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border: 1.5px solid #ffffff;
+  background: #ffffff;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.26);
+  position: relative;
+  z-index: 2;
+  transition: transform $transition-fast;
+}
+
+.topPromoCtaPill {
+  background-color: #1d4ed8;
+  color: #ffffff;
+  font-family: $font-heading;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.24);
+  white-space: nowrap;
+  position: relative;
+  z-index: 3;
+}
+
+// PANEL 3: BOTTOM RIGHT BLUE CARD
+.bottomPromoCard {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: linear-gradient(120deg, #0284c7 0%, #2563eb 55%, #1d4ed8 100%);
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 0;
+  overflow: hidden;
+  transition: transform $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(29, 78, 216, 0.3);
+
+    .expressTruckBadge {
+      transform: translateX(3px);
+    }
+  }
+
+  @media (max-width: 900px) {
+    min-height: 132px;
+  }
+
+  @include mobile {
+    min-height: 120px;
+  }
+}
+
+.bottomPromoGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.18) 0%, transparent 58%);
+  pointer-events: none;
+}
+
+.bottomPromoContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 58%;
+}
+
+.slashTitleStack {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.94;
+  margin-bottom: 5px;
+}
+
+.slashWordWhite {
+  font-family: $font-heading;
+  font-size: 21px;
+  font-weight: 950;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+
+  @media (max-width: 1180px) {
+    font-size: 18px;
+  }
+}
+
+.slashWordRed {
+  font-family: $font-heading;
+  font-size: 22px;
+  font-weight: 950;
+  color: #ef4444;
+  text-shadow:
+    -1px -1px 0 #ffffff,
+     1px -1px 0 #ffffff,
+    -1px  1px 0 #ffffff,
+     1px  1px 0 #ffffff;
+  letter-spacing: -0.02em;
+
+  @media (max-width: 1180px) {
+    font-size: 19px;
+  }
+}
+
+.bottomPromoSub {
+  font-size: 9.5px;
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.bottomPromoVisual {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 42%;
+}
+
+.expressTruckBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  padding: 6px 12px;
+  transition: transform $transition-fast;
+
+  span {
+    font-family: $font-heading;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    margin-top: 2px;
+  }
+}
+
+.bottomPromoCtaPill {
+  background-color: #ffffff;
+  color: #18181b;
+  border: 2px solid #dc2626;
+  font-family: $font-heading;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 13px;
+  border-radius: 9999px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22);
+  white-space: nowrap;
+}

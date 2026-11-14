@@ -7,6 +7,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import {
@@ -31,6 +32,7 @@ import {
   GooglePayIcon,
   QarCurrencyIcon,
 } from '@/components/ui/PaymentIcons';
+import { HomeFooterSeo } from './HomeFooterSeo';
 import styles from './Footer.module.scss';
 
 // Social links configuration
@@ -67,6 +69,8 @@ const SOCIAL_LINKS = [
 ];
 
 export const Footer: React.FC = () => {
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
   const { showToast, openChat } = useShop();
   const [email, setEmail] = useState('');
   const subscribeNewsletter = useMutation(api.newsletter.subscribe);
@@ -86,61 +90,66 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className={styles.footer}>
-      {/* 1. CUSTOMER ASSURANCE TRUST STRIP */}
-      <div className={styles.trustStrip}>
-        <div className="container">
-          <div className={styles.trustGrid}>
-            <div className={styles.trustCard}>
-              <div className={styles.trustIconWrap}>
-                <Plane size={24} />
-              </div>
-              <div className={styles.trustContent}>
-                <h4 className={styles.trustTitle}>Fast Qatar Express Delivery</h4>
-                <p className={styles.trustDesc}>
-                  Prompt tracked doorstep delivery across Doha, Lusail, Al Rayyan, Al Wakrah, and all municipalities.
-                </p>
-              </div>
-            </div>
+    <footer className={`${styles.footer} ${isHomePage ? styles.homeFooter : ''}`}>
+      {/* 0. HOMEPAGE SEO & STOREFRONT GUIDE (homepage only) */}
+      {isHomePage && <HomeFooterSeo />}
 
-            <div className={styles.trustCard}>
-              <div className={styles.trustIconWrap}>
-                <ShieldCheck size={24} />
+      {/* 1. CUSTOMER ASSURANCE TRUST STRIP (hidden on homepage) */}
+      {!isHomePage && (
+        <div className={styles.trustStrip}>
+          <div className="container">
+            <div className={styles.trustGrid}>
+              <div className={styles.trustCard}>
+                <div className={styles.trustIconWrap}>
+                  <Plane size={24} />
+                </div>
+                <div className={styles.trustContent}>
+                  <h4 className={styles.trustTitle}>Fast Qatar Express Delivery</h4>
+                  <p className={styles.trustDesc}>
+                    Prompt tracked doorstep delivery across Doha, Lusail, Al Rayyan, Al Wakrah, and all municipalities.
+                  </p>
+                </div>
               </div>
-              <div className={styles.trustContent}>
-                <h4 className={styles.trustTitle}>100% Genuine Guaranteed</h4>
-                <p className={styles.trustDesc}>
-                  Every product is authentic, factory-sealed, and quality tested before dispatch.
-                </p>
-              </div>
-            </div>
 
-            <div className={styles.trustCard}>
-              <div className={styles.trustIconWrap}>
-                <CreditCard size={24} />
+              <div className={styles.trustCard}>
+                <div className={styles.trustIconWrap}>
+                  <ShieldCheck size={24} />
+                </div>
+                <div className={styles.trustContent}>
+                  <h4 className={styles.trustTitle}>100% Genuine Guaranteed</h4>
+                  <p className={styles.trustDesc}>
+                    Every product is authentic, factory-sealed, and quality tested before dispatch.
+                  </p>
+                </div>
               </div>
-              <div className={styles.trustContent}>
-                <h4 className={styles.trustTitle}>Secure Payments & Instant Order</h4>
-                <p className={styles.trustDesc}>
-                  Pay securely in Qatari Riyal (QAR) with Apple Pay, Google Pay, Visa, or Mastercard with zero conversion fees.
-                </p>
-              </div>
-            </div>
 
-            <div className={styles.trustCard}>
-              <div className={styles.trustIconWrap}>
-                <Headset size={24} />
+              <div className={styles.trustCard}>
+                <div className={styles.trustIconWrap}>
+                  <CreditCard size={24} />
+                </div>
+                <div className={styles.trustContent}>
+                  <h4 className={styles.trustTitle}>Secure Payments & Instant Order</h4>
+                  <p className={styles.trustDesc}>
+                    Pay securely in Qatari Riyal (QAR) with Apple Pay, Google Pay, Visa, or Mastercard with zero conversion fees.
+                  </p>
+                </div>
               </div>
-              <div className={styles.trustContent}>
-                <h4 className={styles.trustTitle}>24/7 Dedicated Support</h4>
-                <p className={styles.trustDesc}>
-                  Live WhatsApp & customer service ready to assist you anywhere in Qatar.
-                </p>
+
+              <div className={styles.trustCard}>
+                <div className={styles.trustIconWrap}>
+                  <Headset size={24} />
+                </div>
+                <div className={styles.trustContent}>
+                  <h4 className={styles.trustTitle}>24/7 Dedicated Support</h4>
+                  <p className={styles.trustDesc}>
+                    Live WhatsApp & customer service ready to assist you anywhere in Qatar.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* 2. MAIN FOOTER CONTENT */}
       <div className={styles.mainFooter}>
@@ -148,7 +157,7 @@ export const Footer: React.FC = () => {
           <div className={styles.footerGrid}>
             {/* Col 1: Brand Info & Online Delivery */}
             <div className={styles.brandCol}>
-              <QatifyLogo variant="dark" size="lg" showTagline={true} />
+              <QatifyLogo variant="dark" size="lg" showTagline={false} />
               <p className={styles.brandBio}>
                 Qatify is Qatar’s trusted online shopping destination for authentic tech accessories and smart lifestyle electronics. We connect shoppers directly to leading brands including Anker, Baseus, Green Lion, Porodo, and Soundcore, backed by prompt doorstep air delivery across Qatar.
               </p>

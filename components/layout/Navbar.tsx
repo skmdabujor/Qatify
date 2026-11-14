@@ -13,6 +13,7 @@ import { api } from '@/convex/_generated/api';
 import {
   Search,
   ShoppingCart,
+  ShoppingBag,
   Heart,
   User,
   Zap,
@@ -39,7 +40,7 @@ import {
   Puzzle,
   MessageCircle,
   ArrowRight,
-  TrendingUp, Layers, Building2,
+  Layers, Building2,
 } from 'lucide-react';
 import { QatifyLogo } from '@/components/brand/QatifyLogo';
 import { AuthModal } from '@/components/auth/AuthModal';
@@ -122,11 +123,37 @@ export const Navbar: React.FC = () => {
   const searchCategoryRef = useRef<HTMLDivElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const mobileSearchContainerRef = useRef<HTMLDivElement>(null);
+  const categoryHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const toggleCategoryMenu = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsCategoryMenuOpen((prev) => !prev);
   };
+
+  const handleCategoryMouseEnter = () => {
+    if (categoryHoverTimeoutRef.current) {
+      clearTimeout(categoryHoverTimeoutRef.current);
+      categoryHoverTimeoutRef.current = null;
+    }
+    setIsCategoryMenuOpen(true);
+  };
+
+  const handleCategoryMouseLeave = () => {
+    if (categoryHoverTimeoutRef.current) {
+      clearTimeout(categoryHoverTimeoutRef.current);
+    }
+    categoryHoverTimeoutRef.current = setTimeout(() => {
+      setIsCategoryMenuOpen(false);
+    }, 150);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (categoryHoverTimeoutRef.current) {
+        clearTimeout(categoryHoverTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Sync localSearch when global searchQuery changes
   useEffect(() => {
@@ -345,10 +372,6 @@ export const Navbar: React.FC = () => {
       >
         {!trimmed ? (
           <div className={styles.emptySearchGuide}>
-            <div className={styles.suggestionSectionHeader}>
-              <TrendingUp size={13} className={styles.headerIcon} />
-              <span>Trending Searches in Qatar</span>
-            </div>
             <div className={styles.popularTagsRow}>
               {POPULAR_SEARCH_TAGS.map((tag) => (
                 <button
@@ -368,10 +391,6 @@ export const Navbar: React.FC = () => {
 
             <div className={styles.suggestionDivider} />
 
-            <div className={styles.suggestionSectionHeader}>
-              <Sparkles size={13} className={styles.headerIcon} />
-              <span>Popular Fast-Ship Tech</span>
-            </div>
             <div className={styles.trendingQuickList}>
               {PRODUCTS.slice(0, 3).map((p) => (
                 <Link
@@ -392,7 +411,6 @@ export const Navbar: React.FC = () => {
                     <span className={styles.quickTitle}>{p.title}</span>
                     <span className={styles.quickPrice}>QAR {p.priceQAR}</span>
                   </div>
-                  <span className={styles.quickBadge}>✈️ 6-10d</span>
                 </Link>
               ))}
             </div>
@@ -560,21 +578,34 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className={styles.header}>
-      {/* 1. TOP UTILITY BAR (Deep Obsidian Black #0A0A0C, White text, Yellow highlights) */}
+      {/* 1. TOP UTILITY BAR (Ecobazar Style: Dark Slate Charcoal Bar) */}
       <div className={styles.topUtilityBar}>
         <div className="container">
           <div className={styles.topUtilityInner}>
-            <div className={styles.topDeliveryHighlight}>
-              <span className={styles.planeIcon}>✈️</span>
-              <span className={styles.deliveryText}>
-                <strong>Direct Global Air Shipping:</strong> 6–10 Days Doorstep Delivery Across Qatar
-              </span>
+            {/* Left Meta Links: Language, Currency & Track Order */}
+            <div className={styles.topUtilityLeft}>
+              <div className={styles.metaDropdown}>
+                <span>Eng</span>
+                <ChevronDown size={12} />
+              </div>
+
+              <div className={styles.metaDropdown}>
+                <span>QAR (ر.ق)</span>
+                <ChevronDown size={12} />
+              </div>
+
+              <span className={styles.topDivider}>|</span>
+
+              <Link href="/track-order" className={styles.topAuthLink}>
+                <span>Track Order</span>
+              </Link>
             </div>
 
-            <div className={styles.topUtilityLinks}>
+            {/* Right Meta Links: Auth */}
+            <div className={styles.topUtilityMeta}>
               {viewer ? (
-                <Link href="/dashboard" className={styles.utilityLink} style={{ color: '#facc15', fontWeight: 600 }}>
-                  <User size={12} />
+                <Link href="/dashboard" className={styles.topAuthLink}>
+                  <User size={13} />
                   <span>Hi, {viewer.name ? viewer.name.split(' ')[0] : viewer.email.split('@')[0]}</span>
                 </Link>
               ) : (
@@ -584,38 +615,17 @@ export const Navbar: React.FC = () => {
                     setAuthModalMode('signIn');
                     setIsAuthModalOpen(true);
                   }}
-                  className={styles.utilityLink}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit' }}
+                  className={styles.topAuthLink}
                 >
-                  <User size={12} />
-                  <span>Sign In / Register</span>
+                  <span>Sign In / Sign Up</span>
                 </button>
               )}
-              <span className={styles.utilityDivider}>|</span>
-              <Link href="/track-order" className={styles.utilityLink}>
-                Track Order
-              </Link>
-              <span className={styles.utilityDivider}>|</span>
-              <button
-                type="button"
-                onClick={() => openChat()}
-                className={styles.utilityChatBtn}
-              >
-                <span className={styles.chatPulseGreen} />
-                <span>Live Chat Support</span>
-              </button>
-              <span className={styles.utilityDivider}>|</span>
-              <div className={styles.currencyBadge}>
-                <Globe size={12} />
-                <span>EN / العربية</span>
-                <span className={styles.currencyQAR}>QAR (ر.ق)</span>
-              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 2. MAIN HEADER BAR (High Conversion, Dense Search & Action Icons) */}
+      {/* 2. MAIN HEADER BAR (Ecobazar Style: Logo, Wide Search, Wishlist, Cart) */}
       <div className={styles.mainNav}>
         <div className="container">
           <div className={styles.mainNavInner}>
@@ -633,97 +643,13 @@ export const Navbar: React.FC = () => {
               <QatifyLogo variant="dark" size="md" showTagline={false} />
             </div>
 
-            {/* Predictive Search with Category Filter Dropdown */}
+            {/* Search Box (Ecobazar Style: Rounded input with search icon & "Search" button) */}
             <div className={styles.searchContainer} ref={searchContainerRef}>
               <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
-                {/* Modern Category Selector with Custom Dropdown Menu */}
-                <div className={styles.categoryDropdownWrapper} ref={searchCategoryRef}>
-                  <button
-                    type="button"
-                    className={`${styles.categoryTriggerBtn} ${isSearchCategoryOpen ? styles.active : ''} ${selectedCategory ? styles.hasSelection : ''}`}
-                    onClick={() => setIsSearchCategoryOpen((prev) => !prev)}
-                    aria-expanded={isSearchCategoryOpen}
-                    aria-haspopup="listbox"
-                    aria-label="Filter search by category"
-                  >
-                    <span className={styles.categoryTriggerIcon}>
-                      {currentCategoryIcon}
-                    </span>
-                    <span className={styles.categoryTriggerLabel}>
-                      {currentCategoryName}
-                    </span>
-                    <ChevronDown
-                      size={13}
-                      className={`${styles.categoryTriggerChevron} ${isSearchCategoryOpen ? styles.rotated : ''}`}
-                    />
-                  </button>
-
-                  {/* Custom Dropdown Flyout */}
-                  {isSearchCategoryOpen && (
-                    <div className={styles.categoryDropdownMenu} role="listbox">
-                      <div className={styles.categoryMenuHeader}>
-                        <span className={styles.categoryMenuTitle}>Filter By Category</span>
-                        <span className={styles.categoryMenuCount}>{CATEGORIES.length} Categories</span>
-                      </div>
-
-                      <div className={styles.categoryMenuList}>
-                        {/* All Categories Option */}
-                        <button
-                          type="button"
-                          className={`${styles.catMenuItem} ${styles.allCatItem} ${!selectedCategory ? styles.selected : ''}`}
-                          onClick={() => handleSelectCategory('')}
-                          role="option"
-                          aria-selected={!selectedCategory}
-                        >
-                          <span className={styles.catMenuIconWrap}>
-                            <LayoutGrid size={15} />
-                          </span>
-                          <div className={styles.catMenuItemInfo}>
-                            <span className={styles.catMenuItemName}>All Categories</span>
-                            <span className={styles.catMenuItemDesc}>Search across all catalog products</span>
-                          </div>
-                          {!selectedCategory && (
-                            <Check size={14} className={styles.catActiveCheck} />
-                          )}
-                        </button>
-
-                        <div className={styles.categoryMenuDivider} />
-
-                        {/* Individual Categories */}
-                        {CATEGORIES.map((cat) => {
-                          const isSelected = selectedCategory === cat.slug;
-                          return (
-                            <button
-                              key={cat.id}
-                              type="button"
-                              className={`${styles.catMenuItem} ${isSelected ? styles.selected : ''}`}
-                              onClick={() => handleSelectCategory(cat.slug)}
-                              role="option"
-                              aria-selected={isSelected}
-                            >
-                              <span className={styles.catMenuIconWrap}>
-                                {getCategoryIcon(cat.icon, 15)}
-                              </span>
-                              <span className={styles.catMenuItemName}>{cat.name}</span>
-                              {isSelected && (
-                                <Check size={14} className={styles.catActiveCheck} />
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      <div className={styles.categoryMenuFooter}>
-                        <Plane size={12} />
-                        <span>Tracked Direct Air Express to Qatar (6–10 Days)</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Search Input Field */}
-                <div className={styles.searchInputWrap}>
+                <div className={styles.searchInputGroup}>
+                  <Search size={18} className={styles.searchInnerIcon} />
                   <input
+                    id="catalog-search-input"
                     type="text"
                     value={localSearch}
                     onChange={(e) => {
@@ -732,7 +658,7 @@ export const Navbar: React.FC = () => {
                     }}
                     onFocus={() => setIsSearchFocused(true)}
                     onKeyDown={handleSearchKeyDown}
-                    placeholder="Search 1,000+ trending tech, MagSafe, GaN chargers, earbuds in Qatar..."
+                    placeholder="Search 1,000+ trending tech, MagSafe, GaN chargers in Qatar..."
                     className={styles.searchInput}
                     aria-label="Search catalog"
                     autoComplete="off"
@@ -754,107 +680,53 @@ export const Navbar: React.FC = () => {
                   )}
                 </div>
 
-                {/* Search Submit Button - Seamless full-height flush button */}
                 <button
                   type="submit"
                   className={styles.searchSubmitBtn}
                   aria-label="Search catalog"
                   title="Search catalog"
                 >
-                  <Search size={18} strokeWidth={2.2} />
+                  <span>Search</span>
                 </button>
               </form>
 
               {/* Real-time Predictive Suggestions Dropdown */}
               {isSearchFocused && renderSuggestionsDropdown(false)}
-
-              {/* Trending Search Tags Strip */}
-              <div className={styles.trendingTags}>
-                <span className={styles.trendingLabel}>Trending:</span>
-                {POPULAR_SEARCH_TAGS.map((tag) => {
-                  const isHovered = hoveredTag === tag;
-                  return (
-                    <button
-                      key={tag}
-                      onClick={() => handleQuickTagClick(tag)}
-                      onMouseEnter={() => setHoveredTag(tag)}
-                      onMouseLeave={() => setHoveredTag(null)}
-                      className={styles.tagBtn}
-                      type="button"
-                      style={
-                        isHovered
-                          ? {
-                              color: '#ffb800',
-                              textDecoration: 'underline',
-                              textDecorationColor: '#ffb800',
-                            }
-                          : undefined
-                      }
-                    >
-                      {tag}
-                    </button>
-                  );
-                })}
-              </div>
             </div>
 
-            {/* Right Action Icons: Wishlist, Dashboard, Cart */}
+            {/* Right Action Items: Wishlist + Divider + Cart with text stack */}
             <div className={styles.actionItems}>
-              {/* Wishlist Quick Badge */}
+              {/* Wishlist Icon */}
               <Link
                 href="/dashboard?tab=wishlist"
-                className={styles.actionIconBtn}
+                className={styles.wishlistBtn}
                 title="Saved Wishlist"
                 aria-label={`Wishlist items (${wishlist.length})`}
               >
                 <div className={styles.iconWithBadge}>
-                  <Heart size={20} />
+                  <Heart size={24} strokeWidth={1.75} />
                   {wishlist.length > 0 && (
                     <span className={styles.badge}>{wishlist.length}</span>
                   )}
                 </div>
-                <span className={styles.iconLabel}>Wishlist</span>
               </Link>
 
-              {/* User / Dashboard Link */}
-              <Link
-                href="/dashboard"
-                className={styles.actionIconBtn}
-                title="Customer Account & Tracking"
-              >
-                <div className={styles.iconWithBadge}>
-                  <User size={20} />
-                  {viewer && (
-                    <span
-                      style={{
-                        position: 'absolute',
-                        bottom: '1px',
-                        right: '1px',
-                        width: '7px',
-                        height: '7px',
-                        borderRadius: '50%',
-                        backgroundColor: '#22c55e',
-                        border: '1.5px solid #ffffff',
-                      }}
-                    />
-                  )}
-                </div>
-                <span className={styles.iconLabel}>{viewer ? (viewer.name ? viewer.name.split(' ')[0] : 'Account') : 'Account'}</span>
-              </Link>
+              {/* Separator Line */}
+              <span className={styles.actionDivider} />
 
-              {/* Cart Drawer Trigger with Live Count & QAR Subtotal */}
+              {/* Shopping Cart Button */}
               <button
                 type="button"
                 onClick={openCart}
-                className={styles.cartTriggerBtn}
+                className={styles.cartGroupBtn}
                 aria-label={`Open shopping cart (${cartCount} items)`}
               >
                 <div className={styles.cartIconWrapper}>
-                  <ShoppingCart size={20} />
+                  <ShoppingBag size={24} strokeWidth={1.75} />
                   <span className={styles.cartCountBadge}>{cartCount}</span>
                 </div>
                 <div className={styles.cartPriceCol}>
-                  <span className={styles.cartPriceLabel}>My Cart</span>
+                  <span className={styles.cartPriceLabel}>Shopping cart:</span>
                   <span className={styles.cartPriceValue}>
                     QAR {cartSubtotal.toLocaleString()}
                   </span>
@@ -879,7 +751,7 @@ export const Navbar: React.FC = () => {
                 }}
                 onFocus={() => setIsMobileSearchFocused(true)}
                 onKeyDown={handleSearchKeyDown}
-                placeholder="Search 1,000+ tech gadgets, MagSafe in Qatar..."
+                placeholder="Search 1,000+ tech gadgets in Qatar..."
                 className={styles.mobileSearchInput}
                 aria-label="Search catalog"
                 autoComplete="off"
@@ -903,7 +775,7 @@ export const Navbar: React.FC = () => {
                 className={styles.mobileSearchSubmitBtn}
                 aria-label="Submit search"
               >
-                <Search size={16} />
+                <span>Search</span>
               </button>
             </form>
 
@@ -913,14 +785,16 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. SECONDARY CATEGORY STRIP (Obsidian Black Accent with White & Yellow) */}
+      {/* 3. BOTTOM NAVIGATION STRIP (Ecobazar Style: All Categories, Category Links, Phone) */}
       <nav className={styles.categoryStrip}>
         <div className="container">
           <div className={styles.categoryStripInner}>
-            {/* All Categories Flyout Trigger */}
+            {/* All Categories Solid Button (Hover open & mouse leave close) */}
             <div
               className={styles.allCatWrapper}
               ref={categoryMenuRef}
+              onMouseEnter={handleCategoryMouseEnter}
+              onMouseLeave={handleCategoryMouseLeave}
             >
               <button
                 type="button"
@@ -929,14 +803,18 @@ export const Navbar: React.FC = () => {
                 aria-expanded={isCategoryMenuOpen}
                 aria-haspopup="true"
               >
-                <Menu size={16} />
+                <Menu size={18} strokeWidth={2.2} />
                 <span>All Categories</span>
                 <ChevronDown size={14} className={styles.chevron} />
               </button>
 
               {/* Mega Flyout Dropdown */}
               {isCategoryMenuOpen && (
-                <div className={styles.megaFlyout}>
+                <div
+                  className={styles.megaFlyout}
+                  onMouseEnter={handleCategoryMouseEnter}
+                  onMouseLeave={handleCategoryMouseLeave}
+                >
                   <div className={styles.megaFlyoutHeader}>
                     <span>Popular Dropship Categories</span>
                   </div>
@@ -965,75 +843,38 @@ export const Navbar: React.FC = () => {
               )}
             </div>
 
-            {/* Quick Links Horizontal Strip */}
+            {/* Quick Links Horizontal Strip - Qatify Categories (10 Items) */}
             <div className={styles.navLinks}>
-              <Link href="/shop?filter=under-99" className={`${styles.navLink} ${styles.dealHighlight}`}>
-                <span>Super Deals Under QAR 99</span>
-              </Link>
-              <Link href="/shop?sort=newest" className={styles.navLink}>
-                <span>New Arrivals</span>
-              </Link>
-              <Link href="/shop?filter=top-rated" className={styles.navLink}>
-                <span>Top Rated in Qatar</span>
-              </Link>
               <Link href="/shop?cat=mobile-accessories" className={styles.navLink}>
                 <span>Mobile Accessories</span>
+              </Link>
+              <Link href="/shop?cat=smartwatches" className={styles.navLink}>
+                <span>Smartwatches</span>
+              </Link>
+              <Link href="/shop?cat=chargers-powerbanks" className={styles.navLink}>
+                <span>GaN Chargers</span>
+              </Link>
+              <Link href="/shop?cat=car-accessories" className={styles.navLink}>
+                <span>Car Tech</span>
+              </Link>
+              <Link href="/shop?cat=gaming-gear" className={styles.navLink}>
+                <span>Gaming Gear</span>
               </Link>
               <Link href="/shop?cat=smart-home" className={styles.navLink}>
                 <span>Smart Home</span>
               </Link>
-              <Link href="/bundle-builder" className={`${styles.navLink} ${styles.bundleHighlight}`}>
-                <span>Bundle Studio</span>
-                <span className={styles.bundlePill}>Save 20%</span>
+              <Link href="/shop?cat=laptop-gear" className={styles.navLink}>
+                <span>Laptop Gear</span>
               </Link>
-
-              {/* Wholesale Hub (B2B & Bulk Orders - Coming Soon) */}
-              <div
-                className={styles.wholesaleNavItem}
-                role="button"
-                aria-disabled="true"
-                tabIndex={0}
-                title="Wholesale Hub — B2B & Bulk Orders (Coming Soon)"
-                aria-label="Wholesale Hub - Coming Soon for B2B and bulk buyers"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                  }
-                }}
-              >
-                <div className={styles.wholesaleContentWrap}>
-                  <span className={styles.comingSoonBadge}>Coming Soon</span>
-                  <span className={styles.wholesaleLabelText}>Wholesale Hub</span>
-                </div>
-
-                {/* Hover Tooltip */}
-                <div className={styles.wholesaleTooltip} role="tooltip">
-                  <div className={styles.wholesaleTooltipHeader}>
-                    <span className={styles.wholesaleTooltipTitle}>
-                      <Building2 size={13} />
-                      Wholesale Hub
-                    </span>
-                    <span className={styles.wholesaleTooltipBadge}>Coming Soon</span>
-                  </div>
-                  <p className={styles.wholesaleTooltipDesc}>
-                    Tiered bulk pricing, dedicated commercial logistics & Qatar tax invoicing launching soon.
-                  </p>
-                  <div className={styles.wholesaleTooltipTags}>
-                    <span className={styles.wholesaleTooltipTag}>B2B Wholesale</span>
-                    <span className={styles.wholesaleTooltipTag}>Bulk Tiers</span>
-                    <span className={styles.wholesaleTooltipTag}>Direct Air Freight</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Delivery Guarantee Pill */}
-            <div className={styles.qatarAirPill}>
-              <span>Tracked Direct Air Express: 6–10 Days to Qatar</span>
+              <Link href="/shop?cat=toys-kids-learning" className={styles.navLink}>
+                <span>Toys & Kids</span>
+              </Link>
+              <Link href="/shop?sort=newest" className={styles.navLink}>
+                <span>New Arrivals</span>
+              </Link>
+              <Link href="/shop?filter=under-99" className={styles.navLink}>
+                <span>Super Deals</span>
+              </Link>
             </div>
           </div>
         </div>

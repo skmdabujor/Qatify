@@ -146,9 +146,9 @@ export default function SignupPage() {
       <div className={styles.authContainer}>
         <div className={styles.authCard}>
           <div className={styles.cardHeader}>
-            <Link href="/" className={styles.logoLink}>
-              <QatifyLogo size="md" />
-            </Link>
+            <div className={styles.logoLink}>
+              <QatifyLogo size="md" href="/" />
+            </div>
             <h1 className={styles.title}>Create Your Account</h1>
             <p className={styles.subtitle}>
               Fast checkout, live Qatar air tracking & exclusive member discounts

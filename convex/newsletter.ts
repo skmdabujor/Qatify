@@ -29,7 +29,7 @@ export function generateNewsletterEmailHtml(options: NewsletterTemplateOptions =
   const recipientEmail = options.recipientEmail || "VIP Subscriber";
   const recipientName = recipientEmail.includes("@") ? recipientEmail.split("@")[0] : "VIP Member";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi Qatify VIP, I would like to inquire about the newsletter deals and coupon ${promoCode}`)}`;
-  const logoUrl = "https://shocking-armadillo-116.convex.cloud/api/storage/43c1a105-5334-4bb8-a12f-8dff85502631";
+  const logoUrl = "https://mellow-puma-618.eu-west-1.convex.cloud/api/storage/65303eae-d04f-4c07-a578-9caf457a58b4";
 
   return `
 <!DOCTYPE html>

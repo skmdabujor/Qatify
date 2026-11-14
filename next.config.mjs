@@ -41,6 +41,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
       },
+      // Shopify CDN
+      {
+        protocol: 'https',
+        hostname: 'cdn.shopify.com',
+      },
     ],
   },
 };

@@ -26,7 +26,6 @@ import {
   Home,
   Laptop,
   Cable,
-  ChevronRight,
   ToyBrick,
   Baby,
   Puzzle,
@@ -34,7 +33,8 @@ import {
 import { ProductCard } from '@/components/product/ProductCard';
 import { CircularCategoryNav } from '@/components/category';
 import { FirstTimeDiscountPopup } from '@/components/popup/FirstTimeDiscountPopup';
-import { GrabOrGoneSection } from '@/components/home/GrabOrGoneSection';
+import { HomeCategoriesSection } from '@/components/home/HomeCategoriesSection';
+import { HeroBentoSlider } from '@/components/home/HeroBentoSlider';
 import { PRODUCTS, CATEGORIES } from '@/data/products';
 import { toProduct, toCategory } from '@/types/product';
 import styles from './page.module.scss';
@@ -74,11 +74,11 @@ const getCategoryIcon = (iconName: string) => {
 };
 
 export default function ShopHomePage() {
-  // Real-time Convex database queries
+  // Real-time Convex database queries (aligned to 6-col grid: 12 items = 2 full rows of 6)
   const liveCategories = useQuery(api.categories.list, { limit: 12 });
-  const liveTrending = useQuery(api.products.getTrending, { limit: 10 });
-  const liveUnder99 = useQuery(api.products.getUnder99, { limit: 15 });
-  const liveBestSellers = useQuery(api.products.getBestSellers, { limit: 5 });
+  const liveTrending = useQuery(api.products.getTrending, { limit: 12 });
+  const liveUnder99 = useQuery(api.products.getUnder99, { limit: 12 });
+  const liveBestSellers = useQuery(api.products.getBestSellers, { limit: 12 });
 
   // Use live data with fallback to mock data while hydrating/loading
   const categories = liveCategories && liveCategories.length > 0
@@ -86,122 +86,23 @@ export default function ShopHomePage() {
     : CATEGORIES;
   const trendingProducts = liveTrending && liveTrending.length > 0
     ? liveTrending.map(toProduct)
-    : PRODUCTS.filter((p) => p.isTrending).slice(0, 10);
+    : PRODUCTS.filter((p) => p.isTrending).slice(0, 12);
   const under99Products = (
     liveUnder99 && liveUnder99.length > 0
       ? liveUnder99.map(toProduct)
       : PRODUCTS.filter((p) => p.isUnder99)
-  ).slice(0, 15);
+  ).slice(0, 12);
   const bestSellerProducts = liveBestSellers && liveBestSellers.length > 0
     ? liveBestSellers.map(toProduct)
-    : PRODUCTS.filter((p) => p.isBestSeller).slice(0, 5);
+    : PRODUCTS.filter((p) => p.isBestSeller).slice(0, 12);
 
   return (
     <div className={styles.homeContainer}>
       <div className="container">
         {/* ===================================================================
-            SECTION 1: HIGH-CONVERSION YELLOW STRIP BANNER (Daraz/E-Commerce Style)
-            - Vibrant Golden-Yellow Canvas with Confetti
-            - Left: 3D Angled "PAYDAY SALE" Ribbon with Date Pill
-            - Center-Left: Promo Badges ("UP TO 50% OFF" + "FREE DELIVERY")
-            - Center: Featured Tech Product Cluster (Earbuds, GaN Charger, Smartwatch)
-            - Center-Right: Bold 3D "SALE IS LIVE NOW" Typography
-            - Right: Single High-Impact Crimson Pill Button ("SHOP NOW >")
+            SECTION 1: 3-PANEL BENTO HERO BANNER WITH INTERACTIVE LEFT SLIDER
         ==================================================================== */}
-        <section className={styles.heroSection}>
-          <div className={styles.yellowPromoStrip}>
-            {/* Background Confetti Accents */}
-            <span className={`${styles.confetti} ${styles.confetti1}`} />
-            <span className={`${styles.confetti} ${styles.confetti2}`} />
-            <span className={`${styles.confetti} ${styles.confetti3}`} />
-            <span className={`${styles.confetti} ${styles.confetti4}`} />
-            <span className={`${styles.confetti} ${styles.confetti5}`} />
-
-            {/* Block 1: Angled Campaign Ribbon */}
-            <div className={styles.ribbonBlock}>
-              <div className={styles.ribbonShape}>
-                <span className={styles.ribbonMainText}>MEGA TECH SALE</span>
-              </div>
-              <div className={styles.ribbonDatePill}>
-                <span>BEST DEALS IN QATAR</span>
-              </div>
-            </div>
-
-            {/* Block 2: Value Badges (% OFF & FREE DELIVERY) */}
-            <div className={styles.offersBlock}>
-              <div className={styles.discountTicket}>
-                <span className={styles.ticketPercent}>%</span>
-                <div className={styles.ticketText}>
-                  <span className={styles.ticketLabel}>UP TO</span>
-                  <span className={styles.ticketValue}>50% OFF</span>
-                </div>
-              </div>
-              <div className={styles.freeDeliveryBadge}>
-                <span className={styles.freeDeliveryPill}>AIR</span>
-                <span className={styles.freeDeliveryText}>EXPRESS</span>
-              </div>
-            </div>
-
-            {/* Block 3: Center Product Cluster (Earbuds + GaN Charger + Smartwatch) */}
-            <div className={styles.productClusterBlock}>
-              <div className={styles.productItemLeft} title={PRODUCTS[1].title}>
-                <img
-                  src={PRODUCTS[1].images[0] || '/placeholder.svg'}
-                  alt={PRODUCTS[1].title}
-                  className={styles.clusterImg}
-                  onError={(e) => {
-                    const target = e.currentTarget;
-                    if (!target.src.endsWith('/placeholder.svg')) {
-                      target.src = '/placeholder.svg';
-                    }
-                  }}
-                />
-              </div>
-              <div className={styles.productItemCenter} title={PRODUCTS[0].title}>
-                <img
-                  src={PRODUCTS[0].images[0] || '/placeholder.svg'}
-                  alt={PRODUCTS[0].title}
-                  className={styles.clusterImgMain}
-                  onError={(e) => {
-                    const target = e.currentTarget;
-                    if (!target.src.endsWith('/placeholder.svg')) {
-                      target.src = '/placeholder.svg';
-                    }
-                  }}
-                />
-              </div>
-              <div className={styles.productItemRight} title={PRODUCTS[2].title}>
-                <img
-                  src={PRODUCTS[2].images[0] || '/placeholder.svg'}
-                  alt={PRODUCTS[2].title}
-                  className={styles.clusterImg}
-                  onError={(e) => {
-                    const target = e.currentTarget;
-                    if (!target.src.endsWith('/placeholder.svg')) {
-                      target.src = '/placeholder.svg';
-                    }
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Block 4: "SALE IS LIVE NOW" Big Bold Typography */}
-            <div className={styles.titleLiveBlock}>
-              <span className={styles.titleLine1}>SALE IS</span>
-              <span className={styles.titleLine2}>LIVE NOW</span>
-            </div>
-
-            {/* Block 5: Single Pill CTA Button ("SHOP NOW >") */}
-            <div className={styles.ctaButtonBlock}>
-              <Link href="/shop" className={styles.shopNowPillBtn}>
-                <span className={styles.btnText}>SHOP NOW</span>
-                <span className={styles.btnArrowCircle}>
-                  <ChevronRight size={14} strokeWidth={3.5} />
-                </span>
-              </Link>
-            </div>
-          </div>
-        </section>
+        <HeroBentoSlider />
 
         {/* ===================================================================
             SECTION 2: COMPACT 2-ROW CATEGORY RIBBON (High-Density Quick Filters)
@@ -210,7 +111,6 @@ export default function ShopHomePage() {
           <div className={styles.sectionHeaderCompact}>
             <div className={styles.sectionTitleBlock}>
               <h2 className={styles.sectionTitle}>Shop by Popular Category</h2>
-              <span className={styles.sectionSub}>Instant filtered discovery</span>
             </div>
             <Link href="/shop" className={styles.viewAllTextLink}>
               View All 10 Categories →
@@ -242,17 +142,14 @@ export default function ShopHomePage() {
             className={styles.promoBannerLink}
             aria-label="Explore Mid-Season Mega Sale on Trending Tech"
           >
-            <picture>
-              <source srcSet="/banners/sale-promo-banner.webp" type="image/webp" />
-              <img
-                src="/banners/sale-promo-banner.png"
-                alt="Mega Tech Sale - Up to 60% Off Trending Gadgets"
-                className={styles.promoBannerImg}
-                width={1200}
-                height={260}
-                loading="lazy"
-              />
-            </picture>
+            <img
+              src="https://mellow-puma-618.eu-west-1.convex.cloud/api/storage/b8714d05-1279-4150-bda2-3f158eb13ec0"
+              alt="Mega Tech Sale - Up to 60% Off Trending Gadgets"
+              className={styles.promoBannerImg}
+              width={1200}
+              height={260}
+              loading="lazy"
+            />
           </Link>
         </section>
 
@@ -264,12 +161,12 @@ export default function ShopHomePage() {
         </section>
 
         {/* ===================================================================
-            SECTION 4: TRENDING IN DOHA THIS WEEK (Dense 4-Column Shelf)
+            SECTION 4: TRENDING THIS WEEK (Dense 4-Column Shelf)
         ==================================================================== */}
         <section className={styles.shelfSection}>
           <div className={styles.shelfHeaderRow}>
             <div className={styles.shelfTitleGroup}>
-              <h2 className={styles.shelfHeading}>Trending in Doha This Week</h2>
+              <h2 className={styles.shelfHeading}>Trending This Week</h2>
             </div>
             <Link href="/shop?sort=trending" className={styles.viewMoreBtn}>
               <span>View All Trending</span>
@@ -277,7 +174,7 @@ export default function ShopHomePage() {
             </Link>
           </div>
 
-          <div className={styles.shelfGrid4Col}>
+          <div className={styles.shelfGrid6Col}>
             {trendingProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -285,9 +182,9 @@ export default function ShopHomePage() {
         </section>
 
         {/* ===================================================================
-            SECTION 5: SPARKLING TECH SUNDAY (2-ROW GRID + PROMO BANNER SHELF)
+            SECTION 5: CATEGORIES SHOWCASE (MAIN CATEGORIES & PRODUCT PREVIEWS)
         ==================================================================== */}
-        <GrabOrGoneSection />
+        <HomeCategoriesSection />
 
         {/* ===================================================================
             SECTION 6: BEST-SELLING SMART ACCESSORIES & UNDER QAR 99
@@ -303,7 +200,7 @@ export default function ShopHomePage() {
             </Link>
           </div>
 
-          <div className={styles.shelfGrid4Col}>
+          <div className={styles.shelfGrid6Col}>
             {under99Products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -316,7 +213,7 @@ export default function ShopHomePage() {
         <section className={styles.shelfSection}>
           <div className={styles.shelfHeaderRow}>
             <div className={styles.shelfTitleGroup}>
-              <h2 className={styles.shelfHeading}>Best-Selling Flagships</h2>
+              <h2 className={styles.shelfHeading}>Best Selling</h2>
             </div>
             <Link href="/shop?sort=rating" className={styles.viewMoreBtn}>
               <span>View Top Rated</span>
@@ -324,7 +221,7 @@ export default function ShopHomePage() {
             </Link>
           </div>
 
-          <div className={styles.shelfGrid4Col}>
+          <div className={styles.shelfGrid6Col}>
             {bestSellerProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

@@ -129,7 +129,7 @@ export interface Order {
   totalQAR: number;
   address: QatarAddress;
   shippingMethod: ShippingMethod;
-  paymentMethod: 'credit_card' | 'apple_pay' | 'cash_on_delivery';
+  paymentMethod: 'credit_card' | 'apple_pay' | 'google_pay' | 'cash_on_delivery';
   status: 'Order Confirmed' | 'Air Hub Transit' | 'Qatar Customs (DOH)' | 'Out for Delivery' | 'Delivered';
   trackingNumber: string;
   estimatedDeliveryWindow: string;
@@ -163,8 +163,15 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
+  subcategory?: string | null;
+  href?: string;
   icon: string;
   count: number;
+  image?: string | null;
+  liveProductCount?: number;
+  featuredProductTitle?: string | null;
+  featuredProductSlug?: string | null;
+  minPriceQAR?: number | null;
 }
 
 export function toCategory(doc: any): Category {
@@ -172,8 +179,15 @@ export function toCategory(doc: any): Category {
     id: doc.id || doc.categoryId || doc._id,
     name: doc.name,
     slug: doc.slug,
+    subcategory: doc.subcategory ?? null,
+    href: doc.href || `/shop?cat=${doc.slug}`,
     icon: doc.icon,
     count: doc.count,
+    image: doc.image ?? null,
+    liveProductCount: doc.liveProductCount,
+    featuredProductTitle: doc.featuredProductTitle ?? null,
+    featuredProductSlug: doc.featuredProductSlug ?? null,
+    minPriceQAR: doc.minPriceQAR ?? null,
   };
 }
 

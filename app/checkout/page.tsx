@@ -1,25 +1,23 @@
 'use client';
 
 // =============================================================================
-// Qatify — Multi-Step Checkout Page (`/checkout`)
-// Step 1: Qatar National Address | Step 2: Air Shipping | Step 3: Payment
+// Qatify — Authentic Made-in-China / Shopify Style In-Site Secure Checkout
+// Single-Page Layout: Shipping Address Modal | In-App Card / Apple Pay / GPay | Order Protection
 // =============================================================================
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useMutation, useAction } from 'convex/react';
+import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import {
   ShieldCheck,
   Plane,
   CreditCard,
-  Banknote,
-  CheckCircle2,
   Lock,
   ChevronRight,
   ChevronDown,
-  ArrowRight,
   MapPin,
   Building,
   Phone,
@@ -28,6 +26,12 @@ import {
   Sparkles,
   MessageCircle,
   Check,
+  X,
+  Info,
+  RotateCcw,
+  Search,
+  CheckCircle2,
+  Package,
 } from 'lucide-react';
 import { useShop } from '@/context/ShopContext';
 import {
@@ -41,21 +45,26 @@ import {
 import { QatarAddress, ShippingMethod, Order } from '@/types/product';
 import {
   ApplePayIcon,
+  GooglePayIcon,
   VisaIcon,
   MastercardIcon,
   AmexIcon,
-  CashOnDeliveryIcon,
+  MaestroIcon,
+  JcbIcon,
+  DiscoverIcon,
+  QarCurrencyIcon,
 } from '@/components/ui/PaymentIcons';
 import { CountryFlag } from '@/components/ui/CountryFlags';
 import styles from './page.module.scss';
 
-// Feature Flag: Cash on Delivery status (Set to true to re-enable COD on checkout)
+// Feature Flag: Cash on Delivery status (Explicitly disabled as requested)
 const IS_COD_ENABLED = false;
 
 function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isBundleCheckout = searchParams.get('mode') === 'bundle';
+  const isBuyNowCheckout = searchParams.get('mode') === 'buynow';
 
   const {
     cart,
@@ -64,10 +73,10 @@ function CheckoutContent() {
     appliedDiscountQAR,
     bundleCart,
     bundleSubtotal,
-    bundleTierPercent,
     bundleDiscountQAR,
     clearBundleCart,
-    isFreeShipping,
+    buyNowItem,
+    clearBuyNow,
     savedAddresses,
     addAddress,
     createOrder,
@@ -77,14 +86,37 @@ function CheckoutContent() {
   } = useShop();
 
   const createConvexOrder = useMutation(api.orders.createOrder);
-  const createPolarCheckout = useAction(api.polar.createCheckoutSession);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Steps state: 1 = Address, 2 = Payment
-  const [currentStep, setCurrentStep] = useState<1 | 2>(1);
+  // Address Modal State
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
 
-  // Address State: Empty by default so all inputs show clean placeholder text
-  const [address, setAddress] = useState<QatarAddress>({
+  // Active Shipping Address State
+  const initialSavedAddress = savedAddresses?.[0] || null;
+  const [address, setAddress] = useState<QatarAddress>(() => {
+    if (initialSavedAddress) {
+      return initialSavedAddress;
+    }
+    return {
+      country: 'Qatar',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneCountryCode: '974',
+      phoneNumber: '',
+      streetAddress: '',
+      apartmentSuite: '',
+      municipality: '',
+      zoneNumber: '',
+      postalCode: '',
+      isDefault: true,
+      fullName: '',
+      phone: '',
+    };
+  });
+
+  // Modal editing address draft
+  const [draftAddress, setDraftAddress] = useState<QatarAddress>({
     country: 'Qatar',
     firstName: '',
     lastName: '',
@@ -101,128 +133,311 @@ function CheckoutContent() {
     phone: '',
   });
 
+  const [saveAddressForFuture, setSaveAddressForFuture] = useState(true);
+
+  // Check if a valid shipping address has been configured
+  const hasValidAddress = Boolean(
+    address.firstName?.trim() &&
+    address.phoneNumber?.trim() &&
+    address.streetAddress?.trim() &&
+    address.municipality?.trim() &&
+    address.postalCode?.trim()
+  );
+
+  // Current Country Config
   const currentCountryConfig =
-    SUPPORTED_COUNTRIES.find((c) => c.name === address.country) ||
-    SUPPORTED_COUNTRIES.find((c) => c.code === address.country) ||
+    SUPPORTED_COUNTRIES.find((c) => c.name === draftAddress.country) ||
+    SUPPORTED_COUNTRIES.find((c) => c.code === draftAddress.country) ||
     SUPPORTED_COUNTRIES[0];
 
-  // Custom Dropdown Open States & Refs for Outside Click
-  const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
-  const [municipalityDropdownOpen, setMunicipalityDropdownOpen] = useState(false);
-  const [zoneDropdownOpen, setZoneDropdownOpen] = useState(false);
+  // Country, Municipality, Zone Dropdown states in Modal
+  const [modalCountryOpen, setModalCountryOpen] = useState(false);
+  const [modalMunicipalityOpen, setModalMunicipalityOpen] = useState(false);
+  const [modalZoneOpen, setModalZoneOpen] = useState(false);
 
-  const countrySelectRef = React.useRef<HTMLDivElement>(null);
-  const municipalitySelectRef = React.useRef<HTMLDivElement>(null);
-  const zoneSelectRef = React.useRef<HTMLDivElement>(null);
+  const countryRef = useRef<HTMLDivElement>(null);
+  const muniRef = useRef<HTMLDivElement>(null);
+  const zoneRef = useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
       const target = e.target as Node;
-      if (countrySelectRef.current && !countrySelectRef.current.contains(target)) {
-        setCountryDropdownOpen(false);
+      if (countryRef.current && !countryRef.current.contains(target)) {
+        setModalCountryOpen(false);
       }
-      if (municipalitySelectRef.current && !municipalitySelectRef.current.contains(target)) {
-        setMunicipalityDropdownOpen(false);
+      if (muniRef.current && !muniRef.current.contains(target)) {
+        setModalMunicipalityOpen(false);
       }
-      if (zoneSelectRef.current && !zoneSelectRef.current.contains(target)) {
-        setZoneDropdownOpen(false);
+      if (zoneRef.current && !zoneRef.current.contains(target)) {
+        setModalZoneOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
-
-  const handleCountryChange = (countryName: string) => {
-    const found = SUPPORTED_COUNTRIES.find((c) => c.name === countryName) || SUPPORTED_COUNTRIES[0];
-
-    setAddress((prev) => ({
-      ...prev,
-      country: found.name,
-      phoneCountryCode: found.phoneCode,
-      postalCode: '', // Postal code stays empty so user types their own!
-      municipality: '',
-      zoneNumber: '',
-    }));
-  };
-
-  const [saveAddressForFuture, setSaveAddressForFuture] = useState(true);
 
   // Shipping Method
   const [selectedShipping, setSelectedShipping] = useState<ShippingMethod>(
     SHIPPING_METHODS[0]
   );
 
-  // Payment Method
-  const [paymentMethod, setPaymentMethod] = useState<'apple_pay' | 'credit_card' | 'cash_on_delivery'>('apple_pay');
+  // Payment Method Selection: 'credit_card' (Add a New Card) | 'apple_pay' | 'google_pay'
+  const [paymentMethod, setPaymentMethod] = useState<'credit_card' | 'apple_pay' | 'google_pay'>('credit_card');
 
-  // Credit card mock inputs
+  // Credit Card Form Data
   const [cardData, setCardData] = useState({
-    cardNumber: '4111 2222 3333 4444',
-    cardName: 'TARIQ AL MANSOOR',
-    expiry: '09/28',
-    cvv: '884',
+    cardNumber: '',
+    cardName: '',
+    expiry: '',
+    cvv: '',
+    billingSameAsShipping: true,
+    saveCard: true,
   });
 
-  // Success state / placed order
-  const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
+  // Restore saved card from localStorage on mount (so user doesn't have to fill it repeatedly)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const saved = localStorage.getItem('qatify_saved_payment_card');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') {
+          setCardData((prev) => ({
+            ...prev,
+            cardNumber: parsed.cardNumber || '',
+            cardName: parsed.cardName || '',
+            expiry: parsed.expiry || '',
+            cvv: parsed.cvv || '',
+            billingSameAsShipping: parsed.billingSameAsShipping ?? true,
+            saveCard: true,
+          }));
+        }
+      }
+    } catch (err) {
+      console.error('Error loading saved card:', err);
+    }
+  }, []);
 
-  // Calculations based on checkout mode (Bundle vs Regular)
-  const checkoutItems = isBundleCheckout ? bundleCart : cart;
-  const checkoutSubtotal = isBundleCheckout ? bundleSubtotal : cartSubtotal;
+  // Helper to persist card data to localStorage
+  const persistSavedCard = (data: {
+    cardNumber: string;
+    cardName: string;
+    expiry: string;
+    cvv: string;
+    billingSameAsShipping: boolean;
+    saveCard: boolean;
+  }) => {
+    if (typeof window === 'undefined') return;
+    try {
+      if (data.saveCard) {
+        localStorage.setItem(
+          'qatify_saved_payment_card',
+          JSON.stringify({
+            cardNumber: data.cardNumber,
+            cardName: data.cardName,
+            expiry: data.expiry,
+            cvv: data.cvv,
+            billingSameAsShipping: data.billingSameAsShipping,
+          })
+        );
+      } else {
+        localStorage.removeItem('qatify_saved_payment_card');
+      }
+    } catch (err) {
+      console.error('Error saving card:', err);
+    }
+  };
+
+  // Terms and conditions acceptance
+  const [agreedToTerms, setAgreedToTerms] = useState(true);
+
+  // Calculations based on checkout mode (Bundle vs Buy Now vs Regular Cart)
+  const checkoutItems = isBundleCheckout
+    ? bundleCart
+    : isBuyNowCheckout
+    ? (buyNowItem ? [buyNowItem] : [])
+    : cart;
+
+  const checkoutSubtotal = isBundleCheckout
+    ? bundleSubtotal
+    : isBuyNowCheckout
+    ? (buyNowItem ? buyNowItem.product.priceQAR * buyNowItem.quantity : 0)
+    : cartSubtotal;
+
   const shippingCost = selectedShipping.priceQAR;
   const totalDiscount = isBundleCheckout
     ? (bundleDiscountQAR || 0)
     : (appliedDiscountQAR || 0);
+
   const grandTotal = Math.max(0, checkoutSubtotal + shippingCost - totalDiscount);
 
-  // Handle address submit -> move to step 2
-  const handleAddressSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (
-      !address.firstName?.trim() ||
-      !address.lastName?.trim() ||
-      !address.phoneNumber?.trim() ||
-      !address.streetAddress?.trim() ||
-      !address.municipality?.trim() ||
-      !address.zoneNumber?.trim()
-    ) {
-      showToast('Incomplete Address', 'Please fill in Name, Phone, Street, City & Zone.', 'warning');
-      return;
-    }
-    if (!address.email?.trim() || !address.email.includes('@') || !address.email.includes('.')) {
-      showToast('Valid Email Required', 'Please enter a valid email address for order notifications.', 'warning');
-      return;
-    }
-    const resolvedFullName = `${address.firstName.trim()} ${address.lastName.trim()}`;
-    const resolvedPhone = `+${(address.phoneCountryCode || currentCountryConfig.phoneCode).trim()} ${address.phoneNumber.trim()}`;
-    const updatedAddress: QatarAddress = {
-      ...address,
-      country: address.country || currentCountryConfig.name,
-      fullName: resolvedFullName,
-      phone: resolvedPhone,
-      streetNumber: address.streetAddress,
-      buildingNumber: address.apartmentSuite || '',
-      postalCode: address.postalCode?.trim() || currentCountryConfig.defaultPostalCode,
-      isDefault: saveAddressForFuture,
-    };
-    if (saveAddressForFuture) {
-      addAddress(updatedAddress);
-    }
-    setAddress(updatedAddress);
-    setCurrentStep(2);
+  // Format Card Number (XXXX XXXX XXXX XXXX)
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.replace(/\D/g, '').slice(0, 16);
+    let formatted = val.match(/.{1,4}/g)?.join(' ') || val;
+    const updated = { ...cardData, cardNumber: formatted };
+    setCardData(updated);
+    if (updated.saveCard) persistSavedCard(updated);
   };
 
-  // Handle final order placement
-  const handlePlaceOrder = async () => {
+  // Cardholder Name Change
+  const handleCardNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const updated = { ...cardData, cardName: e.target.value };
+    setCardData(updated);
+    if (updated.saveCard) persistSavedCard(updated);
+  };
+
+  // Format Expiry (MM / YY)
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.replace(/\D/g, '').slice(0, 4);
+    if (val.length >= 2) {
+      val = `${val.slice(0, 2)}/${val.slice(2)}`;
+    }
+    const updated = { ...cardData, expiry: val };
+    setCardData(updated);
+    if (updated.saveCard) persistSavedCard(updated);
+  };
+
+  // CVV Change
+  const handleCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newCvv = e.target.value.replace(/\D/g, '').slice(0, 4);
+    const updated = { ...cardData, cvv: newCvv };
+    setCardData(updated);
+    if (updated.saveCard) persistSavedCard(updated);
+  };
+
+  // Toggle Save Card Checkbox
+  const handleSaveCardToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isChecked = e.target.checked;
+    const updated = { ...cardData, saveCard: isChecked };
+    setCardData(updated);
+    persistSavedCard(updated);
+  };
+
+  // Detect Card Brand from card number
+  const detectCardBrand = (num: string) => {
+    const clean = num.replace(/\s+/g, '');
+    if (clean.startsWith('4')) return 'visa';
+    if (/^(5[1-5]|2[2-7])/.test(clean)) return 'mastercard';
+    if (/^3[47]/.test(clean)) return 'amex';
+    if (/^(6011|65|64[4-9])/.test(clean)) return 'discover';
+    if (/^(352[89]|35[3-8][0-9])/.test(clean)) return 'jcb';
+    return 'card';
+  };
+
+  // Open modal with current address or clear draft
+  const openAddressModal = () => {
+    if (hasValidAddress) {
+      setDraftAddress({ ...address });
+    } else {
+      setDraftAddress({
+        country: 'Qatar',
+        firstName: '',
+        lastName: '',
+        email: address.email || '',
+        phoneCountryCode: '974',
+        phoneNumber: '',
+        streetAddress: '',
+        apartmentSuite: '',
+        municipality: '',
+        zoneNumber: '',
+        postalCode: '',
+        isDefault: true,
+        fullName: '',
+        phone: '',
+      });
+    }
+    setIsAddressModalOpen(true);
+  };
+
+  // Save Modal Address
+  const handleSaveDraftAddress = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (
+      !draftAddress.firstName?.trim() ||
+      !draftAddress.phoneNumber?.trim() ||
+      !draftAddress.streetAddress?.trim() ||
+      !draftAddress.municipality?.trim() ||
+      !draftAddress.postalCode?.trim() ||
+      !draftAddress.email?.trim()
+    ) {
+      showToast(
+        'Required Fields Missing',
+        'Please fill in all required fields (Name, Email, Address, City, Postal Code, and Phone).',
+        'warning'
+      );
+      return;
+    }
+
+    const resolvedFullName = `${draftAddress.firstName.trim()} ${draftAddress.lastName?.trim() || ''}`.trim();
+    const resolvedPhone = `+${(draftAddress.phoneCountryCode || currentCountryConfig.phoneCode).trim()} ${draftAddress.phoneNumber.trim()}`;
+
+    const completeAddress: QatarAddress = {
+      ...draftAddress,
+      country: draftAddress.country || currentCountryConfig.name,
+      fullName: resolvedFullName,
+      phone: resolvedPhone,
+      email: draftAddress.email.trim(),
+      streetNumber: draftAddress.streetAddress,
+      buildingNumber: draftAddress.apartmentSuite || '',
+      postalCode: draftAddress.postalCode.trim(),
+      isDefault: saveAddressForFuture,
+    };
+
+    if (saveAddressForFuture) {
+      addAddress(completeAddress);
+    }
+    setAddress(completeAddress);
+    setIsAddressModalOpen(false);
+    showToast('Shipping Address Saved', 'Delivery address confirmed for this order.', 'success');
+  };
+
+  // Handle Pay Now Action
+  const handlePayNow = async () => {
     if (checkoutItems.length === 0) {
       showToast(
         'Cart is Empty',
-        isBundleCheckout
+        isBuyNowCheckout
+          ? 'No product selected for instant checkout.'
+          : isBundleCheckout
           ? 'Your bundle cart is empty. Please add items in Bundle Studio.'
           : 'Please add items before placing an order.',
         'warning'
       );
       router.push(isBundleCheckout ? '/bundle-builder' : '/shop');
+      return;
+    }
+
+    // Ensure shipping address exists
+    if (!hasValidAddress) {
+      showToast('Shipping Address Required', 'Please enter your delivery address to continue.', 'warning');
+      openAddressModal();
+      return;
+    }
+
+    // Validate Card if Credit Card is selected
+    if (paymentMethod === 'credit_card') {
+      const cleanCard = cardData.cardNumber.replace(/\s+/g, '');
+      if (cleanCard.length < 15) {
+        showToast('Invalid Card Number', 'Please enter a valid 15 or 16-digit card number.', 'warning');
+        return;
+      }
+      if (!cardData.cardName.trim()) {
+        showToast('Cardholder Name Required', 'Please enter the given name on the card.', 'warning');
+        return;
+      }
+      if (!cardData.expiry || !cardData.expiry.includes('/')) {
+        showToast('Expiry Date Required', 'Please provide a valid expiration date (MM/YY).', 'warning');
+        return;
+      }
+      if (!cardData.cvv || cardData.cvv.length < 3) {
+        showToast('Security Code Required', 'Please enter a valid CVV/CSC code (3 or 4 digits).', 'warning');
+        return;
+      }
+    }
+
+    if (!agreedToTerms) {
+      showToast('Terms Acceptance Required', 'Please agree to the Terms and Conditions to proceed.', 'warning');
       return;
     }
 
@@ -240,10 +455,14 @@ function CheckoutContent() {
         selectedOption: item.selectedOption,
       }));
 
-      // 1. Create persistent order in Convex database
-      const resolvedFullName = `${address.firstName || ''} ${address.lastName || ''}`.trim() || address.fullName || 'Customer';
-      const resolvedPhone = `+${(address.phoneCountryCode || currentCountryConfig.phoneCode).trim()} ${(address.phoneNumber || '').trim()}`.trim() || address.phone || '+974 44374646';
+      const resolvedFullName =
+        `${address.firstName || ''} ${address.lastName || ''}`.trim() || address.fullName || 'Valued Customer';
+      const resolvedPhone =
+        `+${(address.phoneCountryCode || currentCountryConfig.phoneCode).trim()} ${(address.phoneNumber || '').trim()}`.trim() ||
+        address.phone ||
+        '+974 44374646';
 
+      // 1. Create order in Convex database with verified status
       const orderResult = await createConvexOrder({
         items: itemsPayload,
         couponCode: (!isBundleCheckout && appliedCoupon) ? appliedCoupon : undefined,
@@ -255,8 +474,8 @@ function CheckoutContent() {
           phoneNumber: address.phoneNumber,
           streetAddress: address.streetAddress,
           apartmentSuite: address.apartmentSuite,
-          municipality: address.municipality,
-          zoneNumber: address.zoneNumber,
+          municipality: address.municipality || 'Doha',
+          zoneNumber: address.zoneNumber || 'Zone 55',
           postalCode: address.postalCode || currentCountryConfig.defaultPostalCode,
           isDefault: saveAddressForFuture,
           fullName: resolvedFullName,
@@ -275,10 +494,10 @@ function CheckoutContent() {
           priceQAR: selectedShipping.priceQAR,
           description: selectedShipping.description,
         },
-        paymentMethod: paymentMethod === 'cash_on_delivery' ? 'cash_on_delivery' : 'polar',
+        paymentMethod,
       });
 
-      // 2. Also save into local ShopContext
+      // 2. Also register in local ShopContext
       createOrder({
         items: checkoutItems,
         subtotalQAR: checkoutSubtotal,
@@ -288,789 +507,949 @@ function CheckoutContent() {
         address,
         shippingMethod: selectedShipping,
         paymentMethod,
-        estimatedDeliveryWindow: '6–10 Business Days to Qatar',
+        estimatedDeliveryWindow: '3–7 Business Days to Qatar',
       });
 
-      // 3. Clear the appropriate cart
+      // 3. Clear shopping carts & persist saved card if selected
+      if (paymentMethod === 'credit_card') {
+        persistSavedCard(cardData);
+      }
+
       if (isBundleCheckout) {
         clearBundleCart();
+      } else if (isBuyNowCheckout) {
+        clearBuyNow();
       } else {
         clearCart();
       }
 
-      // 4. If Cash on Delivery, route to confirmation
-      if (paymentMethod === 'cash_on_delivery') {
-        router.push(`/checkout/success?orderNumber=${orderResult.orderNumber}&method=cod`);
-        return;
-      }
+      showToast('Payment Authorized', 'Your order was placed securely and confirmed!', 'success');
 
-      // 5. Digital checkout: Create Polar checkout session
-      const session = await createPolarCheckout({
-        orderId: orderResult.orderId,
-      });
-
-      if (session?.checkoutUrl) {
-        window.location.href = session.checkoutUrl;
-      } else {
-        router.push(`/checkout/success?orderNumber=${orderResult.orderNumber}`);
-      }
+      // 4. Smooth In-Site redirect to success confirmation (No third-party redirection!)
+      router.push(`/checkout/success?orderNumber=${orderResult.orderNumber}`);
     } catch (err) {
       console.error('Checkout error:', err);
-      showToast('Checkout Failed', 'Could not process order. Please try again.', 'error');
+      showToast('Payment Error', 'Could not process order. Please try again.', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // If order was successfully created, render celebration state
-  if (confirmedOrder) {
-    return (
-      <div className={styles.orderSuccessPage}>
-        <div className="container">
-          <div className={styles.successCard}>
-            <div className={styles.successIconCircle}>
-              <CheckCircle2 size={54} />
-            </div>
-
-            <span className={styles.successPill}>ORDER CONFIRMED & VERIFIED</span>
-            <h1 className={styles.successHeading}>Shukran! Your Order is Placed</h1>
-            <p className={styles.successSub}>
-              We are routing your items to our international air logistics hub. You will receive step-by-step SMS updates with live Qatar customs tracking.
-            </p>
-
-            <div className={styles.orderMetadataBox}>
-              <div className={styles.metaRow}>
-                <span className={styles.metaLabel}>Order Number</span>
-                <strong className={styles.metaValueMono}>{confirmedOrder.orderNumber}</strong>
-              </div>
-              <div className={styles.metaRow}>
-                <span className={styles.metaLabel}>Air Express Tracking</span>
-                <strong className={styles.trackingNumberHighlight}>
-                  {confirmedOrder.trackingNumber}
-                </strong>
-              </div>
-              <div className={styles.metaRow}>
-                <span className={styles.metaLabel}>Delivery Destination</span>
-                <span className={styles.metaValue}>
-                  {confirmedOrder.address.streetAddress || confirmedOrder.address.streetNumber}, {confirmedOrder.address.apartmentSuite || confirmedOrder.address.buildingNumber}, {confirmedOrder.address.municipality}, {confirmedOrder.address.zoneNumber}
-                </span>
-              </div>
-              <div className={styles.metaRow}>
-                <span className={styles.metaLabel}>Estimated Arrival</span>
-                <strong className={styles.metaValue}>
-                  6–10 Business Days via Hamad Int’l Airport (DOH)
-                </strong>
-              </div>
-              <div className={styles.metaRow}>
-                <span className={styles.metaLabel}>Total Paid</span>
-                <strong className={styles.metaValuePrice}>
-                  QAR {confirmedOrder.totalQAR.toLocaleString()}
-                </strong>
-              </div>
-            </div>
-
-            <div className={styles.successCtaRow}>
-              <Link href="/dashboard" className={styles.trackShipmentBtn}>
-                <Plane size={16} />
-                <span>Track International Shipment</span>
-              </Link>
-              <Link href="/shop" className={styles.backHomeBtn}>
-                Continue Shopping
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={styles.checkoutPage}>
       <div className="container">
-        {/* Header Breadcrumb */}
-        <nav className={styles.breadcrumbNav}>
-          <Link href={isBundleCheckout ? '/bundle-cart' : '/cart'} className={styles.crumbLink}>
-            {isBundleCheckout ? 'Bundle Cart' : 'Cart'}
-          </Link>
-          <ChevronRight size={13} className={styles.crumbChevron} />
-          <span className={styles.currentCrumb}>
-            {isBundleCheckout ? 'Wholesale Bundle Checkout' : 'Qatar Express Checkout'}
-          </span>
-        </nav>
+        {/* Top Header: Title + Secured Trading Badge */}
+        <div className={styles.checkoutPageHeader}>
+          <div className={styles.titleWithBadge}>
+            <h1 className={styles.checkoutMainTitle}>Secure Checkout</h1>
+            <span className={styles.securedTradingBadge} title="Protected by Secured Trading">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className={styles.stShieldIcon}
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient id="stGradBadge" x1="12" y1="2" x2="12" y2="23" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#66bb6a" />
+                    <stop offset="1" stopColor="#4cae4f" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M12 2.2L9.6 3.9C7.8 4.4 5.8 4.6 4.3 4.3C3.7 4.2 3 4.6 3 5.3V11C3 16.4 6.9 20.7 11.7 22.3C11.9 22.4 12.1 22.4 12.3 22.3C17.1 20.7 21 16.4 21 11V5.3C21 4.6 20.3 4.2 19.7 4.3C18.2 4.6 16.2 4.4 14.4 3.9L12 2.2Z"
+                  fill="url(#stGradBadge)"
+                />
+                <path
+                  d="M14.6 8.7c-.6-.5-1.5-.8-2.5-.8-1.7 0-2.8.8-2.8 2.1 0 1.2.9 1.8 2.2 2.1l.8.2c1.2.3 1.6.7 1.6 1.3 0 .8-.8 1.4-1.9 1.4-1 0-2.1-.4-2.8-1.1l-.8 1.1c.9.9 2.2 1.4 3.6 1.4 2.2 0 3.6-1.1 3.6-2.8 0-1.4-.9-2.1-2.4-2.4l-.8-.2c-1.1-.2-1.5-.5-1.5-1.1 0-.7.7-1.2 1.7-1.2.8 0 1.6.3 2.2.7l.5-1.2z"
+                  fill="#ffffff"
+                />
+              </svg>
+              <span className={styles.stWordSecured}>Secured</span>
+              <span className={styles.stWordTrading}>Trading</span>
+            </span>
+          </div>
 
-        {/* 2-Step Visual Progress Bar */}
-        <div className={styles.stepsProgressBar}>
-          <button
-            type="button"
-            onClick={() => setCurrentStep(1)}
-            className={`${styles.stepIndicator} ${currentStep >= 1 ? styles.active : ''}`}
-          >
-            <div className={styles.stepNum}>1</div>
-            <div className={styles.stepLabelCol}>
-              <span className={styles.stepTitle}>Qatar Address</span>
-              <span className={styles.stepDesc}>Zone, Street & Building</span>
-            </div>
-          </button>
-
-          <div className={`${styles.stepConnector} ${currentStep >= 2 ? styles.active : ''}`} />
-
-          <div className={`${styles.stepIndicator} ${currentStep === 2 ? styles.active : ''}`}>
-            <div className={styles.stepNum}>2</div>
-            <div className={styles.stepLabelCol}>
-              <span className={styles.stepTitle}>Payment</span>
-              <span className={styles.stepDesc}>
-                {IS_COD_ENABLED ? 'Apple Pay / Card / COD' : 'Apple Pay / Card'}
-              </span>
-            </div>
+          <div className={styles.headerTrustGuarantees}>
+            <span className={styles.trustItem}>
+              <ShieldCheck size={14} className={styles.trustIconGreen} />
+              <span>256-Bit SSL Encryption</span>
+            </span>
           </div>
         </div>
 
-        {/* Main 2-Column Layout: Form (Left) & Order Summary (Right) */}
+        {/* 2-Column Checkout Layout */}
         <div className={styles.checkoutLayout}>
-          {/* Form Column */}
-          <div className={styles.formColumn}>
+          {/* LEFT COLUMN: Main Form Modules */}
+          <div className={styles.mainModulesColumn}>
             {/* ===============================================================
-                STEP 1: ALIEXPRESS QATAR DROPSHIP SHIPPING DETAILS
+                SECTION 1: SHIPPING ADDRESS
             ================================================================ */}
-            {currentStep === 1 && (
-              <div className={styles.aliCardWrapper}>
-                {/* Quick saved addresses selection pills */}
-                {savedAddresses.length > 0 && (
-                  <div className={styles.savedAddressesBar}>
-                    <span className={styles.savedBarLabel}>Quick Select:</span>
-                    {savedAddresses.map((addr, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => {
-                          setAddress({
-                            country: addr.country || 'Qatar',
-                            firstName: addr.firstName || '',
-                            lastName: addr.lastName || '',
-                            email: addr.email || '',
-                            phoneCountryCode: addr.phoneCountryCode || '974',
-                            phoneNumber: addr.phoneNumber || '',
-                            streetAddress: addr.streetAddress || addr.streetNumber || '',
-                            apartmentSuite: addr.apartmentSuite || addr.buildingNumber || '',
-                            municipality: addr.municipality || '',
-                            zoneNumber: addr.zoneNumber || '',
-                            postalCode: addr.postalCode || '',
-                            isDefault: addr.isDefault ?? true,
-                            fullName: addr.fullName || '',
-                            phone: addr.phone || '',
-                          });
-                        }}
-                        className={styles.savedAddrPill}
-                      >
-                        {addr.firstName || addr.fullName?.split(' ')[0] || 'Address'} • {addr.municipality} ({addr.zoneNumber})
-                      </button>
-                    ))}
-                  </div>
-                )}
+            <section className={styles.checkoutSection}>
+              <div className={styles.sectionHeadingRow}>
+                <div className={styles.sectionIconCircle}>
+                  <MapPin size={17} />
+                </div>
+                <h2 className={styles.sectionHeadingText}>Shipping Address</h2>
+              </div>
 
-                <div className={styles.aliModalCard}>
-                  <div className={styles.aliModalHeader}>
-                    <h2 className={styles.aliModalTitle}>Add new address</h2>
-                  </div>
-
-                  <form onSubmit={handleAddressSubmit} className={styles.aliAddressForm}>
-                    {/* 1. Country/region */}
-                    <div className={styles.aliSection}>
-                      <label className={styles.aliSectionTitle}>Country/region</label>
-                      <div
-                        ref={countrySelectRef}
-                        className={`${styles.customSelectWrapper} ${countryDropdownOpen ? styles.wrapperOpen : ''}`}
-                        style={{ maxWidth: '320px' }}
-                      >
-                        <div
-                          className={`${styles.aliCountrySelector} ${countryDropdownOpen ? styles.dropdownActiveTrigger : ''}`}
-                          onClick={() => {
-                            setCountryDropdownOpen(!countryDropdownOpen);
-                            setMunicipalityDropdownOpen(false);
-                            setZoneDropdownOpen(false);
-                          }}
-                        >
-                          <div className={styles.aliCountryInfo}>
-                            <CountryFlag code={currentCountryConfig.code} size={22} />
-                            <span className={styles.aliCountryCodeBadge}>{currentCountryConfig.code}</span>
-                            <span className={styles.aliCountryName}>{currentCountryConfig.name}</span>
-                          </div>
-                          <ChevronDown
-                            size={18}
-                            className={`${styles.dropdownChevron} ${countryDropdownOpen ? styles.chevronOpen : ''}`}
-                          />
-                        </div>
-
-                        {countryDropdownOpen && (
-                          <div className={styles.customDropdownMenu}>
-                            {SUPPORTED_COUNTRIES.map((c) => {
-                              const isSelected = currentCountryConfig.code === c.code;
-                              return (
-                                <div
-                                  key={c.code}
-                                  className={`${styles.customDropdownItem} ${isSelected ? styles.itemSelected : ''}`}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleCountryChange(c.name);
-                                    setCountryDropdownOpen(false);
-                                  }}
-                                >
-                                  <div className={styles.itemLeft}>
-                                    <CountryFlag code={c.code} size={20} />
-                                    <span className={styles.aliCountryCodeBadge}>{c.code}</span>
-                                    <span className={styles.itemTitle}>{c.name}</span>
-                                  </div>
-                                  <div className={styles.itemRight}>
-                                    <span className={styles.itemPhoneCode}>+{c.phoneCode}</span>
-                                    {isSelected && <Check size={16} className={styles.itemCheckIcon} />}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
+              <div className={styles.sectionBody}>
+                {hasValidAddress ? (
+                  <div className={styles.confirmedAddressCard}>
+                    <div className={styles.addressCardTop}>
+                      <div className={styles.recipientInfo}>
+                        <CountryFlag code={address.country} size={18} />
+                        <span className={styles.recipientName}>
+                          {address.firstName} {address.lastName || ''}
+                        </span>
+                        <span className={styles.recipientPhone}>
+                          +{address.phoneCountryCode || '974'} {address.phoneNumber}
+                        </span>
+                        {address.email && (
+                          <span className={styles.recipientEmail}>
+                            • {address.email}
+                          </span>
                         )}
                       </div>
-                    </div>
-
-                    {/* 2. Contact information */}
-                    <div className={styles.aliSection}>
-                      <label className={styles.aliSectionTitle}>Contact information</label>
-                      <div className={styles.aliContactGrid}>
-                        {/* Row 1: First name & Last name */}
-                        <div className={styles.aliContactRow}>
-                          <div className={styles.aliInputCol}>
-                            <input
-                              type="text"
-                              required
-                              value={address.firstName}
-                              onChange={(e) => setAddress({ ...address, firstName: e.target.value })}
-                              placeholder="First name"
-                              className={styles.aliTextInput}
-                            />
-                          </div>
-                          <div className={styles.aliInputCol}>
-                            <input
-                              type="text"
-                              required
-                              value={address.lastName}
-                              onChange={(e) => setAddress({ ...address, lastName: e.target.value })}
-                              placeholder="Last name"
-                              className={styles.aliTextInput}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Row 2: Email address & Mobile phone number */}
-                        <div className={styles.aliContactRow}>
-                          <div className={styles.aliInputCol}>
-                            <input
-                              type="email"
-                              required
-                              value={address.email || ''}
-                              onChange={(e) => setAddress({ ...address, email: e.target.value })}
-                              placeholder="Email address"
-                              className={styles.aliTextInput}
-                            />
-                          </div>
-                          <div className={styles.aliPhoneGroup}>
-                            <div className={styles.aliPhonePrefix}>{currentCountryConfig.phoneCode}</div>
-                            <input
-                              type="tel"
-                              required
-                              value={address.phoneNumber}
-                              onChange={(e) => {
-                                const val = e.target.value.replace(/[^0-9]/g, '');
-                                setAddress({ ...address, phoneNumber: val });
-                              }}
-                              placeholder="Mobile phone number"
-                              className={styles.aliPhoneInput}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 3. Address */}
-                    <div className={styles.aliSection}>
-                      <label className={styles.aliSectionTitle}>Address</label>
-
-                      {/* Row 1: Street address & Apt/Suite/Building */}
-                      <div className={styles.aliAddressRow1}>
-                        <input
-                          type="text"
-                          required
-                          value={address.streetAddress}
-                          onChange={(e) => setAddress({ ...address, streetAddress: e.target.value })}
-                          placeholder="Street address, road or house number"
-                          className={styles.aliTextInput}
-                        />
-                        <input
-                          type="text"
-                          value={address.apartmentSuite || ''}
-                          onChange={(e) => setAddress({ ...address, apartmentSuite: e.target.value })}
-                          placeholder="Building, Apt, Suite, Unit (Optional)"
-                          className={styles.aliTextInput}
-                        />
-                      </div>
-
-                      {/* Row 2: Municipality/Province, Zone/District, Postal code */}
-                      <div className={styles.aliAddressRow2}>
-                        {/* Custom Municipality Dropdown */}
-                        <div
-                          ref={municipalitySelectRef}
-                          className={`${styles.customSelectWrapper} ${municipalityDropdownOpen ? styles.wrapperOpen : ''}`}
-                        >
-                          <div
-                            className={`${styles.customSelectTrigger} ${municipalityDropdownOpen ? styles.dropdownActiveTrigger : ''}`}
-                            onClick={() => {
-                              setMunicipalityDropdownOpen(!municipalityDropdownOpen);
-                              setCountryDropdownOpen(false);
-                              setZoneDropdownOpen(false);
-                            }}
-                          >
-                            <span className={address.municipality ? styles.selectValueText : styles.selectPlaceholderText}>
-                              {address.municipality ||
-                                (currentCountryConfig.code === 'QA'
-                                  ? 'Select Municipality'
-                                  : currentCountryConfig.code === 'SA'
-                                    ? 'Select Province / City'
-                                    : 'Select Emirate / City')}
-                            </span>
-                            <ChevronDown
-                              size={16}
-                              className={`${styles.dropdownChevron} ${municipalityDropdownOpen ? styles.chevronOpen : ''}`}
-                            />
-                          </div>
-
-                          {municipalityDropdownOpen && (
-                            <div className={styles.customDropdownMenu}>
-                              {currentCountryConfig.provinces.map((prov) => {
-                                const isSelected = address.municipality === prov;
-                                return (
-                                  <div
-                                    key={prov}
-                                    className={`${styles.customDropdownItem} ${isSelected ? styles.itemSelected : ''}`}
-                                    onClick={() => {
-                                      setAddress({ ...address, municipality: prov, zoneNumber: '' });
-                                      setMunicipalityDropdownOpen(false);
-                                    }}
-                                  >
-                                    <span className={styles.itemTitle}>{prov}</span>
-                                    {isSelected && <Check size={15} className={styles.itemCheckIcon} />}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Custom Zone Dropdown */}
-                        <div
-                          ref={zoneSelectRef}
-                          className={`${styles.customSelectWrapper} ${zoneDropdownOpen ? styles.wrapperOpen : ''}`}
-                        >
-                          <div
-                            className={`${styles.customSelectTrigger} ${zoneDropdownOpen ? styles.dropdownActiveTrigger : ''}`}
-                            onClick={() => {
-                              if (!address.municipality) {
-                                showToast(
-                                  'Select City First',
-                                  'Please choose a municipality or city first to view its zones.',
-                                  'info'
-                                );
-                                return;
-                              }
-                              setZoneDropdownOpen(!zoneDropdownOpen);
-                              setCountryDropdownOpen(false);
-                              setMunicipalityDropdownOpen(false);
-                            }}
-                          >
-                            <span className={address.zoneNumber ? styles.selectValueText : styles.selectPlaceholderText}>
-                              {address.zoneNumber ||
-                                (currentCountryConfig.code === 'QA'
-                                  ? 'Select Zone'
-                                  : currentCountryConfig.code === 'SA'
-                                    ? 'Select District'
-                                    : 'Select Area / Zone')}
-                            </span>
-                            <ChevronDown
-                              size={16}
-                              className={`${styles.dropdownChevron} ${zoneDropdownOpen ? styles.chevronOpen : ''}`}
-                            />
-                          </div>
-
-                          {zoneDropdownOpen && (
-                            <div className={styles.customDropdownMenu}>
-                              {(currentCountryConfig.zones[address.municipality] || []).length > 0 ? (
-                                (currentCountryConfig.zones[address.municipality] || []).map((z) => {
-                                  const isSelected = address.zoneNumber === z;
-                                  return (
-                                    <div
-                                      key={z}
-                                      className={`${styles.customDropdownItem} ${isSelected ? styles.itemSelected : ''}`}
-                                      onClick={() => {
-                                        setAddress({ ...address, zoneNumber: z });
-                                        setZoneDropdownOpen(false);
-                                      }}
-                                    >
-                                      <span className={styles.itemTitle}>{z}</span>
-                                      {isSelected && <Check size={15} className={styles.itemCheckIcon} />}
-                                    </div>
-                                  );
-                                })
-                              ) : (
-                                <div className={styles.noItemsMsg}>No zones available for this city</div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* ZIP / Postal code (Starts empty, placeholder shows clean text) */}
-                        <input
-                          type="text"
-                          value={address.postalCode || ''}
-                          onChange={(e) => setAddress({ ...address, postalCode: e.target.value })}
-                          placeholder="ZIP / Postal code"
-                          className={styles.aliTextInput}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Checkbox: Set as default shipping address */}
-                    <div className={styles.aliCheckboxRow}>
-                      <label className={styles.aliCheckLabel}>
-                        <input
-                          type="checkbox"
-                          checked={saveAddressForFuture}
-                          onChange={(e) => setSaveAddressForFuture(e.target.checked)}
-                          className={styles.aliHiddenCheck}
-                        />
-                        <span className={`${styles.aliCustomBox} ${saveAddressForFuture ? styles.checked : ''}`}>
-                          {saveAddressForFuture && <Check size={13} strokeWidth={3} color="#ffffff" />}
-                        </span>
-                        <span className={styles.aliCheckText}>Set as default shipping address</span>
-                      </label>
-                    </div>
-
-                    {/* Button: Confirm */}
-                    <div className={styles.aliBtnRow}>
-                      <button type="submit" className={styles.aliConfirmBtn}>
-                        Confirm
+                      <button
+                        type="button"
+                        onClick={openAddressModal}
+                        className={styles.editAddressButton}
+                      >
+                        Change Address
                       </button>
                     </div>
-                  </form>
-                </div>
+
+                    <div className={styles.addressCardDetails}>
+                      <p className={styles.addressLinePrimary}>
+                        {address.streetAddress}
+                        {address.apartmentSuite ? `, ${address.apartmentSuite}` : ''}
+                      </p>
+                      <p className={styles.addressLineSecondary}>
+                        {address.zoneNumber ? `${address.zoneNumber}, ` : ''}
+                        {address.municipality}, {address.country}{' '}
+                        {address.postalCode ? `• ${address.postalCode}` : ''}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={styles.emptyAddressContainer}>
+                    <button
+                      type="button"
+                      onClick={openAddressModal}
+                      className={styles.addNewAddressTriggerBtn}
+                    >
+                      + Add New Address
+                    </button>
+                    <p className={styles.emptyAddressHint}>
+                      Please add your shipping address so we can calculate exact delivery options.
+                    </p>
+                  </div>
+                )}
               </div>
-            )}
+            </section>
 
             {/* ===============================================================
-                STEP 2: PAYMENT METHOD SELECTOR UI
+                SECTION 2: PAYMENT METHOD
             ================================================================ */}
-            {currentStep === 2 && (
-              <div className={styles.stepFormCard}>
-                <div className={styles.formCardHeader}>
-                  <Lock size={20} className={styles.headerIconRed} />
-                  <div>
-                    <h2 className={styles.formCardTitle}>2. Select Secure Payment Method</h2>
-                    <p className={styles.formCardSub}>
-                      All transactions are 256-bit encrypted and processed in Qatari Riyal (QAR).
-                    </p>
-                  </div>
+            <section className={styles.checkoutSection}>
+              <div className={styles.sectionHeadingRow}>
+                <div className={styles.sectionIconCircle}>
+                  <CreditCard size={17} />
                 </div>
+                <h2 className={styles.sectionHeadingText}>Payment Method</h2>
+              </div>
 
-                {/* Payment Option Tabs */}
-                <div className={styles.paymentMethodTabs}>
-                  {/* Apple Pay */}
-                  <div
-                    onClick={() => setPaymentMethod('apple_pay')}
-                    className={`${styles.payOptionCard} ${
-                      paymentMethod === 'apple_pay' ? styles.activePay : ''
-                    }`}
-                  >
-                    <div className={styles.payOptionHeader}>
+              <div className={styles.paymentMethodsWrapper}>
+                {/* CHOICE 1: Add a New Card (Visa / Mastercard / Amex / Maestro / JCB / Discover / Qatar) */}
+                <div
+                  className={`${styles.paymentOptionBox} ${
+                    paymentMethod === 'credit_card' ? styles.optionSelected : ''
+                  }`}
+                  onClick={() => setPaymentMethod('credit_card')}
+                >
+                  <div className={styles.optionHeaderRow}>
+                    <label className={styles.customRadioWrap}>
                       <input
                         type="radio"
-                        name="payMethod"
-                        checked={paymentMethod === 'apple_pay'}
-                        onChange={() => setPaymentMethod('apple_pay')}
-                      />
-                      <span className={styles.payOptionName}>Apple Pay</span>
-                      <ApplePayIcon width={40} height={25} />
-                      <span className={styles.recommendedPill}>RECOMMENDED IN QATAR</span>
-                    </div>
-                    <p className={styles.payOptionSub}>
-                      Pay instantly with Touch ID or Face ID using your Apple devices.
-                    </p>
-                  </div>
-
-                  {/* Credit / Debit Card */}
-                  <div
-                    onClick={() => setPaymentMethod('credit_card')}
-                    className={`${styles.payOptionCard} ${
-                      paymentMethod === 'credit_card' ? styles.activePay : ''
-                    }`}
-                  >
-                    <div className={styles.payOptionHeader}>
-                      <input
-                        type="radio"
-                        name="payMethod"
+                        name="checkoutPaymentMethod"
                         checked={paymentMethod === 'credit_card'}
                         onChange={() => setPaymentMethod('credit_card')}
+                        className={styles.hiddenRadio}
                       />
-                      <span className={styles.payOptionName}>Credit / Debit Card</span>
-                      <div className={styles.cardLogosRow}>
-                        <VisaIcon width={34} height={21} />
-                        <MastercardIcon width={34} height={21} />
-                        <AmexIcon width={34} height={21} />
+                      <span className={styles.radioDot} />
+                    </label>
+
+                    <div className={styles.optionHeaderLabelCol}>
+                      <div className={styles.optionTitleRow}>
+                        <CreditCard size={18} className={styles.cardHeaderIcon} />
+                        <span className={styles.optionTitleText}>Add a New Card</span>
                       </div>
                     </div>
-                    <p className={styles.payOptionSub}>
-                      Secure payment with local Qatari banks or international credit cards.
-                    </p>
 
-                    {paymentMethod === 'credit_card' && (
-                      <div className={styles.mockCardForm} onClick={(e) => e.stopPropagation()}>
-                        <div className={styles.formGroupFull}>
-                          <label className={styles.fieldLabel}>Cardholder Name</label>
-                          <input
-                            type="text"
-                            value={cardData.cardName}
-                            onChange={(e) => setCardData({ ...cardData, cardName: e.target.value })}
-                            className={styles.textInput}
-                          />
-                        </div>
+                    {/* Card Logos Row (Exact Match to Screenshot) */}
+                    <div className={styles.cardLogosRow}>
+                      <VisaIcon width={32} height={20} />
+                      <MastercardIcon width={32} height={20} />
+                      <MaestroIcon width={32} height={20} />
+                      <JcbIcon width={32} height={20} />
+                      <DiscoverIcon width={32} height={20} />
+                      <AmexIcon width={32} height={20} />
+                      <QarCurrencyIcon width={32} height={20} />
+                    </div>
+                  </div>
 
-                        <div className={styles.formGroupFull}>
-                          <label className={styles.fieldLabel}>Card Number</label>
+                  {/* Sub-form when Card is selected */}
+                  {paymentMethod === 'credit_card' && (
+                    <div
+                      className={styles.expandedCardForm}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {/* Card Number Input */}
+                      <div className={styles.fieldGroup}>
+                        <label className={styles.fieldLabel}>
+                          Card number <span className={styles.requiredStar}>*</span>
+                        </label>
+                        <div className={styles.inputWithIconWrapper}>
                           <input
                             type="text"
                             value={cardData.cardNumber}
-                            onChange={(e) => setCardData({ ...cardData, cardNumber: e.target.value })}
-                            className={styles.textInput}
+                            onChange={handleCardNumberChange}
+                            placeholder="1234  5678  9012  3456"
+                            maxLength={19}
+                            className={styles.styledInput}
                           />
+                          <div className={styles.detectedCardBadge}>
+                            {detectCardBrand(cardData.cardNumber) === 'visa' && (
+                              <VisaIcon width={28} height={18} />
+                            )}
+                            {detectCardBrand(cardData.cardNumber) === 'mastercard' && (
+                              <MastercardIcon width={28} height={18} />
+                            )}
+                            {detectCardBrand(cardData.cardNumber) === 'amex' && (
+                              <AmexIcon width={28} height={18} />
+                            )}
+                            {detectCardBrand(cardData.cardNumber) === 'discover' && (
+                              <DiscoverIcon width={28} height={18} />
+                            )}
+                            {detectCardBrand(cardData.cardNumber) === 'jcb' && (
+                              <JcbIcon width={28} height={18} />
+                            )}
+                            {detectCardBrand(cardData.cardNumber) === 'card' && (
+                              <CreditCard size={18} color="#94a3b8" />
+                            )}
+                          </div>
                         </div>
+                      </div>
 
-                        <div className={styles.formGroup}>
-                          <label className={styles.fieldLabel}>Expiry Date</label>
+                      {/* Cardholder Name */}
+                      <div className={styles.fieldGroup}>
+                        <label className={styles.fieldLabel}>
+                          Given name(s) <span className={styles.requiredStar}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          autoComplete="off"
+                          value={cardData.cardName}
+                          onChange={handleCardNameChange}
+                          placeholder="Name as printed on card"
+                          className={styles.styledInput}
+                        />
+                      </div>
+
+                      {/* Expiry & CVV 2-column row */}
+                      <div className={styles.twoColumnFields}>
+                        <div className={styles.fieldGroup}>
+                          <label className={styles.fieldLabel}>
+                            <span>Expire in MM/YY</span>{' '}
+                            <span className={styles.requiredStar}>*</span>
+                            <span className={styles.infoTooltipIcon} title="Two digit month and two digit year">
+                              <Info size={13} />
+                            </span>
+                          </label>
                           <input
                             type="text"
+                            inputMode="numeric"
+                            autoComplete="off"
                             value={cardData.expiry}
-                            onChange={(e) => setCardData({ ...cardData, expiry: e.target.value })}
-                            className={styles.textInput}
+                            onChange={handleExpiryChange}
+                            placeholder="MM / YY"
+                            maxLength={5}
+                            className={styles.styledInput}
                           />
                         </div>
 
-                        <div className={styles.formGroup}>
-                          <label className={styles.fieldLabel}>CVV / CVC</label>
+                        <div className={styles.fieldGroup}>
+                          <label className={styles.fieldLabel}>
+                            <span>Security code (CVV/CSC)</span>{' '}
+                            <span className={styles.requiredStar}>*</span>
+                            <span className={styles.infoTooltipIcon} title="3 digits on back of card or 4 digits on front of Amex">
+                              <Info size={13} />
+                            </span>
+                          </label>
                           <input
-                            type="password"
-                            maxLength={4}
+                            type="text"
+                            inputMode="numeric"
+                            autoComplete="off"
+                            name="securityCodeCvv"
+                            data-lpignore="true"
+                            data-1p-ignore="true"
                             value={cardData.cvv}
-                            onChange={(e) => setCardData({ ...cardData, cvv: e.target.value })}
-                            className={styles.textInput}
+                            onChange={handleCvvChange}
+                            placeholder="CVV"
+                            maxLength={4}
+                            className={styles.styledInput}
                           />
                         </div>
                       </div>
-                    )}
-                  </div>
 
-                  {/* Cash on Delivery (COD) - Conditionally rendered when enabled */}
-                  {IS_COD_ENABLED && (
-                    <div
-                      onClick={() => setPaymentMethod('cash_on_delivery')}
-                      className={`${styles.payOptionCard} ${
-                        paymentMethod === 'cash_on_delivery' ? styles.activePay : ''
-                      }`}
-                    >
-                      <div className={styles.payOptionHeader}>
-                        <input
-                          type="radio"
-                          name="payMethod"
-                          checked={paymentMethod === 'cash_on_delivery'}
-                          onChange={() => setPaymentMethod('cash_on_delivery')}
-                        />
-                        <span className={styles.payOptionName}>Cash on Delivery (COD)</span>
-                        <CashOnDeliveryIcon width={40} height={25} />
-                        <span className={styles.codPill}>ALL QATAR ZONES</span>
+                      {/* Billing Address Module Box */}
+                      <div className={styles.billingAddressBox}>
+                        <div className={styles.billingBoxHeader}>
+                          <span className={styles.billingTitle}>Billing Address</span>
+                        </div>
+                        {hasValidAddress ? (
+                          <div className={styles.billingToggleRow}>
+                            <label className={styles.switchLabel}>
+                              <input
+                                type="checkbox"
+                                checked={cardData.billingSameAsShipping}
+                                onChange={(e) => {
+                                  const updated = {
+                                    ...cardData,
+                                    billingSameAsShipping: e.target.checked,
+                                  };
+                                  setCardData(updated);
+                                  if (updated.saveCard) persistSavedCard(updated);
+                                }}
+                                className={styles.hiddenSwitch}
+                              />
+                              <span className={styles.sliderSwitch} />
+                              <span className={styles.switchText}>
+                                Billing address the same as shipping address
+                              </span>
+                            </label>
+                          </div>
+                        ) : (
+                          <p className={styles.billingAddressNotice}>
+                            Your shipping address hasn't been added yet. Add it above and we'll use it as your billing address.
+                          </p>
+                        )}
                       </div>
-                      <p className={styles.payOptionSub}>
-                        Pay in cash (QAR) directly to the delivery courier upon doorstep package handover.
-                      </p>
+
+                      {/* Checkbox: Save this card */}
+                      <div className={styles.saveCardCheckboxRow}>
+                        <label className={styles.checkboxLabel}>
+                          <input
+                            type="checkbox"
+                            checked={cardData.saveCard}
+                            onChange={handleSaveCardToggle}
+                            className={styles.nativeCheckbox}
+                          />
+                          <span className={styles.customBox}>
+                            {cardData.saveCard && <Check size={12} strokeWidth={3} />}
+                          </span>
+                          <span className={styles.checkboxText}>
+                            Save this card for faster checkout next time
+                          </span>
+                        </label>
+                      </div>
                     </div>
                   )}
                 </div>
 
-                <div className={styles.stepButtonRow}>
+                {/* CHOICE 2: Apple Pay */}
+                <div
+                  className={`${styles.paymentOptionBox} ${
+                    paymentMethod === 'apple_pay' ? styles.optionSelected : ''
+                  }`}
+                  onClick={() => setPaymentMethod('apple_pay')}
+                >
+                  <div className={styles.optionHeaderRow}>
+                    <label className={styles.customRadioWrap}>
+                      <input
+                        type="radio"
+                        name="checkoutPaymentMethod"
+                        checked={paymentMethod === 'apple_pay'}
+                        onChange={() => setPaymentMethod('apple_pay')}
+                        className={styles.hiddenRadio}
+                      />
+                      <span className={styles.radioDot} />
+                    </label>
+
+                    <div className={styles.optionHeaderLabelCol}>
+                      <div className={styles.walletHeaderInline}>
+                        <ApplePayIcon width={46} height={26} />
+                        <span className={styles.walletLabelText}>Apple Pay</span>
+                        <span className={styles.recommendedPill}>Recommended</span>
+                      </div>
+                      <p className={styles.walletSubText}>
+                        Pay instantly with Touch ID or Face ID using your Apple device.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CHOICE 3: Google Pay */}
+                <div
+                  className={`${styles.paymentOptionBox} ${
+                    paymentMethod === 'google_pay' ? styles.optionSelected : ''
+                  }`}
+                  onClick={() => setPaymentMethod('google_pay')}
+                >
+                  <div className={styles.optionHeaderRow}>
+                    <label className={styles.customRadioWrap}>
+                      <input
+                        type="radio"
+                        name="checkoutPaymentMethod"
+                        checked={paymentMethod === 'google_pay'}
+                        onChange={() => setPaymentMethod('google_pay')}
+                        className={styles.hiddenRadio}
+                      />
+                      <span className={styles.radioDot} />
+                    </label>
+
+                    <div className={styles.optionHeaderLabelCol}>
+                      <div className={styles.walletHeaderInline}>
+                        <GooglePayIcon width={46} height={26} />
+                        <span className={styles.walletLabelText}>Google Pay</span>
+                      </div>
+                      <p className={styles.walletSubText}>
+                        Fast, secure checkout using cards stored in your Google Account.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ===============================================================
+                SECTION 3: ITEMS AND DELIVERY OPTIONS
+            ================================================================ */}
+            <section className={styles.checkoutSection}>
+              <div className={styles.sectionHeadingRow}>
+                <div className={styles.sectionIconCircle}>
+                  <Package size={17} />
+                </div>
+                <h2 className={styles.sectionHeadingText}>Items and delivery options</h2>
+              </div>
+
+              <div className={styles.itemsDeliveryCard}>
+                <div className={styles.sellerHeaderRow}>
+                  <span className={styles.soldByLabel}>
+                    Sold by: <strong>Qatify Express Logistics Hub</strong>
+                  </span>
                   <button
                     type="button"
-                    onClick={() => setCurrentStep(1)}
-                    className={styles.backStepBtn}
+                    onClick={() => openChat()}
+                    className={styles.chatNowLink}
                   >
-                    ← Edit Address
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handlePlaceOrder}
-                    disabled={isSubmitting}
-                    className={styles.confirmOrderBtn}
-                    style={{
-                      opacity: isSubmitting ? 0.75 : 1,
-                      cursor: isSubmitting ? 'wait' : 'pointer',
-                    }}
-                  >
-                    <Lock size={16} />
-                    <span>
-                      {isSubmitting
-                        ? 'Connecting to Polar Gateway...'
-                        : `Confirm & Place Qatar Order (QAR ${grandTotal.toLocaleString()})`}
-                    </span>
+                    <MessageCircle size={14} />
+                    <span>Chat Now</span>
                   </button>
                 </div>
 
-                <p
-                  style={{
-                    fontSize: '11.5px',
-                    color: '#71717a',
-                    textAlign: 'center',
-                    marginTop: '12px',
-                    lineHeight: '1.45',
-                  }}
-                >
-                  By placing your order, you agree to Qatify&apos;s{' '}
-                  <Link href="/terms" style={{ color: '#ffb800', textDecoration: 'underline' }}>
-                    Terms &amp; Conditions
-                  </Link>
-                  ,{' '}
-                  <Link href="/privacy" style={{ color: '#ffb800', textDecoration: 'underline' }}>
-                    Privacy Policy
-                  </Link>
-                  , and{' '}
-                  <Link href="/refund-policy" style={{ color: '#ffb800', textDecoration: 'underline' }}>
-                    Refund &amp; Return Policy
-                  </Link>
-                  . Covered by our 100% Lost Parcel Money-Back Guarantee (Insha&apos;Allah).
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Right Column: Order Review Summary */}
-          <div className={styles.summaryColumn}>
-            <div className={styles.summaryCard}>
-              <h3 className={styles.summaryTitle}>Order Review</h3>
-
-              {/* Items List */}
-              <div className={styles.summaryItemsList}>
-                {checkoutItems.map((item) => (
-                  <div key={item.id} className={styles.summaryItem}>
-                    <img
-                      src={item.product.images[0] || '/placeholder.svg'}
-                      alt={item.product.title}
-                      className={styles.summaryItemImg}
-                      onError={(e) => {
-                        const target = e.currentTarget;
-                        if (!target.src.endsWith('/placeholder.svg')) {
-                          target.src = '/placeholder.svg';
-                        }
-                      }}
-                    />
-                    <div className={styles.summaryItemInfo}>
-                      <h4 className={styles.summaryItemTitle}>{item.product.title}</h4>
-                      <div className={styles.summaryItemMeta}>
-                        <span>Qty: {item.quantity}</span>
-                        {item.selectedColor && <span> • {item.selectedColor}</span>}
+                {/* Items List */}
+                <div className={styles.checkoutItemsList}>
+                  {checkoutItems.map((item, idx) => (
+                    <div key={idx} className={styles.checkoutItemRow}>
+                      <div className={styles.itemThumbWrap}>
+                        <Image
+                          src={item.product.images[0] || '/placeholder.svg'}
+                          alt={item.product.title}
+                          width={60}
+                          height={60}
+                          className={styles.itemThumbImg}
+                        />
+                      </div>
+                      <div className={styles.itemInfoCol}>
+                        <span className={styles.itemTitle}>{item.product.title}</span>
+                        {(item.selectedColor || item.selectedOption) && (
+                          <span className={styles.itemVariant}>
+                            {item.selectedColor && `Color: ${item.selectedColor}`}
+                            {item.selectedColor && item.selectedOption && ' • '}
+                            {item.selectedOption && item.selectedOption}
+                          </span>
+                        )}
+                        <span className={styles.itemQuantityBadge}>Qty: {item.quantity}</span>
+                      </div>
+                      <div className={styles.itemPriceCol}>
+                        <strong className={styles.itemPriceQAR}>
+                          QAR {(item.product.priceQAR * item.quantity).toFixed(2)}
+                        </strong>
                       </div>
                     </div>
-                    <div className={styles.summaryItemPrice}>
-                      QAR {item.product.priceQAR * item.quantity}
+                  ))}
+                </div>
+
+                {/* Shipping Method Option */}
+                <div className={styles.shippingMethodSelector}>
+                  <div className={styles.shippingMethodItem}>
+                    <div className={styles.shippingMethodLeft}>
+                      <Plane size={16} className={styles.shippingIcon} />
+                      <div>
+                        <strong>Standard International Air Express</strong>
+                        <p className={styles.shippingDeliveryWindow}>
+                          Estimated delivery to Qatar: 3–7 Business Days
+                        </p>
+                      </div>
                     </div>
+                    <span className={styles.shippingFreeBadge}>FREE SHIPPING</span>
                   </div>
-                ))}
-              </div>
-
-              {/* Breakdown */}
-              <div className={styles.summaryCalculations}>
-                <div className={styles.calcRow}>
-                  <span>Subtotal</span>
-                  <span className="price-qar">QAR {checkoutSubtotal.toLocaleString()}</span>
-                </div>
-
-                {isBundleCheckout && bundleDiscountQAR > 0 && (
-                  <div className={styles.calcRow} style={{ color: '#16a34a' }}>
-                    <span>Tiered Bundle ({bundleTierPercent}% OFF)</span>
-                    <span className="price-qar">- QAR {bundleDiscountQAR.toLocaleString()}</span>
-                  </div>
-                )}
-
-                {!isBundleCheckout && appliedDiscountQAR > 0 && (
-                  <div className={styles.calcRow} style={{ color: '#16a34a' }}>
-                    <span>Promo Coupon</span>
-                    <span className="price-qar">- QAR {appliedDiscountQAR.toLocaleString()}</span>
-                  </div>
-                )}
-
-                <div className={styles.calcRow}>
-                  <div className={styles.calcLabelCol}>
-                    <span>{selectedShipping.name}</span>
-                    <span className={styles.calcSub}>{selectedShipping.duration}</span>
-                  </div>
-                  <span className="price-qar">
-                    {shippingCost === 0 ? (
-                      <strong className={styles.freeGreen}>FREE</strong>
-                    ) : (
-                      `QAR ${shippingCost}`
-                    )}
-                  </span>
-                </div>
-
-                <div className={`${styles.calcRow} ${styles.grandTotal}`}>
-                  <span>Total Amount</span>
-                  <span className={styles.grandPrice}>
-                    QAR {grandTotal.toLocaleString()}
-                  </span>
                 </div>
               </div>
+            </section>
+          </div>
 
-              {/* Delivery Guarantee Pill */}
-              <div className={styles.checkoutGuarantees}>
-                <div className={styles.guaranteeItem}>
-                  <ShieldCheck size={16} />
-                  <span>100% Pre-Dispatch Quality Check</span>
-                </div>
-                <div className={styles.guaranteeItem}>
-                  <Plane size={16} />
-                  <span>Fast Doorstep Delivery in Qatar</span>
-                </div>
-              </div>
+          {/* RIGHT COLUMN: Sticky Order Summary */}
+          <aside className={styles.orderSummarySidebar}>
+            <div className={styles.summaryStickyBox}>
+              <div className={styles.summaryCard}>
+                <h3 className={styles.summaryHeading}>
+                  Order Summary ({checkoutItems.reduce((acc, i) => acc + i.quantity, 0)} items)
+                </h3>
 
-              {/* Checkout Live Support Card */}
-              <div className={styles.checkoutHelpCard}>
-                <div className={styles.checkoutHelpText}>
-                  <span>Need assistance with your order?</span>
-                  <strong>Chat live with our Doha checkout team</strong>
+                {/* Products Thumbnails Row */}
+                <div className={styles.summaryThumbsRow}>
+                  {checkoutItems.slice(0, 4).map((item, i) => (
+                    <div key={i} className={styles.summaryThumbWrap}>
+                      <Image
+                        src={item.product.images[0] || '/placeholder.svg'}
+                        alt={item.product.title}
+                        width={46}
+                        height={46}
+                        className={styles.summaryThumbImg}
+                      />
+                      <span className={styles.summaryThumbBadge}>{item.quantity}</span>
+                    </div>
+                  ))}
+                  {checkoutItems.length > 4 && (
+                    <div className={styles.moreThumbsBadge}>
+                      +{checkoutItems.length - 4}
+                    </div>
+                  )}
                 </div>
+
+                {/* Breakdown Costs */}
+                <div className={styles.breakdownList}>
+                  <div className={styles.breakdownRow}>
+                    <span className={styles.breakdownLabel}>Item subtotal</span>
+                    <span className={styles.breakdownVal}>QAR {checkoutSubtotal.toFixed(2)}</span>
+                  </div>
+
+                  <div className={styles.breakdownRow}>
+                    <span className={styles.breakdownLabel}>
+                      Transaction fee <Info size={12} className={styles.feeInfo} />
+                    </span>
+                    <span className={styles.breakdownFeeWaived}>QAR 0.00</span>
+                  </div>
+
+                  {totalDiscount > 0 && (
+                    <div className={styles.breakdownRow}>
+                      <span className={styles.breakdownDiscountLabel}>
+                        Discount {appliedCoupon && `(${appliedCoupon})`}
+                      </span>
+                      <span className={styles.breakdownDiscountVal}>
+                        -QAR {totalDiscount.toFixed(2)}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className={styles.breakdownRow}>
+                    <span className={styles.breakdownLabel}>Air Freight Shipping</span>
+                    <span className={styles.breakdownFree}>FREE</span>
+                  </div>
+                </div>
+
+                <div className={styles.divider} />
+
+                {/* Total Payment Due */}
+                <div className={styles.totalDueRow}>
+                  <span className={styles.totalDueLabel}>Total payment due</span>
+                  <strong className={styles.totalDueAmount}>
+                    QAR {grandTotal.toFixed(2)}
+                  </strong>
+                </div>
+
+                {/* Big Coral Pay Now Button */}
                 <button
                   type="button"
-                  onClick={() => openChat('I need assistance with checkout and payment in Qatar.')}
-                  className={styles.checkoutChatBtn}
+                  onClick={handlePayNow}
+                  disabled={isSubmitting}
+                  className={styles.payNowButton}
                 >
-                  <MessageCircle size={14} />
-                  <span>Chat With Us</span>
+                  {isSubmitting ? (
+                    <span className={styles.buttonSpinnerContent}>
+                      <span className={styles.spinnerCircle} />
+                      <span>Authorizing Payment...</span>
+                    </span>
+                  ) : (
+                    <span>Pay Now</span>
+                  )}
                 </button>
+
+                {/* Terms Acceptance Checkbox */}
+                <div className={styles.termsRow}>
+                  <label className={styles.termsLabel}>
+                    <input
+                      type="checkbox"
+                      checked={agreedToTerms}
+                      onChange={(e) => setAgreedToTerms(e.target.checked)}
+                      className={styles.nativeCheckbox}
+                    />
+                    <span className={styles.termsCustomBox}>
+                      {agreedToTerms && <Check size={11} strokeWidth={3} />}
+                    </span>
+                    <span className={styles.termsText}>
+                      By clicking the button, you agree to the{' '}
+                      <Link href="/terms" className={styles.termsLink}>
+                        Terms and Conditions
+                      </Link>
+                      ,{' '}
+                      <Link href="/privacy" className={styles.termsLink}>
+                        Privacy Policy
+                      </Link>{' '}
+                      and Return & Refund Rules.
+                    </span>
+                  </label>
+                </div>
+
+                {/* Made-in-China / Qatify Order Protection Card */}
+                <div className={styles.orderProtectionBox}>
+                  <h4 className={styles.protectionTitle}>Qatify.com Order Protection</h4>
+
+                  <div className={styles.protectionItem}>
+                    <div className={styles.protectionIconWrap}>
+                      <ShieldCheck size={16} color="#008000" />
+                    </div>
+                    <div>
+                      <strong className={styles.protectionHeading}>Funds Security</strong>
+                      <p className={styles.protectionText}>
+                        Your payment is only released after you confirm satisfactory delivery in Qatar.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className={styles.protectionItem}>
+                    <div className={styles.protectionIconWrap}>
+                      <RotateCcw size={16} color="#008000" />
+                    </div>
+                    <div>
+                      <strong className={styles.protectionHeading}>Return & Refund Support</strong>
+                      <p className={styles.protectionText}>
+                        Request return or refund assistance within 14 days for eligible order issues.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className={styles.protectionItem}>
+                    <div className={styles.protectionIconWrap}>
+                      <Plane size={16} color="#008000" />
+                    </div>
+                    <div>
+                      <strong className={styles.protectionHeading}>Air Express Guarantee</strong>
+                      <p className={styles.protectionText}>
+                        Full doorstep courier handover with live Qatar Customs tracking.
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className={styles.protectionFooterNotice}>
+                    Only orders placed and paid through Qatify.com can enjoy protection by Secured Trading.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          </aside>
         </div>
       </div>
+
+      {/* ===============================================================
+          ADDRESS MODAL POPUP (Exact Match to Screenshot 2)
+      ================================================================ */}
+      {isAddressModalOpen && (
+        <div className={styles.modalBackdrop} onClick={() => setIsAddressModalOpen(false)}>
+          <div
+            className={styles.modalCardDialog}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            {/* Modal Header */}
+            <div className={styles.modalHeader}>
+              <h3 className={styles.modalTitle}>Add New Address</h3>
+              <button
+                type="button"
+                onClick={() => setIsAddressModalOpen(false)}
+                className={styles.modalCloseBtn}
+                aria-label="Close"
+              >
+                <X size={19} />
+              </button>
+            </div>
+
+            {/* Address Form (Clean Shopify Style) */}
+            <form onSubmit={handleSaveDraftAddress} className={styles.modalAddressForm}>
+              {/* Email (Shopify Style) */}
+              <input
+                type="email"
+                required
+                value={draftAddress.email || ''}
+                onChange={(e) =>
+                  setDraftAddress({ ...draftAddress, email: e.target.value })
+                }
+                placeholder="Email"
+                className={styles.shopifyInput}
+              />
+
+              {/* Country Selector (Shopify Style) */}
+              <div className={styles.shopifySelectWrap} ref={countryRef}>
+                <div
+                  className={styles.shopifyCountrySelect}
+                  onClick={() => setModalCountryOpen(!modalCountryOpen)}
+                >
+                  <div className={styles.shopifyCountryInfo}>
+                    <span className={styles.shopifyMiniLabel}>Country/Region</span>
+                    <div className={styles.modalCountrySelected}>
+                      <CountryFlag code={draftAddress.country} size={16} />
+                      <span className={styles.countryNameText}>{draftAddress.country}</span>
+                    </div>
+                  </div>
+                  <ChevronDown size={15} color="#6b7280" />
+                </div>
+
+                {modalCountryOpen && (
+                  <div className={styles.modalDropdownMenu}>
+                    {SUPPORTED_COUNTRIES.map((c) => (
+                      <div
+                        key={c.code}
+                        onClick={() => {
+                          setDraftAddress({
+                            ...draftAddress,
+                            country: c.name,
+                            phoneCountryCode: c.phoneCode,
+                          });
+                          setModalCountryOpen(false);
+                        }}
+                        className={`${styles.modalDropdownItem} ${
+                          draftAddress.country === c.name ? styles.dropdownSelected : ''
+                        }`}
+                      >
+                        <CountryFlag code={c.code} size={18} />
+                        <span>{c.name}</span>
+                        <span className={styles.phoneCodeTag}>+{c.phoneCode}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* First Name & Last Name (2 Columns, Shopify Style) */}
+              <div className={styles.twoColumnModalRow}>
+                <input
+                  type="text"
+                  required
+                  value={draftAddress.firstName}
+                  onChange={(e) =>
+                    setDraftAddress({
+                      ...draftAddress,
+                      firstName: e.target.value,
+                      fullName: `${e.target.value} ${draftAddress.lastName || ''}`.trim(),
+                    })
+                  }
+                  placeholder="First name"
+                  className={styles.shopifyInput}
+                />
+                <input
+                  type="text"
+                  value={draftAddress.lastName}
+                  onChange={(e) =>
+                    setDraftAddress({
+                      ...draftAddress,
+                      lastName: e.target.value,
+                      fullName: `${draftAddress.firstName || ''} ${e.target.value}`.trim(),
+                    })
+                  }
+                  placeholder="Last name"
+                  className={styles.shopifyInput}
+                />
+              </div>
+
+              {/* Street Address (Shopify Style) */}
+              <input
+                type="text"
+                required
+                value={draftAddress.streetAddress}
+                onChange={(e) =>
+                  setDraftAddress({ ...draftAddress, streetAddress: e.target.value })
+                }
+                placeholder="Address"
+                className={styles.shopifyInput}
+              />
+
+              {/* Apartment, Suite, etc. (optional) */}
+              <input
+                type="text"
+                value={draftAddress.apartmentSuite}
+                onChange={(e) =>
+                  setDraftAddress({ ...draftAddress, apartmentSuite: e.target.value })
+                }
+                placeholder="Apartment, suite, etc. (optional)"
+                className={styles.shopifyInput}
+              />
+
+              {/* City / Municipality, Zone, Postal Code (Shopify Style) */}
+              <div className={styles.threeColumnModalRow}>
+                {/* City / Municipality */}
+                <div className={styles.shopifySelectWrap} ref={muniRef}>
+                  <div
+                    className={styles.shopifySelectTrigger}
+                    onClick={() => setModalMunicipalityOpen(!modalMunicipalityOpen)}
+                  >
+                    <span className={draftAddress.municipality ? styles.selectVal : styles.selectPlaceholder}>
+                      {draftAddress.municipality || 'City'}
+                    </span>
+                    <ChevronDown size={14} color="#6b7280" />
+                  </div>
+                  {modalMunicipalityOpen && (
+                    <div className={styles.modalDropdownMenu}>
+                      {QATAR_MUNICIPALITIES.map((m) => (
+                        <div
+                          key={m.code}
+                          onClick={() => {
+                            setDraftAddress({
+                              ...draftAddress,
+                              municipality: m.name.split(' (')[0],
+                            });
+                            setModalMunicipalityOpen(false);
+                          }}
+                          className={`${styles.modalDropdownItem} ${
+                            draftAddress.municipality === m.name.split(' (')[0] ? styles.dropdownSelected : ''
+                          }`}
+                        >
+                          <span>{m.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Zone Number */}
+                <div className={styles.shopifySelectWrap} ref={zoneRef}>
+                  <div
+                    className={styles.shopifySelectTrigger}
+                    onClick={() => setModalZoneOpen(!modalZoneOpen)}
+                  >
+                    <span className={draftAddress.zoneNumber ? styles.selectVal : styles.selectPlaceholder}>
+                      {draftAddress.zoneNumber || 'Zone'}
+                    </span>
+                    <ChevronDown size={14} color="#6b7280" />
+                  </div>
+                  {modalZoneOpen && (
+                    <div className={styles.modalDropdownMenuScrollable}>
+                      {ALL_QATAR_ZONES.map((zone) => (
+                        <div
+                          key={zone}
+                          onClick={() => {
+                            setDraftAddress({
+                              ...draftAddress,
+                              zoneNumber: zone,
+                            });
+                            setModalZoneOpen(false);
+                          }}
+                          className={`${styles.modalDropdownItem} ${
+                            draftAddress.zoneNumber === zone ? styles.dropdownSelected : ''
+                          }`}
+                        >
+                          <strong>{zone}</strong>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Postal Code (Mandatory) */}
+                <input
+                  type="text"
+                  required
+                  value={draftAddress.postalCode}
+                  onChange={(e) =>
+                    setDraftAddress({ ...draftAddress, postalCode: e.target.value })
+                  }
+                  placeholder="Postal code"
+                  className={styles.shopifyInput}
+                />
+              </div>
+
+              {/* Phone Input (Shopify Style) */}
+              <div className={styles.shopifyPhoneWrap}>
+                <span className={styles.shopifyPhoneBadge}>
+                  +{draftAddress.phoneCountryCode || '974'}
+                </span>
+                <input
+                  type="tel"
+                  required
+                  value={draftAddress.phoneNumber}
+                  onChange={(e) =>
+                    setDraftAddress({
+                      ...draftAddress,
+                      phoneNumber: e.target.value.replace(/\D/g, ''),
+                    })
+                  }
+                  placeholder="Phone"
+                  className={styles.shopifyPhoneInput}
+                />
+              </div>
+
+              {/* Set as default checkbox */}
+              <div className={styles.modalDefaultCheckRow}>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={saveAddressForFuture}
+                    onChange={(e) => setSaveAddressForFuture(e.target.checked)}
+                    className={styles.nativeCheckbox}
+                  />
+                  <span className={styles.customBox}>
+                    {saveAddressForFuture && <Check size={12} strokeWidth={3} />}
+                  </span>
+                  <span className={styles.checkboxText}>Set as default shipping address</span>
+                </label>
+              </div>
+
+              {/* Modal Buttons: Cancel and Confirm */}
+              <div className={styles.modalActionButtonsRow}>
+                <button
+                  type="button"
+                  onClick={() => setIsAddressModalOpen(false)}
+                  className={styles.modalCancelBtn}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className={styles.modalConfirmBtn}>
+                  Confirm
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={<div style={{ padding: '80px 20px', textAlign: 'center' }}>Loading Qatar Checkout...</div>}>
+    <Suspense
+      fallback={
+        <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <p>Loading checkout...</p>
+        </div>
+      }
+    >
       <CheckoutContent />
     </Suspense>
   );
 }
-

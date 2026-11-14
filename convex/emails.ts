@@ -55,7 +55,7 @@ export function generateOrderEmailHtml(order: Doc<"orders">, siteUrl: string): s
           <tr>
             <td align="center" style="background-color: #ffffff; padding: 22px 24px; border-bottom: 2px solid #f1f3f5; border-top: 4px solid #ffb800; text-align: center;">
               <a href="${siteUrl}" target="_blank" style="text-decoration: none; display: inline-block;">
-                <img src="https://shocking-armadillo-116.convex.cloud/api/storage/43c1a105-5334-4bb8-a12f-8dff85502631" height="42" alt="Shop Qatify" style="display: block; height: 42px; width: auto; max-width: 220px; border: 0; margin: 0 auto;" />
+                <img src="https://mellow-puma-618.eu-west-1.convex.cloud/api/storage/65303eae-d04f-4c07-a578-9caf457a58b4" height="46" alt="Shop Qatify" style="display: block; height: 46px; width: auto; max-width: 220px; border: 0; margin: 0 auto;" />
               </a>
             </td>
           </tr>

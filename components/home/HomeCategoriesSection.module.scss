@@ -1,0 +1,285 @@
+// =============================================================================
+// Qatify — Homepage Main Categories Grid Section SCSS
+// Clean bordered mosaic grid inspired by high-density retail category showcases
+// =============================================================================
+
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.sectionWrapper {
+  width: 100%;
+  margin-top: $space-4;
+  margin-bottom: $space-6;
+  position: relative;
+
+  @include tablet {
+    margin-top: 0;
+    margin-bottom: $space-4;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// SECTION HEADER
+// -----------------------------------------------------------------------------
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: $space-3;
+
+  @include mobile {
+    margin-bottom: $space-2;
+  }
+}
+
+.heading {
+  font-family: $font-heading;
+  font-size: 20px;
+  font-weight: 800;
+  color: $color-ink-black;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0;
+
+  @include mobile {
+    font-size: 16px;
+    letter-spacing: -0.01em;
+  }
+}
+
+.viewAllBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: $color-ink-black;
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: $radius-xs;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color $transition-fast;
+
+  span {
+    white-space: nowrap;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: $color-accent-red;
+  }
+
+  @include mobile {
+    font-size: 11.5px;
+    padding: 3px 6px;
+    gap: 3px;
+
+    svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// CLEAN WHITE BORDERED CATEGORY GRID
+// -----------------------------------------------------------------------------
+.gridCard {
+  background-color: #ffffff;
+  border: 1px solid $color-border-subtle;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: $shadow-xs;
+
+  @include mobile {
+    border-radius: 0;
+  }
+}
+
+.categoriesGrid {
+  display: grid;
+  margin-right: -1px;
+  margin-bottom: -1px;
+
+  &.cols5 {
+    grid-template-columns: repeat(5, 1fr);
+
+    @include tablet {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    @include phablet {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &.cols6 {
+    grid-template-columns: repeat(6, 1fr);
+
+    @include laptop {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    @include phablet {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &.cols8 {
+    grid-template-columns: repeat(8, 1fr);
+
+    .categoryCell {
+      padding: 16px 10px 12px;
+    }
+
+    .imageBox {
+      width: 84px;
+      height: 84px;
+      margin-bottom: 8px;
+
+      @include desktop {
+        width: 76px;
+        height: 76px;
+      }
+    }
+
+    .categoryName {
+      font-size: 12.5px;
+      min-height: 34px;
+    }
+
+    @include laptop {
+      grid-template-columns: repeat(4, 1fr);
+
+      .categoryCell {
+        padding: 16px 10px 12px;
+      }
+
+      .imageBox {
+        width: 82px;
+        height: 82px;
+      }
+    }
+
+    @include phablet {
+      grid-template-columns: repeat(2, 1fr);
+
+      .categoryCell {
+        padding: 14px 10px 12px;
+      }
+
+      .imageBox {
+        width: 76px;
+        height: 76px;
+      }
+
+      .categoryName {
+        font-size: 12px;
+        min-height: 32px;
+      }
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// INDIVIDUAL CATEGORY CELL
+// -----------------------------------------------------------------------------
+.categoryCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  padding: 18px 12px 14px;
+  background-color: #ffffff;
+  border-right: 1px solid #ececef;
+  border-bottom: 1px solid #ececef;
+  text-decoration: none;
+  color: $color-ink-black;
+  transition: background-color $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    background-color: #fafafa;
+    box-shadow: inset 0 -2px 0 $color-accent-yellow;
+
+    .categoryImg {
+      transform: scale(1.06);
+    }
+
+    .categoryName {
+      color: #000000;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-accent-yellow;
+    outline-offset: -2px;
+  }
+
+  @include tablet {
+    padding: 14px 8px 12px;
+  }
+
+  @include phablet {
+    padding: 14px 10px 12px;
+  }
+}
+
+.imageBox {
+  width: 96px;
+  height: 96px;
+  border-radius: 0;
+  background-color: #f8f8fa;
+  border: 1px solid #f4f4f5;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+
+  @include tablet {
+    width: 78px;
+    height: 78px;
+    margin-bottom: 8px;
+  }
+
+  @include mobile {
+    width: 76px;
+    height: 76px;
+  }
+}
+
+.categoryImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+.fallbackIcon {
+  color: $color-text-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.categoryName {
+  font-family: $font-body;
+  font-size: 13px;
+  font-weight: 500;
+  color: $color-ink-black;
+  line-height: 1.35;
+  min-height: 35px;
+  @include line-clamp(2);
+  transition: color $transition-fast;
+
+  @include tablet {
+    font-size: 12px;
+    min-height: 32px;
+  }
+}

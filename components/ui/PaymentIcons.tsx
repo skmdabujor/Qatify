@@ -321,4 +321,111 @@ export function GooglePayIcon({ width = 44, height = 28, className }: PaymentIco
   );
 }
 
+/**
+ * Maestro Vector Mark
+ */
+export function MaestroIcon({ width = 44, height = 28, className }: PaymentIconProps) {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 120 80"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-label="Maestro"
+      role="img"
+    >
+      <rect width="120" height="80" rx="8" fill="#FFFFFF" />
+      <rect x="0.75" y="0.75" width="118.5" height="78.5" rx="7.25" stroke="#E2E8F0" strokeWidth="1.5" />
+      <circle cx="46" cy="40" r="22" fill="#EB001B" />
+      <circle cx="74" cy="40" r="22" fill="#00A2E5" />
+      <path
+        d="M60 23.4C65.5 27.6 69 33.5 69 40C69 46.5 65.5 52.4 60 56.6C54.5 52.4 51 46.5 51 40C51 33.5 54.5 27.6 60 23.4Z"
+        fill="#7B61FF"
+      />
+    </svg>
+  );
+}
+
+/**
+ * JCB Vector Mark
+ */
+export function JcbIcon({ width = 44, height = 28, className }: PaymentIconProps) {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 120 80"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-label="JCB"
+      role="img"
+    >
+      <rect width="120" height="80" rx="8" fill="#FFFFFF" />
+      <rect x="0.75" y="0.75" width="118.5" height="78.5" rx="7.25" stroke="#E2E8F0" strokeWidth="1.5" />
+      <rect x="22" y="18" width="24" height="44" rx="6" fill="#005BAB" />
+      <rect x="48" y="18" width="24" height="44" rx="6" fill="#D32F2F" />
+      <rect x="74" y="18" width="24" height="44" rx="6" fill="#008837" />
+      <text
+        x="60"
+        y="46"
+        textAnchor="middle"
+        fontFamily="sans-serif"
+        fontSize="16"
+        fontWeight="900"
+        fill="#FFFFFF"
+        letterSpacing="2"
+      >
+        JCB
+      </text>
+    </svg>
+  );
+}
+
+/**
+ * Discover Vector Mark
+ */
+export function DiscoverIcon({ width = 44, height = 28, className }: PaymentIconProps) {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 120 80"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-label="Discover"
+      role="img"
+    >
+      <rect width="120" height="80" rx="8" fill="#FFFFFF" />
+      <rect x="0.75" y="0.75" width="118.5" height="78.5" rx="7.25" stroke="#E2E8F0" strokeWidth="1.5" />
+      <text
+        x="42"
+        y="46"
+        fontFamily="sans-serif"
+        fontSize="14"
+        fontWeight="900"
+        fill="#231F20"
+        letterSpacing="1"
+      >
+        DISC
+      </text>
+      <circle cx="73" cy="40" r="8" fill="#F76800" />
+      <text
+        x="93"
+        y="46"
+        fontFamily="sans-serif"
+        fontSize="14"
+        fontWeight="900"
+        fill="#231F20"
+        letterSpacing="1"
+      >
+        VER
+      </text>
+    </svg>
+  );
+}
+
 

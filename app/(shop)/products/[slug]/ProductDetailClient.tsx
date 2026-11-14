@@ -1,8 +1,8 @@
 'use client';
 
 // =============================================================================
-// Qatify — Dynamic Product Detail Client View (`/products/[slug]`)
-// Gallery + Buy Box + Multi-Buy Savings + Interactive Qatar Timeline
+// Qatify — Clean, Minimal & High-Converting Product Detail View (`/products/[slug]`)
+// Streamlined Shopify-Style UX with Qatify Brand Aesthetics & Logistics
 // =============================================================================
 
 import React, { useState, useEffect } from 'react';
@@ -14,34 +14,27 @@ import { Product, toProduct } from '@/types/product';
 import {
   Star,
   Heart,
-  ShoppingCart,
+  Share2,
+  Minus,
+  Plus,
+  ChevronRight,
+  ChevronDown,
+  ChevronLeft,
+  Flame,
+  Lock,
   Plane,
   ShieldCheck,
-  Headset,
-  CheckCircle2,
-  Share2,
   Clock,
-  MapPin,
   Package,
-  Layers,
-  ChevronRight,
-  Flame,
-  Plus,
-  Minus,
+  RotateCcw,
+  ShoppingCart,
+  ShoppingBag,
   Zap,
-  MessageCircle,
-  Lock,
   CreditCard,
+  X,
+  ZoomIn,
 } from 'lucide-react';
-import {
-  ApplePayIcon,
-  VisaIcon,
-  MastercardIcon,
-  AmexIcon,
-  GooglePayIcon,
-  QarCurrencyIcon,
-} from '@/components/ui/PaymentIcons';
-import { PRODUCTS, QATAR_MUNICIPALITIES } from '@/data/products';
+import { PRODUCTS } from '@/data/products';
 import { ProductCard } from '@/components/product/ProductCard';
 import { useShop } from '@/context/ShopContext';
 import styles from './page.module.scss';
@@ -59,14 +52,97 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
   const paramSlug = routeParams?.slug;
   const slug = propSlug || (typeof paramSlug === 'string' ? paramSlug : Array.isArray(paramSlug) ? paramSlug[0] : '') || '';
 
-  const { addToCart, closeCart, toggleWishlist, isInWishlist, showToast, openChat } = useShop();
+  const {
+    addToCart,
+    initiateBuyNow,
+    closeCart,
+    toggleWishlist,
+    isInWishlist,
+    showToast,
+  } = useShop();
 
   const liveProduct = useQuery(api.products.getBySlug, slug ? { slug } : 'skip');
   const fallbackProduct = initialProduct || PRODUCTS.find((p) => p.slug === slug);
   const product = liveProduct ? toProduct(liveProduct) : fallbackProduct;
 
-  // Gallery active image
+  // Gallery active image & auto-slider
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isGalleryHovered, setIsGalleryHovered] = useState(false);
+
+  // Auto-slide gallery images every 3.5 seconds when not hovered
+  useEffect(() => {
+    if (!product?.images || product.images.length <= 1 || isGalleryHovered) return;
+
+    const timer = setInterval(() => {
+      setActiveImageIndex((prev) => (prev + 1) % product.images.length);
+    }, 3500);
+
+    return () => clearInterval(timer);
+  }, [product?.images, isGalleryHovered]);
+
+  const handlePrevImage = () => {
+    if (!product?.images || product.images.length <= 1) return;
+    setActiveImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
+  };
+
+  const handleNextImage = () => {
+    if (!product?.images || product.images.length <= 1) return;
+    setActiveImageIndex((prev) => (prev + 1) % product.images.length);
+  };
+
+  // Lightbox & Mouse Drag / Touch Swipe to slide
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartX = React.useRef(0);
+  const dragDistance = React.useRef(0);
+
+  const handleDragStart = (clientX: number) => {
+    setIsDragging(true);
+    dragStartX.current = clientX;
+    dragDistance.current = 0;
+  };
+
+  const handleDragMove = (clientX: number) => {
+    if (!isDragging) return;
+    dragDistance.current = clientX - dragStartX.current;
+  };
+
+  const handleDragEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+
+    const threshold = 40;
+    if (dragDistance.current > threshold) {
+      // Dragged right -> previous image
+      handlePrevImage();
+    } else if (dragDistance.current < -threshold) {
+      // Dragged left -> next image
+      handleNextImage();
+    } else if (Math.abs(dragDistance.current) < 8) {
+      // Clicked without dragging -> open large image lightbox modal
+      setIsLightboxOpen(true);
+    }
+    dragDistance.current = 0;
+  };
+
+  // Keyboard navigation and scroll-lock for lightbox
+  useEffect(() => {
+    if (!isLightboxOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsLightboxOpen(false);
+      else if (e.key === 'ArrowLeft') handlePrevImage();
+      else if (e.key === 'ArrowRight') handleNextImage();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [isLightboxOpen, product?.images]);
 
   // Variant selections
   const [selectedColor, setSelectedColor] = useState(
@@ -76,6 +152,15 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
     product?.variants?.options?.[0]?.values?.[0] || ''
   );
   const [quantity, setQuantity] = useState(1);
+
+  // Read more state for description
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+
+  // Clean accordions states
+  const [isShippingOpen, setIsShippingOpen] = useState(false);
+  const [isWarrantyOpen, setIsWarrantyOpen] = useState(false);
+  const [isSpecsOpen, setIsSpecsOpen] = useState(false);
+  const [isReviewsOpen, setIsReviewsOpen] = useState(false);
 
   // Sync variants when live product arrives
   useEffect(() => {
@@ -94,9 +179,8 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
 
   useEffect(() => {
     const handleScroll = () => {
-      // Reveal sticky bar when scrolled: 220px on mobile/tablet, 380px on desktop
       const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-      const threshold = isMobile ? 220 : 380;
+      const threshold = isMobile ? 220 : 420;
       const shouldShow = window.scrollY > threshold;
       setShowStickyBar(shouldShow);
 
@@ -121,18 +205,6 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
       }
     };
   }, []);
-
-  // Municipality selector for dynamic timeline
-  const [selectedMunicipality, setSelectedMunicipality] = useState(
-    QATAR_MUNICIPALITIES[0].name
-  );
-
-  // Active information tab
-  const [activeTab, setActiveTab] = useState<'specs' | 'contents' | 'shipping' | 'reviews'>('specs');
-
-  // Collapsible accordion states in Technical Specifications tab (+ / - toggle)
-  const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
-  const [isSpecsOpen, setIsSpecsOpen] = useState(true);
 
   // Related products from Convex or mock fallback
   const liveRelated = useQuery(
@@ -209,38 +281,20 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
   }
 
   const isFavorited = isInWishlist(product.id);
-
-  // Compute unit price based on volume tiers
-  const getActiveUnitPrice = () => {
-    if (!product.volumeDiscounts || product.volumeDiscounts.length === 0) {
-      return product.priceQAR;
-    }
-    const matchingTier = [...product.volumeDiscounts]
-      .sort((a, b) => b.quantity - a.quantity)
-      .find((tier) => quantity >= tier.quantity);
-
-    return matchingTier ? matchingTier.pricePerUnitQAR : product.priceQAR;
-  };
-
-  const unitPrice = getActiveUnitPrice();
+  const unitPrice = product.priceQAR;
   const totalPriceQAR = unitPrice * quantity;
 
   // Add to cart with variant
   const handleAddToCart = () => {
-    addToCart(product, quantity, selectedColor, selectedOption);
-    showToast(
-      'Added to Cart! 🛒',
-      `${quantity}x ${product.title} (${selectedColor || 'Default'}) added to your Qatar cart.`,
-      'success'
-    );
+    addToCart(product, quantity, selectedColor, selectedOption, true, false);
   };
 
-  // Immediate Buy Now - redirect directly to checkout without opening the side cart drawer
+  // Immediate Buy Now - redirect directly to checkout with isolated item (regular cart stays untouched!)
   const handleBuyNow = () => {
     if (!product) return;
     closeCart();
-    addToCart(product, quantity, selectedColor, selectedOption, false);
-    router.push('/checkout');
+    initiateBuyNow(product, quantity, selectedColor, selectedOption);
+    router.push('/checkout?mode=buynow');
   };
 
   // Share link
@@ -259,61 +313,69 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
     }
   };
 
-  // Dynamic delivery date calculation
-  const today = new Date();
-  const munData = QATAR_MUNICIPALITIES.find((m) => m.name === selectedMunicipality);
-  const transitOffset = munData ? munData.transitDaysOffset : 0;
-
-  const dispatchDate = new Date(today);
-  dispatchDate.setDate(today.getDate() + 1);
-
-  const flightDate = new Date(today);
-  flightDate.setDate(today.getDate() + 3);
-
-  const customsDate = new Date(today);
-  customsDate.setDate(today.getDate() + 5);
-
-  const finalDeliveryDate = new Date(today);
-  finalDeliveryDate.setDate(today.getDate() + 7 + transitOffset);
-
-  const formatDate = (d: Date) => {
-    return d.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
   return (
     <div className={styles.productPage}>
       <div className="container">
-        {/* Breadcrumb Navigation */}
+        {/* ===================================================================
+            BREADCRUMB NAVIGATION (Clean & Compact)
+        ==================================================================== */}
         <nav className={styles.breadcrumbNav} aria-label="Breadcrumb">
           <Link href="/" className={styles.crumbLink}>Home</Link>
-          <ChevronRight size={13} className={styles.crumbSep} />
+          <span className={styles.crumbSep}>/</span>
           <Link href="/shop" className={styles.crumbLink}>Shop</Link>
-          <ChevronRight size={13} className={styles.crumbSep} />
+          <span className={styles.crumbSep}>/</span>
           <Link href={`/shop?cat=${product.categorySlug}`} className={styles.crumbLink}>
             {product.category}
           </Link>
-          <ChevronRight size={13} className={styles.crumbSep} />
+          <span className={styles.crumbSep}>/</span>
           <span className={styles.activeCrumb}>{product.title}</span>
         </nav>
 
-        {/* Main Product Showcase Grid */}
+        {/* ===================================================================
+            MAIN PRODUCT STAGE: 2 CLEAN COLUMNS (Gallery + Streamlined Buy Box)
+        ==================================================================== */}
         <div className={styles.productGrid}>
-          {/* LEFT: Image Gallery Stage */}
-          <div className={styles.galleryColumn}>
-            <div className={styles.mainStage}>
+          {/* LEFT: Clean Image Gallery with Auto-Slide */}
+          <div
+            className={styles.galleryColumn}
+            onMouseEnter={() => setIsGalleryHovered(true)}
+            onMouseLeave={() => setIsGalleryHovered(false)}
+          >
+            <div
+              className={`${styles.mainStage} ${isDragging ? styles.isDragging : ''}`}
+              onMouseDown={(e) => handleDragStart(e.clientX)}
+              onMouseMove={(e) => handleDragMove(e.clientX)}
+              onMouseUp={handleDragEnd}
+              onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
+              onTouchMove={(e) => handleDragMove(e.touches[0].clientX)}
+              onTouchEnd={handleDragEnd}
+            >
               {product.discountPercent > 0 && (
-                <span className={styles.galleryDiscountBadge}>
+                <span className={styles.discountBadge}>
                   -{product.discountPercent}% OFF
                 </span>
               )}
 
+              {/* Click to Enlarge / Zoom Trigger Button */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsLightboxOpen(true);
+                }}
+                className={styles.zoomTriggerBtn}
+                title="Click to view full image"
+                aria-label="Enlarge product image"
+              >
+                <ZoomIn size={16} />
+              </button>
+
               <img
+                key={activeImageIndex}
                 src={product.images[activeImageIndex] || '/placeholder.svg'}
-                alt={product.title}
+                alt={`${product.title} - Preview ${activeImageIndex + 1}`}
                 className={styles.mainImg}
+                draggable={false}
                 onError={(e) => {
                   const target = e.currentTarget;
                   if (!target.src.endsWith('/placeholder.svg')) {
@@ -334,6 +396,7 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                     className={`${styles.thumbBtn} ${
                       activeImageIndex === idx ? styles.activeThumb : ''
                     }`}
+                    aria-label={`View product image ${idx + 1}`}
                   >
                     <img
                       src={img || '/placeholder.svg'}
@@ -350,132 +413,63 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                 ))}
               </div>
             )}
-
-            {/* Trust Assurances Under Gallery */}
-            <div className={styles.galleryAssurances}>
-              <div className={styles.assuranceItem}>
-                <ShieldCheck size={18} />
-                <div>
-                  <strong>100% Genuine Guaranteed</strong>
-                  <span>Factory-sealed authentic product with warranty</span>
-                </div>
-              </div>
-              <div className={styles.assuranceItem}>
-                <Plane size={18} />
-                <div>
-                  <strong>Fast Qatar Express Delivery</strong>
-                  <span>Tracked delivery across Doha, Lusail & all Qatar</span>
-                </div>
-              </div>
-              <div className={styles.assuranceItem}>
-                <Headset size={18} />
-                <div>
-                  <strong>24/7 Dedicated Support</strong>
-                  <span>Instant WhatsApp & live chat assistance</span>
-                </div>
-              </div>
-              <div className={styles.assuranceItem}>
-                <CreditCard size={18} />
-                <div>
-                  <strong>Safe & Flexible Payments</strong>
-                  <span>Apple Pay, Google Pay & Qatar Cards</span>
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* RIGHT: Product Buy Box & Configuration */}
+          {/* RIGHT: Clean, User-Friendly Product Details & Buy Box */}
           <div className={styles.infoColumn}>
-            <div className={styles.productMetaHeader}>
-              <div className={styles.brandAndCategory}>
-                <span className={styles.brandBadge}>{product.brand}</span>
-                <span className={styles.skuText}>SKU: {product.id.toUpperCase()}</span>
-                {product.badge && (
-                  <span className={styles.spotlightBadge}>{product.badge}</span>
-                )}
-              </div>
+            {/* Product Title */}
+            <h1 className={styles.productHeading}>{product.title}</h1>
 
-              <h1 className={styles.productHeading}>{product.title}</h1>
-
-              {/* Rating & Sold count */}
-              <div className={styles.ratingAndStatsRow}>
-                <div className={styles.starsWrapper}>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      size={14}
-                      fill="#FACC15"
-                      color="#FACC15"
-                    />
-                  ))}
-                  <span className={styles.ratingScoreBold}>{product.rating}</span>
-                </div>
-                <span className={styles.statDivider}>•</span>
-                <span className={styles.reviewCountText}>
-                  {product.reviewCount} Verified Qatar Reviews
-                </span>
-                <span className={styles.statDivider}>•</span>
-                <span className={styles.soldHighlight}>
-                  <Flame size={13} />
-                  <span>{product.soldCount} Sold in Qatar</span>
-                </span>
+            {/* Rating Stars & Reviews Count & Total Sold */}
+            <div className={styles.ratingRow}>
+              <div className={styles.starsWrapper}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    size={14}
+                    fill={star <= Math.round(product.rating) ? '#FFB800' : '#E4E4E7'}
+                    color={star <= Math.round(product.rating) ? '#FFB800' : '#E4E4E7'}
+                  />
+                ))}
               </div>
+              <button
+                type="button"
+                onClick={() => setIsReviewsOpen(true)}
+                className={styles.reviewsCountLink}
+              >
+                {product.reviewCount || 0} reviews
+              </button>
+              {product.soldCount > 0 && (
+                <>
+                  <span className={styles.ratingDivider}>•</span>
+                  <span className={styles.soldCountText}>
+                    <Flame size={13} className={styles.soldFlameIcon} />
+                    <strong>{product.soldCount}</strong> sold
+                  </span>
+                </>
+              )}
             </div>
 
-            {/* Price Box */}
-            <div className={styles.priceContainer}>
-              <div className={styles.priceRowMain}>
-                <div className={styles.currentPriceWrap}>
-                  <span className={styles.qarSymbol}>QAR</span>
-                  <span className={styles.qarNumber}>{unitPrice}</span>
-                </div>
-                {product.originalPriceQAR > unitPrice && (
-                  <div className={styles.strikethroughPrice}>
-                    QAR {product.originalPriceQAR * quantity}
-                  </div>
-                )}
-                <div className={styles.savingsPill}>
-                  Save QAR {(product.originalPriceQAR - unitPrice) * quantity}
-                </div>
-              </div>
-
-              <p className={styles.taxNotice}>
-                Price inclusive of all Qatar import customs duties & handling.
-              </p>
+            {/* Clean Pricing Line */}
+            <div className={styles.priceRow}>
+              {product.originalPriceQAR > unitPrice && (
+                <span className={styles.originalPrice}>
+                  QAR {product.originalPriceQAR}
+                </span>
+              )}
+              <span className={styles.currentPrice}>
+                QAR {unitPrice}
+              </span>
+              {product.discountPercent > 0 && (
+                <span className={styles.priceDiscountPill}>
+                  Save {product.discountPercent}%
+                </span>
+              )}
             </div>
-
-            {/* Volume Discounts Tier Box */}
-            {product.volumeDiscounts && product.volumeDiscounts.length > 0 && (
-              <div className={styles.volumeDiscountsBox}>
-                <div className={styles.volumeHeader}>
-                  <span>Multi-Buy Savings (Buy More, Save More)</span>
-                </div>
-                <div className={styles.volumeTiersList}>
-                  {product.volumeDiscounts.map((tier) => (
-                    <button
-                      key={tier.quantity}
-                      type="button"
-                      onClick={() => setQuantity(tier.quantity)}
-                      className={`${styles.volumeTierCard} ${
-                        quantity === tier.quantity ? styles.selectedTier : ''
-                      }`}
-                    >
-                      <div className={styles.tierQty}>
-                        <strong>Buy {tier.quantity}</strong>
-                      </div>
-                      <div className={styles.tierPrice}>
-                        <span className="price-qar">QAR {tier.pricePerUnitQAR}</span> / each
-                      </div>
-                      <div className={styles.tierSavings}>{tier.savingsText}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Variant Selectors: Colors */}
             {product.variants?.colors && product.variants.colors.length > 0 && (
-              <div className={styles.variantGroup}>
+              <div className={styles.variantSection}>
                 <span className={styles.variantLabel}>
                   Color: <strong>{selectedColor}</strong>
                 </span>
@@ -485,16 +479,16 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                       key={color.name}
                       type="button"
                       onClick={() => setSelectedColor(color.name)}
-                      className={`${styles.colorChip} ${
-                        selectedColor === color.name ? styles.activeChip : ''
+                      className={`${styles.colorDotBtn} ${
+                        selectedColor === color.name ? styles.activeDot : ''
                       }`}
                       title={color.name}
+                      aria-label={`Select color ${color.name}`}
                     >
                       <span
-                        className={styles.colorDot}
+                        className={styles.colorCircle}
                         style={{ backgroundColor: color.hex }}
                       />
-                      <span className={styles.colorText}>{color.name}</span>
                     </button>
                   ))}
                 </div>
@@ -503,7 +497,7 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
 
             {/* Variant Selectors: Edition / Options */}
             {product.variants?.options && product.variants.options.length > 0 && (
-              <div className={styles.variantGroup}>
+              <div className={styles.variantSection}>
                 {product.variants.options.map((opt) => (
                   <div key={opt.name} className={styles.optBlock}>
                     <span className={styles.variantLabel}>
@@ -530,690 +524,433 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
 
             {/* Quantity Stepper */}
             <div className={styles.quantitySection}>
-              <span className={styles.variantLabel}>Quantity:</span>
-              <div className={styles.quantityStepper}>
-                <button
-                  type="button"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className={styles.stepBtn}
-                  aria-label="Decrease quantity"
-                >
-                  <Minus size={14} />
-                </button>
-                <span className={styles.qtyNumber}>{quantity}</span>
-                <button
-                  type="button"
-                  onClick={() => setQuantity(quantity + 1)}
-                  className={styles.stepBtn}
-                  aria-label="Increase quantity"
-                >
-                  <Plus size={14} />
-                </button>
+              <span className={styles.quantityLabel}>Quantity</span>
+              <div className={styles.quantityRow}>
+                <div className={styles.quantityStepper}>
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className={styles.stepBtn}
+                    aria-label="Decrease quantity"
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <span className={styles.qtyNumber}>{quantity}</span>
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(quantity + 1)}
+                    className={styles.stepBtn}
+                    aria-label="Increase quantity"
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
               </div>
-
-              <span className={styles.stockStatus}>
-                <CheckCircle2 size={14} color="#16a34a" />
-                <span>In Stock — Ready to Dispatch to Qatar</span>
-              </span>
             </div>
 
-            {/* Primary Action Buttons */}
-            <div className={styles.actionButtonsRow}>
-              <button
-                type="button"
-                onClick={handleAddToCart}
-                className={styles.addToCartBtn}
-              >
-                <ShoppingCart size={18} />
-                <span>Add to Cart • QAR {totalPriceQAR}</span>
-              </button>
-
+            {/* Primary Action Buttons (Side-by-Side Standard Size) */}
+            <div className={styles.actionsContainer}>
               <button
                 type="button"
                 onClick={handleBuyNow}
                 className={styles.buyNowBtn}
               >
-                <Zap size={18} />
-                <span>Buy Now with Cash / Card</span>
+                <ShoppingCart size={17} />
+                <span>Buy Now</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                className={styles.addToCartBtn}
+              >
+                <ShoppingBag size={17} />
+                <span>Add to Cart</span>
               </button>
             </div>
 
-            {/* Aux Buttons: Wishlist & Share */}
-            <div className={styles.auxButtonsRow}>
+            {/* Checkout Micro-Copy */}
+            <p className={styles.ctaSubtext}>
+              100% Secure Online Payment (Apple Pay, Google Pay & Cards). Fast express delivery across Qatar.
+            </p>
+
+            {/* Wishlist & Share Aux Links */}
+            <div className={styles.auxLinksRow}>
               <button
                 type="button"
                 onClick={() => toggleWishlist(product)}
-                className={`${styles.auxBtn} ${isFavorited ? styles.activeWish : ''}`}
+                className={`${styles.auxLinkBtn} ${isFavorited ? styles.activeWish : ''}`}
               >
-                <Heart size={16} fill={isFavorited ? '#ffb800' : 'none'} color={isFavorited ? '#ffb800' : 'currentColor'} />
+                <Heart
+                  size={15}
+                  fill={isFavorited ? '#E11D48' : 'none'}
+                  color={isFavorited ? '#E11D48' : 'currentColor'}
+                />
                 <span>{isFavorited ? 'Saved in Wishlist' : 'Add to Wishlist'}</span>
               </button>
-
+              <span className={styles.auxDivider}>•</span>
               <button
                 type="button"
                 onClick={handleShare}
-                className={styles.auxBtn}
+                className={styles.auxLinkBtn}
               >
-                <Share2 size={16} />
+                <Share2 size={15} />
                 <span>Share</span>
               </button>
             </div>
 
-            {/* Guaranteed Safe Checkout & Payment Method Cards */}
-            <div className={styles.paymentTrustCard}>
-              <div className={styles.paymentTrustHeader}>
-                <div className={styles.paymentTrustTitleWrap}>
-                  <ShieldCheck size={16} />
-                  <span>Guaranteed Safe & Secure Checkout</span>
+            {/* 4-Item Horizontal Trust Badges Grid (Direct from Reference) */}
+            <div className={styles.trustBadgesGrid}>
+              <div className={styles.trustBadgeItem}>
+                <div className={styles.trustIconWrap}>
+                  <CreditCard size={18} />
                 </div>
-                <div className={styles.paymentSecurityBadge}>
-                  <Lock size={11} />
-                  <span>256-Bit SSL</span>
+                <div className={styles.trustBadgeText}>
+                  <strong>Online Payment</strong>
+                  <span>Cards & Apple Pay</span>
                 </div>
               </div>
 
-              {/* Payment Card Badges Row */}
-              <div className={styles.paymentCardsGrid} aria-label="Accepted Payment Methods in Qatar">
-                <span className={styles.payCardBadge} title="Apple Pay — Touch ID / Face ID Instant Pay">
-                  <ApplePayIcon width={44} height={28} />
-                </span>
-                <span className={styles.payCardBadge} title="Visa Debit & Credit Cards">
-                  <VisaIcon width={44} height={28} />
-                </span>
-                <span className={styles.payCardBadge} title="Mastercard">
-                  <MastercardIcon width={44} height={28} />
-                </span>
-                <span className={styles.payCardBadge} title="American Express">
-                  <AmexIcon width={44} height={28} />
-                </span>
-                <span className={styles.payCardBadge} title="Google Pay">
-                  <GooglePayIcon width={44} height={28} />
-                </span>
-                <span className={styles.payCardBadge} title="Official Qatari Riyal (ر.ق)">
-                  <QarCurrencyIcon width={44} height={28} />
-                </span>
+              <div className={styles.trustBadgeItem}>
+                <div className={styles.trustIconWrap}>
+                  <Plane size={18} />
+                </div>
+                <div className={styles.trustBadgeText}>
+                  <strong>Free Delivery</strong>
+                  <span>over QAR 150</span>
+                </div>
               </div>
 
-              {/* Payment Trust Bullet Highlights */}
-              <div className={styles.paymentTrustHighlights}>
-                <div className={styles.trustHighlightItem}>
-                  <CheckCircle2 size={12} />
-                  <span>100% Buyer Protection Guaranteed</span>
+              <div className={styles.trustBadgeItem}>
+                <div className={styles.trustIconWrap}>
+                  <ShieldCheck size={18} />
                 </div>
-                <div className={styles.trustHighlightItem}>
-                  <CheckCircle2 size={12} />
-                  <span>Qatar Debit & Credit Cards</span>
+                <div className={styles.trustBadgeText}>
+                  <strong>100% original</strong>
+                  <span>QC checked</span>
                 </div>
-                <div className={styles.trustHighlightItem}>
-                  <CheckCircle2 size={12} />
-                  <span>Zero Processing Surcharge</span>
+              </div>
+
+              <div className={styles.trustBadgeItem}>
+                <div className={styles.trustIconWrap}>
+                  <RotateCcw size={18} />
+                </div>
+                <div className={styles.trustBadgeText}>
+                  <strong>14-day easy</strong>
+                  <span>return policy</span>
                 </div>
               </div>
             </div>
 
-            {/* INTERACTIVE QATAR DELIVERY TIMELINE CARD */}
-            <div className={styles.deliveryTimelineCard}>
-              <div className={styles.timelineCardHeader}>
-                <div className={styles.timelineHeaderTitle}>
-                  <Plane size={16} className={styles.yellowPlane} />
-                  <span>Estimated Doorstep Delivery in Qatar</span>
-                </div>
-
-                {/* Municipality Selector */}
-                <div className={styles.municipalitySelectWrap}>
-                  <MapPin size={13} className={styles.pinIcon} />
-                  <select
-                    value={selectedMunicipality}
-                    onChange={(e) => setSelectedMunicipality(e.target.value)}
-                    className={styles.municipalitySelect}
-                  >
-                    {QATAR_MUNICIPALITIES.map((mun) => (
-                      <option key={mun.code} value={mun.name}>
-                        {mun.name}
-                      </option>
+            {/* Product Summary & Description with "Read more" toggle */}
+            <div className={styles.productSummaryBox}>
+              <h3 className={styles.summaryTitle}>
+                {product.title.split('–')[0].trim()}
+              </h3>
+              <div className={`${styles.summaryText} ${isDescriptionExpanded ? styles.expanded : ''}`}>
+                <p>{product.shortDescription || product.fullDescription}</p>
+                {isDescriptionExpanded && product.fullDescription && product.fullDescription !== product.shortDescription && (
+                  <div className={styles.fullDescParas}>
+                    {product.fullDescription.split('\n\n').map((para, i) => (
+                      <p key={i}>{para}</p>
                     ))}
-                  </select>
-                </div>
+                  </div>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                className={styles.readMoreBtn}
+              >
+                {isDescriptionExpanded ? 'Read less' : 'Read more'}
+              </button>
+            </div>
+
+            {/* Clean Accordions (Shipping, Warranty, Specs & Reviews) */}
+            <div className={styles.accordionsList}>
+              {/* Accordion 1: Shipping & Delivery */}
+              <div className={styles.accordionRow}>
+                <button
+                  type="button"
+                  className={styles.accordionHeader}
+                  onClick={() => setIsShippingOpen(!isShippingOpen)}
+                  aria-expanded={isShippingOpen}
+                >
+                  <span className={styles.accordionHeaderLeft}>
+                    <Plane size={16} />
+                    <span>Shipping & delivery</span>
+                  </span>
+                  <ChevronDown
+                    size={16}
+                    className={`${styles.chevron} ${isShippingOpen ? styles.rotate : ''}`}
+                  />
+                </button>
+                {isShippingOpen && (
+                  <div className={styles.accordionBody}>
+                    <p>
+                      <strong>Direct Global Air Express to Qatar:</strong> Orders are dispatched from certified manufacturers directly into Hamad International Airport (DOH).
+                    </p>
+                    <ul className={styles.accordionList}>
+                      <li>
+                        Estimated delivery window: <strong>6–10 business days</strong> directly to your doorstep in Doha, Lusail, Al Rayyan, Al Wakrah, Al Khor, and all Qatar municipalities.
+                      </li>
+                      <li>
+                        <strong>Free shipping</strong> applies automatically on all orders QAR 150 and above.
+                      </li>
+                      <li>
+                        Real-time tracking notifications sent via WhatsApp & SMS from air departure to your door.
+                      </li>
+                    </ul>
+                  </div>
+                )}
               </div>
 
-              <div className={styles.timelineCardBody}>
-                <div className={styles.timelineWindowSummary}>
-                  <span>Target Window: </span>
-                  <strong suppressHydrationWarning>{formatDate(today)} — {formatDate(finalDeliveryDate)}</strong>
-                  <span className={styles.windowPill}>6–8 Business Days</span>
-                </div>
+              {/* Accordion 2: Returns & Warranty */}
+              <div className={styles.accordionRow}>
+                <button
+                  type="button"
+                  className={styles.accordionHeader}
+                  onClick={() => setIsWarrantyOpen(!isWarrantyOpen)}
+                  aria-expanded={isWarrantyOpen}
+                >
+                  <span className={styles.accordionHeaderLeft}>
+                    <RotateCcw size={16} />
+                    <span>Returns & warranty</span>
+                  </span>
+                  <ChevronDown
+                    size={16}
+                    className={`${styles.chevron} ${isWarrantyOpen ? styles.rotate : ''}`}
+                  />
+                </button>
+                {isWarrantyOpen && (
+                  <div className={styles.accordionBody}>
+                    <p>
+                      <strong>100% Authentic Guarantee:</strong> Every product delivered by Qatify is brand new, factory sealed, and quality-inspected.
+                    </p>
+                    <ul className={styles.accordionList}>
+                      <li>
+                        <strong>14-Day Easy Return:</strong> If your product arrives damaged or defective, our Doha support team arranges instant replacement or refund.
+                      </li>
+                      <li>
+                        <strong>1-Year Manufacturer Warranty:</strong> Protection against manufacturing defects and internal hardware malfunctions.
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
 
-                {/* 5-Step Visual Route */}
-                <div className={styles.timelineStepsFlow}>
-                  <div className={styles.tStep}>
-                    <div className={`${styles.tNode} ${styles.completed}`} />
-                    <div className={styles.tContent}>
-                      <span className={styles.tTitle}>Order Placed Today</span>
-                      <span className={styles.tDate} suppressHydrationWarning>{formatDate(today)}</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.tStep}>
-                    <div className={`${styles.tNode} ${styles.completed}`} />
-                    <div className={styles.tContent}>
-                      <span className={styles.tTitle}>Quality Check & Pack</span>
-                      <span className={styles.tDate} suppressHydrationWarning>{formatDate(dispatchDate)}</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.tStep}>
-                    <div className={`${styles.tNode} ${styles.current}`} />
-                    <div className={styles.tContent}>
-                      <span className={styles.tTitle}>Express Air Flight</span>
-                      <span className={styles.tDate} suppressHydrationWarning>{formatDate(flightDate)}</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.tStep}>
-                    <div className={styles.tNode} />
-                    <div className={styles.tContent}>
-                      <span className={styles.tTitle}>Hamad Airport Customs</span>
-                      <span className={styles.tDate} suppressHydrationWarning>{formatDate(customsDate)}</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.tStep}>
-                    <div className={styles.tNode} />
-                    <div className={styles.tContent}>
-                      <span className={styles.tTitle}>Doorstep in {selectedMunicipality.split(' ')[0]}</span>
-                      <span className={styles.tDate} suppressHydrationWarning>{formatDate(finalDeliveryDate)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className={styles.timelineGuaranteesRow}>
-                  <div className={styles.tGuarantee}>
-                    <CheckCircle2 size={13} />
-                    <span>Insured doorstep delivery across Qatar</span>
-                  </div>
-                  <div className={styles.tGuarantee}>
-                    <CheckCircle2 size={13} />
-                    <span>24/7 WhatsApp & live customer support</span>
-                  </div>
-                </div>
-
-                {/* Live Chat Support Strip */}
-                <div className={styles.productChatHelpStrip}>
-                  <div className={styles.helpTextCol}>
-                    <span className={styles.helpHeading}>Have questions about {product.title}?</span>
-                    <span className={styles.helpSub}>
-                      Chat live with our Doha electronics specialist for compatibility & bulk inquiries.
-                    </span>
-                  </div>
+              {/* Accordion 3: Technical Specifications & Package Contents */}
+              {product.specifications && Object.keys(product.specifications).length > 0 && (
+                <div className={styles.accordionRow}>
                   <button
                     type="button"
-                    onClick={() => openChat(`I have a question about ${product.title} (QAR ${unitPrice})`)}
-                    className={styles.productChatBtn}
+                    className={styles.accordionHeader}
+                    onClick={() => setIsSpecsOpen(!isSpecsOpen)}
+                    aria-expanded={isSpecsOpen}
                   >
-                    <MessageCircle size={15} />
-                    <span>Chat With Us</span>
+                    <span className={styles.accordionHeaderLeft}>
+                      <Package size={16} />
+                      <span>Specifications & package contents</span>
+                    </span>
+                    <ChevronDown
+                      size={16}
+                      className={`${styles.chevron} ${isSpecsOpen ? styles.rotate : ''}`}
+                    />
                   </button>
+                  {isSpecsOpen && (
+                    <div className={styles.accordionBody}>
+                      <table className={styles.specsCompactTable}>
+                        <tbody>
+                          {Object.entries(product.specifications).map(([key, val]) => (
+                            <tr key={key}>
+                              <td className={styles.specKey}>{key}</td>
+                              <td className={styles.specVal}>{String(val)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {product.packageContents && product.packageContents.length > 0 && (
+                        <div className={styles.packageContentsWrap}>
+                          <strong>In the Box:</strong>
+                          <ul className={styles.packageList}>
+                            {product.packageContents.map((item, idx) => (
+                              <li key={idx}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
+              )}
+
+              {/* Accordion 4: Verified Customer Reviews */}
+              <div className={styles.accordionRow}>
+                <button
+                  type="button"
+                  className={styles.accordionHeader}
+                  onClick={() => setIsReviewsOpen(!isReviewsOpen)}
+                  aria-expanded={isReviewsOpen}
+                >
+                  <span className={styles.accordionHeaderLeft}>
+                    <Star size={16} />
+                    <span>Verified customer reviews ({product.reviewCount || 0})</span>
+                  </span>
+                  <ChevronDown
+                    size={16}
+                    className={`${styles.chevron} ${isReviewsOpen ? styles.rotate : ''}`}
+                  />
+                </button>
+                {isReviewsOpen && (
+                  <div className={styles.accordionBody}>
+                    <div className={styles.reviewsSummaryHeader}>
+                      <div className={styles.ratingNumberBox}>
+                        <span className={styles.bigScore}>{product.rating}</span>
+                        <div className={styles.starsWrapper}>
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              size={13}
+                              fill={s <= Math.round(product.rating) ? '#FFB800' : '#E4E4E7'}
+                              color={s <= Math.round(product.rating) ? '#FFB800' : '#E4E4E7'}
+                            />
+                          ))}
+                        </div>
+                        <span className={styles.revCountText}>
+                          Based on {product.reviewCount} Qatar orders
+                        </span>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setShowReviewForm(!showReviewForm)}
+                        className={styles.writeReviewToggleBtn}
+                      >
+                        {showReviewForm ? 'Cancel' : 'Write a Review'}
+                      </button>
+                    </div>
+
+                    {/* Review Submission Form */}
+                    {showReviewForm && (
+                      <form onSubmit={handleReviewSubmit} className={styles.reviewForm}>
+                        <h4>Leave Your Review</h4>
+                        <div className={styles.formRow}>
+                          <label>
+                            Your Name:
+                            <input
+                              type="text"
+                              value={reviewName}
+                              onChange={(e) => setReviewName(e.target.value)}
+                              placeholder="e.g. Tariq Al-Kuwari"
+                              required
+                            />
+                          </label>
+                          <label>
+                            Location:
+                            <input
+                              type="text"
+                              value={reviewLocation}
+                              onChange={(e) => setReviewLocation(e.target.value)}
+                              placeholder="Doha, Qatar"
+                            />
+                          </label>
+                        </div>
+                        <div className={styles.formRatingRow}>
+                          <span>Rating:</span>
+                          <div className={styles.starPicker}>
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <button
+                                key={s}
+                                type="button"
+                                onClick={() => setReviewRating(s)}
+                                className={styles.starPickerBtn}
+                              >
+                                <Star
+                                  size={18}
+                                  fill={s <= reviewRating ? '#FFB800' : '#E4E4E7'}
+                                  color={s <= reviewRating ? '#FFB800' : '#E4E4E7'}
+                                />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <label className={styles.commentLabel}>
+                          Your Feedback:
+                          <textarea
+                            value={reviewComment}
+                            onChange={(e) => setReviewComment(e.target.value)}
+                            rows={3}
+                            placeholder="Share your experience with product quality, speed of delivery, etc."
+                            required
+                          />
+                        </label>
+                        <button
+                          type="submit"
+                          disabled={isSubmittingReview}
+                          className={styles.submitReviewBtn}
+                        >
+                          {isSubmittingReview ? 'Submitting...' : 'Submit Review'}
+                        </button>
+                      </form>
+                    )}
+
+                    {/* Reviews List */}
+                    <div className={styles.reviewsList}>
+                      {liveReviews && liveReviews.length > 0 ? (
+                        liveReviews.map((rev: any) => (
+                          <div key={rev._id} className={styles.singleReview}>
+                            <div className={styles.singleRevMeta}>
+                              <strong>{rev.authorName}</strong>
+                              <span className={styles.singleRevLocation}>({rev.location || 'Qatar'})</span>
+                              <span className={styles.verifiedTag}>✓ Verified Buyer</span>
+                            </div>
+                            <div className={styles.singleRevStars}>
+                              {[1, 2, 3, 4, 5].map((s) => (
+                                <Star
+                                  key={s}
+                                  size={11}
+                                  fill={s <= rev.rating ? '#FFB800' : '#E4E4E7'}
+                                  color={s <= rev.rating ? '#FFB800' : '#E4E4E7'}
+                                />
+                              ))}
+                            </div>
+                            <p className={styles.singleRevComment}>{rev.comment}</p>
+                          </div>
+                        ))
+                      ) : (
+                        <div className={styles.singleReview}>
+                          <div className={styles.singleRevMeta}>
+                            <strong>Mohammed S.</strong>
+                            <span className={styles.singleRevLocation}>(Doha)</span>
+                            <span className={styles.verifiedTag}>✓ Verified Buyer</span>
+                          </div>
+                          <div className={styles.singleRevStars}>
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <Star key={s} size={11} fill="#FFB800" color="#FFB800" />
+                            ))}
+                          </div>
+                          <p className={styles.singleRevComment}>
+                            Excellent build quality and fast direct air delivery to Doha. Exactly as described!
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
 
-        {/* TABBED TECHNICAL INFORMATION SECTION */}
-        <section className={styles.tabbedInfoSection}>
-          <div className={styles.tabHeaders}>
-            <button
-              type="button"
-              onClick={() => setActiveTab('specs')}
-              className={`${styles.tabBtn} ${activeTab === 'specs' ? styles.activeTab : ''}`}
-            >
-              Technical Specifications
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('contents')}
-              className={`${styles.tabBtn} ${activeTab === 'contents' ? styles.activeTab : ''}`}
-            >
-              Package Contents ({product.packageContents?.length || 0})
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('shipping')}
-              className={`${styles.tabBtn} ${activeTab === 'shipping' ? styles.activeTab : ''}`}
-            >
-              Shipping & Support
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('reviews')}
-              className={`${styles.tabBtn} ${activeTab === 'reviews' ? styles.activeTab : ''}`}
-            >
-              Verified Reviews ({product.reviewCount || 0})
-            </button>
-          </div>
-
-          <div className={styles.tabContentCard}>
-            {/* Tab 1: Technical Specifications & Product Description Accordions */}
-            {activeTab === 'specs' && (
-              <div className={styles.specsTab}>
-                {/* 1. Collapsible Product Description Section (+ to open, - to close) */}
-                <div className={styles.specsAccordionItem}>
-                  <button
-                    type="button"
-                    className={styles.specsAccordionHeader}
-                    onClick={() => setIsDescriptionOpen((prev) => !prev)}
-                    aria-expanded={isDescriptionOpen}
-                  >
-                    <div className={styles.specsAccordionTitleWrap}>
-                      <h3 className={styles.specsAccordionTitle}>Product Description</h3>
-                      {!isDescriptionOpen && (
-                        <span className={styles.specsAccordionHint}>
-                          Click to expand description & key details
-                        </span>
-                      )}
-                    </div>
-                    <span
-                      className={styles.specsAccordionToggleBtn}
-                      aria-label={isDescriptionOpen ? 'Close product description' : 'Open product description'}
-                    >
-                      {isDescriptionOpen ? <Minus size={18} /> : <Plus size={18} />}
-                    </span>
-                  </button>
-
-                  {isDescriptionOpen && (
-                    <div className={styles.specsAccordionBody}>
-                      <div className={styles.productDescriptionContent}>
-                        {product.shortDescription && product.shortDescription !== product.fullDescription && (
-                          <div className={styles.descHighlightBox}>
-                            <p className={styles.descHighlightText}>{product.shortDescription}</p>
-                          </div>
-                        )}
-
-                        <div className={styles.descParagraphs}>
-                          {(product.fullDescription || (product as any).description || product.shortDescription || '')
-                            .split('\n\n')
-                            .map((para: string, i: number) => (
-                              <p key={i} className={styles.descParagraph}>
-                                {para}
-                              </p>
-                            ))}
-                        </div>
-
-                        {product.tags && product.tags.length > 0 && (
-                          <div className={styles.descTagsRow}>
-                            <span className={styles.tagsLabel}>Highlights:</span>
-                            <div className={styles.tagPills}>
-                              {product.tags.map((tag: string, idx: number) => (
-                                <span key={idx} className={styles.descTagPill}>
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* 2. Collapsible Hardware & Engineering Specifications Section */}
-                <div className={styles.specsAccordionItem}>
-                  <button
-                    type="button"
-                    className={styles.specsAccordionHeader}
-                    onClick={() => setIsSpecsOpen((prev) => !prev)}
-                    aria-expanded={isSpecsOpen}
-                  >
-                    <div className={styles.specsAccordionTitleWrap}>
-                      <h3 className={styles.specsAccordionTitle}>Hardware & Engineering Specifications</h3>
-                      {!isSpecsOpen && (
-                        <span className={styles.specsAccordionHint}>
-                          Click to view technical specifications table
-                        </span>
-                      )}
-                    </div>
-                    <span
-                      className={styles.specsAccordionToggleBtn}
-                      aria-label={isSpecsOpen ? 'Close hardware specifications' : 'Open hardware specifications'}
-                    >
-                      {isSpecsOpen ? <Minus size={18} /> : <Plus size={18} />}
-                    </span>
-                  </button>
-
-                  {isSpecsOpen && (
-                    <div className={styles.specsAccordionBody}>
-                      {product.specifications && Object.keys(product.specifications).length > 0 ? (
-                        <table className={styles.specsTable}>
-                          <tbody>
-                            {Object.entries(product.specifications).map(([key, value], idx) => (
-                              <tr
-                                key={key}
-                                className={idx % 2 === 0 ? styles.evenRow : styles.oddRow}
-                              >
-                                <td className={styles.specKey}>{key}</td>
-                                <td className={styles.specVal}>{value}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      ) : (
-                        <p className={styles.noSpecsText}>
-                          Detailed engineering specifications will be provided with the manufacturer box shipment.
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Tab 2: Package Contents */}
-            {activeTab === 'contents' && (
-              <div className={styles.contentsTab}>
-                <h3 className={styles.tabHeading}>What’s Inside the Retail Box</h3>
-                <ul className={styles.contentsList}>
-                  {(product.packageContents || []).map((item, idx) => (
-                    <li key={idx} className={styles.contentItem}>
-                      <CheckCircle2 size={16} className={styles.checkIcon} />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Tab 3: Shipping & Customer Care */}
-            {activeTab === 'shipping' && (
-              <div className={styles.shippingTab}>
-                <h3 className={styles.tabHeading}>Qatify Qatar Delivery & Support Policy</h3>
-                <div className={styles.policyGrid}>
-                  <div className={styles.policyCard}>
-                    <Plane size={22} className={styles.policyIcon} />
-                    <h4>Fast Doorstep Express Delivery</h4>
-                    <p>
-                      Orders are processed promptly and dispatched with tracked express delivery directly to your door in Doha, Lusail, Al Rayyan, Al Wakrah, and Al Khor.
-                    </p>
-                  </div>
-
-                  <div className={styles.policyCard}>
-                    <ShieldCheck size={22} className={styles.policyIcon} />
-                    <h4>100% Genuine Guaranteed</h4>
-                    <p>
-                      Prior to dispatch, each unit is checked for cosmetic integrity, battery charging safety, and accessory completeness. Tamper-evident seals applied.
-                    </p>
-                  </div>
-
-                  <div className={styles.policyCard}>
-                    <Headset size={22} className={styles.policyIcon} />
-                    <h4>Dedicated Qatar Support</h4>
-                    <p>
-                      Have any questions or need assistance? Contact our Doha support team via WhatsApp or live chat for prompt, dedicated customer service.
-                    </p>
-                  </div>
-
-                  <div className={styles.policyCard}>
-                    <CreditCard size={22} className={styles.policyIcon} />
-                    <h4>Secure Qatar Payments</h4>
-                    <p>
-                      Pay securely with Apple Pay, Google Pay, and local Qatari debit/credit cards with 256-bit bank-grade encryption.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Tab 4: Verified Reviews */}
-            {activeTab === 'reviews' && (
-              <div className={styles.reviewsTab}>
-                <div className={styles.reviewsSummaryRow}>
-                  <div className={styles.reviewScoreCard}>
-                    <span className={styles.hugeScore}>{product.rating}</span>
-                    <div className={styles.scoreStars}>
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <Star key={s} size={15} fill="#FACC15" color="#FACC15" />
-                      ))}
-                    </div>
-                    <span className={styles.totalRevLabel}>
-                      Based on {product.reviewCount} Qatar Shoppers
-                    </span>
-                  </div>
-
-                  <div className={styles.ratingBars}>
-                    <div className={styles.barRow}>
-                      <span>5 Star</span>
-                      <div className={styles.barTrack}>
-                        <div className={styles.barFill} style={{ width: '85%' }} />
-                      </div>
-                      <span>85%</span>
-                    </div>
-                    <div className={styles.barRow}>
-                      <span>4 Star</span>
-                      <div className={styles.barTrack}>
-                        <div className={styles.barFill} style={{ width: '12%' }} />
-                      </div>
-                      <span>12%</span>
-                    </div>
-                    <div className={styles.barRow}>
-                      <span>3 Star</span>
-                      <div className={styles.barTrack}>
-                        <div className={styles.barFill} style={{ width: '3%' }} />
-                      </div>
-                      <span>3%</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Write Review Action Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', paddingBottom: '12px', borderBottom: '1px solid #e4e4e7' }}>
-                  <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#0a0a0c' }}>
-                    Customer Reviews ({liveReviews && liveReviews.length > 0 ? liveReviews.length : product.reviewCount})
-                  </h4>
-                  <button
-                    type="button"
-                    onClick={() => setShowReviewForm(!showReviewForm)}
-                    style={{
-                      padding: '8px 16px',
-                      backgroundColor: showReviewForm ? '#f4f4f5' : '#0a0a0c',
-                      color: showReviewForm ? '#0a0a0c' : '#ffffff',
-                      border: '1px solid #e4e4e7',
-                      borderRadius: '6px',
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {showReviewForm ? 'Cancel' : 'Write a Review'}
-                  </button>
-                </div>
-
-                {/* Write Review Form */}
-                {showReviewForm && (
-                  <form onSubmit={handleReviewSubmit} style={{ backgroundColor: '#f8fafc', padding: '16px', borderRadius: '8px', marginBottom: '20px', border: '1px solid #e2e8f0' }}>
-                    <div style={{ marginBottom: '12px' }}>
-                      <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#52525b', marginBottom: '4px' }}>
-                        Your Rating
-                      </label>
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <button
-                            key={star}
-                            type="button"
-                            onClick={() => setReviewRating(star)}
-                            style={{
-                              background: 'transparent',
-                              border: 'none',
-                              cursor: 'pointer',
-                              padding: '2px',
-                            }}
-                          >
-                            <Star
-                              size={20}
-                              fill={star <= reviewRating ? '#FACC15' : 'transparent'}
-                              color={star <= reviewRating ? '#FACC15' : '#a1a1aa'}
-                            />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                      <div>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#52525b', marginBottom: '4px' }}>
-                          Your Name
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={reviewName}
-                          onChange={(e) => setReviewName(e.target.value)}
-                          placeholder="Your name"
-                          style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            borderRadius: '6px',
-                            border: '1px solid #cbd5e1',
-                            fontSize: '13px',
-                          }}
-                        />
-                      </div>
-                      <div>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#52525b', marginBottom: '4px' }}>
-                          Location in Qatar
-                        </label>
-                        <input
-                          type="text"
-                          value={reviewLocation}
-                          onChange={(e) => setReviewLocation(e.target.value)}
-                          placeholder="Your city or area"
-                          style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            borderRadius: '6px',
-                            border: '1px solid #cbd5e1',
-                            fontSize: '13px',
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div style={{ marginBottom: '14px' }}>
-                      <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#52525b', marginBottom: '4px' }}>
-                        Review Comment
-                      </label>
-                      <textarea
-                        required
-                        rows={3}
-                        value={reviewComment}
-                        onChange={(e) => setReviewComment(e.target.value)}
-                        placeholder="Share your experience regarding delivery time, product quality, or features..."
-                        style={{
-                          width: '100%',
-                          padding: '8px 12px',
-                          borderRadius: '6px',
-                          border: '1px solid #cbd5e1',
-                          fontSize: '13px',
-                          fontFamily: 'inherit',
-                          resize: 'vertical',
-                        }}
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isSubmittingReview}
-                      style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#ffb800',
-                        color: '#111111',
-                        border: 'none',
-                        borderRadius: '6px',
-                        fontSize: '13px',
-                        fontWeight: 700,
-                        cursor: isSubmittingReview ? 'not-allowed' : 'pointer',
-                        opacity: isSubmittingReview ? 0.7 : 1,
-                      }}
-                    >
-                      {isSubmittingReview ? 'Submitting...' : 'Post Verified Review'}
-                    </button>
-                  </form>
-                )}
-
-                {/* Verified Reviews List */}
-                <div className={styles.sampleReviewsList}>
-                  {liveReviews && liveReviews.length > 0 ? (
-                    liveReviews.map((rev) => (
-                      <div key={rev._id} className={styles.reviewItem}>
-                        <div className={styles.revHeader}>
-                          <span className={styles.revAuthor}>
-                            {rev.authorName} ({rev.location})
-                          </span>
-                          {rev.verifiedBuyer && (
-                            <span className={styles.revVerified}>✓ Verified Qatar Buyer</span>
-                          )}
-                          <span className={styles.revDate}>{rev.date}</span>
-                        </div>
-                        <div className={styles.revRating}>
-                          {[1, 2, 3, 4, 5].map((s) => (
-                            <Star
-                              key={s}
-                              size={12}
-                              fill={s <= rev.rating ? '#FACC15' : 'transparent'}
-                              color={s <= rev.rating ? '#FACC15' : '#cbd5e1'}
-                            />
-                          ))}
-                        </div>
-                        <p className={styles.revBody}>{rev.comment}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <>
-                      <div className={styles.reviewItem}>
-                        <div className={styles.revHeader}>
-                          <span className={styles.revAuthor}>Nasser K. (Lusail)</span>
-                          <span className={styles.revVerified}>✓ Verified Qatar Buyer</span>
-                          <span className={styles.revDate}>3 days ago</span>
-                        </div>
-                        <div className={styles.revRating}>
-                          {[1, 2, 3, 4, 5].map((s) => (
-                            <Star key={s} size={12} fill="#FACC15" color="#FACC15" />
-                          ))}
-                        </div>
-                        <p className={styles.revBody}>
-                          Arrived in 6 days to Fox Hills, Lusail. Packaging was factory sealed and in mint condition. The sound quality and noise cancellation are incredible for Doha commuting. Genuine product, very happy!
-                        </p>
-                      </div>
-
-                      <div className={styles.reviewItem}>
-                        <div className={styles.revHeader}>
-                          <span className={styles.revAuthor}>Fatima A. (Al Rayyan)</span>
-                          <span className={styles.revVerified}>✓ Verified Qatar Buyer</span>
-                          <span className={styles.revDate}>1 week ago</span>
-                        </div>
-                        <div className={styles.revRating}>
-                          {[1, 2, 3, 4, 5].map((s) => (
-                            <Star key={s} size={12} fill="#FACC15" color="#FACC15" />
-                          ))}
-                        </div>
-                        <p className={styles.revBody}>
-                          Ordered 2 units with the multi-buy discount. Best price in Qatar compared to local mall stores in Doha. Fast delivery and excellent WhatsApp customer support!
-                        </p>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* RELATED PRODUCTS SHELF */}
+        {/* ===================================================================
+            RELATED PRODUCTS SHELF
+        ==================================================================== */}
         {relatedProducts.length > 0 && (
           <section className={styles.relatedSection}>
             <div className={styles.relatedHeader}>
               <h2 className={styles.relatedTitle}>Customers Also Ordered in Qatar</h2>
               <Link href={`/shop?cat=${product.categorySlug}`} className={styles.viewCategoryLink}>
-                <span className={styles.desktopMoreText}>More in {product.category} →</span>
-                <span className={styles.mobileMoreText}>More →</span>
+                <span>More in {product.category} →</span>
               </Link>
             </div>
             <div className={styles.relatedGrid}>
@@ -1232,7 +969,6 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
           aria-hidden={!showStickyBar}
         >
           <div className={styles.stickyInner}>
-            {/* Product Thumbnail & Quick Info */}
             <div className={styles.stickyProductInfo}>
               <img
                 src={product.images[activeImageIndex] || product.images[0] || '/placeholder.svg'}
@@ -1254,23 +990,16 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                   {selectedColor && (
                     <span className={styles.stickyVariant}>• {selectedColor}</span>
                   )}
-                  {selectedOption && (
-                    <span className={styles.stickyVariant}>• {selectedOption}</span>
-                  )}
                   <span className={styles.stickyDeliveryBadge}>
-                    ⚡ Express Qatar Delivery
+                    ✈️ 6–10 Days to Qatar
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Price & Quantity & CTAs */}
             <div className={styles.stickyRightCol}>
               <div className={styles.stickyPriceBlock}>
-                <div className={styles.stickyCurrentPrice}>
-                  <span className={styles.stickyQar}>QAR</span>
-                  <span className={styles.stickyAmount}>{totalPriceQAR}</span>
-                </div>
+                <span className={styles.stickyAmount}>QAR {totalPriceQAR}</span>
                 {product.originalPriceQAR > unitPrice && (
                   <span className={styles.stickyOriginalPrice}>
                     QAR {product.originalPriceQAR * quantity}
@@ -1278,7 +1007,6 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                 )}
               </div>
 
-              {/* Quantity Stepper (hidden on smaller mobile) */}
               <div className={styles.stickyStepper}>
                 <button
                   type="button"
@@ -1299,33 +1027,105 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                 </button>
               </div>
 
-              {/* Action Buttons */}
               <div className={styles.stickyBtnGroup}>
+                <button
+                  type="button"
+                  onClick={handleBuyNow}
+                  className={styles.stickyBuyBtn}
+                  title="Buy Now (Secure Online Payment)"
+                >
+                  <ShoppingCart size={16} />
+                  <span>Buy Now</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={handleAddToCart}
                   className={styles.stickyAddBtn}
                   title="Add to Cart"
                 >
-                  <ShoppingCart size={16} />
+                  <ShoppingBag size={16} />
                   <span>Add to Cart</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleBuyNow}
-                  className={styles.stickyBuyBtn}
-                  title="Buy Now with Cash or Card"
-                >
-                  <Zap size={16} />
-                  <span>Buy Now</span>
                 </button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* ===================================================================
+          FULL-SCREEN IMAGE LIGHTBOX MODAL (Click to Enlarge)
+      ==================================================================== */}
+      {isLightboxOpen && (
+        <div
+          className={styles.lightboxOverlay}
+          onClick={() => setIsLightboxOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Enlarged product image view"
+        >
+          <div
+            className={styles.lightboxContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className={styles.lightboxCloseBtn}
+              onClick={() => setIsLightboxOpen(false)}
+              aria-label="Close zoomed view"
+            >
+              <X size={22} />
+            </button>
+
+            <div className={styles.lightboxImageStage}>
+              <img
+                src={product.images[activeImageIndex] || '/placeholder.svg'}
+                alt={`${product.title} - Zoomed`}
+                className={styles.lightboxImg}
+              />
+
+              {product.images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    className={`${styles.lightboxNavBtn} ${styles.lightboxPrev}`}
+                    onClick={handlePrevImage}
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft size={28} />
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.lightboxNavBtn} ${styles.lightboxNext}`}
+                    onClick={handleNextImage}
+                    aria-label="Next image"
+                  >
+                    <ChevronRight size={28} />
+                  </button>
+                </>
+              )}
+            </div>
+
+            {product.images.length > 1 && (
+              <div className={styles.lightboxThumbs}>
+                {product.images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setActiveImageIndex(idx)}
+                    className={`${styles.lightboxThumbBtn} ${
+                      activeImageIndex === idx ? styles.activeLightboxThumb : ''
+                    }`}
+                    aria-label={`View photo ${idx + 1}`}
+                  >
+                    <img src={img || '/placeholder.svg'} alt="" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-

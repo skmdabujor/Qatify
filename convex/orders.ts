@@ -91,6 +91,7 @@ export const createOrder = mutation({
     paymentMethod: v.union(
       v.literal("credit_card"),
       v.literal("apple_pay"),
+      v.literal("google_pay"),
       v.literal("cash_on_delivery"),
       v.literal("polar")
     ),
@@ -406,26 +407,27 @@ export const createOrder = mutation({
       shippingMethod: args.shippingMethod,
       paymentMethod: args.paymentMethod,
       status: "Order Confirmed",
-      paymentStatus: args.paymentMethod === "cash_on_delivery" ? "pending" : "pending",
+      paymentStatus: "paid",
       trackingNumber,
       estimatedDeliveryWindow: estWindow,
       timeline: [
         {
           stage: "Order Confirmed",
-          title: "Order Placed & Payment Pending",
-          description: "Order received in Qatify system. Awaiting payment authorization.",
-          location: "Qatify Cloud Center",
+          title: "Order Confirmed & Payment Verified",
+          description: `Authorized via ${args.paymentMethod === 'apple_pay' ? 'Apple Pay' : args.paymentMethod === 'google_pay' ? 'Google Pay' : 'Credit / Debit Card'}. Dispatched to air express logistics.`,
+          location: "Qatify Secured Checkout",
           date: dateStr,
           completed: true,
-          current: true,
+          current: false,
         },
         {
           stage: "Air Hub Transit",
           title: "Direct Global Air Express Dispatch",
-          description: "Package packed, quality-inspected, and boarded for direct flight to Qatar.",
+          description: "Package packed, quality-inspected, and scheduled for direct flight to Qatar.",
           location: "Global Logistics Hub",
-          date: "Pending dispatch",
+          date: "In Transit",
           completed: false,
+          current: true,
         },
         {
           stage: "Qatar Customs (DOH)",
