@@ -1,0 +1,714 @@
+// =============================================================================
+// Qatify — Dedicated Auth Page Styling (Sign In / Register / Reset)
+// Matched to the exact modern 2-column e-commerce layout provided by user
+// =============================================================================
+
+.authPageWrapper {
+  background-color: #ffffff;
+  min-height: calc(100vh - 180px);
+  padding: 24px 20px 80px 20px;
+}
+
+.authContainer {
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.breadcrumbRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 36px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.breadcrumbLink {
+  color: #475569;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #0f172a;
+    text-decoration: underline;
+  }
+}
+
+.breadcrumbSeparator {
+  color: #cbd5e1;
+}
+
+.breadcrumbCurrent {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.authGrid {
+  display: flex;
+  gap: 56px;
+  align-items: flex-start;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+    gap: 40px;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Left Form Column
+// -----------------------------------------------------------------------------
+.formColumn {
+  flex: 1 1 58%;
+  min-width: 0;
+  max-width: 620px;
+
+  @media (max-width: 960px) {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+.mainHeading {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+  line-height: 1.25;
+
+  @media (max-width: 640px) {
+    font-size: 24px;
+  }
+}
+
+.subHeading {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 28px 0;
+  line-height: 1.5;
+}
+
+.orEmailDivider {
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  margin: 0 0 20px 0;
+}
+
+.formBody {
+  display: flex;
+  flex-direction: column;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.twoColRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.fieldLabel {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.optionalTag {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: #94a3b8;
+  margin-left: 4px;
+}
+
+.textInput,
+.selectInput {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0 14px;
+  font-size: 13.5px;
+  color: #0f172a;
+  background-color: #ffffff;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+
+  &:focus {
+    border-color: #ffb800;
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.2);
+  }
+
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: #0f172a !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+}
+
+.selectInput {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+}
+
+.passwordInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordInput {
+  padding-right: 44px;
+}
+
+.eyeToggleBtn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #0f172a;
+  }
+}
+
+.forgotPasswordRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.forgotPasswordBtn {
+  font-size: 12.5px;
+  color: #18181b;
+  font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s ease;
+
+  &:hover {
+    text-decoration: underline;
+    color: #eab308;
+  }
+}
+
+.phoneGroup {
+  display: flex;
+  gap: 8px;
+  position: relative;
+}
+
+.customDialWrapper {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.customDialBtn {
+  height: 42px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #ffffff;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px; // Arrow is right next to the code!
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: #94a3b8;
+  }
+
+  &.open {
+    border-color: #ffb800;
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.2);
+  }
+}
+
+.dialChevron {
+  color: #475569;
+  transition: transform 0.2s ease;
+
+  &.rotate {
+    transform: rotate(180deg);
+  }
+}
+
+.customDialMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 175px;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  padding: 4px;
+
+  // Custom slim modern scrollbar (No ugly default OS scrollbar!)
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+    &:hover {
+      background: #94a3b8;
+    }
+  }
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.customDialItem {
+  padding: 7px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #0f172a;
+  transition: all 0.12s ease;
+
+  &:hover {
+    background-color: #f1f5f9;
+  }
+
+  &.selected {
+    background-color: #ffb800;
+    color: #18181b;
+    font-weight: 700;
+
+    .itemName {
+      color: #52525b;
+    }
+  }
+}
+
+.itemCode {
+  font-weight: 600;
+}
+
+.itemName {
+  font-size: 11.5px;
+  color: #64748b;
+  margin-left: 8px;
+}
+
+// -----------------------------------------------------------------------------
+// Universal Custom Full-Width Select Dropdown (Gender, Nationality, etc.)
+// -----------------------------------------------------------------------------
+.customSelectWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.customSelectBtn {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #ffffff;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+
+  &:hover {
+    border-color: #94a3b8;
+  }
+
+  &.open {
+    border-color: #ffb800;
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.2);
+  }
+}
+
+.selectPlaceholderText {
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.selectValueText {
+  color: #0f172a;
+  font-weight: 500;
+  font-size: 13.5px;
+}
+
+.customSelectMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  padding: 4px;
+
+  // Custom slim modern scrollbar
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+    &:hover {
+      background: #94a3b8;
+    }
+  }
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.customSelectItem {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: #0f172a;
+  transition: all 0.12s ease;
+
+  &:hover {
+    background-color: #f1f5f9;
+  }
+
+  &.selected {
+    background-color: #ffb800;
+    color: #18181b;
+    font-weight: 700;
+  }
+}
+
+.checkboxContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 16px 0 24px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxInput {
+  width: 18px;
+  height: 18px;
+  accent-color: #18181b;
+  margin-top: 1px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkboxLabel {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.45;
+}
+
+.primaryActionBtn {
+  background-color: #ffb800;
+  color: #18181b;
+  font-size: 14.5px;
+  font-weight: 700;
+  height: 44px;
+  padding: 0 42px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  align-self: flex-start;
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background-color: #eab308;
+    color: #000000;
+    box-shadow: 0 4px 14px rgba(255, 184, 0, 0.35);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 600px) {
+    width: 100%;
+    align-self: stretch;
+  }
+}
+
+.legalNote {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 14px;
+  line-height: 1.5;
+
+  a {
+    color: #18181b;
+    font-weight: 600;
+    text-decoration: underline;
+
+    &:hover {
+      color: #eab308;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Right Benefits Sidebar Card
+// -----------------------------------------------------------------------------
+.sidebarColumn {
+  width: 360px;
+  flex-shrink: 0;
+
+  @media (max-width: 960px) {
+    width: 100%;
+  }
+}
+
+.sidebarCard {
+  background-color: #f8fafc; // Qatify soft neutral card canvas
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 26px 22px;
+}
+
+.sidebarHeading {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 18px 0;
+}
+
+.benefitList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.benefitItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.benefitIconBox {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #fffbeb; // Signature Qatify solar yellow tint
+  color: #b45309; // Warm brand gold amber
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.benefitText {
+  font-size: 12.5px;
+  color: #334155;
+  line-height: 1.45;
+}
+
+.sidebarSolidBtn {
+  width: 100%;
+  height: 42px;
+  background-color: #18181b;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: #ffb800;
+    color: #18181b;
+  }
+}
+
+.sidebarDivider {
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 24px 0 20px 0;
+}
+
+.sidebarSubSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarSubHeading {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+}
+
+.sidebarSubDesc {
+  font-size: 12.5px;
+  color: #64748b;
+  line-height: 1.45;
+  margin: 0 0 16px 0;
+}
+
+.sidebarOutlineBtn {
+  width: 100%;
+  height: 42px;
+  background-color: #ffffff;
+  border: 1.5px solid #18181b;
+  color: #18181b;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: #18181b;
+    color: #ffffff;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Feedback Alerts
+// -----------------------------------------------------------------------------
+.errorAlert {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.successAlert {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.backBtnRow {
+  margin-top: 16px;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    color: #0f172a;
+    text-decoration: underline;
+  }
+}
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -274,6 +274,13 @@
   gap: 10px;
 }
 
+.addAddressRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .addNewAddressTriggerBtn {
   background-color: #ffffff;
   border: 1px solid #cbd5e1;
@@ -293,6 +300,20 @@
     border-color: #0f172a;
     background-color: #f8fafc;
   }
+}
+
+.smallAddressNotice {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #b91c1c;
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+  padding: 4px 10px;
+  border-radius: 999px;
+  line-height: 1.3;
 }
 
 .emptyAddressHint {
@@ -649,39 +670,6 @@
   gap: 16px;
 }
 
-.sellerHeaderRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.soldByLabel {
-  font-size: 13px;
-  color: #475569;
-
-  strong {
-    color: #0f172a;
-  }
-}
-
-.chatNowLink {
-  background: none;
-  border: none;
-  color: #0284c7;
-  font-size: 13px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
 .checkoutItemsList {
   display: flex;
   flex-direction: column;
@@ -751,6 +739,74 @@
   font-size: 14.5px;
   font-weight: 700;
   color: #0f172a;
+}
+
+// Customer Order Note Input Box (Clean, Light, Single-Layer Vibe)
+.orderNoteContainer {
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+  background: transparent;
+}
+
+.orderNoteHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.orderNoteTitleWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.orderNoteIcon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.orderNoteLabel {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+}
+
+.orderNoteCharCount {
+  font-size: 11px;
+  font-weight: 400;
+  color: #94a3b8;
+  font-variant-numeric: tabular-nums;
+}
+
+.orderNoteTextarea {
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 11px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #334155;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  resize: vertical;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  &:focus {
+    border-color: #ffb800;
+    box-shadow: 0 0 0 2px rgba(255, 184, 0, 0.1);
+  }
 }
 
 .shippingMethodSelector {
@@ -910,28 +966,28 @@
 
 .breakdownVal {
   color: #0f172a;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .breakdownFeeWaived {
   color: #4cae4f;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .breakdownDiscountLabel {
   color: #d97706;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .breakdownDiscountVal {
   color: #d97706;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .breakdownFree {
   color: #4cae4f;
-  font-weight: 700;
-  font-size: 12px;
+  font-weight: 400;
+  font-size: 13px;
 }
 
 .divider {
@@ -1084,6 +1140,10 @@
 .protectionIconWrap {
   margin-top: 2px;
   flex-shrink: 0;
+  color: #18181b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .protectionHeading {

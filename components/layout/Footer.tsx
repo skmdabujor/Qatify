@@ -94,62 +94,52 @@ export const Footer: React.FC = () => {
       {/* 0. HOMEPAGE SEO & STOREFRONT GUIDE (homepage only) */}
       {isHomePage && <HomeFooterSeo />}
 
-      {/* 1. CUSTOMER ASSURANCE TRUST STRIP (hidden on homepage) */}
-      {!isHomePage && (
-        <div className={styles.trustStrip}>
-          <div className="container">
-            <div className={styles.trustGrid}>
-              <div className={styles.trustCard}>
-                <div className={styles.trustIconWrap}>
-                  <Plane size={24} />
-                </div>
-                <div className={styles.trustContent}>
-                  <h4 className={styles.trustTitle}>Fast Qatar Express Delivery</h4>
-                  <p className={styles.trustDesc}>
-                    Prompt tracked doorstep delivery across Doha, Lusail, Al Rayyan, Al Wakrah, and all municipalities.
-                  </p>
-                </div>
+      {/* 1. CUSTOMER ASSURANCE TRUST STRIP */}
+      <div className={styles.trustStrip}>
+        <div className="container">
+          <div className={styles.trustCard}>
+            <div className={styles.trustItem}>
+              <div className={styles.trustIconWrap}>
+                <CreditCard size={20} strokeWidth={1.75} />
               </div>
-
-              <div className={styles.trustCard}>
-                <div className={styles.trustIconWrap}>
-                  <ShieldCheck size={24} />
-                </div>
-                <div className={styles.trustContent}>
-                  <h4 className={styles.trustTitle}>100% Genuine Guaranteed</h4>
-                  <p className={styles.trustDesc}>
-                    Every product is authentic, factory-sealed, and quality tested before dispatch.
-                  </p>
-                </div>
+              <div className={styles.trustText}>
+                <strong className={styles.trustTitle}>Online Payment</strong>
+                <span className={styles.trustSubtitle}>Cards &amp; Apple Pay</span>
               </div>
+            </div>
 
-              <div className={styles.trustCard}>
-                <div className={styles.trustIconWrap}>
-                  <CreditCard size={24} />
-                </div>
-                <div className={styles.trustContent}>
-                  <h4 className={styles.trustTitle}>Secure Payments & Instant Order</h4>
-                  <p className={styles.trustDesc}>
-                    Pay securely in Qatari Riyal (QAR) with Apple Pay, Google Pay, Visa, or Mastercard with zero conversion fees.
-                  </p>
-                </div>
+            <div className={styles.trustItem}>
+              <div className={styles.trustIconWrap}>
+                <Plane size={20} strokeWidth={1.75} />
               </div>
+              <div className={styles.trustText}>
+                <strong className={styles.trustTitle}>Free Delivery</strong>
+                <span className={styles.trustSubtitle}>over QAR 150</span>
+              </div>
+            </div>
 
-              <div className={styles.trustCard}>
-                <div className={styles.trustIconWrap}>
-                  <Headset size={24} />
-                </div>
-                <div className={styles.trustContent}>
-                  <h4 className={styles.trustTitle}>24/7 Dedicated Support</h4>
-                  <p className={styles.trustDesc}>
-                    Live WhatsApp & customer service ready to assist you anywhere in Qatar.
-                  </p>
-                </div>
+            <div className={styles.trustItem}>
+              <div className={styles.trustIconWrap}>
+                <ShieldCheck size={20} strokeWidth={1.75} />
+              </div>
+              <div className={styles.trustText}>
+                <strong className={styles.trustTitle}>100% original</strong>
+                <span className={styles.trustSubtitle}>QC checked</span>
+              </div>
+            </div>
+
+            <div className={styles.trustItem}>
+              <div className={styles.trustIconWrap}>
+                <Headset size={20} strokeWidth={1.75} />
+              </div>
+              <div className={styles.trustText}>
+                <strong className={styles.trustTitle}>24/7 Support</strong>
+                <span className={styles.trustSubtitle}>WhatsApp &amp; Live Chat</span>
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* 2. MAIN FOOTER CONTENT */}
       <div className={styles.mainFooter}>

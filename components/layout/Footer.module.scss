@@ -14,80 +14,94 @@
   border-top: none;
 }
 
-// 1. TRUST STRIP
+// 1. TRUST STRIP (Customer Assurance Bar)
 .trustStrip {
   background-color: #fafafa;
   border-bottom: 1px solid $color-border-subtle;
-  padding: $space-6 0;
+  padding: 20px 0;
 
   @include mobile {
-    padding: $space-4 0;
-  }
-}
-
-.trustGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: $space-4;
-
-  @include laptop {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @include mobile {
-    grid-template-columns: 1fr;
-    gap: $space-3;
+    padding: 16px 0;
   }
 }
 
 .trustCard {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  align-items: start;
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 16px;
+  }
+
+  @include mobile {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 12px;
+  }
+}
+
+.trustItem {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 14px 16px;
-  background-color: #ffffff;
-  border: 1px solid $color-border-subtle;
-  border-radius: $radius-md;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-  transition: transform $transition-fast, box-shadow $transition-fast, border-color $transition-fast;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  gap: 8px;
+  transition: transform $transition-fast;
 
   &:hover {
-    transform: translateY(-2px);
-    border-color: #4cae4f;
-    box-shadow: 0 4px 12px rgba(76, 174, 79, 0.1);
+    transform: translateY(-1px);
+
+    .trustIconWrap {
+      color: #000000;
+    }
   }
 }
 
 .trustIconWrap {
-  color: #4cae4f;
-  flex-shrink: 0;
-  margin-top: 2px;
+  color: #18181b;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background-color: #f0fdf4;
-  border: 1px solid #dcfce7;
+  transition: transform $transition-fast, color $transition-fast;
 }
 
-.trustContent {
-  flex: 1;
+.trustText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  max-width: 280px;
 }
 
 .trustTitle {
   font-size: 13.5px;
   font-weight: 700;
-  color: $color-text-primary;
-  margin-bottom: 3px;
-  font-family: $font-heading;
+  color: #18181b;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+
+  @include mobile {
+    font-size: 12px;
+  }
 }
 
-.trustDesc {
+.trustSubtitle {
   font-size: 11.5px;
-  color: $color-text-secondary;
-  line-height: 1.45;
+  font-weight: 400;
+  color: #71717a;
+  line-height: 1.2;
+
+  @include mobile {
+    font-size: 10.5px;
+  }
 }
 
 // 2. MAIN FOOTER

@@ -134,6 +134,7 @@ export interface Order {
   trackingNumber: string;
   estimatedDeliveryWindow: string;
   timeline: OrderTimelineStep[];
+  customerNote?: string;
 }
 
 export type SortOption =

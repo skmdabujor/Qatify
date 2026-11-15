@@ -24,14 +24,14 @@ import {
   User,
   Mail,
   Sparkles,
-  MessageCircle,
   Check,
   X,
   Info,
   RotateCcw,
   Search,
   CheckCircle2,
-  Package,
+  FileText,
+  AlertCircle,
 } from 'lucide-react';
 import { useShop } from '@/context/ShopContext';
 import {
@@ -82,7 +82,6 @@ function CheckoutContent() {
     createOrder,
     clearCart,
     showToast,
-    openChat,
   } = useShop();
 
   const createConvexOrder = useMutation(api.orders.createOrder);
@@ -90,6 +89,8 @@ function CheckoutContent() {
 
   // Address Modal State
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [addressMissingError, setAddressMissingError] = useState(false);
+  const addressSectionRef = useRef<HTMLDivElement>(null);
 
   // Active Shipping Address State
   const initialSavedAddress = savedAddresses?.[0] || null;
@@ -181,6 +182,9 @@ function CheckoutContent() {
     SHIPPING_METHODS[0]
   );
 
+  // Customer Order Note
+  const [orderNote, setOrderNote] = useState('');
+
   // Payment Method Selection: 'credit_card' (Add a New Card) | 'apple_pay' | 'google_pay'
   const [paymentMethod, setPaymentMethod] = useState<'credit_card' | 'apple_pay' | 'google_pay'>('credit_card');
 
@@ -264,7 +268,8 @@ function CheckoutContent() {
     ? (buyNowItem ? buyNowItem.product.priceQAR * buyNowItem.quantity : 0)
     : cartSubtotal;
 
-  const shippingCost = selectedShipping.priceQAR;
+  const isFreeShipping = checkoutSubtotal >= 150;
+  const shippingCost = isFreeShipping ? 0 : (selectedShipping?.priceQAR ?? 20);
   const totalDiscount = isBundleCheckout
     ? (bundleDiscountQAR || 0)
     : (appliedDiscountQAR || 0);
@@ -388,6 +393,7 @@ function CheckoutContent() {
       addAddress(completeAddress);
     }
     setAddress(completeAddress);
+    setAddressMissingError(false);
     setIsAddressModalOpen(false);
     showToast('Shipping Address Saved', 'Delivery address confirmed for this order.', 'success');
   };
@@ -410,7 +416,9 @@ function CheckoutContent() {
 
     // Ensure shipping address exists
     if (!hasValidAddress) {
+      setAddressMissingError(true);
       showToast('Shipping Address Required', 'Please enter your delivery address to continue.', 'warning');
+      addressSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       openAddressModal();
       return;
     }
@@ -466,6 +474,7 @@ function CheckoutContent() {
       const orderResult = await createConvexOrder({
         items: itemsPayload,
         couponCode: (!isBundleCheckout && appliedCoupon) ? appliedCoupon : undefined,
+        customerNote: orderNote.trim() || undefined,
         address: {
           country: address.country || currentCountryConfig.name,
           firstName: address.firstName,
@@ -507,6 +516,7 @@ function CheckoutContent() {
         address,
         shippingMethod: selectedShipping,
         paymentMethod,
+        customerNote: orderNote.trim() || undefined,
         estimatedDeliveryWindow: '3–7 Business Days to Qatar',
       });
 
@@ -587,7 +597,7 @@ function CheckoutContent() {
             {/* ===============================================================
                 SECTION 1: SHIPPING ADDRESS
             ================================================================ */}
-            <section className={styles.checkoutSection}>
+            <section ref={addressSectionRef} className={styles.checkoutSection}>
               <div className={styles.sectionHeadingRow}>
                 <div className={styles.sectionIconCircle}>
                   <MapPin size={17} />
@@ -636,13 +646,21 @@ function CheckoutContent() {
                   </div>
                 ) : (
                   <div className={styles.emptyAddressContainer}>
-                    <button
-                      type="button"
-                      onClick={openAddressModal}
-                      className={styles.addNewAddressTriggerBtn}
-                    >
-                      + Add New Address
-                    </button>
+                    <div className={styles.addAddressRow}>
+                      <button
+                        type="button"
+                        onClick={openAddressModal}
+                        className={styles.addNewAddressTriggerBtn}
+                      >
+                        + Add New Address
+                      </button>
+                      {addressMissingError && !hasValidAddress && (
+                        <span className={styles.smallAddressNotice}>
+                          <AlertCircle size={13} />
+                          <span>Address required to proceed</span>
+                        </span>
+                      )}
+                    </div>
                     <p className={styles.emptyAddressHint}>
                       Please add your shipping address so we can calculate exact delivery options.
                     </p>
@@ -926,31 +944,10 @@ function CheckoutContent() {
             </section>
 
             {/* ===============================================================
-                SECTION 3: ITEMS AND DELIVERY OPTIONS
+                SECTION 3: ORDER ITEMS & NOTE
             ================================================================ */}
             <section className={styles.checkoutSection}>
-              <div className={styles.sectionHeadingRow}>
-                <div className={styles.sectionIconCircle}>
-                  <Package size={17} />
-                </div>
-                <h2 className={styles.sectionHeadingText}>Items and delivery options</h2>
-              </div>
-
               <div className={styles.itemsDeliveryCard}>
-                <div className={styles.sellerHeaderRow}>
-                  <span className={styles.soldByLabel}>
-                    Sold by: <strong>Qatify Express Logistics Hub</strong>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => openChat()}
-                    className={styles.chatNowLink}
-                  >
-                    <MessageCircle size={14} />
-                    <span>Chat Now</span>
-                  </button>
-                </div>
-
                 {/* Items List */}
                 <div className={styles.checkoutItemsList}>
                   {checkoutItems.map((item, idx) => (
@@ -984,20 +981,27 @@ function CheckoutContent() {
                   ))}
                 </div>
 
-                {/* Shipping Method Option */}
-                <div className={styles.shippingMethodSelector}>
-                  <div className={styles.shippingMethodItem}>
-                    <div className={styles.shippingMethodLeft}>
-                      <Plane size={16} className={styles.shippingIcon} />
-                      <div>
-                        <strong>Standard International Air Express</strong>
-                        <p className={styles.shippingDeliveryWindow}>
-                          Estimated delivery to Qatar: 3–7 Business Days
-                        </p>
-                      </div>
+                {/* Customer Order Note Input */}
+                <div className={styles.orderNoteContainer}>
+                  <div className={styles.orderNoteHeader}>
+                    <div className={styles.orderNoteTitleWrap}>
+                      <FileText size={14} className={styles.orderNoteIcon} />
+                      <label htmlFor="checkoutOrderNote" className={styles.orderNoteLabel}>
+                        Order Note (Optional)
+                      </label>
                     </div>
-                    <span className={styles.shippingFreeBadge}>FREE SHIPPING</span>
+                    <span className={styles.orderNoteCharCount}>
+                      {orderNote.length}/300
+                    </span>
                   </div>
+                  <textarea
+                    id="checkoutOrderNote"
+                    value={orderNote}
+                    onChange={(e) => setOrderNote(e.target.value.slice(0, 300))}
+                    placeholder="Write a note for your order..."
+                    className={styles.orderNoteTextarea}
+                    rows={2}
+                  />
                 </div>
               </div>
             </section>
@@ -1059,7 +1063,11 @@ function CheckoutContent() {
 
                   <div className={styles.breakdownRow}>
                     <span className={styles.breakdownLabel}>Air Freight Shipping</span>
-                    <span className={styles.breakdownFree}>FREE</span>
+                    {shippingCost === 0 ? (
+                      <span className={styles.breakdownFree}>FREE</span>
+                    ) : (
+                      <span className={styles.breakdownVal}>QAR {shippingCost.toFixed(2)}</span>
+                    )}
                   </div>
                 </div>
 
@@ -1122,7 +1130,7 @@ function CheckoutContent() {
 
                   <div className={styles.protectionItem}>
                     <div className={styles.protectionIconWrap}>
-                      <ShieldCheck size={16} color="#008000" />
+                      <ShieldCheck size={16} color="#18181b" />
                     </div>
                     <div>
                       <strong className={styles.protectionHeading}>Funds Security</strong>
@@ -1134,7 +1142,7 @@ function CheckoutContent() {
 
                   <div className={styles.protectionItem}>
                     <div className={styles.protectionIconWrap}>
-                      <RotateCcw size={16} color="#008000" />
+                      <RotateCcw size={16} color="#18181b" />
                     </div>
                     <div>
                       <strong className={styles.protectionHeading}>Return & Refund Support</strong>
@@ -1146,7 +1154,7 @@ function CheckoutContent() {
 
                   <div className={styles.protectionItem}>
                     <div className={styles.protectionIconWrap}>
-                      <Plane size={16} color="#008000" />
+                      <Plane size={16} color="#18181b" />
                     </div>
                     <div>
                       <strong className={styles.protectionHeading}>Air Express Guarantee</strong>

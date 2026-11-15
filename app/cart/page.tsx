@@ -1,40 +1,28 @@
 'use client';
 
 // =============================================================================
-// Qatify — Full Cart Page (`/cart`)
-// Line Items + 6–10 Day Delivery Windows + Under QAR 35 Upsell + Order Summary
+// Qatify — Shopping Cart Page (`/cart`)
+// Exact visual reproduction of the user-provided layout
+// Styled with Qatify Brand Identity (Qatify Yellow #ffb800, Black #18181b, Inter fonts)
 // =============================================================================
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useConvex } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import {
   ShoppingBag,
-  Trash2,
   Plus,
   Minus,
-  ArrowRight,
-  Plane,
-  ShieldCheck,
+  X,
   Tag,
-  Sparkles,
-  Heart,
-  ChevronRight,
-  Headset,
-  MessageCircle,
-  Lock,
-  CheckCircle2,
+  Gift,
+  ShieldCheck,
+  BadgeCheck,
+  ArrowRight,
 } from 'lucide-react';
-import {
-  ApplePayIcon,
-  VisaIcon,
-  MastercardIcon,
-  AmexIcon,
-  GooglePayIcon,
-  QarCurrencyIcon,
-} from '@/components/ui/PaymentIcons';
 import { useShop } from '@/context/ShopContext';
 import { PRODUCTS } from '@/data/products';
 import styles from './page.module.scss';
@@ -44,48 +32,34 @@ export default function CartPage() {
   const {
     cart,
     cartSubtotal,
-    cartCount,
     updateQuantity,
     removeFromCart,
-    clearCart,
     addToCart,
-    toggleWishlist,
     showToast,
-    openChat,
     appliedCoupon,
     appliedDiscountQAR,
     setCoupon,
-    bundleItemCount,
   } = useShop();
 
   const convex = useConvex();
   const [couponCode, setCouponCode] = useState('');
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
-
-  // Delivery arrival preview dates
-  const today = new Date();
-  const minDeliveryDate = new Date(today);
-  minDeliveryDate.setDate(today.getDate() + 6);
-  const maxDeliveryDate = new Date(today);
-  maxDeliveryDate.setDate(today.getDate() + 10);
-
-  const deliveryDateString = `${minDeliveryDate.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  })} – ${maxDeliveryDate.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  })}`;
+  const [activeTab, setActiveTab] = useState<'coupon' | 'voucher'>('coupon');
 
   const couponDiscount = appliedDiscountQAR || 0;
-  const totalDiscount = couponDiscount;
-  const shippingFee = cart.length === 0 ? 0 : 20;
-  const grandTotal = Math.max(0, cartSubtotal - totalDiscount + shippingFee);
+  const isFreeShipping = cartSubtotal >= 150;
+  const shippingFee = cart.length === 0 ? 0 : isFreeShipping ? 0 : 20;
+  const grandTotal = Math.max(0, cartSubtotal - couponDiscount + shippingFee);
 
   const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
     const code = couponCode.trim().toUpperCase();
     if (!code) return;
+
+    if (activeTab === 'voucher') {
+      showToast('Gift Voucher', 'Please enter a valid Qatar gift voucher or coupon code.', 'info');
+      return;
+    }
 
     setIsValidatingCoupon(true);
     try {
@@ -110,402 +84,310 @@ export default function CartPage() {
     }
   };
 
-  // Impulse upsells under QAR 50 / QAR 35
-  const impulseProducts = PRODUCTS.filter((p) => p.priceQAR <= 49).slice(0, 3);
+  // Recommended Products for "You May Also Like" (Exactly 6 items, 2-column grid)
+  const recommendedProducts = useMemo(() => {
+    const inCartIds = new Set(cart.map((item) => item.product.id));
+    return PRODUCTS.filter((p) => !inCartIds.has(p.id)).slice(0, 6);
+  }, [cart]);
 
   return (
     <div className={styles.cartPage}>
-      <div className="container">
-        {/* Breadcrumb */}
-        <nav className={styles.breadcrumbNav}>
-          <Link href="/" className={styles.crumbLink}>Home</Link>
-          <ChevronRight size={13} className={styles.crumbChevron} />
-          <span className={styles.currentCrumb}>Shopping Cart</span>
-        </nav>
-
-        <div className={styles.cartHeaderRow}>
-          <div className={styles.headerTitleWrap}>
-            <h1 className={styles.cartHeading}>Your Shopping Cart</h1>
-            <span className={styles.cartCountPill}>
-              {cartCount} {cartCount === 1 ? 'item' : 'items'}
-            </span>
-          </div>
-
-          {cart.length > 0 && (
-            <button
-              type="button"
-              onClick={clearCart}
-              className={styles.clearCartBtn}
-            >
-              Clear Entire Cart
-            </button>
-          )}
-        </div>
+      <div className={styles.cartContainer}>
+        {/* Main Title: Shopping Cart */}
+        <h1 className={styles.cartMainTitle}>Shopping Cart</h1>
 
         {cart.length === 0 ? (
           <div className={styles.emptyCartCard}>
             <div className={styles.emptyIconCircle}>
-              <ShoppingBag size={48} />
+              <ShoppingBag size={44} color="#a1a1aa" />
             </div>
             <h2 className={styles.emptyTitle}>Your cart is empty</h2>
             <p className={styles.emptyDesc}>
-              Discover trending electronics, MagSafe wireless chargers, and smart lifestyle gear with 6–10 day tracked air delivery across Qatar.
+              Discover trending electronics, MagSafe accessories, and lifestyle essentials with fast Qatar doorstep delivery.
             </p>
             <Link href="/shop" className={styles.startShoppingBtn}>
-              <span>Explore Qatar Super Deals</span>
+              <span>Start Shopping</span>
               <ArrowRight size={16} />
             </Link>
           </div>
         ) : (
           <div className={styles.cartLayout}>
-            {/* Left Column: Cart Items & Upsells */}
-            <div className={styles.itemsColumn}>
-              {/* Items List */}
-              <div className={styles.cartItemsList}>
-                {cart.map((item) => (
-                  <div key={item.id} className={styles.cartItemRow}>
-                    <div className={styles.itemImageWrap}>
-                      <img
-                        src={item.product.images[0] || '/placeholder.svg'}
-                        alt={item.product.title}
-                        className={styles.itemImage}
-                        onError={(e) => {
-                          const target = e.currentTarget;
-                          if (!target.src.endsWith('/placeholder.svg')) {
-                            target.src = '/placeholder.svg';
-                          }
-                        }}
-                      />
-                    </div>
+            {/* ===============================================================
+                LEFT COLUMN: YOUR PRODUCTS + YOU MAY ALSO LIKE
+            ================================================================ */}
+            <div className={styles.leftColumn}>
+              {/* CARD 1: YOUR PRODUCTS */}
+              <div className={styles.yourProductsCard}>
+                <div className={styles.cardHeaderArea}>
+                  <h2 className={styles.yourProductsTitle}>Your Products</h2>
+                </div>
+                <div className={styles.headerDivider} />
 
-                    <div className={styles.itemMainCol}>
-                      <div className={styles.itemHeader}>
-                        <div className={styles.itemBrandAndTitle}>
-                          <span className={styles.itemBrand}>{item.product.brand}</span>
-                          <Link
-                            href={`/products/${item.product.slug}`}
-                            className={styles.itemTitleLink}
-                          >
-                            <h3 className={styles.itemTitle}>{item.product.title}</h3>
-                          </Link>
+                <div className={styles.productsList}>
+                  {cart.map((item) => (
+                    <div key={item.id} className={styles.productRow}>
+                      {/* Product Thumbnail */}
+                      <Link
+                        href={`/products/${item.product.slug}`}
+                        className={styles.productThumbWrap}
+                      >
+                        <Image
+                          src={item.product.images[0] || '/placeholder.svg'}
+                          alt={item.product.title}
+                          width={72}
+                          height={72}
+                          className={styles.productThumbImg}
+                        />
+                      </Link>
+
+                      {/* Product Details */}
+                      <div className={styles.productDetailsCol}>
+                        <Link
+                          href={`/products/${item.product.slug}`}
+                          className={styles.productTitleLink}
+                        >
+                          <h3 className={styles.productTitle}>{item.product.title}</h3>
+                        </Link>
+
+                        <div className={styles.officialStoreRow}>
+                          <BadgeCheck size={12} className={styles.officialCheckIcon} />
+                          <span className={styles.officialStoreName}>
+                            {item.product.brand || 'Qatify'} Official Store
+                          </span>
                         </div>
+
+                        <div className={styles.modelRow}>
+                          {item.selectedColor ? (
+                            <span>Color: <strong>{item.selectedColor}</strong></span>
+                          ) : item.selectedOption ? (
+                            <span>Variant: <strong>{item.selectedOption}</strong></span>
+                          ) : (
+                            <span>Model: <strong>{item.product.brand || 'Original Edition'}</strong></span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Boxed Stepper [ - | 1 | + ] */}
+                      <div className={styles.segmentedStepper}>
                         <button
                           type="button"
-                          onClick={() => removeFromCart(item.id)}
-                          className={styles.deleteBtn}
-                          title="Remove item"
+                          onClick={() => updateQuantity(item.id, -1)}
+                          className={styles.stepperActionBtn}
+                          aria-label="Decrease quantity"
                         >
-                          <Trash2 size={16} />
+                          <Minus size={12} strokeWidth={2.5} />
+                        </button>
+                        <div className={styles.stepperDivider} />
+                        <span className={styles.stepperNumber}>{item.quantity}</span>
+                        <div className={styles.stepperDivider} />
+                        <button
+                          type="button"
+                          onClick={() => updateQuantity(item.id, 1)}
+                          className={styles.stepperActionBtn}
+                          aria-label="Increase quantity"
+                        >
+                          <Plus size={12} strokeWidth={2.5} />
                         </button>
                       </div>
 
-                      {/* Variant Badges */}
-                      {(item.selectedColor || item.selectedOption) && (
-                        <div className={styles.itemVariants}>
-                          {item.selectedColor && (
-                            <span className={styles.variantBadge}>
-                              Color: {item.selectedColor}
-                            </span>
-                          )}
-                          {item.selectedOption && (
-                            <span className={styles.variantBadge}>
-                              {item.selectedOption}
-                            </span>
-                          )}
-                        </div>
-                      )}
-
-                      {/* 6-10 Day Delivery Timeline notice per item */}
-                      <div className={styles.itemDeliveryNotice}>
-                        <Plane size={12} className={styles.planeNoticeIcon} />
-                        <span>Estimated Air Arrival in Qatar: <strong>{deliveryDateString}</strong></span>
+                      {/* Price Column */}
+                      <div className={styles.itemPriceArea}>
+                        <strong className={styles.itemTotalPrice}>
+                          {(item.product.priceQAR * item.quantity).toLocaleString()} QAR
+                        </strong>
+                        <span className={styles.itemUnitPrice}>
+                          {item.product.priceQAR.toLocaleString()} QAR/unit
+                        </span>
                       </div>
 
-                      {/* Pricing and Quantity Stepper */}
-                      <div className={styles.itemFooterRow}>
-                        <div className={styles.priceCol}>
-                          <span className={styles.unitPrice}>
-                            QAR {item.product.priceQAR}
-                          </span>
-                          {item.product.originalPriceQAR > item.product.priceQAR && (
-                            <span className={styles.originalPrice}>
-                              QAR {item.product.originalPriceQAR}
-                            </span>
-                          )}
-                        </div>
-
-                        <div className={styles.stepperAndSave}>
-                          <div className={styles.stepper}>
-                            <button
-                              type="button"
-                              onClick={() => updateQuantity(item.id, -1)}
-                              className={styles.stepBtn}
-                              aria-label="Decrease quantity"
-                            >
-                              <Minus size={13} />
-                            </button>
-                            <span className={styles.stepQty}>{item.quantity}</span>
-                            <button
-                              type="button"
-                              onClick={() => updateQuantity(item.id, 1)}
-                              className={styles.stepBtn}
-                              aria-label="Increase quantity"
-                            >
-                              <Plus size={13} />
-                            </button>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              toggleWishlist(item.product);
-                              removeFromCart(item.id);
-                            }}
-                            className={styles.saveForLaterBtn}
-                          >
-                            <Heart size={13} />
-                            <span>Save for Later</span>
-                          </button>
-                        </div>
-
-                        <div className={styles.lineItemTotal}>
-                          <span>Total: </span>
-                          <strong className="price-qar">
-                            QAR {item.product.priceQAR * item.quantity}
-                          </strong>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Impulse Upsell Section: Under QAR 50 */}
-              <div className={styles.upsellSection}>
-                <div className={styles.upsellHeader}>
-                  <Sparkles size={16} />
-                  <span>Frequently Added Accessories Under QAR 50</span>
-                </div>
-                <div className={styles.upsellGrid}>
-                  {impulseProducts.map((p) => (
-                    <div key={p.id} className={styles.upsellCard}>
-                      <img
-                        src={p.images[0] || '/placeholder.svg'}
-                        alt={p.title}
-                        className={styles.upsellImg}
-                        onError={(e) => {
-                          const target = e.currentTarget;
-                          if (!target.src.endsWith('/placeholder.svg')) {
-                            target.src = '/placeholder.svg';
-                          }
-                        }}
-                      />
-                      <div className={styles.upsellInfo}>
-                        <h4 className={styles.upsellTitle}>{p.title}</h4>
-                        <span className={styles.upsellPrice}>QAR {p.priceQAR}</span>
-                      </div>
+                      {/* Remove Button (✕) */}
                       <button
                         type="button"
-                        onClick={() => addToCart(p, 1, undefined, undefined, false)}
-                        className={styles.quickAddBtn}
+                        onClick={() => removeFromCart(item.id)}
+                        className={styles.removeCloseBtn}
+                        title="Remove item"
+                        aria-label="Remove item"
                       >
-                        + Add
+                        <X size={16} strokeWidth={2.2} />
                       </button>
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
 
-            {/* Right Column: Sticky Order Summary */}
-            <div className={styles.summaryColumn}>
-              <div className={styles.summaryCard}>
-                <h3 className={styles.summaryTitle}>Order Summary</h3>
-
-                {/* Promo Code Input */}
-                <form onSubmit={handleApplyCoupon} className={styles.couponForm}>
-                  <div className={styles.couponInputWrap}>
-                    <Tag size={15} className={styles.couponTagIcon} />
-                    <input
-                      type="text"
-                      placeholder="Promo Code (WELCOME10)"
-                      value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value)}
-                      className={styles.couponInput}
-                    />
-                  </div>
-                  <button type="submit" className={styles.couponBtn}>
-                    Apply
-                  </button>
-                </form>
-
-                {appliedCoupon && (
-                  <div className={styles.couponSuccessNotice}>
-                    <span>Coupon <strong>{appliedCoupon}</strong> active (-QAR {couponDiscount})</span>
-                    <button
-                      type="button"
-                      onClick={() => setCoupon(null, 0)}
-                      className={styles.removeCouponAction}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                )}
-
-                {bundleItemCount > 0 && (
-                  <div
-                    style={{
-                      background: '#fff7ed',
-                      border: '1px solid #fed7aa',
-                      borderRadius: '8px',
-                      padding: '10px 14px',
-                      marginBottom: '16px',
-                      fontSize: '13px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      color: '#9a3412',
-                    }}
-                  >
-                    <span>🎁 You also have <strong>{bundleItemCount} items</strong> in your Bundle Cart</span>
-                    <Link
-                      href="/bundle-cart"
-                      style={{ fontWeight: 600, color: '#c2410c', textDecoration: 'underline' }}
-                    >
-                      View Bundle Cart →
-                    </Link>
-                  </div>
-                )}
-
-                {/* Summary Calculations */}
-                <div className={styles.summaryRowsList}>
-                  <div className={styles.summaryRow}>
-                    <span>Items Subtotal</span>
-                    <span className={styles.summaryVal}>QAR {cartSubtotal.toLocaleString()}</span>
+              {/* CARD 2: YOU MAY ALSO LIKE (2-COLUMN GRID) */}
+              {recommendedProducts.length > 0 && (
+                <div className={styles.youMayLikeSection}>
+                  <div className={styles.youMayLikeHeader}>
+                    <h2 className={styles.youMayLikeTitle}>You May Also Like</h2>
+                    <p className={styles.youMayLikeSub}>
+                      People frequently buy these with the products on your cart.
+                    </p>
                   </div>
 
-                  {appliedCoupon && (
-                    <div className={`${styles.summaryRow} ${styles.discountRow}`}>
-                      <span>Promo Coupon</span>
-                      <span className={styles.summaryVal}>- QAR {couponDiscount}</span>
-                    </div>
-                  )}
+                  <div className={styles.recommendGrid}>
+                    {recommendedProducts.map((p) => (
+                      <div key={p.id} className={styles.recommendCard}>
+                        {/* Image Column */}
+                        <div className={styles.recImageCol}>
+                          <Link href={`/products/${p.slug}`} className={styles.recThumbLink}>
+                            <Image
+                              src={p.images[0] || '/placeholder.svg'}
+                              alt={p.title}
+                              width={84}
+                              height={84}
+                              className={styles.recThumbImg}
+                            />
+                          </Link>
+                          <span className={styles.officialWarrantyBadge}>
+                            <ShieldCheck size={10} />
+                            <span>Authentic Product</span>
+                          </span>
+                        </div>
 
-                  <div className={styles.summaryRow}>
-                    <div className={styles.shippingLabelCol}>
-                      <span>Direct Tracked Air Express</span>
-                      <span className={styles.shippingNotice}>6–10 Days to Qatar</span>
-                    </div>
-                    <span className={styles.summaryVal}>
-                      {cart.length === 0 ? 'QAR 0' : `QAR ${shippingFee}`}
-                    </span>
-                  </div>
+                        {/* Content Column */}
+                        <div className={styles.recDetailsCol}>
+                          <Link href={`/products/${p.slug}`} className={styles.recProductTitleLink}>
+                            <h4 className={styles.recProductTitle}>{p.title}</h4>
+                          </Link>
 
-                  <div className={`${styles.summaryRow} ${styles.grandTotalRow}`}>
-                    <span>Total Amount (QAR)</span>
-                    <span className={styles.grandTotalValue}>
-                      QAR {grandTotal.toLocaleString()}
-                    </span>
+                          <div className={styles.recPriceWrap}>
+                            <span className={styles.recMainPrice}>
+                              {p.priceQAR.toLocaleString()} QAR
+                            </span>
+                            {p.originalPriceQAR > p.priceQAR && (
+                              <span className={styles.recOldPrice}>
+                                {p.originalPriceQAR.toLocaleString()} QAR
+                              </span>
+                            )}
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => addToCart(p, 1, undefined, undefined, false)}
+                            className={styles.recAddToCartButton}
+                          >
+                            Add to Cart
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
+              )}
+            </div>
 
-                {/* Primary Checkout CTA */}
+            {/* ===============================================================
+                RIGHT COLUMN: STICKY ORDER SUMMARY
+            ================================================================ */}
+            <div className={styles.rightColumn}>
+              <div className={styles.orderSummaryCard}>
+                <h3 className={styles.summaryTitle}>Order Summary</h3>
+
+                {/* Dashed Box: "Get Some Extra" */}
+                <div className={styles.getExtraDashedBox}>
+                  <div className={styles.getExtraHead}>
+                    <strong className={styles.getExtraTitle}>Get Some Extra</strong>
+                    <span className={styles.getExtraSub}>Use coupon/voucher/star points</span>
+                  </div>
+
+                  {/* Tabs: [ Coupon ] [ Gift Voucher ] */}
+                  <div className={styles.couponTabs}>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('coupon')}
+                      className={`${styles.couponTabBtn} ${
+                        activeTab === 'coupon' ? styles.couponTabActive : ''
+                      }`}
+                    >
+                      <Tag size={11} />
+                      <span>Coupon</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('voucher')}
+                      className={`${styles.couponTabBtn} ${
+                        activeTab === 'voucher' ? styles.couponTabActive : ''
+                      }`}
+                    >
+                      <Gift size={11} />
+                      <span>Gift Voucher</span>
+                    </button>
+                  </div>
+
+                  {/* Integrated Input + Apply Form */}
+                  <form onSubmit={handleApplyCoupon} className={styles.couponInputBar}>
+                    <input
+                      type="text"
+                      placeholder={
+                        activeTab === 'coupon'
+                          ? 'Promo / Coupon Code'
+                          : 'Enter Gift Voucher Code'
+                      }
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      className={styles.couponInputField}
+                    />
+                    <button
+                      type="submit"
+                      disabled={isValidatingCoupon}
+                      className={styles.couponApplyButton}
+                    >
+                      {isValidatingCoupon ? '...' : 'Apply'}
+                    </button>
+                  </form>
+
+                  {/* Active Coupon Status */}
+                  {appliedCoupon && (
+                    <div className={styles.couponAppliedRow}>
+                      <span>
+                        Coupon <strong>{appliedCoupon}</strong> active (-{couponDiscount} QAR)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setCoupon(null, 0)}
+                        className={styles.removeCouponX}
+                        aria-label="Remove coupon"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Sub-Total Row */}
+                <div className={styles.summaryLineRow}>
+                  <span className={styles.lineLabel}>Sub-Total:</span>
+                  <span className={styles.lineValue}>
+                    {cartSubtotal.toLocaleString()} QAR
+                  </span>
+                </div>
+
+                {appliedCoupon && (
+                  <div className={styles.summaryLineRow}>
+                    <span className={styles.lineLabel}>Coupon Discount:</span>
+                    <span className={styles.discountValue}>
+                      - {couponDiscount.toLocaleString()} QAR
+                    </span>
+                  </div>
+                )}
+
+                {/* Total Row */}
+                <div className={`${styles.summaryLineRow} ${styles.grandTotalLine}`}>
+                  <span className={styles.totalLabel}>Total:</span>
+                  <strong className={styles.totalValue}>
+                    {grandTotal.toLocaleString()} QAR
+                  </strong>
+                </div>
+
+                {/* Confirm Order CTA Button */}
                 <button
                   type="button"
                   onClick={() => router.push('/checkout')}
-                  className={styles.checkoutSubmitBtn}
+                  className={styles.confirmOrderCTA}
                 >
-                  <span>Proceed to Qatar Checkout</span>
-                  <ArrowRight size={17} />
+                  Confirm Order
                 </button>
-
-                <Link href="/shop" className={styles.continueShoppingLink}>
-                  ← Continue Shopping Catalog
-                </Link>
-
-                {/* Guaranteed Safe & Secure Checkout Trust Card with Payment Icons */}
-                <div className={styles.paymentTrustCard}>
-                  <div className={styles.paymentTrustHeader}>
-                    <div className={styles.paymentTrustTitleWrap}>
-                      <ShieldCheck size={15} />
-                      <span>Guaranteed Safe & Secure Checkout</span>
-                    </div>
-                    <div className={styles.paymentSecurityBadge}>
-                      <Lock size={11} />
-                      <span>256-Bit SSL</span>
-                    </div>
-                  </div>
-
-                  {/* Payment Card Badges Row */}
-                  <div className={styles.paymentCardsGrid} aria-label="Accepted Payment Methods in Qatar">
-                    <span className={styles.payCardBadge} title="Apple Pay — Touch ID / Face ID Instant Pay">
-                      <ApplePayIcon width={40} height={26} />
-                    </span>
-                    <span className={styles.payCardBadge} title="Visa Debit & Credit Cards">
-                      <VisaIcon width={40} height={26} />
-                    </span>
-                    <span className={styles.payCardBadge} title="Mastercard">
-                      <MastercardIcon width={40} height={26} />
-                    </span>
-                    <span className={styles.payCardBadge} title="American Express">
-                      <AmexIcon width={40} height={26} />
-                    </span>
-                    <span className={styles.payCardBadge} title="Google Pay">
-                      <GooglePayIcon width={40} height={26} />
-                    </span>
-                    <span className={styles.payCardBadge} title="Official Qatari Riyal (ر.ق)">
-                      <QarCurrencyIcon width={40} height={26} />
-                    </span>
-                  </div>
-
-                  {/* Payment Trust Bullet Highlights */}
-                  <div className={styles.paymentTrustHighlights}>
-                    <div className={styles.trustHighlightItem}>
-                      <CheckCircle2 size={12} />
-                      <span>100% Buyer Protection Guaranteed</span>
-                    </div>
-                    <div className={styles.trustHighlightItem}>
-                      <CheckCircle2 size={12} />
-                      <span>Qatar Debit & Credit Cards</span>
-                    </div>
-                    <div className={styles.trustHighlightItem}>
-                      <CheckCircle2 size={12} />
-                      <span>Zero Processing Surcharge</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Assurance Badges */}
-                <div className={styles.summaryTrustBox}>
-                  <div className={styles.trustRow}>
-                    <ShieldCheck size={16} />
-                    <span>100% Quality Inspected before dispatch</span>
-                  </div>
-                  <div className={styles.trustRow}>
-                    <Headset size={16} />
-                    <span>24/7 dedicated support via WhatsApp & chat</span>
-                  </div>
-                  <div className={styles.trustRow}>
-                    <Plane size={16} />
-                    <span>Live step-by-step air tracking via Hamad Airport</span>
-                  </div>
-                </div>
-
-                {/* Cart Live Chat Help Card */}
-                <div className={styles.cartChatSupportCard}>
-                  <div className={styles.cartChatText}>
-                    <strong>Need help with your cart?</strong>
-                    <span>Chat live with our Doha support team</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => openChat('I have questions about my cart items or Qatar delivery.')}
-                    className={styles.cartChatBtn}
-                  >
-                    <MessageCircle size={14} />
-                    <span>Chat With Us</span>
-                  </button>
-                </div>
               </div>
             </div>
           </div>
@@ -514,4 +396,3 @@ export default function CartPage() {
     </div>
   );
 }
-

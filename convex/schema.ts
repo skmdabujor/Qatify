@@ -5,6 +5,23 @@ import { authTables } from "@convex-dev/auth/server";
 export default defineSchema({
   ...authTables,
 
+  // Extended Users Table (Custom Customer Profile Attributes)
+  users: defineTable({
+    name: v.optional(v.string()),
+    image: v.optional(v.string()),
+    email: v.optional(v.string()),
+    emailVerificationTime: v.optional(v.number()),
+    phone: v.optional(v.string()),
+    phoneVerificationTime: v.optional(v.number()),
+    isAnonymous: v.optional(v.boolean()),
+    gender: v.optional(v.string()),
+    dob: v.optional(v.string()),
+    nationality: v.optional(v.string()),
+    marketingConsent: v.optional(v.boolean()),
+  })
+    .index("email", ["email"])
+    .index("phone", ["phone"]),
+
   // 1. Product Catalog Table
   products: defineTable({
     productId: v.string(), // custom id like 'qat-001'
@@ -155,6 +172,7 @@ export default defineSchema({
     vipRewardCoupon: v.optional(v.string()),
     customerEmail: v.optional(v.string()),
     customerPhone: v.optional(v.string()),
+    customerNote: v.optional(v.string()),
     address: v.object({
       // AliExpress Qatar Dropship Fields
       country: v.optional(v.string()),

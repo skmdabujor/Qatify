@@ -1126,15 +1126,6 @@
   color: #52525b;
 }
 
-.stickyDeliveryBadge {
-  color: #15803d;
-  font-weight: 500;
-
-  @include mobile {
-    display: none;
-  }
-}
-
 .stickyRightCol {
   display: flex;
   align-items: center;

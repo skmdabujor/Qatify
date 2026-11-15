@@ -45,6 +45,7 @@ export function formatOrderTelegramMessage(
     `💰 <b>Total Amount:</b> <b>QAR ${order.totalQAR.toLocaleString()}</b>`,
     `💳 <b>Payment Method:</b> ${order.paymentMethod.toUpperCase()} (${order.paymentStatus})`,
     `🚚 <b>Tracking Number:</b> <code>${order.trackingNumber}</code>`,
+    ...(order.customerNote ? [`📝 <b>Customer Note:</b> <i>${order.customerNote}</i>`] : []),
     `━━━━━━━━━━━━━━━━━━━━━━`,
     `🛒 <b>Ordered Items (${order.items.length}):</b>`,
     itemsList,

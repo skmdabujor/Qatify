@@ -67,6 +67,7 @@ interface TrackingTimelineProps {
       quantity: number;
       image: string;
     }>;
+    customerNote?: string;
   };
   onRefreshSuccess?: () => void;
 }
@@ -175,6 +176,11 @@ export function TrackingTimeline({ order, onRefreshSuccess }: TrackingTimelinePr
               <MapPin size={12} />
               <span>Destination: {destinationCity}</span>
             </span>
+            {order.customerNote && (
+              <span style={{ fontSize: '12px', color: '#fef08a', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px', wordBreak: 'break-word' }}>
+                <span>📝 Note: {order.customerNote}</span>
+              </span>
+            )}
           </div>
 
           <button

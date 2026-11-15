@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useConvex } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import {
@@ -65,6 +65,7 @@ import { CountryFlag } from '@/components/ui/CountryFlags';
 import styles from './page.module.scss';
 
 function DashboardContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const initialTab = searchParams.get('tab') || 'tracking';
   const initialRole = searchParams.get('role') || 'customer';
@@ -202,9 +203,7 @@ function DashboardContent() {
   };
 
   const handleOpenEmailModal = () => {
-    setEmailInput(userEmail || '');
-    setEmailError('');
-    setIsEmailModalOpen(true);
+    router.push('/login?redirect=/dashboard');
   };
 
   const handleSaveEmail = (e: React.FormEvent) => {
@@ -871,6 +870,26 @@ function DashboardContent() {
                               );
                             })}
                           </div>
+
+                          {ord.customerNote && (
+                            <div
+                              style={{
+                                marginTop: '10px',
+                                padding: '8px 12px',
+                                background: '#fffbeb',
+                                border: '1px solid #fef3c7',
+                                borderRadius: '6px',
+                                fontSize: '12px',
+                                color: '#92400e',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                              }}
+                            >
+                              <strong>Your Note:</strong>
+                              <span>{ord.customerNote}</span>
+                            </div>
+                          )}
 
                           <div className={styles.orderFooterStrip}>
                             <div className={styles.orderTotalWrap}>
@@ -1554,7 +1573,31 @@ function DashboardContent() {
                             return (
                               <tr key={ord._id || ord.id || ord.orderNumber}>
                                 <td><strong>{ord.orderNumber}</strong></td>
-                                <td>{customerName} ({municipality})</td>
+                                <td>
+                                  <div>{customerName} ({municipality})</div>
+                                  {ord.customerNote && (
+                                    <div
+                                      style={{
+                                        marginTop: '4px',
+                                        fontSize: '11px',
+                                        color: '#92400e',
+                                        backgroundColor: '#fef3c7',
+                                        border: '1px solid #fde68a',
+                                        borderRadius: '4px',
+                                        padding: '2px 6px',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '4px',
+                                        maxWidth: '240px',
+                                        wordBreak: 'break-word',
+                                        lineHeight: 1.3,
+                                      }}
+                                      title={`Customer Note: ${ord.customerNote}`}
+                                    >
+                                      <span>📝 Note: {ord.customerNote}</span>
+                                    </div>
+                                  )}
+                                </td>
                                 <td>{ord.items?.length || 1} items ({itemsText})</td>
                                 <td className="price-qar">QAR {ord.totalQAR?.toLocaleString()}</td>
                                 <td>

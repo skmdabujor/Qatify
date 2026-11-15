@@ -103,12 +103,12 @@
 
 .searchSubmitBtn {
   background: $color-accent-orange;
-  color: #ffffff;
+  color: #000000;
   border: none;
   border-radius: 8px;
   padding: 12px 24px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -118,6 +118,7 @@
 
   &:hover {
     background: $color-accent-orange-hover;
+    color: #000000;
   }
 
   @include mobile {
@@ -164,6 +165,10 @@
   padding: 48px 24px;
   text-align: center;
   color: #52525b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .supportHelpRow {

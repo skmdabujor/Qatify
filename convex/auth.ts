@@ -7,7 +7,15 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
     Password({
       profile(params) {
         const email = ((params.email as string) || "").trim().toLowerCase();
-        const user: { email: string; name?: string; phone?: string } = { email };
+        const user: {
+          email: string;
+          name?: string;
+          phone?: string;
+          gender?: string;
+          dob?: string;
+          nationality?: string;
+          marketingConsent?: boolean;
+        } = { email };
         const name = (params.name as string) || (params.fullName as string);
         if (name && typeof name === "string" && name.trim()) {
           user.name = name.trim();
@@ -15,6 +23,25 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         const phone = params.phone as string;
         if (phone && typeof phone === "string" && phone.trim()) {
           user.phone = phone.trim();
+        }
+        const gender = params.gender as string;
+        if (gender && typeof gender === "string" && gender.trim()) {
+          user.gender = gender.trim();
+        }
+        const dob = params.dob as string;
+        if (dob && typeof dob === "string" && dob.trim()) {
+          user.dob = dob.trim();
+        }
+        const nationality = params.nationality as string;
+        if (nationality && typeof nationality === "string" && nationality.trim()) {
+          user.nationality = nationality.trim();
+        }
+        if (typeof params.marketingConsent === "boolean") {
+          user.marketingConsent = params.marketingConsent;
+        } else if (params.marketingConsent === "true") {
+          user.marketingConsent = true;
+        } else if (params.marketingConsent === "false") {
+          user.marketingConsent = false;
         }
         return user;
       },

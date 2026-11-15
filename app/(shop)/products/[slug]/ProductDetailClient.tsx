@@ -27,6 +27,7 @@ import {
   Clock,
   Package,
   RotateCcw,
+  Headset,
   ShoppingCart,
   ShoppingBag,
   Zap,
@@ -633,11 +634,11 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
 
               <div className={styles.trustBadgeItem}>
                 <div className={styles.trustIconWrap}>
-                  <RotateCcw size={18} />
+                  <Headset size={18} />
                 </div>
                 <div className={styles.trustBadgeText}>
-                  <strong>14-day easy</strong>
-                  <span>return policy</span>
+                  <strong>24/7 Support</strong>
+                  <span>WhatsApp &amp; Live Chat</span>
                 </div>
               </div>
             </div>
@@ -990,9 +991,6 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                   {selectedColor && (
                     <span className={styles.stickyVariant}>• {selectedColor}</span>
                   )}
-                  <span className={styles.stickyDeliveryBadge}>
-                    ✈️ 6–10 Days to Qatar
-                  </span>
                 </div>
               </div>
             </div>

@@ -96,6 +96,7 @@ export const createOrder = mutation({
       v.literal("polar")
     ),
     couponCode: v.optional(v.string()),
+    customerNote: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     // 0. Anti-fraud & format normalization: Support AliExpress dropship fields
@@ -384,6 +385,7 @@ export const createOrder = mutation({
       vipRewardCoupon,
       customerEmail: args.address.email?.toLowerCase(),
       customerPhone: resolvedPhone,
+      customerNote: args.customerNote?.trim() || undefined,
       address: {
         country: args.address.country || "Qatar",
         firstName: firstName || resolvedFullName.split(" ")[0] || "Customer",

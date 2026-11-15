@@ -130,6 +130,15 @@ function CheckoutSuccessContent() {
                 ● {order?.paymentStatus === 'paid' ? 'Paid & Authorized' : 'Pending Authorization'}
               </span>
             </div>
+
+            {(order as any)?.customerNote && (
+              <div className={styles.metaRow}>
+                <span className={styles.metaLabel}>Order Note</span>
+                <span className={styles.metaValue} style={{ fontStyle: 'italic', color: '#18181b' }}>
+                  &ldquo;{(order as any).customerNote}&rdquo;
+                </span>
+              </div>
+            )}
           </div>
 
           {/* VIP Reward Coupon Box (Rendered when 20 items were purchased) */}

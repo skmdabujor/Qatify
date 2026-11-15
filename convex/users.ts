@@ -26,18 +26,26 @@ export const viewer = query({
       name: user.name || "",
       email: user.email || "",
       phone: user.phone || "",
+      gender: user.gender || "",
+      dob: user.dob || "",
+      nationality: user.nationality || "",
+      marketingConsent: user.marketingConsent ?? false,
       image: user.image,
     };
   },
 });
 
 /**
- * Update authenticated user's profile details (Name, Phone number).
+ * Update authenticated user's profile details (Name, Phone number, Gender, Date of Birth, Nationality).
  */
 export const updateProfile = mutation({
   args: {
     name: v.optional(v.string()),
     phone: v.optional(v.string()),
+    gender: v.optional(v.string()),
+    dob: v.optional(v.string()),
+    nationality: v.optional(v.string()),
+    marketingConsent: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -45,12 +53,31 @@ export const updateProfile = mutation({
       throw new Error("Unauthorized: Please sign in to update profile.");
     }
 
-    const patch: { name?: string; phone?: string } = {};
+    const patch: {
+      name?: string;
+      phone?: string;
+      gender?: string;
+      dob?: string;
+      nationality?: string;
+      marketingConsent?: boolean;
+    } = {};
     if (args.name !== undefined) {
       patch.name = args.name.trim();
     }
     if (args.phone !== undefined) {
       patch.phone = args.phone.trim();
+    }
+    if (args.gender !== undefined) {
+      patch.gender = args.gender.trim();
+    }
+    if (args.dob !== undefined) {
+      patch.dob = args.dob.trim();
+    }
+    if (args.nationality !== undefined) {
+      patch.nationality = args.nationality.trim();
+    }
+    if (args.marketingConsent !== undefined) {
+      patch.marketingConsent = args.marketingConsent;
     }
 
     await ctx.db.patch(userId, patch);

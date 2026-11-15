@@ -43,7 +43,6 @@ import {
   Layers, Building2,
 } from 'lucide-react';
 import { QatifyLogo } from '@/components/brand/QatifyLogo';
-import { AuthModal } from '@/components/auth/AuthModal';
 import { useShop } from '@/context/ShopContext';
 import { CATEGORIES, PRODUCTS } from '@/data/products';
 import { Product, toProduct } from '@/types/product';
@@ -106,8 +105,6 @@ export const Navbar: React.FC = () => {
   } = useShop();
 
   const viewer = useQuery(api.users.viewer);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'signIn' | 'signUp'>('signIn');
 
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
@@ -609,16 +606,9 @@ export const Navbar: React.FC = () => {
                   <span>Hi, {viewer.name ? viewer.name.split(' ')[0] : viewer.email.split('@')[0]}</span>
                 </Link>
               ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAuthModalMode('signIn');
-                    setIsAuthModalOpen(true);
-                  }}
-                  className={styles.topAuthLink}
-                >
+                <Link href="/login" className={styles.topAuthLink}>
                   <span>Sign In / Sign Up</span>
-                </button>
+                </Link>
               )}
             </div>
           </div>
@@ -993,11 +983,6 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
       )}
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        defaultMode={authModalMode}
-      />
     </header>
   );
 };

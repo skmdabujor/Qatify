@@ -56,7 +56,7 @@ function TrackOrderContent() {
       <div className={styles.searchHero}>
         <h1 className={styles.pageTitle}>Track Your International Air Shipment</h1>
         <p className={styles.pageSub}>
-          Enter your Qatify order reference (e.g. <code>QA-89421</code>) or your tracking code to view live aircraft logistics, customs clearance, and doorstep delivery in Qatar.
+          Enter your Qatify order reference (<code>QA-89421</code>) or your tracking code to view live aircraft logistics, customs clearance, and doorstep delivery in Qatar.
         </p>
 
         <form onSubmit={handleSearch} className={styles.searchBoxWrap}>
@@ -95,7 +95,7 @@ function TrackOrderContent() {
             </div>
           ) : trackingData === null ? (
             <div className={styles.notFoundCard}>
-              <AlertCircle size={40} color="#f59e0b" style={{ marginBottom: '12px' }} />
+              <AlertCircle size={40} color="#f59e0b" style={{ margin: '0 auto 12px' }} />
               <h3 style={{ margin: 0, fontSize: '18px', color: '#0a0a0c' }}>
                 Shipment Record Not Found
               </h3>
@@ -108,7 +108,7 @@ function TrackOrderContent() {
           )
         ) : (
           <div className={styles.notFoundCard}>
-            <Package size={44} color="#d4d4d8" style={{ marginBottom: '14px' }} />
+            <Package size={44} color="#d4d4d8" style={{ margin: '0 auto 14px' }} />
             <h3 style={{ margin: 0, fontSize: '17px', color: '#0a0a0c' }}>
               Awaiting Tracking Reference
             </h3>
