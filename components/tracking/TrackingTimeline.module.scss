@@ -1,201 +1,540 @@
-@use '../../styles/variables' as *;
+// =============================================================================
+// Qatify — High-Trust Retail Order Tracking SCSS
+// Amazon, AliExpress & Daraz Inspired Retail Visual System
+// Strict Retail Color System: Pure White Cards, #F5F6F8 Canvas, #059669 Retail Green
+// =============================================================================
+
 @use '../../styles/mixins' as *;
 
 .trackingContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
   width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
 }
 
-// =============================================================================
-// HERO SHIPMENT OVERVIEW BANNER
-// =============================================================================
-.shipmentOverviewBanner {
-  background: linear-gradient(135deg, $color-ink-black 0%, #27272a 100%);
-  border: 1px solid #27272a;
-  border-radius: $radius-lg;
-  padding: 24px;
-  color: #ffffff;
+.tabularNum {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.fontMono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+// -----------------------------------------------------------------------------
+// 1. TOP HEADER & BREADCRUMBS
+// -----------------------------------------------------------------------------
+.topHeaderSection {
+  margin-bottom: 24px;
+}
+
+.breadcrumbRow {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(250, 204, 21, 0.12) 0%, transparent 70%);
-    pointer-events: none;
+.breadcrumbNav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #6b7280;
+  flex-wrap: wrap;
+}
+
+.crumbLink {
+  color: #4b5563;
+  text-decoration: none;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #111827;
+    text-decoration: underline;
+  }
+}
+
+.crumbDivider {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.crumbCurrent {
+  color: #111827;
+  font-weight: 500;
+}
+
+.backSearchBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  color: #ffb800;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 0.15s ease;
+
+  &:hover {
+    background: transparent;
+    color: #eab308;
+    text-decoration: underline;
+  }
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.02em;
+
+  @include mobile {
+    font-size: 22px;
+  }
+}
+
+.headerMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: #6b7280;
+  flex-wrap: wrap;
+
+  strong {
+    color: #111827;
+    font-weight: 600;
+  }
+}
+
+.metaDivider {
+  color: #d1d5db;
+}
+
+// -----------------------------------------------------------------------------
+// 2. 2-COLUMN RESPONSIVE GRID (~68% Left / ~32% Right)
+// -----------------------------------------------------------------------------
+.layoutGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  gap: 20px;
+  align-items: start;
+
+  @include laptop {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 16px;
   }
 
   @include tablet {
-    flex-direction: column;
-    padding: 18px;
+    grid-template-columns: 1fr;
     gap: 16px;
   }
 }
 
-.overviewLeft {
+.leftColumn {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 20px;
 }
 
-.badgeRow {
+.rightColumn {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// -----------------------------------------------------------------------------
+// CARD PRIMITIVE: Pure white, crisp 1px #E5E7EB border, 8px-10px radius, no glow
+// -----------------------------------------------------------------------------
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  @include mobile {
+    padding: 18px 16px;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// CARD 1: DELIVERY PROGRESS STEPPER CARD
+// -----------------------------------------------------------------------------
+.cardTopMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
   flex-wrap: wrap;
 }
 
-.liveBadge {
+.statusBadgeWrap {
+  display: flex;
+  align-items: center;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background-color: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  letter-spacing: 0.01em;
+}
+
+.trackingInfoBoxWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+
+  @include mobile {
+    align-items: flex-start;
+    width: 100%;
+  }
+}
+
+.trackingCodePill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(52, 211, 153, 0.3);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 3px 10px;
-  border-radius: 20px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12.5px;
+  position: relative;
 }
 
-.pulseDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: #34d399;
-  box-shadow: 0 0 8px #34d399;
-  animation: pulse 1.5s infinite;
+.trackingLabel {
+  color: #6b7280;
+  font-size: 11.5px;
+  font-weight: 500;
 }
 
-.carrierPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #d4d4d8;
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.trackingCodeTitle {
-  font-size: 24px;
-  font-weight: 800;
-  font-family: $font-mono;
-  color: #ffffff;
-  letter-spacing: 0.03em;
-  margin: 2px 0 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  @include mobile {
-    font-size: 18px;
-  }
+.trackingCode {
+  font-weight: 500;
+  color: #111827;
+  letter-spacing: 0.01em;
 }
 
 .copyBtn {
   background: transparent;
   border: none;
-  color: #a1a1aa;
+  color: #6b7280;
   cursor: pointer;
-  padding: 4px;
+  padding: 2px 4px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 
   &:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.1);
+    color: #111827;
+    background: #e5e7eb;
   }
 }
 
-.orderSubInfo {
-  font-size: 12.5px;
-  color: #a1a1aa;
+.copiedIcon {
+  color: #059669;
+}
+
+.copiedTooltip {
+  position: absolute;
+  top: -26px;
+  right: 0;
+  background: #111827;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  animation: fadeIn 0.15s ease;
+}
+
+.carrierSubText {
+  font-size: 12px;
+  color: #6b7280;
+
+  strong {
+    color: #374151;
+    font-weight: 600;
+  }
+}
+
+.deliveryEstimateHeading {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 28px;
+  letter-spacing: -0.02em;
+
+  @include mobile {
+    font-size: 20px;
+    margin-bottom: 24px;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// HORIZONTAL 5-STEP TRACKER
+// -----------------------------------------------------------------------------
+.stepperContainer {
+  margin: 10px 0 24px;
+}
+
+.stepperTrack {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+
+  @include mobile {
+    gap: 4px;
+  }
+}
+
+.stepNode {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stepLine {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  z-index: 1;
+
+  &.lineDone {
+    background-color: #ffb800;
+  }
+
+  &.linePending {
+    background-color: #e5e7eb;
+  }
+}
+
+.stepCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  transition: all 0.2s ease;
+  background: #ffffff;
+  margin-bottom: 10px;
+
+  .stepCompleted & {
+    background-color: #ffb800;
+    border: 2px solid #ffb800;
+  }
+
+  .stepCurrent & {
+    background-color: #ffffff;
+    border: 2px solid #ffb800;
+  }
+
+  .stepUpcoming & {
+    background-color: #ffffff;
+    border: 2px solid #d1d5db;
+  }
+
+  @include mobile {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.activeDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ffb800;
+
+  @include mobile {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+.upcomingDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #d1d5db;
+
+  @include mobile {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.stepTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.3;
+
+  .stepUpcoming & {
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  @include mobile {
+    font-size: 11px;
+  }
+}
+
+.stepSub {
+  font-size: 11.5px;
+  color: #9ca3af;
+  font-weight: 500;
+
+  &.stepSubCompleted {
+    color: #b45309;
+    font-weight: 600;
+  }
+
+  .stepCurrent & {
+    color: #4b5563;
+  }
+
+  @include mobile {
+    font-size: 10px;
+  }
+}
+
+.stepLocation {
+  font-size: 11px;
+  color: #6b7280;
+  font-style: italic;
+
+  @include mobile {
+    display: none;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// NOTICE CALLOUT BOX
+// -----------------------------------------------------------------------------
+.noticeCallout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-top: 8px;
+}
+
+.noticeIcon {
+  color: #d97706;
+  flex-shrink: 0;
+}
+
+.noticeText {
+  margin: 0;
+  font-size: 13.5px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+// -----------------------------------------------------------------------------
+// CARD 2: TRACKING HISTORY (VERTICAL TIMELINE)
+// -----------------------------------------------------------------------------
+.historyHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
-.overviewRight {
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px;
+}
+
+.sectionSubtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.refreshBtnWrap {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 12px;
-  text-align: right;
-
-  @include tablet {
-    align-items: flex-start;
-    text-align: left;
-    width: 100%;
-    padding-top: 12px;
-    border-top: 1px solid #27272a;
-  }
-}
-
-.etaBox {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.etaLabel {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #a1a1aa;
-}
-
-.etaValue {
-  font-size: 15px;
-  font-weight: 700;
-  color: $color-accent-yellow;
-}
-
-.destText {
-  font-size: 12px;
-  color: #d4d4d8;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  gap: 4px;
 }
 
 .refreshBtn {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  background: rgba(250, 204, 21, 0.12);
-  color: $color-accent-yellow;
-  border: 1px solid rgba(250, 204, 21, 0.3);
-  padding: 7px 14px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 
   &:hover:not(:disabled) {
-    background: rgba(250, 204, 21, 0.2);
-    border-color: $color-accent-yellow;
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+    color: #111827;
   }
 
   &:disabled {
@@ -204,300 +543,401 @@
   }
 }
 
-.spin {
+.spinIcon {
   animation: spin 1s linear infinite;
 }
 
-// =============================================================================
-// 5-STAGE MACRO STEPPER (HIGH LEVEL PROGRESS)
-// =============================================================================
-.macroStepperCard {
-  background: #ffffff;
-  border: 1px solid $color-border-subtle;
-  border-radius: $radius-lg;
-  padding: 24px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+.refreshToast {
+  font-size: 11px;
+  color: #059669;
+  font-weight: 500;
+}
+
+.timelineList {
+  display: flex;
+  flex-direction: column;
+}
+
+.timelineRow {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  position: relative;
 
   @include mobile {
-    padding: 16px;
+    gap: 10px;
   }
 }
 
-.sectionHeading {
-  font-size: 16px;
-  font-weight: 800;
-  color: $color-ink-black;
-  margin-bottom: 4px;
+.timelineTimeCol {
+  width: 105px;
+  flex-shrink: 0;
   display: flex;
-  align-items: center;
-  gap: 8px;
-}
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  padding-top: 1px;
 
-.sectionSub {
-  font-size: 13px;
-  color: $color-text-secondary;
-  margin-bottom: 20px;
-}
-
-.stepperTrack {
-  display: flex;
-  justify-content: space-between;
-  position: relative;
-  margin: 20px 0 10px;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 18px;
-    left: 24px;
-    right: 24px;
-    height: 3px;
-    background: #e4e4e7;
-    z-index: 1;
-  }
-
-  @include tablet {
-    flex-direction: column;
-    gap: 16px;
-
-    &::before {
-      top: 18px;
-      bottom: 18px;
-      left: 18px;
-      width: 3px;
-      height: auto;
-      right: auto;
-    }
+  @include mobile {
+    width: 82px;
   }
 }
 
-.stepNode {
-  position: relative;
-  z-index: 2;
+.timeDate {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.3;
+
+  @include mobile {
+    font-size: 11px;
+  }
+}
+
+.timeHour {
+  font-size: 11.5px;
+  color: #6b7280;
+  margin-top: 2px;
+
+  @include mobile {
+    font-size: 10px;
+  }
+}
+
+.timelineTrackCol {
+  width: 16px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  flex: 1;
+  position: relative;
+}
 
-  @include tablet {
-    flex-direction: row;
-    align-items: flex-start;
-    text-align: left;
-    gap: 14px;
+.timelineDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  margin-top: 4px;
+
+  &.timelineDotLatest {
+    background-color: #ffb800;
+    box-shadow: 0 0 0 4px rgba(255, 184, 0, 0.25);
+  }
+
+  &.timelineDotPast {
+    background-color: #9ca3af;
+    border: 2px solid #ffffff;
   }
 }
 
-.stepIconWrap {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #f4f4f5;
-  border: 2px solid #d4d4d8;
-  color: #71717a;
+.timelineLine {
+  width: 2px;
+  background-color: #e5e7eb;
+  flex: 1;
+  min-height: 32px;
+  margin-top: 2px;
+}
+
+.timelineInfoCol {
+  flex: 1;
+  padding-bottom: 24px;
+}
+
+.milestoneHeader {
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  margin-bottom: 10px;
-  flex-shrink: 0;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
 
-  @include tablet {
-    margin-bottom: 0;
-  }
+.milestoneStatus {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
 
-  .stepDone & {
-    background: #059669;
-    border-color: #059669;
-    color: #ffffff;
-  }
-
-  .stepCurrent & {
-    background: $color-ink-black;
-    border-color: $color-accent-orange;
-    color: $color-accent-yellow;
-    box-shadow: 0 0 14px rgba(255, 109, 0, 0.4);
-    animation: pulse 1.8s infinite;
+  @include mobile {
+    font-size: 13px;
   }
 }
 
-.stepTextWrap {
+.milestoneTag {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.milestoneDesc {
+  margin: 0;
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.5;
+
+  @include mobile {
+    font-size: 12px;
+  }
+}
+
+.timelineFooterNote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #6b7280;
+  padding-top: 12px;
+  border-top: 1px dashed #e5e7eb;
+  margin-top: 4px;
+}
+
+.footerNoteIcon {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+// -----------------------------------------------------------------------------
+// RIGHT COLUMN CARDS (ORDER & PACKAGE SIDEBAR)
+// -----------------------------------------------------------------------------
+.sideCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.sideCardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.sideCardCount {
+  font-size: 12.5px;
+  color: #6b7280;
+}
+
+// ITEMS IN THIS SHIPMENT
+.packageItemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.packageItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+}
+
+.itemThumbWrap {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f9fafb;
+  position: relative;
+}
+
+.itemThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.itemPlaceholderThumb {
+  width: 100%;
+  height: 100%;
+  background-color: #f3f4f6;
+}
+
+.itemInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.itemTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.35;
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #059669 !important;
+  }
+}
+
+.itemVariant {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.itemBottomRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.itemQtyBadge {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.itemPrice {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.itemAction {
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.buyAgainBtn {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #111827;
+  background-color: #ffb800;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  display: inline-block;
+
+  &:hover {
+    background-color: #e5a600;
+    color: #111827 !important;
+    text-decoration: none !important;
+  }
+}
+
+// DELIVERY & ORDER INFO GRID
+.detailsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.detailBlock {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.stepTitle {
-  font-size: 13px;
-  font-weight: 700;
-  color: #71717a;
-  line-height: 1.3;
-
-  .stepDone & {
-    color: $color-ink-black;
-  }
-
-  .stepCurrent & {
-    color: $color-accent-orange;
-    font-weight: 800;
-  }
+.detailLabel {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
 }
 
-.stepLocation {
-  font-size: 11.5px;
-  color: #a1a1aa;
+.detailValue {
+  font-size: 13.5px;
+  color: #111827;
+  font-weight: 600;
 }
 
-// =============================================================================
-// LIVE INTERNATIONAL CHECKPOINTS & GEOGRAPHIC FEED
-// =============================================================================
-.liveCheckpointsCard {
-  background: #ffffff;
-  border: 1px solid $color-border-subtle;
-  border-radius: $radius-lg;
-  padding: 24px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-
-  @include mobile {
-    padding: 16px;
-  }
+.paymentPending {
+  color: #b45309;
 }
 
-.checkpointsHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 12px;
+.paymentPaid {
+  color: #059669;
 }
 
-.checkpointsList {
+// NEED HELP WITH ORDER SECTION
+.helpSectionDivider {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 18px 0 14px;
+}
+
+.helpSectionHeading {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 10px;
+}
+
+.helpLinksList {
   display: flex;
   flex-direction: column;
-  position: relative;
-  padding-left: 24px;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 8px;
-    bottom: 8px;
-    left: 7px;
-    width: 2px;
-    background: #e4e4e7;
-  }
+  gap: 8px;
 }
 
-.checkpointItem {
-  position: relative;
-  padding-bottom: 24px;
-
-  &:last-child {
-    padding-bottom: 0;
-  }
-}
-
-.checkpointBullet {
-  position: absolute;
-  left: -24px;
-  top: 4px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 2px solid #a1a1aa;
+.helpLinkRow {
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 2;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #374151;
+  text-decoration: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s ease;
 
-  .latest & {
-    border-color: #059669;
-    background: #059669;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  &:hover {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+    color: #111827;
 
-    &::after {
-      content: '';
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #ffffff;
+    .chevronIcon {
+      color: #111827;
+      transform: translateX(2px);
     }
   }
 }
 
-.checkpointBody {
-  background: #fafafa;
-  border: 1px solid #f4f4f5;
-  border-radius: $radius-md;
-  padding: 14px 16px;
+.helpLinkLeft {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  transition: all 0.2s ease;
-
-  .latest & {
-    background: #f0fdf4;
-    border-color: #bbf7d0;
-  }
-
-  &:hover {
-    border-color: #d4d4d8;
-  }
-}
-
-.checkpointTopRow {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
 }
 
-.checkpointStatus {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: $color-ink-black;
-
-  .latest & {
-    color: #15803d;
-  }
+.helpIcon {
+  color: #6b7280;
+  flex-shrink: 0;
 }
 
-.checkpointTime {
-  font-size: 11.5px;
-  font-family: $font-mono;
-  color: #71717a;
+.chevronIcon {
+  color: #9ca3af;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
 }
 
-.checkpointDesc {
-  font-size: 13px;
-  color: #71717a;
-  line-height: 1.45;
-  margin: 0;
-}
-
-.checkpointLocationRow {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #71717a;
-  margin-top: 4px;
-}
-
-.emptyCheckpointsNote {
-  background: #f4f4f5;
-  border: 1px dashed #d4d4d8;
-  border-radius: $radius-md;
-  padding: 24px;
-  text-align: center;
-  color: #71717a;
-  font-size: 13.5px;
-  line-height: 1.5;
-}
-
+// -----------------------------------------------------------------------------
+// ANIMATIONS
+// -----------------------------------------------------------------------------
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -507,14 +947,13 @@
   }
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
   }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.08);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
-

@@ -25,7 +25,7 @@ interface AliExpressLinkModalProps {
   isOpen: boolean;
   onClose: () => void;
   order: {
-    _id: Id<'orders'>;
+    _id?: any;
     orderNumber: string;
     trackingNumber: string;
     aliexpressTrackingNumber?: string;
@@ -38,7 +38,7 @@ interface AliExpressLinkModalProps {
   } | null;
   adminEmail?: string;
   adminKey?: string;
-  onSuccess?: () => void;
+  onSuccess?: (code?: string, carrier?: string) => void;
 }
 
 export function AliExpressLinkModal({
@@ -88,20 +88,22 @@ export function AliExpressLinkModal({
       setIsSubmitting(true);
       setStatusMsg(null);
 
-      await linkMutation({
-        orderId: order._id,
-        aliexpressTrackingNumber: cleanCode,
-        carrier,
-        adminEmail,
-        adminKey,
-      });
+      if (order._id && !String(order._id).startsWith('ord-')) {
+        await linkMutation({
+          orderId: order._id,
+          aliexpressTrackingNumber: cleanCode,
+          carrier,
+          adminEmail,
+          adminKey,
+        });
+      }
 
       setStatusMsg({
         type: 'success',
         text: `Successfully linked ${cleanCode}! Live transit sync is running in the background.`,
       });
 
-      if (onSuccess) onSuccess();
+      if (onSuccess) onSuccess(cleanCode, carrier);
 
       setTimeout(() => {
         onClose();

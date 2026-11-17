@@ -211,7 +211,8 @@ $cat-orange-glow: rgba(255, 109, 0, 0.25);
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding: 4px 2px 8px;
-  touch-action: pan-x;
+  touch-action: pan-x pan-y;
+  overscroll-behavior-x: contain;
   scroll-padding: 0 12px;
 
   &::-webkit-scrollbar {
@@ -267,31 +268,33 @@ $cat-orange-glow: rgba(255, 109, 0, 0.25);
     width: 68px;
   }
 
-  &:hover {
-    .circleWrapper {
-      transform: translateY(-3px) scale(1.04);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      .circleWrapper {
+        transform: translateY(-3px) scale(1.04);
 
-      &.ringRed {
-        box-shadow: 0 8px 18px rgba(255, 105, 0, 0.28);
-        border-color: #ffb800;
+        &.ringRed {
+          box-shadow: 0 8px 18px rgba(255, 105, 0, 0.28);
+          border-color: #ffb800;
+        }
+
+        &.ringGold {
+          box-shadow: 0 8px 18px rgba(255, 184, 0, 0.32);
+          border-color: #ffb800;
+        }
+
+        .productImg {
+          transform: scale(1.12);
+        }
       }
 
-      &.ringGold {
-        box-shadow: 0 8px 18px rgba(255, 184, 0, 0.32);
-        border-color: #ffb800;
+      .badgePill {
+        transform: translateX(-50%) scale(1.05);
       }
 
-      .productImg {
-        transform: scale(1.12);
+      .title {
+        color: $cat-orange;
       }
-    }
-
-    .badgePill {
-      transform: translateX(-50%) scale(1.05);
-    }
-
-    .title {
-      color: $cat-orange;
     }
   }
 

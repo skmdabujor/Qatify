@@ -24,8 +24,9 @@ export const checkIsAdmin = query({
       const userId = await getAuthUserId(ctx);
       if (userId) {
         const user = await ctx.db.get(userId);
-        if (user?.email) {
-          const normalized = user.email.trim().toLowerCase();
+        const emailToCheck = user?.email || args.email;
+        if (emailToCheck) {
+          const normalized = emailToCheck.trim().toLowerCase();
           const admin = await ctx.db
             .query("admins")
             .withIndex("by_email", (q) => q.eq("email", normalized))
@@ -34,7 +35,7 @@ export const checkIsAdmin = query({
           if (admin) {
             return {
               isAdmin: true,
-              role: admin.role,
+              role: admin.role || ("admin" as const),
               name: admin.name || null,
               email: admin.email,
             };
@@ -45,7 +46,25 @@ export const checkIsAdmin = query({
       // Ignore auth extraction errors
     }
 
-    // 2. Fallback check for adminKey
+    // 2. Direct check for provided email (e.g. from viewer.email or client)
+    if (args.email) {
+      const normalized = args.email.trim().toLowerCase();
+      const admin = await ctx.db
+        .query("admins")
+        .withIndex("by_email", (q) => q.eq("email", normalized))
+        .first();
+
+      if (admin) {
+        return {
+          isAdmin: true,
+          role: admin.role || ("admin" as const),
+          name: admin.name || null,
+          email: admin.email,
+        };
+      }
+    }
+
+    // 3. Fallback check for adminKey
     const expected = process.env.ADMIN_SECRET_KEY;
     if (expected && args.adminKey && args.adminKey.trim() === expected.trim()) {
       return {

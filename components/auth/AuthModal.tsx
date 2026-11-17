@@ -108,16 +108,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
   }, [isOpen, defaultMode]);
 
-  // Keep mode in sync with defaultMode when opened
+  // Keep mode in sync with defaultMode when opened & lock body scroll
   useEffect(() => {
     if (isOpen) {
+      document.body.style.overflow = 'hidden';
       setMode(defaultMode);
       setErrorMessage('');
       setSuccessMessage('');
       setPassword('');
       setResetCode('');
       setNewPassword('');
+    } else {
+      document.body.style.overflow = '';
     }
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen, defaultMode]);
 
   // Handle ESC key press
@@ -293,12 +299,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         if (onSuccess) onSuccess();
       } catch (err: any) {
         console.error('Sign up error:', err);
-        const msg = err?.message || String(err);
-        if (
+        const msg = (err?.message || String(err)).toLowerCase();
+        let isDuplicate =
           msg.includes('already exists') ||
           msg.includes('user already exists') ||
-          (msg.includes('Account') && msg.includes('exists'))
-        ) {
+          (msg.includes('account') && msg.includes('exists')) ||
+          msg.includes('duplicate');
+
+        if (!isDuplicate) {
+          try {
+            isDuplicate = Boolean(await convex.query(api.users.checkEmailExists, { email: cleanEmail }));
+          } catch {
+            // Silently continue
+          }
+        }
+
+        if (isDuplicate) {
           setErrorMessage('An account with this email already exists. Please sign in instead.');
         } else {
           setErrorMessage('Failed to create account. Please check your details and try again.');

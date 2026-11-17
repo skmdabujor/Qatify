@@ -20,6 +20,20 @@ export const viewer = query({
     if (!user) {
       return null;
     }
+    let isAdmin = false;
+    let adminRole: "owner" | "admin" | null = null;
+    if (user.email) {
+      const normalized = user.email.trim().toLowerCase();
+      const admin = await ctx.db
+        .query("admins")
+        .withIndex("by_email", (q) => q.eq("email", normalized))
+        .first();
+      if (admin) {
+        isAdmin = true;
+        adminRole = admin.role || "admin";
+      }
+    }
+
     return {
       _id: user._id,
       _creationTime: user._creationTime,
@@ -31,6 +45,8 @@ export const viewer = query({
       nationality: user.nationality || "",
       marketingConsent: user.marketingConsent ?? false,
       image: user.image,
+      isAdmin,
+      adminRole,
     };
   },
 });

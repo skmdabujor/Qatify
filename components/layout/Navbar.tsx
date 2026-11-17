@@ -7,7 +7,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import {
@@ -16,6 +16,7 @@ import {
   ShoppingBag,
   Heart,
   User,
+  Shield,
   Zap,
   Menu,
   X,
@@ -85,13 +86,30 @@ const getCategoryIcon = (iconName?: string, size = 15) => {
       return <Baby size={size} />;
     case 'Puzzle':
       return <Puzzle size={size} />;
+    case 'Sparkles':
+      return <Sparkles size={size} />;
     default:
       return <LayoutGrid size={size} />;
   }
 };
 
+export const DESKTOP_NAV_LINKS = [
+  { label: 'Mobile Accessories', href: '/shop?cat=mobile-accessories', icon: 'Smartphone' },
+  { label: 'Smartwatches', href: '/shop?cat=smartwatches', icon: 'Watch' },
+  { label: 'GaN Chargers', href: '/shop?cat=chargers-powerbanks', icon: 'Zap' },
+  { label: 'Car Tech', href: '/shop?cat=car-accessories', icon: 'Car' },
+  { label: 'Gaming Gear', href: '/shop?cat=gaming-gear', icon: 'Gamepad2' },
+  { label: 'Smart Home', href: '/shop?cat=smart-home', icon: 'Home' },
+  { label: 'Laptop Gear', href: '/shop?cat=laptop-gear', icon: 'Laptop' },
+  { label: 'Toys & Kids', href: '/shop?cat=toys-kids-learning', icon: 'ToyBrick' },
+  { label: 'New Arrivals', href: '/shop?sort=newest', icon: 'Sparkles' },
+  { label: 'Super Deals', href: '/shop?filter=under-99', icon: 'Zap' },
+];
+
 export const Navbar: React.FC = () => {
   const router = useRouter();
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
   const {
     cartCount,
     cartSubtotal,
@@ -105,6 +123,11 @@ export const Navbar: React.FC = () => {
   } = useShop();
 
   const viewer = useQuery(api.users.viewer);
+  const adminCheck = useQuery(
+    api.admins.checkIsAdmin,
+    viewer?.email ? { email: viewer.email } : 'skip'
+  );
+  const isUserAdmin = Boolean(viewer?.isAdmin || adminCheck?.isAdmin);
 
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
@@ -252,6 +275,25 @@ export const Navbar: React.FC = () => {
     };
   }, []);
 
+  // Close mobile drawer on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsSearchFocused(false);
+    setIsMobileSearchFocused(false);
+  }, [pathname]);
+
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
   // Close dropdowns on ESC key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -375,6 +417,7 @@ export const Navbar: React.FC = () => {
                   key={tag}
                   type="button"
                   className={styles.popularTagPill}
+                  onClick={() => handleQuickTagClick(tag)}
                   onMouseDown={(e) => {
                     e.preventDefault();
                     handleQuickTagClick(tag);
@@ -427,6 +470,11 @@ export const Navbar: React.FC = () => {
                       key={cat.id}
                       type="button"
                       className={styles.categoryChipBtn}
+                      onClick={() => {
+                        handleSelectCategory(cat.slug);
+                        setIsSearchFocused(false);
+                        setIsMobileSearchFocused(false);
+                      }}
                       onMouseDown={(e) => {
                         e.preventDefault();
                         handleSelectCategory(cat.slug);
@@ -601,10 +649,27 @@ export const Navbar: React.FC = () => {
             {/* Right Meta Links: Auth */}
             <div className={styles.topUtilityMeta}>
               {viewer ? (
-                <Link href="/dashboard" className={styles.topAuthLink}>
-                  <User size={13} />
-                  <span>Hi, {viewer.name ? viewer.name.split(' ')[0] : viewer.email.split('@')[0]}</span>
-                </Link>
+                <>
+                  {isUserAdmin && (
+                    <>
+                      <Link
+                        href="/dashboard?role=admin"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.topAdminLink}
+                        title="Access Dropship Operations Admin Panel"
+                      >
+                        <Shield size={12} className={styles.topAdminIcon} />
+                        <span>Admin</span>
+                      </Link>
+                      <span className={styles.topDivider}>|</span>
+                    </>
+                  )}
+                  <Link href="/dashboard" className={styles.topAuthLink}>
+                    <User size={13} />
+                    <span>Hi, {viewer.name ? viewer.name.split(' ')[0] : viewer.email.split('@')[0]}</span>
+                  </Link>
+                </>
               ) : (
                 <Link href="/login" className={styles.topAuthLink}>
                   <span>Sign In / Sign Up</span>
@@ -633,56 +698,58 @@ export const Navbar: React.FC = () => {
               <QatifyLogo variant="dark" size="md" showTagline={false} />
             </div>
 
-            {/* Search Box (Ecobazar Style: Rounded input with search icon & "Search" button) */}
-            <div className={styles.searchContainer} ref={searchContainerRef}>
-              <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
-                <div className={styles.searchInputGroup}>
-                  <Search size={18} className={styles.searchInnerIcon} />
-                  <input
-                    id="catalog-search-input"
-                    type="text"
-                    value={localSearch}
-                    onChange={(e) => {
-                      setLocalSearch(e.target.value);
-                      setIsSearchFocused(true);
-                    }}
-                    onFocus={() => setIsSearchFocused(true)}
-                    onKeyDown={handleSearchKeyDown}
-                    placeholder="Search 1,000+ trending tech, MagSafe, GaN chargers in Qatar..."
-                    className={styles.searchInput}
-                    aria-label="Search catalog"
-                    autoComplete="off"
-                  />
-                  {localSearch && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setLocalSearch('');
-                        setSearchQuery('');
-                        setSelectedIndex(-1);
+            {/* Search Box (Ecobazar Style: Rounded input with search icon & "Search" button) - ONLY on HomePage */}
+            {isHomePage && (
+              <div className={styles.searchContainer} ref={searchContainerRef}>
+                <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
+                  <div className={styles.searchInputGroup}>
+                    <Search size={18} className={styles.searchInnerIcon} />
+                    <input
+                      id="catalog-search-input"
+                      type="text"
+                      value={localSearch}
+                      onChange={(e) => {
+                        setLocalSearch(e.target.value);
+                        setIsSearchFocused(true);
                       }}
-                      className={styles.clearSearchBtn}
-                      aria-label="Clear search input"
-                      title="Clear search text"
-                    >
-                      <X size={14} />
-                    </button>
-                  )}
-                </div>
+                      onFocus={() => setIsSearchFocused(true)}
+                      onKeyDown={handleSearchKeyDown}
+                      placeholder="Search for products, brands and more..."
+                      className={styles.searchInput}
+                      aria-label="Search catalog"
+                      autoComplete="off"
+                    />
+                    {localSearch && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setLocalSearch('');
+                          setSearchQuery('');
+                          setSelectedIndex(-1);
+                        }}
+                        className={styles.clearSearchBtn}
+                        aria-label="Clear search input"
+                        title="Clear search text"
+                      >
+                        <X size={14} />
+                      </button>
+                    )}
+                  </div>
 
-                <button
-                  type="submit"
-                  className={styles.searchSubmitBtn}
-                  aria-label="Search catalog"
-                  title="Search catalog"
-                >
-                  <span>Search</span>
-                </button>
-              </form>
+                  <button
+                    type="submit"
+                    className={styles.searchSubmitBtn}
+                    aria-label="Search catalog"
+                    title="Search catalog"
+                  >
+                    <span>Search</span>
+                  </button>
+                </form>
 
-              {/* Real-time Predictive Suggestions Dropdown */}
-              {isSearchFocused && renderSuggestionsDropdown(false)}
-            </div>
+                {/* Real-time Predictive Suggestions Dropdown */}
+                {isSearchFocused && renderSuggestionsDropdown(false)}
+              </div>
+            )}
 
             {/* Right Action Items: Wishlist + Divider + Cart with text stack */}
             <div className={styles.actionItems}>
@@ -725,53 +792,56 @@ export const Navbar: React.FC = () => {
             </div>
           </div>
 
-          {/* Dedicated Mobile & Tablet Quick Search Bar (< 768px) */}
-          <div className={styles.mobileSearchRow} ref={mobileSearchContainerRef}>
-            <form onSubmit={handleSearchSubmit} className={styles.mobileSearchForm}>
-              <div className={styles.mobileSearchIconWrap}>
-                <Search size={16} />
-              </div>
-              <input
-                id="mobile-catalog-search-input"
-                type="text"
-                value={localSearch}
-                onChange={(e) => {
-                  setLocalSearch(e.target.value);
-                  setIsMobileSearchFocused(true);
-                }}
-                onFocus={() => setIsMobileSearchFocused(true)}
-                onKeyDown={handleSearchKeyDown}
-                placeholder="Search 1,000+ tech gadgets in Qatar..."
-                className={styles.mobileSearchInput}
-                aria-label="Search catalog"
-                autoComplete="off"
-              />
-              {localSearch && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLocalSearch('');
-                    setSearchQuery('');
-                    setSelectedIndex(-1);
+          {/* Dedicated Mobile & Tablet Quick Search Bar (< 768px) - ONLY on HomePage */}
+          {isHomePage && (
+            <div className={styles.mobileSearchRow} ref={mobileSearchContainerRef}>
+              <form onSubmit={handleSearchSubmit} className={styles.mobileSearchForm}>
+                <div className={styles.mobileSearchIconWrap}>
+                  <Search size={16} />
+                </div>
+                <input
+                  id="mobile-catalog-search-input"
+                  type="text"
+                  value={localSearch}
+                  onChange={(e) => {
+                    setLocalSearch(e.target.value);
+                    setIsMobileSearchFocused(true);
                   }}
-                  className={styles.mobileClearBtn}
-                  aria-label="Clear search text"
+                  onFocus={() => setIsMobileSearchFocused(true)}
+                  onKeyDown={handleSearchKeyDown}
+                  placeholder="Search for products, brands and more..."
+                  className={styles.mobileSearchInput}
+                  aria-label="Search catalog"
+                  autoComplete="off"
+                />
+                {localSearch && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLocalSearch('');
+                      setSearchQuery('');
+                      setSelectedIndex(-1);
+                    }}
+                    className={styles.mobileClearBtn}
+                    aria-label="Clear search text"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+                <button
+                  type="submit"
+                  className={styles.mobileSearchSubmitBtn}
+                  aria-label="Submit search"
+                  title="Submit search"
                 >
-                  <X size={14} />
+                  <Search size={18} />
                 </button>
-              )}
-              <button
-                type="submit"
-                className={styles.mobileSearchSubmitBtn}
-                aria-label="Submit search"
-              >
-                <span>Search</span>
-              </button>
-            </form>
+              </form>
 
-            {/* Mobile Predictive Suggestions Dropdown */}
-            {isMobileSearchFocused && renderSuggestionsDropdown(true)}
-          </div>
+              {/* Mobile Predictive Suggestions Dropdown */}
+              {isMobileSearchFocused && renderSuggestionsDropdown(true)}
+            </div>
+          )}
         </div>
       </div>
 
@@ -835,36 +905,11 @@ export const Navbar: React.FC = () => {
 
             {/* Quick Links Horizontal Strip - Qatify Categories (10 Items) */}
             <div className={styles.navLinks}>
-              <Link href="/shop?cat=mobile-accessories" className={styles.navLink}>
-                <span>Mobile Accessories</span>
-              </Link>
-              <Link href="/shop?cat=smartwatches" className={styles.navLink}>
-                <span>Smartwatches</span>
-              </Link>
-              <Link href="/shop?cat=chargers-powerbanks" className={styles.navLink}>
-                <span>GaN Chargers</span>
-              </Link>
-              <Link href="/shop?cat=car-accessories" className={styles.navLink}>
-                <span>Car Tech</span>
-              </Link>
-              <Link href="/shop?cat=gaming-gear" className={styles.navLink}>
-                <span>Gaming Gear</span>
-              </Link>
-              <Link href="/shop?cat=smart-home" className={styles.navLink}>
-                <span>Smart Home</span>
-              </Link>
-              <Link href="/shop?cat=laptop-gear" className={styles.navLink}>
-                <span>Laptop Gear</span>
-              </Link>
-              <Link href="/shop?cat=toys-kids-learning" className={styles.navLink}>
-                <span>Toys & Kids</span>
-              </Link>
-              <Link href="/shop?sort=newest" className={styles.navLink}>
-                <span>New Arrivals</span>
-              </Link>
-              <Link href="/shop?filter=under-99" className={styles.navLink}>
-                <span>Super Deals</span>
-              </Link>
+              {DESKTOP_NAV_LINKS.map((item) => (
+                <Link key={item.label} href={item.href} className={styles.navLink}>
+                  <span>{item.label}</span>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
@@ -879,96 +924,74 @@ export const Navbar: React.FC = () => {
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={styles.closeDrawerBtn}
+                aria-label="Close menu drawer"
               >
                 <X size={20} />
               </button>
             </div>
 
             <div className={styles.mobileDrawerBody}>
-              {/* Quick links */}
+              {/* Account, Track Order & Admin (Matching Desktop Top Bar) */}
               <div className={styles.mobileLinksSection}>
                 <Link
-                  href="/shop?filter=under-99"
+                  href="/track-order"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={styles.mobileDrawerLink}
                 >
-                  <Sparkles size={16} />
-                  <span>Super Deals Under QAR 99</span>
-                </Link>
-                <Link
-                  href="/bundle-builder"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`${styles.mobileDrawerLink} ${styles.bundleMobileHighlight}`}
-                >
-                  <Layers size={16} />
-                  <span>Bundle Studio — Build & Save 20%</span>
+                  <Plane size={16} />
+                  <span>Track Order</span>
                 </Link>
 
-                {/* Wholesale Hub for Mobile Drawer */}
-                <div
-                  className={styles.wholesaleMobileItem}
-                  role="button"
-                  aria-disabled="true"
-                  tabIndex={0}
-                  title="Wholesale Hub — B2B & Bulk Orders (Coming Soon)"
-                  aria-label="Wholesale Hub - Coming Soon for B2B and bulk buyers"
-                  onClick={(e) => {
-                    e.preventDefault();
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                    }
-                  }}
-                >
-                  <div className={styles.wholesaleMobileLeft}>
-                    <Building2 size={16} className={styles.wholesaleMobileIcon} />
-                    <div className={styles.wholesaleMobileTextCol}>
-                      <div className={styles.wholesaleMobileTopRow}>
-                        <span className={styles.wholesaleMobileTitle}>Wholesale Hub</span>
-                        <span className={styles.comingSoonBadgeMobile}>Coming Soon</span>
-                      </div>
-                      <span className={styles.wholesaleMobileSub}>
-                        B2B bulk pricing & Qatar commercial supply launching soon
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <Link
-                  href="/dashboard"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={styles.mobileDrawerLink}
-                >
-                  <User size={16} />
-                  <span>Track Orders & Dashboard</span>
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    openChat();
-                  }}
-                  className={`${styles.mobileDrawerLink} ${styles.chatAccent}`}
-                >
-                  <MessageCircle size={16} />
-                  <span>Talk to Us — Live Chat Support</span>
-                </button>
+                {viewer ? (
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={styles.mobileDrawerLink}
+                  >
+                    <User size={16} />
+                    <span>Hi, {viewer.name ? viewer.name.split(' ')[0] : viewer.email.split('@')[0]}</span>
+                  </Link>
+                ) : (
+                  <Link
+                    href="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={styles.mobileDrawerLink}
+                  >
+                    <User size={16} />
+                    <span>Sign In / Sign Up</span>
+                  </Link>
+                )}
+
+                {isUserAdmin && (
+                  <Link
+                    href="/dashboard?role=admin"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`${styles.mobileDrawerLink} ${styles.adminDrawerLink}`}
+                  >
+                    <Shield size={16} />
+                    <span>Store Admin (Admin)</span>
+                    <span className={styles.adminDrawerBadge}>Admin</span>
+                  </Link>
+                )}
               </div>
 
-              <div className={styles.mobileCategoryHeading}>All Categories</div>
+              {/* Exact Categories & Deals matching Desktop */}
+              <div className={styles.mobileCategoryHeading}>All Categories &amp; Deals</div>
               <div className={styles.mobileCategoryList}>
-                {CATEGORIES.map((cat) => (
+                {DESKTOP_NAV_LINKS.map((item) => (
                   <Link
-                    key={cat.id}
-                    href={`/shop?cat=${cat.slug}`}
+                    key={item.label}
+                    href={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={styles.mobileCategoryItem}
                   >
                     <span className={styles.mobileCatItemLeft}>
                       <span className={styles.mobileCatIcon}>
-                        {getCategoryIcon(cat.icon, 16)}
+                        {getCategoryIcon(item.icon, 16)}
                       </span>
-                      <span>{cat.name}</span>
+                      <span>{item.label}</span>
                     </span>
                   </Link>
                 ))}
@@ -977,7 +1000,7 @@ export const Navbar: React.FC = () => {
 
             <div className={styles.mobileDrawerFooter}>
               <div className={styles.mobileGuaranteeText}>
-                ✈️ 6–10 Days Direct Air Delivery to Doha, Lusail & all Qatar
+                ✈️ 6–10 Days Direct Air Delivery to Doha, Lusail &amp; all Qatar
               </div>
             </div>
           </div>

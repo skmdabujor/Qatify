@@ -91,7 +91,10 @@ interface ShopContextType {
   activeOrder: Order | null;
   savedAddresses: QatarAddress[];
   addAddress: (address: QatarAddress) => void;
-  createOrder: (orderData: Omit<Order, 'id' | 'orderNumber' | 'date' | 'timeline' | 'status' | 'trackingNumber'>) => Order;
+  createOrder: (orderData: Omit<Order, 'id' | 'orderNumber' | 'date' | 'timeline' | 'status' | 'trackingNumber'> & {
+    orderNumber?: string;
+    trackingNumber?: string;
+  }) => Order;
 
   // Toasts
   toasts: ToastMessage[];
@@ -212,7 +215,28 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
       const storedOrders = localStorage.getItem('qatify_orders');
       if (storedOrders) {
-        setOrders(JSON.parse(storedOrders));
+        try {
+          const parsed = JSON.parse(storedOrders);
+          if (Array.isArray(parsed)) {
+            // Clean up legacy QTF- orders to QA- standard
+            const cleanedOrders = parsed.map((ord: any) => {
+              let num = String(ord.orderNumber || '');
+              if (num.startsWith('QTF-')) {
+                const digits = num.replace(/[^0-9]/g, '');
+                num = digits === '73411' ? 'QA-896533' : `QA-${digits}`;
+              }
+              return {
+                ...ord,
+                orderNumber: num || 'QA-896533',
+                trackingNumber: ord.trackingNumber || `QA-EXP-${num.replace(/[^0-9]/g, '') || '896533'}`,
+              };
+            });
+            setOrders(cleanedOrders);
+            localStorage.setItem('qatify_orders', JSON.stringify(cleanedOrders));
+          }
+        } catch (e) {
+          console.error('Error parsing stored orders:', e);
+        }
       }
 
       const storedAddresses = localStorage.getItem('qatify_addresses');
@@ -560,15 +584,18 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
   // Order Actions
   const createOrder = (
-    orderData: Omit<Order, 'id' | 'orderNumber' | 'date' | 'timeline' | 'status' | 'trackingNumber'>
+    orderData: Omit<Order, 'id' | 'orderNumber' | 'date' | 'timeline' | 'status' | 'trackingNumber'> & {
+      orderNumber?: string;
+      trackingNumber?: string;
+    }
   ): Order => {
-    const randomDigits = Math.floor(10000 + Math.random() * 90000);
-    const orderNumber = `QTF-${randomDigits}-QA`;
-    const trackingNumber = `QA-EXP-${Math.floor(1000000 + Math.random() * 9000000)}`;
+    const randomSuffix = Math.floor(100000 + Math.random() * 900000);
+    const orderNumber = orderData.orderNumber || `QA-${randomSuffix}`;
+    const trackingNumber = orderData.trackingNumber || `QA-EXP-${randomSuffix}`;
 
     const newOrder: Order = {
       ...orderData,
-      id: `ord-${Date.now()}`,
+      id: `ord-${orderNumber}`,
       orderNumber,
       trackingNumber,
       date: new Date().toISOString().split('T')[0],
@@ -619,6 +646,11 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     };
 
     setOrders((prev) => [newOrder, ...prev]);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('qatify_last_order_number', orderNumber);
+      } catch (e) {}
+    }
     clearCart();
     showToast('Order Placed Successfully! 🎉', `Ref: ${orderNumber} | Tracked Air 6–10 Days`, 'success');
     return newOrder;

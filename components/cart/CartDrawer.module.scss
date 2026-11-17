@@ -23,7 +23,8 @@
   animation: slideLeft 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   @include mobile {
-    width: 100vw;
+    width: 100%;
+    max-width: 100%;
   }
 }
 

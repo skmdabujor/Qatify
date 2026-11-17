@@ -146,14 +146,14 @@ export const QATAR_MUNICIPALITIES = [
 
 export const CATEGORIES = [
   { id: 'mobile-acc', name: 'Mobile Accessories', slug: 'mobile-accessories', icon: 'Smartphone', count: 42 },
-  { id: 'smartwatches', name: 'Smartwatches & Fit', slug: 'smartwatches', icon: 'Watch', count: 28 },
-  { id: 'toys-kids-learning', name: 'Toys-Kids Learning', slug: 'toys-kids-learning', icon: 'ToyBrick', count: 28 },
-  { id: 'power-chargers', name: 'GaN Chargers & Banks', slug: 'chargers-powerbanks', icon: 'Zap', count: 29 },
-  { id: 'car-tech', name: 'Car Tech & Mounts', slug: 'car-accessories', icon: 'Car', count: 19 },
-  { id: 'gaming-gear', name: 'Gaming & Desk Tech', slug: 'gaming-gear', icon: 'Gamepad2', count: 24 },
+  { id: 'smartwatches', name: 'Smartwatches', slug: 'smartwatches', icon: 'Watch', count: 28 },
+  { id: 'power-chargers', name: 'GaN Chargers', slug: 'chargers-powerbanks', icon: 'Zap', count: 29 },
+  { id: 'car-tech', name: 'Car Tech', slug: 'car-accessories', icon: 'Car', count: 19 },
+  { id: 'gaming-gear', name: 'Gaming Gear', slug: 'gaming-gear', icon: 'Gamepad2', count: 24 },
+  { id: 'smart-home', name: 'Smart Home', slug: 'smart-home', icon: 'Home', count: 22 },
+  { id: 'laptop-gear', name: 'Laptop Gear', slug: 'laptop-gear', icon: 'Laptop', count: 18 },
+  { id: 'toys-kids-learning', name: 'Toys & Kids', slug: 'toys-kids-learning', icon: 'ToyBrick', count: 28 },
   { id: 'drones-cameras', name: 'Drones & Vlogging', slug: 'drones-cameras', icon: 'Camera', count: 16 },
-  { id: 'smart-home', name: 'Smart Home & Ambience', slug: 'smart-home', icon: 'Home', count: 22 },
-  { id: 'laptop-gear', name: 'Laptop Hubs & Stands', slug: 'laptop-gear', icon: 'Laptop', count: 18 },
   { id: 'cables-adapters', name: 'Fast Cables & OTG', slug: 'cables-adapters', icon: 'Cable', count: 31 },
 ];
 

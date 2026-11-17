@@ -66,20 +66,8 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
   const fallbackProduct = initialProduct || PRODUCTS.find((p) => p.slug === slug);
   const product = liveProduct ? toProduct(liveProduct) : fallbackProduct;
 
-  // Gallery active image & auto-slider
+  // Gallery active image
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [isGalleryHovered, setIsGalleryHovered] = useState(false);
-
-  // Auto-slide gallery images every 3.5 seconds when not hovered
-  useEffect(() => {
-    if (!product?.images || product.images.length <= 1 || isGalleryHovered) return;
-
-    const timer = setInterval(() => {
-      setActiveImageIndex((prev) => (prev + 1) % product.images.length);
-    }, 3500);
-
-    return () => clearInterval(timer);
-  }, [product?.images, isGalleryHovered]);
 
   const handlePrevImage = () => {
     if (!product?.images || product.images.length <= 1) return;
@@ -95,17 +83,24 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const dragStartX = React.useRef(0);
+  const dragStartY = React.useRef(0);
   const dragDistance = React.useRef(0);
+  const dragDistanceY = React.useRef(0);
 
-  const handleDragStart = (clientX: number) => {
+  const handleDragStart = (clientX: number, clientY = 0) => {
     setIsDragging(true);
     dragStartX.current = clientX;
+    dragStartY.current = clientY;
     dragDistance.current = 0;
+    dragDistanceY.current = 0;
   };
 
-  const handleDragMove = (clientX: number) => {
+  const handleDragMove = (clientX: number, clientY = 0) => {
     if (!isDragging) return;
     dragDistance.current = clientX - dragStartX.current;
+    if (clientY) {
+      dragDistanceY.current = clientY - dragStartY.current;
+    }
   };
 
   const handleDragEnd = () => {
@@ -113,17 +108,21 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
     setIsDragging(false);
 
     const threshold = 40;
-    if (dragDistance.current > threshold) {
-      // Dragged right -> previous image
-      handlePrevImage();
-    } else if (dragDistance.current < -threshold) {
-      // Dragged left -> next image
-      handleNextImage();
-    } else if (Math.abs(dragDistance.current) < 8) {
-      // Clicked without dragging -> open large image lightbox modal
-      setIsLightboxOpen(true);
+    // Only register image swipe if horizontal movement is dominant over vertical scroll
+    if (
+      Math.abs(dragDistance.current) > threshold &&
+      Math.abs(dragDistance.current) > Math.abs(dragDistanceY.current) * 1.3
+    ) {
+      if (dragDistance.current > 0) {
+        // Dragged right -> previous image
+        handlePrevImage();
+      } else {
+        // Dragged left -> next image
+        handleNextImage();
+      }
     }
     dragDistance.current = 0;
+    dragDistanceY.current = 0;
   };
 
   // Keyboard navigation and scroll-lock for lightbox
@@ -336,19 +335,19 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
             MAIN PRODUCT STAGE: 2 CLEAN COLUMNS (Gallery + Streamlined Buy Box)
         ==================================================================== */}
         <div className={styles.productGrid}>
-          {/* LEFT: Clean Image Gallery with Auto-Slide */}
-          <div
-            className={styles.galleryColumn}
-            onMouseEnter={() => setIsGalleryHovered(true)}
-            onMouseLeave={() => setIsGalleryHovered(false)}
-          >
+          {/* LEFT: Clean Image Gallery */}
+          <div className={styles.galleryColumn}>
             <div
               className={`${styles.mainStage} ${isDragging ? styles.isDragging : ''}`}
-              onMouseDown={(e) => handleDragStart(e.clientX)}
-              onMouseMove={(e) => handleDragMove(e.clientX)}
+              onMouseDown={(e) => handleDragStart(e.clientX, e.clientY)}
+              onMouseMove={(e) => handleDragMove(e.clientX, e.clientY)}
               onMouseUp={handleDragEnd}
-              onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
-              onTouchMove={(e) => handleDragMove(e.touches[0].clientX)}
+              onTouchStart={(e) =>
+                handleDragStart(e.touches[0].clientX, e.touches[0].clientY)
+              }
+              onTouchMove={(e) =>
+                handleDragMove(e.touches[0].clientX, e.touches[0].clientY)
+              }
               onTouchEnd={handleDragEnd}
             >
               {product.discountPercent > 0 && (
@@ -370,6 +369,46 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
               >
                 <ZoomIn size={16} />
               </button>
+
+              {/* Stage Navigation Arrows (Mobile & Desktop) */}
+              {product.images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePrevImage();
+                    }}
+                    className={`${styles.stageArrowBtn} ${styles.prevStageBtn}`}
+                    aria-label="Previous product image"
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNextImage();
+                    }}
+                    className={`${styles.stageArrowBtn} ${styles.nextStageBtn}`}
+                    aria-label="Next product image"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+
+                  {/* Stage Dots Indicator */}
+                  <div className={styles.stageDots} aria-hidden="true">
+                    {product.images.map((_, dotIdx) => (
+                      <span
+                        key={dotIdx}
+                        className={`${styles.stageDot} ${
+                          activeImageIndex === dotIdx ? styles.activeStageDot : ''
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
 
               <img
                 key={activeImageIndex}

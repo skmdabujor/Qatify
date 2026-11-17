@@ -315,8 +315,8 @@ export default defineSchema({
   admins: defineTable({
     email: v.string(), // Normalized lowercase email
     name: v.optional(v.string()),
-    role: v.union(v.literal("owner"), v.literal("admin")),
-    addedAt: v.string(), // ISO timestamp
+    role: v.optional(v.union(v.literal("owner"), v.literal("admin"))),
+    addedAt: v.optional(v.string()), // ISO timestamp
     notes: v.optional(v.string()),
   }).index("by_email", ["email"]),
 

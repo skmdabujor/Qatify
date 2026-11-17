@@ -58,6 +58,18 @@ function ShopContent() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState<boolean>(false);
 
+  // Lock body scroll while mobile filters sheet is open
+  React.useEffect(() => {
+    if (isMobileFiltersOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileFiltersOpen]);
+
   // Toggle brand selection
   const handleToggleBrand = (brand: string) => {
     setSelectedBrands((prev) =>

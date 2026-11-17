@@ -160,6 +160,7 @@ export const HeroBentoSlider: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
+  const wasSwiped = useRef(false);
 
   const totalSlides = HERO_SLIDES.length;
 
@@ -198,18 +199,30 @@ export const HeroBentoSlider: React.FC = () => {
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+    wasSwiped.current = false;
+    setIsPaused(true);
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
+    // Resume auto-slide after brief delay
+    setTimeout(() => setIsPaused(false), 2000);
     if (touchStartX.current === null) return;
     const deltaX = e.changedTouches[0].clientX - touchStartX.current;
     touchStartX.current = null;
-    if (Math.abs(deltaX) > 40) {
+    if (Math.abs(deltaX) > 35) {
+      wasSwiped.current = true;
       if (deltaX < 0) {
         goToSlide(activeIndex + 1);
       } else {
         goToSlide(activeIndex - 1);
       }
+    }
+  };
+
+  const handleSlideClick = (e: React.MouseEvent) => {
+    if (wasSwiped.current) {
+      e.preventDefault();
+      wasSwiped.current = false;
     }
   };
 
@@ -234,6 +247,7 @@ export const HeroBentoSlider: React.FC = () => {
               <Link
                 key={slide.id}
                 href={slide.href}
+                onClick={handleSlideClick}
                 className={`${styles.slide} ${styles[slide.themeClass]}`}
               >
                 <div className={styles.slideGlow} aria-hidden="true" />

@@ -149,6 +149,12 @@ export default function ShopHomePage() {
               width={1200}
               height={260}
               loading="lazy"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.src.endsWith('/placeholder.svg')) {
+                  target.src = '/placeholder.svg';
+                }
+              }}
             />
           </Link>
         </section>

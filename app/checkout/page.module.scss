@@ -1193,12 +1193,13 @@
   padding: 24px 28px;
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.16);
   position: relative;
-  max-height: 90vh;
+  max-height: calc(100dvh - 32px);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   animation: modalScaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 
   @include mobile {
-    padding: 20px 16px;
+    padding: 18px 14px;
     border-radius: 12px;
   }
 }

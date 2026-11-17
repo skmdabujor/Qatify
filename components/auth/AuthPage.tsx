@@ -98,6 +98,7 @@ export function AuthPage({ defaultMode = 'signIn' }: AuthPageProps) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [emailExistsWarning, setEmailExistsWarning] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [isReadOnly, setIsReadOnly] = useState(true);
 
@@ -173,6 +174,7 @@ export function AuthPage({ defaultMode = 'signIn' }: AuthPageProps) {
     setIsGenderOpen(false);
     setIsNationalityOpen(false);
     setErrorMessage('');
+    setEmailExistsWarning(false);
     setSuccessMessage('');
     if (targetMode === 'signIn') {
       window.history.replaceState(null, '', '/login');
@@ -194,6 +196,21 @@ export function AuthPage({ defaultMode = 'signIn' }: AuthPageProps) {
       } catch {
         // Silently continue
       }
+    }
+  };
+
+  // Real-time check if an email already exists in Convex
+  const handleEmailBlur = async () => {
+    const cleanEmail = email.trim().toLowerCase();
+    if (cleanEmail && cleanEmail.includes('@') && cleanEmail.includes('.')) {
+      try {
+        const exists = await convex.query(api.users.checkEmailExists, { email: cleanEmail });
+        setEmailExistsWarning(Boolean(exists));
+      } catch {
+        // Silently continue
+      }
+    } else {
+      setEmailExistsWarning(false);
     }
   };
 
@@ -315,6 +332,7 @@ export function AuthPage({ defaultMode = 'signIn' }: AuthPageProps) {
         // Pre-check for duplicate account in Convex backend
         const emailAlreadyExists = await convex.query(api.users.checkEmailExists, { email: cleanEmail });
         if (emailAlreadyExists) {
+          setEmailExistsWarning(true);
           setErrorMessage('An account with this email already exists. Please sign in instead.');
           setLoading(false);
           return;
@@ -374,12 +392,23 @@ export function AuthPage({ defaultMode = 'signIn' }: AuthPageProps) {
         router.push(redirectUrl);
       } catch (err: any) {
         console.error('Sign up error:', err);
-        const msg = err?.message || String(err);
-        if (
+        const msg = (err?.message || String(err)).toLowerCase();
+        let isDuplicate =
           msg.includes('already exists') ||
           msg.includes('user already exists') ||
-          (msg.includes('Account') && msg.includes('exists'))
-        ) {
+          (msg.includes('account') && msg.includes('exists')) ||
+          msg.includes('duplicate');
+
+        if (!isDuplicate) {
+          try {
+            isDuplicate = Boolean(await convex.query(api.users.checkEmailExists, { email: cleanEmail }));
+          } catch {
+            // Silently continue
+          }
+        }
+
+        if (isDuplicate) {
+          setEmailExistsWarning(true);
           setErrorMessage('An account with this email already exists. Please sign in instead.');
         } else {
           setErrorMessage('Failed to create account. Please check your information and try again.');
@@ -465,7 +494,18 @@ export function AuthPage({ defaultMode = 'signIn' }: AuthPageProps) {
             {errorMessage && (
               <div className={styles.errorAlert} role="alert">
                 <AlertCircle size={17} style={{ flexShrink: 0 }} />
-                <span>{errorMessage}</span>
+                <div className={styles.errorAlertContent}>
+                  <span>{errorMessage}</span>
+                  {(emailExistsWarning || errorMessage.includes('already exists')) && mode === 'signUp' && (
+                    <button
+                      type="button"
+                      onClick={() => handleSwitchMode('signIn')}
+                      className={styles.errorAlertSignInBtn}
+                    >
+                      Sign In Now →
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
@@ -772,14 +812,32 @@ export function AuthPage({ defaultMode = 'signIn' }: AuthPageProps) {
                       id="signup-email"
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (emailExistsWarning) setEmailExistsWarning(false);
+                        if (errorMessage) setErrorMessage('');
+                      }}
+                      onBlur={handleEmailBlur}
                       placeholder="Email ID"
                       required
                       readOnly={isReadOnly}
                       onFocus={() => setIsReadOnly(false)}
                       autoComplete="off"
-                      className={styles.textInput}
+                      className={`${styles.textInput} ${emailExistsWarning ? styles.inputErrorBorder : ''}`}
                     />
+                    {emailExistsWarning && (
+                      <div className={styles.emailExistsInlineNotice}>
+                        <AlertCircle size={14} className={styles.noticeIcon} />
+                        <span>An account with this email already exists.</span>
+                        <button
+                          type="button"
+                          onClick={() => handleSwitchMode('signIn')}
+                          className={styles.inlineSignInLink}
+                        >
+                          Sign In instead →
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* New password */}

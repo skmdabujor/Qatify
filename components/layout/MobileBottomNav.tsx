@@ -7,24 +7,24 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Home, LayoutGrid, Search, ShoppingBag, User } from 'lucide-react';
 import { useShop } from '@/context/ShopContext';
 import styles from './MobileBottomNav.module.scss';
 
 export const MobileBottomNav: React.FC = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const { cartCount, openCart } = useShop();
 
   const handleSearchClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    // Scroll to top and focus mobile search input if available
-    window.scrollTo({ top: 0, behavior: 'smooth' });
     const mobileSearchInput = document.getElementById('mobile-catalog-search-input');
     if (mobileSearchInput) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       setTimeout(() => mobileSearchInput.focus(), 250);
     } else {
-      window.location.href = '/shop';
+      router.push('/shop');
     }
   };
 

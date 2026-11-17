@@ -72,14 +72,15 @@ $breakpoint-wide: 1440px;
   }
 }
 
-// Mobile smooth horizontal swipe container mixin
+// Mobile smooth horizontal swipe container mixin (allows both pan-x swipe & fluid vertical scrolling)
 @mixin touch-scroll-x {
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  touch-action: pan-x;
+  touch-action: pan-x pan-y;
+  overscroll-behavior-x: contain;
 
   &::-webkit-scrollbar {
     display: none;

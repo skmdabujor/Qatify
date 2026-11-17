@@ -2,11 +2,12 @@
 
 // =============================================================================
 // Qatify — Dynamic App Layout Shell
-// Selectively hides standard e-commerce chrome (Navbar, Footer, Cart) during Maintenance Mode
+// Selectively hides standard e-commerce chrome (Navbar, Footer, Cart)
+// during Maintenance Mode AND on the dedicated Admin Ops Console (`/dashboard?role=admin`)
 // =============================================================================
 
-import React from 'react';
-import { usePathname } from 'next/navigation';
+import React, { Suspense } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/components/cart/CartDrawer';
@@ -15,11 +16,14 @@ import { ChatWidget } from '@/components/chat/ChatWidget';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { SubscribeNotificationBanner } from '@/components/popup/SubscribeNotificationBanner';
 
-export function AppLayoutShell({ children }: { children: React.ReactNode }) {
+function LayoutShellInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const isMaintenance = pathname === '/maintenance';
+  const role = searchParams?.get('role');
+  const isAdminDashboard = pathname === '/dashboard' && role === 'admin';
 
-  if (isMaintenance) {
+  if (isMaintenance || isAdminDashboard) {
     return (
       <>
         <ToastContainer />
@@ -42,3 +46,17 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+export function AppLayoutShell({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense
+      fallback={
+        <>
+          <ToastContainer />
+          <main>{children}</main>
+        </>
+      }
+    >
+      <LayoutShellInner>{children}</LayoutShellInner>
+    </Suspense>
+  );
+}

@@ -17,8 +17,9 @@ export async function assertAdminAccess(
     const userId = await getAuthUserId(ctx);
     if (userId) {
       const user = await ctx.db.get(userId);
-      if (user?.email) {
-        const normalized = user.email.trim().toLowerCase();
+      const emailToCheck = user?.email || adminEmail;
+      if (emailToCheck) {
+        const normalized = emailToCheck.trim().toLowerCase();
         const admin = await ctx.db
           .query("admins")
           .withIndex("by_email", (q) => q.eq("email", normalized))
@@ -27,17 +28,34 @@ export async function assertAdminAccess(
         if (admin) {
           return {
             email: admin.email,
-            role: admin.role,
+            role: admin.role || "admin",
             name: admin.name,
           };
         }
       }
     }
   } catch (err) {
-    // getAuthUserId may fail in environments without auth headers; proceed to key check
+    // getAuthUserId may fail in environments without auth headers; proceed to email check
   }
 
-  // 2. Secret Key check (for CLI scripts / seed data / emergency master access)
+  // 2. Direct lookup for adminEmail in the admins database table
+  if (adminEmail) {
+    const normalized = adminEmail.trim().toLowerCase();
+    const admin = await ctx.db
+      .query("admins")
+      .withIndex("by_email", (q) => q.eq("email", normalized))
+      .first();
+
+    if (admin) {
+      return {
+        email: admin.email,
+        role: admin.role || "admin",
+        name: admin.name,
+      };
+    }
+  }
+
+  // 3. Secret Key check (for CLI scripts / seed data / emergency master access)
   const expected = process.env.ADMIN_SECRET_KEY;
   if (expected && adminKey && adminKey.trim() === expected.trim()) {
     return {

@@ -4,7 +4,7 @@
 // Qatify — Slide-Over Cart Drawer with Qatar Free Delivery Progress & Arrival Preview
 // =============================================================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -41,6 +41,18 @@ export const CartDrawer: React.FC = () => {
   const convex = useConvex();
   const [couponCode, setCouponCode] = useState('');
   const [isValidating, setIsValidating] = useState(false);
+
+  // Lock body scroll while cart drawer is open
+  useEffect(() => {
+    if (isCartOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isCartOpen]);
 
   if (!isCartOpen) return null;
 

@@ -92,6 +92,18 @@ function CheckoutContent() {
   const [addressMissingError, setAddressMissingError] = useState(false);
   const addressSectionRef = useRef<HTMLDivElement>(null);
 
+  // Lock body scroll while address modal is open
+  useEffect(() => {
+    if (isAddressModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isAddressModalOpen]);
+
   // Active Shipping Address State
   const initialSavedAddress = savedAddresses?.[0] || null;
   const [address, setAddress] = useState<QatarAddress>(() => {
@@ -506,8 +518,10 @@ function CheckoutContent() {
         paymentMethod,
       });
 
-      // 2. Also register in local ShopContext
+      // 2. Also register in local ShopContext with matching Convex orderNumber
       createOrder({
+        orderNumber: orderResult.orderNumber,
+        trackingNumber: orderResult.trackingNumber,
         items: checkoutItems,
         subtotalQAR: checkoutSubtotal,
         shippingQAR: shippingCost,
@@ -519,6 +533,17 @@ function CheckoutContent() {
         customerNote: orderNote.trim() || undefined,
         estimatedDeliveryWindow: '3–7 Business Days to Qatar',
       });
+
+      if (typeof window !== 'undefined') {
+        try {
+          if (orderResult.orderNumber) {
+            localStorage.setItem('qatify_last_order_number', orderResult.orderNumber);
+          }
+          if (address.email) {
+            localStorage.setItem('qatify_customer_email', address.email.trim().toLowerCase());
+          }
+        } catch (e) {}
+      }
 
       // 3. Clear shopping carts & persist saved card if selected
       if (paymentMethod === 'credit_card') {

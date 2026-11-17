@@ -11,14 +11,20 @@
   flex-direction: column;
   transition: transform $transition-fast, box-shadow $transition-fast, border-color $transition-fast;
 
-  &:hover {
-    border-color: $color-border-medium;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: $color-border-medium;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
 
-    .productImageHover {
-      opacity: 1;
+      .productImageHover {
+        opacity: 1;
+      }
     }
+  }
+
+  &:active {
+    transform: scale(0.99);
   }
 
   // List view variant (Shop catalog list toggle)

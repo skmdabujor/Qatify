@@ -5,7 +5,7 @@
 // Role Switcher: Customer View (5-Stage Air Shipment Tracker) vs Admin View (Analytics)
 // =============================================================================
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useConvex } from 'convex/react';
@@ -46,10 +46,28 @@ import {
   ChevronDown,
   Check,
   Mail,
+  HelpCircle,
+  UploadCloud,
+  Menu,
+  Activity,
+  Terminal,
+  Download,
+  Copy,
+  Eye,
+  RefreshCw,
 } from 'lucide-react';
+import {
+  INITIAL_CROSS_BORDER_ORDERS,
+  INITIAL_LIVE_ACTION_EVENTS,
+  generateManifestCsv,
+  CrossBorderOrder,
+  LiveActionEvent,
+} from '@/data/adminCrossBorderOrders';
 import { TelegramAlertsManager } from '@/components/admin/TelegramAlertsManager';
 import { TrackingTimeline } from '@/components/tracking/TrackingTimeline';
+import { InvoiceModal } from '@/components/orders/InvoiceModal';
 import { AliExpressLinkModal } from '@/components/admin/AliExpressLinkModal';
+import { DEFAULT_RETAIL_ORDERS } from '@/data/retailOrders';
 import { useAuthActions } from '@convex-dev/auth/react';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { useShop } from '@/context/ShopContext';
@@ -64,10 +82,25 @@ import { QatarAddress, Order } from '@/types/product';
 import { CountryFlag } from '@/components/ui/CountryFlags';
 import styles from './page.module.scss';
 
+const SUPPORT_FAQS = [
+  {
+    q: 'How long does Direct Air Express delivery take to Qatar?',
+    a: 'Standard Direct Air Express orders typically arrive at your doorstep in Doha, Lusail, or Al Rayyan within 5–9 business days from fulfillment dispatch.',
+  },
+  {
+    q: 'What should I do if my items are damaged or missing?',
+    a: 'Submit a request using the form on the left or reach out via our WhatsApp concierge with photos within 14 days of delivery for immediate replacement or full refund.',
+  },
+  {
+    q: 'Are Qatar customs and import duties covered?',
+    a: 'Yes! All orders shipped via Qatify include 100% customs clearance at Hamad International Airport (DOH) with zero surprise doorstep delivery fees.',
+  },
+];
+
 function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get('tab') || 'tracking';
+  const initialTab = searchParams.get('tab') || 'orders';
   const initialRole = searchParams.get('role') || 'customer';
 
   // Role State: 'customer' | 'admin'
@@ -77,17 +110,17 @@ function DashboardContent() {
 
   // Customer Active Tab
   const [customerTab, setCustomerTab] = useState<
-    'tracking' | 'orders' | 'addresses' | 'wishlist' | 'support'
+    'orders' | 'tracking' | 'addresses' | 'wishlist' | 'support'
   >(
-    initialTab === 'orders'
-      ? 'orders'
+    initialTab === 'tracking'
+      ? 'tracking'
       : initialTab === 'addresses'
       ? 'addresses'
       : initialTab === 'wishlist'
       ? 'wishlist'
       : initialTab === 'support'
       ? 'support'
-      : 'tracking'
+      : 'orders'
   );
 
   // Admin Active Tab Filter ('all' | 'analytics' | 'pipeline' | 'orders' | 'telegram')
@@ -139,18 +172,36 @@ function DashboardContent() {
   // Server-side Dynamic Admin Access Check against Convex `admins` table
   const adminCheck = useQuery(
     api.admins.checkIsAdmin,
-    adminKey ? { adminKey } : viewer ? {} : 'skip'
+    adminKey
+      ? { adminKey }
+      : viewer?.email
+      ? { email: viewer.email }
+      : userEmail
+      ? { email: userEmail }
+      : {}
   );
-  const isAdmin = Boolean(adminCheck?.isAdmin);
-  const adminRole = adminCheck?.role || null;
-  const adminName = adminCheck?.name || null;
+  const isAdmin = Boolean(adminCheck?.isAdmin || viewer?.isAdmin);
+  const adminRole = adminCheck?.role || viewer?.adminRole || null;
+  const adminName = adminCheck?.name || viewer?.name || null;
 
-  // If role is admin but user is not verified in Convex backend, revert to customer view
+  // Keep or sync admin role state safely
   useEffect(() => {
-    if (!isAdmin && role === 'admin') {
-      setRole('customer');
+    if (initialRole === 'admin') {
+      setRole('admin');
     }
-  }, [isAdmin, role]);
+  }, [initialRole]);
+
+  // Manage body class for admin isolation (hiding storefront elements)
+  useEffect(() => {
+    if (role === 'admin') {
+      document.body.classList.add('admin-ops-mode');
+    } else {
+      document.body.classList.remove('admin-ops-mode');
+    }
+    return () => {
+      document.body.classList.remove('admin-ops-mode');
+    };
+  }, [role]);
 
   const {
     orders,
@@ -231,18 +282,49 @@ function DashboardContent() {
     showToast('Signed Out', 'Switched to Guest Session', 'info');
   };
 
-  const orderFromUrl = searchParams.get('order') || '';
+  const orderFromUrl = searchParams.get('order') || searchParams.get('orderNumber') || '';
 
-  // Customer-scoped orders: fetch only orders matching the user's email
+  // Retrieve stored guest email or last order number from localStorage for instant guest order pickup
+  const [guestEmail, setGuestEmail] = useState('');
+  const [lastOrderNum, setLastOrderNum] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const storedGuestEmail = localStorage.getItem('qatify_customer_email') || '';
+        if (storedGuestEmail) setGuestEmail(storedGuestEmail);
+
+        const storedLastNum = localStorage.getItem('qatify_last_order_number') || '';
+        if (storedLastNum) setLastOrderNum(storedLastNum);
+      } catch (e) {}
+    }
+  }, []);
+
+  const activeCustomerEmail = userEmail || guestEmail;
+
+  // Customer-scoped orders: fetch orders matching the user's email
   const customerLiveOrders = useQuery(
     api.orders.getOrdersByCustomer,
-    userEmail ? { email: userEmail, limit: 30 } : 'skip'
+    activeCustomerEmail ? { email: activeCustomerEmail, limit: 30 } : 'skip'
+  );
+
+  // Single order lookup from Convex (e.g. QA-896533 passed via URL or last checkout)
+  const targetLookupNumber = orderFromUrl || lastOrderNum || '';
+  const singleConvexOrder = useQuery(
+    api.orders.getByOrderNumber,
+    targetLookupNumber ? { orderNumber: targetLookupNumber } : 'skip'
   );
 
   // Admin-scoped live orders: strictly fetched only when user is verified in Convex
   const adminLiveOrders = useQuery(
     api.orders.listRecentOrders,
-    isAdmin ? { adminKey: adminKey || undefined, limit: 50 } : 'skip'
+    isAdmin
+      ? {
+          adminEmail: userEmail || viewer?.email || undefined,
+          adminKey: adminKey || undefined,
+          limit: 50,
+        }
+      : 'skip'
   );
 
   const updateStatus = useMutation(api.orders.updateOrderStatus);
@@ -257,12 +339,643 @@ function DashboardContent() {
           ? customerLiveOrders
           : orders);
 
-  // Dynamic KPIs from actual database orders
-  const totalRevenue = displayOrders.reduce((sum, o) => sum + (o.totalQAR || 0), 0);
-  const pendingDispatchCount = displayOrders.filter((o) => o.status === 'Order Confirmed').length;
-  const inAirTransitCount = displayOrders.filter((o) => o.status === 'Air Hub Transit').length;
-  const customsCount = displayOrders.filter((o) => o.status === 'Qatar Customs (DOH)').length;
-  const deliveredCount = displayOrders.filter((o) => o.status === 'Delivered').length;
+  // Cross-Border Operations State (Amazon Seller Central / AliExpress Logistics style)
+  const [crossBorderOrders, setCrossBorderOrders] = useState<CrossBorderOrder[]>(INITIAL_CROSS_BORDER_ORDERS);
+  const [liveActionEvents, setLiveActionEvents] = useState<LiveActionEvent[]>(INITIAL_LIVE_ACTION_EVENTS);
+  const [opsAdminTab, setOpsAdminTab] = useState<'all' | 'analytics' | 'pipeline' | 'orders' | 'live_feed' | 'telegram'>('all');
+  const [isOpsSidebarOpen, setIsOpsSidebarOpen] = useState(true);
+  const [opsSearch, setOpsSearch] = useState('');
+  const [opsPipelineStage, setOpsPipelineStage] = useState<'all' | 'pending' | 'in_transit' | 'customs' | 'delivered'>('all');
+  const [opsZoneFilter, setOpsZoneFilter] = useState<string>('all');
+  const [opsAwbFilter, setOpsAwbFilter] = useState<'all' | 'linked' | 'unlinked'>('all');
+  const [opsCurrentPage, setOpsCurrentPage] = useState(1);
+  const [copiedAwb, setCopiedAwb] = useState<string | null>(null);
+  const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
+  const [activeDrawerOrder, setActiveDrawerOrder] = useState<CrossBorderOrder | null>(null);
+  const [isTrackingDrawerOpen, setIsTrackingDrawerOpen] = useState(false);
+  const [drawerAwbInput, setDrawerAwbInput] = useState('');
+  const [isManualOrderModalOpen, setIsManualOrderModalOpen] = useState(false);
+  const [isTrackingModalOpen, setIsTrackingModalOpen] = useState(false);
+  const [isInspectDrawerOpen, setIsInspectDrawerOpen] = useState(false);
+  const [selectedInspectionOrder, setSelectedInspectionOrder] = useState<any | null>(null);
+  const [manualOrderData, setManualOrderData] = useState({
+    customerName: '',
+    phone: '+974 ',
+    municipality: 'Doha',
+    zoneNumber: 'Zone 38',
+    streetAddress: 'Al Sadd',
+    productTitle: 'PulsePro ANC Wireless Headphones',
+    priceQAR: 169,
+    quantity: 1,
+    cainiaoAwb: '',
+  });
+
+  const opsSearchInputRef = useRef<HTMLInputElement>(null);
+
+  // Global ⌘K / Ctrl+K keyboard shortcut listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        opsSearchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Sync live orders from Convex into crossBorderOrders
+  useEffect(() => {
+    if (adminLiveOrders && adminLiveOrders.length > 0) {
+      setCrossBorderOrders((prev) => {
+        const liveConverted: CrossBorderOrder[] = adminLiveOrders.map((ord: any) => {
+          const municipality = ord.address?.municipality || 'Doha';
+          const isDoha = municipality.toLowerCase().includes('doha');
+          return {
+            id: ord._id || ord.orderNumber,
+            _id: ord._id,
+            orderNumber: ord.orderNumber,
+            date: ord.date || 'Nov 17, 2026',
+            customerName: ord.address?.fullName || 'Qatar Customer',
+            municipality,
+            municipalityAr: isDoha ? 'العاصمة' : 'مدينة لوسيل',
+            zoneNumber: ord.address?.zoneNumber || 'Zone 24',
+            streetAddress: ord.address?.streetAddress || ord.address?.municipality || 'Al Sadd',
+            fullAddressText: `${ord.address?.streetAddress || ''}, ${ord.address?.zoneNumber || ''}`.trim(),
+            itemsSummary: ord.items?.[0]?.title
+              ? `${ord.items.length}× ${ord.items[0].title.slice(0, 24)}...`
+              : '1× Qatify Tech Gadget',
+            itemsCount: ord.items?.length || 1,
+            totalQAR: ord.totalQAR || 169,
+            paymentStatus: (ord.paymentStatus === 'paid' ? 'Paid' : 'Pending') as any,
+            trackingNumber: ord.trackingNumber || `QAT-AIR-${ord.orderNumber.replace(/[^0-9]/g, '')}`,
+            aliexpressTrackingNumber: ord.aliexpressTrackingNumber,
+            aliexpressCarrier: ord.aliexpressCarrier || 'cainiao',
+            status: ord.status || 'Order Confirmed',
+            stageLabel:
+              ord.status === 'Order Confirmed'
+                ? 'Pending Dispatch'
+                : ord.status === 'Air Hub Transit'
+                ? 'In Air Transit'
+                : ord.status === 'Qatar Customs (DOH)'
+                ? 'Qatar Customs (DOH)'
+                : ord.status || 'Pending Dispatch',
+            stageSubtitle:
+              ord.status === 'Order Confirmed'
+                ? 'Supplier Pack'
+                : ord.status === 'Air Hub Transit'
+                ? 'Flight to DOH'
+                : ord.status === 'Qatar Customs (DOH)'
+                ? 'Hamad Cargo Hub'
+                : 'Doorstep Drops',
+            timeFormatted: ord.date ? `${ord.date.slice(0, 6)}, 14:00` : 'Nov 17, 13:40',
+            phone: ord.address?.phone || '+974 5500 0000',
+            paymentMethod: ord.paymentMethod || 'Apple Pay',
+            netProfitQAR: Math.round((ord.totalQAR || 169) * 0.384),
+            marginPercent: '38.4%',
+            estDelivery: 'Nov 22, 2026',
+            milestoneIndex:
+              ord.status === 'Delivered'
+                ? 5
+                : ord.status === 'Qatar Customs (DOH)'
+                ? 4
+                : ord.status === 'Air Hub Transit'
+                ? 3
+                : 1,
+            scanHistory: [
+              {
+                id: `scan-${ord.orderNumber || Date.now()}-1`,
+                title: ord.status === 'Qatar Customs (DOH)' ? 'Customs Assessment Cleared' : 'Order Confirmed',
+                time: 'Nov 17, 13:40',
+                location: ord.status === 'Qatar Customs (DOH)' ? 'Hamad International Airport Cargo (DOH)' : 'Qatify Checkout',
+                description: `Live order synced from Convex database. Payment settled (${ord.totalQAR || 169} QAR).`,
+                isLatest: true,
+              },
+            ],
+          };
+        });
+
+        const seen = new Set(liveConverted.map((o) => o.orderNumber));
+        const nonDuplicateMock = prev.filter((o) => !seen.has(o.orderNumber));
+        return [...liveConverted, ...nonDuplicateMock];
+      });
+    }
+  }, [adminLiveOrders]);
+
+  // Dynamic KPIs from actual operations orders
+  const opsKpi = useMemo(() => {
+    const totalRev = crossBorderOrders.reduce((sum, o) => sum + (o.totalQAR || 0), 0);
+    const unlinkedCount = crossBorderOrders.filter((o) => !o.aliexpressTrackingNumber).length;
+    const linkedCount = crossBorderOrders.filter((o) => Boolean(o.aliexpressTrackingNumber)).length;
+    const dohaCount = crossBorderOrders.filter((o) => o.municipality.toLowerCase().includes('doha')).length;
+    const lusailCount = crossBorderOrders.filter((o) => o.municipality.toLowerCase().includes('lusail')).length;
+    const avgBasket = crossBorderOrders.length > 0 ? (totalRev / crossBorderOrders.length).toFixed(2) : '176.50';
+    const estMarginQAR = Math.round(totalRev * 0.384);
+
+    return {
+      grossRevenue: totalRev,
+      unlinkedCount,
+      linkedCount,
+      totalOrders: crossBorderOrders.length,
+      dohaCount,
+      lusailCount,
+      avgBasket,
+      estMarginQAR,
+    };
+  }, [crossBorderOrders]);
+
+  const totalRevenue = opsKpi.grossRevenue;
+  const pendingDispatchCount = crossBorderOrders.filter((o) => o.status === 'Order Confirmed').length;
+  const inAirTransitCount = crossBorderOrders.filter((o) => o.status === 'Air Hub Transit').length;
+  const customsCount = crossBorderOrders.filter((o) => o.status === 'Qatar Customs (DOH)').length;
+  const deliveredCount = crossBorderOrders.filter((o) => o.status === 'Delivered').length;
+
+  const filteredOpsOrders = useMemo(() => {
+    let list = crossBorderOrders;
+
+    const q = opsSearch.trim().toLowerCase();
+    if (q) {
+      list = list.filter(
+        (o) =>
+          o.orderNumber.toLowerCase().includes(q) ||
+          o.trackingNumber.toLowerCase().includes(q) ||
+          o.customerName.toLowerCase().includes(q) ||
+          o.itemsSummary.toLowerCase().includes(q) ||
+          (o.aliexpressTrackingNumber && o.aliexpressTrackingNumber.toLowerCase().includes(q)) ||
+          o.zoneNumber.toLowerCase().includes(q) ||
+          o.municipality.toLowerCase().includes(q)
+      );
+    }
+
+    if (opsPipelineStage === 'pending') {
+      list = list.filter((o) => o.status === 'Order Confirmed');
+    } else if (opsPipelineStage === 'in_transit') {
+      list = list.filter((o) => o.status === 'Air Hub Transit');
+    } else if (opsPipelineStage === 'customs') {
+      list = list.filter((o) => o.status === 'Qatar Customs (DOH)');
+    } else if (opsPipelineStage === 'delivered') {
+      list = list.filter((o) => o.status === 'Delivered');
+    }
+
+    if (opsZoneFilter === 'doha') {
+      list = list.filter((o) => o.municipality.toLowerCase().includes('doha'));
+    } else if (opsZoneFilter === 'lusail') {
+      list = list.filter((o) => o.municipality.toLowerCase().includes('lusail'));
+    }
+
+    if (opsAwbFilter === 'linked') {
+      list = list.filter((o) => Boolean(o.aliexpressTrackingNumber));
+    } else if (opsAwbFilter === 'unlinked') {
+      list = list.filter((o) => !o.aliexpressTrackingNumber);
+    }
+
+    return list;
+  }, [crossBorderOrders, opsSearch, opsPipelineStage, opsZoneFilter, opsAwbFilter]);
+
+  const handleStatusChange = async (order: any, newStatus: string) => {
+    if (order._id && !String(order._id).startsWith('ord-')) {
+      try {
+        await updateStatus({
+          adminKey: adminKey || undefined,
+          orderId: order._id,
+          status: newStatus as any,
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    setCrossBorderOrders((prev) =>
+      prev.map((o) => {
+        if (o.id === order.id || o.orderNumber === order.orderNumber) {
+          const stageLabel =
+            newStatus === 'Order Confirmed'
+              ? 'Pending Dispatch'
+              : newStatus === 'Air Hub Transit'
+              ? 'In Air Transit'
+              : newStatus === 'Qatar Customs (DOH)'
+              ? 'Qatar Customs (DOH)'
+              : newStatus;
+          const stageSubtitle =
+            newStatus === 'Order Confirmed'
+              ? 'Supplier Pack'
+              : newStatus === 'Air Hub Transit'
+              ? 'Flight to DOH'
+              : newStatus === 'Qatar Customs (DOH)'
+              ? 'Hamad Cargo Hub'
+              : 'Doorstep Drops';
+          return { ...o, status: newStatus as any, stageLabel, stageSubtitle };
+        }
+        return o;
+      })
+    );
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
+    const newEvent: LiveActionEvent = {
+      id: `act-${Date.now()}`,
+      timestamp: timeStr,
+      type: 'STATUS_CHANGE',
+      orderRef: order.trackingNumber || order.orderNumber,
+      title: `Status → ${newStatus}`,
+      detail: `Operator updated ${order.orderNumber} (${order.customerName}) to [${newStatus}].`,
+      badge: 'STATUS',
+      badgeColor: newStatus === 'Delivered' ? 'green' : newStatus.includes('Customs') ? 'blue' : 'amber',
+    };
+    setLiveActionEvents((prev) => [newEvent, ...prev]);
+    showToast('Status Updated! ✈️', `${order.orderNumber} is now: ${newStatus}`, 'success');
+  };
+
+  const handleCopyAwb = (awb: string, orderRef: string) => {
+    navigator.clipboard.writeText(awb);
+    setCopiedAwb(awb);
+    setTimeout(() => setCopiedAwb(null), 2000);
+    showToast('AWB Copied! 📋', awb, 'success');
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
+    setLiveActionEvents((prev) => [
+      {
+        id: `act-${Date.now()}`,
+        timestamp: timeStr,
+        type: 'AWB_LINK',
+        orderRef,
+        title: 'Cainiao AWB Copied',
+        detail: `Operator copied AliExpress tracking ${awb} for shipment reference ${orderRef}.`,
+        badge: 'CLIPBOARD',
+        badgeColor: 'teal',
+      },
+      ...prev,
+    ]);
+  };
+
+  const handleExportManifest = () => {
+    const csv = generateManifestCsv(filteredOpsOrders);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Qatify_Manifest_DOH_EXP_01_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast('Manifest Exported 📄', 'Air Cargo Manifest CSV downloaded successfully', 'success');
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
+    setLiveActionEvents((prev) => [
+      {
+        id: `act-${Date.now()}`,
+        timestamp: timeStr,
+        type: 'MANIFEST_EXPORT',
+        orderRef: 'DOH-EXP-01',
+        title: 'Manifest Exported',
+        detail: `Exported manifest of ${filteredOpsOrders.length} cross-border orders to CSV.`,
+        badge: 'MANIFEST',
+        badgeColor: 'green',
+      },
+      ...prev,
+    ]);
+  };
+
+  const openTrackingDrawer = (ord: CrossBorderOrder) => {
+    setActiveDrawerOrder(ord);
+    setDrawerAwbInput(ord.aliexpressTrackingNumber || '');
+    setIsTrackingDrawerOpen(true);
+  };
+
+  const handleSaveDrawerAwb = () => {
+    if (!activeDrawerOrder) return;
+    const cleanAwb = drawerAwbInput.trim();
+    if (!cleanAwb) {
+      showToast('AWB Required', 'Please enter a valid tracking code', 'info');
+      return;
+    }
+    setCrossBorderOrders((prev) =>
+      prev.map((o) =>
+        o.orderNumber === activeDrawerOrder.orderNumber
+          ? { ...o, aliexpressTrackingNumber: cleanAwb, aliexpressCarrier: 'cainiao' }
+          : o
+      )
+    );
+    setActiveDrawerOrder((prev) =>
+      prev
+        ? { ...prev, aliexpressTrackingNumber: cleanAwb, aliexpressCarrier: 'cainiao' }
+        : null
+    );
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
+    setLiveActionEvents((prev) => [
+      {
+        id: `act-${Date.now()}`,
+        timestamp: timeStr,
+        type: 'AWB_LINK',
+        orderRef: activeDrawerOrder.orderNumber,
+        title: 'AWB Attached',
+        detail: `Attached AliExpress Cainiao tracking ${cleanAwb} to ${activeDrawerOrder.orderNumber}.`,
+        badge: 'AWB LINK',
+        badgeColor: 'teal',
+      },
+      ...prev,
+    ]);
+    showToast('AWB Saved & Synced! ✈️', `AliExpress code ${cleanAwb} bound to ${activeDrawerOrder.orderNumber}`, 'success');
+  };
+
+  const handlePushDrawerTelegram = () => {
+    if (!activeDrawerOrder) return;
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
+    setLiveActionEvents((prev) => [
+      {
+        id: `act-${Date.now()}`,
+        timestamp: timeStr,
+        type: 'DISPATCH_ALERT',
+        orderRef: activeDrawerOrder.orderNumber,
+        title: 'Telegram Alert Sent',
+        detail: `Pushed status update [${activeDrawerOrder.status}] for ${activeDrawerOrder.orderNumber} to Telegram subscriber channel.`,
+        badge: 'TELEGRAM',
+        badgeColor: 'green',
+      },
+      ...prev,
+    ]);
+    showToast('Telegram Alert Dispatched! ✈️', `Milestone broadcasted to Qatar channel for ${activeDrawerOrder.orderNumber}`, 'success');
+  };
+
+  const toggleSelectOrder = (orderNum: string) => {
+    setSelectedOrderIds((prev) =>
+      prev.includes(orderNum) ? prev.filter((id) => id !== orderNum) : [...prev, orderNum]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedOrderIds.length === filteredOpsOrders.length) {
+      setSelectedOrderIds([]);
+    } else {
+      setSelectedOrderIds(filteredOpsOrders.map((o) => o.orderNumber));
+    }
+  };
+
+  const handleSimulateEvent = () => {
+    const sampleSims = [
+      {
+        badge: 'CUSTOMS DOH',
+        badgeColor: 'blue' as const,
+        title: 'Hamad Cargo Inspection Passed',
+        detail: 'Batch QC-902 customs inspection completed at Hamad Intl Cargo Terminal. Ready for local handover.',
+      },
+      {
+        badge: 'AIR FREIGHT',
+        badgeColor: 'amber' as const,
+        title: 'Flight QR-8840 Landed',
+        detail: 'Qatar Cargo Boeing 777F touched down at DOH runway 34L carrying direct air express containers.',
+      },
+      {
+        badge: 'TELEGRAM DISPATCH',
+        badgeColor: 'teal' as const,
+        title: 'Alert Broadcast Sent',
+        detail: 'Automatic dispatch webhook delivered to Qatify Logistics Bot channel for 10 active manifests.',
+      },
+    ];
+    const picked = sampleSims[Math.floor(Math.random() * sampleSims.length)];
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
+    setLiveActionEvents((prev) => [
+      {
+        id: `act-${Date.now()}`,
+        timestamp: timeStr,
+        type: 'CUSTOMS_SYNC',
+        orderRef: 'DOH-EXP-01',
+        title: picked.title,
+        detail: picked.detail,
+        badge: picked.badge,
+        badgeColor: picked.badgeColor,
+      },
+      ...prev,
+    ]);
+    showToast('Simulation Event Added', picked.title, 'info');
+  };
+
+  const handleCreateManualOrder = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manualOrderData.customerName.trim()) {
+      showToast('Validation Error', 'Customer name is required', 'error');
+      return;
+    }
+    const orderNum = `QA-${Math.floor(100000 + Math.random() * 900000)}`;
+    const trackingRef = `QAT-AIR-${orderNum.replace('QA-', '')}`;
+    const isDoha = manualOrderData.municipality.toLowerCase().includes('doha');
+    const newOrder: CrossBorderOrder = {
+      id: `ord-man-${Date.now()}`,
+      orderNumber: orderNum,
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      customerName: manualOrderData.customerName.trim(),
+      municipality: manualOrderData.municipality,
+      municipalityAr: isDoha ? 'العاصمة' : 'مدينة لوسيل',
+      zoneNumber: manualOrderData.zoneNumber.trim() || 'Zone 38',
+      streetAddress: manualOrderData.streetAddress.trim() || 'Al Sadd',
+      fullAddressText: `${manualOrderData.streetAddress}, ${manualOrderData.zoneNumber}`,
+      itemsSummary: `1× ${manualOrderData.productTitle.trim()}`,
+      itemsCount: manualOrderData.quantity || 1,
+      totalQAR: Number(manualOrderData.priceQAR) || 169,
+      paymentStatus: 'Paid',
+      trackingNumber: trackingRef,
+      aliexpressTrackingNumber: manualOrderData.cainiaoAwb.trim() ? manualOrderData.cainiaoAwb.trim().toUpperCase() : undefined,
+      aliexpressCarrier: 'cainiao',
+      status: 'Order Confirmed',
+      stageLabel: 'Pending Dispatch',
+      stageSubtitle: 'Supplier Pack',
+      timeFormatted: 'Nov 17, 14:00',
+      phone: manualOrderData.phone.trim() || '+974 5500 1234',
+      paymentMethod: 'Apple Pay',
+      netProfitQAR: Math.round((Number(manualOrderData.priceQAR) || 169) * 0.384),
+      marginPercent: '38.4%',
+      estDelivery: 'Nov 24, 2026',
+      milestoneIndex: 1,
+      scanHistory: [
+        {
+          id: `scan-${orderNum}-1`,
+          title: 'Order Confirmed (Manual)',
+          time: 'Nov 17, 14:00',
+          location: 'Qatify Seller Ops Console',
+          description: `Manual order created by ops admin for ${manualOrderData.customerName}.`,
+          isLatest: true,
+        },
+      ],
+    };
+
+    setCrossBorderOrders((prev) => [newOrder, ...prev]);
+    setIsManualOrderModalOpen(false);
+    showToast('Order Created! 📦', `${orderNum} added to Qatar fulfillment pipeline`, 'success');
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
+    setLiveActionEvents((prev) => [
+      {
+        id: `act-${Date.now()}`,
+        timestamp: timeStr,
+        type: 'MANUAL_ORDER',
+        orderRef: orderNum,
+        title: 'Manual Order Injected',
+        detail: `Operator created manual order ${orderNum} for ${newOrder.customerName} (QAR ${newOrder.totalQAR}).`,
+        badge: 'NEW ORDER',
+        badgeColor: 'green',
+      },
+      ...prev,
+    ]);
+
+    setManualOrderData({
+      customerName: '',
+      phone: '+974 ',
+      municipality: 'Doha',
+      zoneNumber: 'Zone 38',
+      streetAddress: 'Al Sadd',
+      productTitle: 'PulsePro ANC Wireless Headphones',
+      priceQAR: 169,
+      quantity: 1,
+      cainiaoAwb: '',
+    });
+  };
+
+  // Retail Orders & Two-View State
+  const [activeTrackingOrder, setActiveTrackingOrder] = useState<any | null>(null);
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+  const [invoiceModalOrder, setInvoiceModalOrder] = useState<any | null>(null);
+  const [orderSearchInput, setOrderSearchInput] = useState('');
+  const [orderFilterTab, setOrderFilterTab] = useState<'all' | 'to_ship' | 'in_transit' | 'delivered'>('all');
+
+  // Combine live orders with authentic retail showcase orders
+  const retailOrders = useMemo(() => {
+    const list: any[] = [];
+    const seenNumbers = new Set<string>();
+
+    const addOrder = (ord: any) => {
+      if (!ord) return;
+      let num = String(ord.orderNumber || ord.id || '');
+      // Clean up legacy QTF- prefix orders to standard QA- format (e.g. QA-896533)
+      if (num.startsWith('QTF-')) {
+        const digits = num.replace(/[^0-9]/g, '');
+        num = digits === '73411' ? 'QA-896533' : `QA-${digits}`;
+      }
+      const dedupKey = num.toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!dedupKey || seenNumbers.has(dedupKey)) return;
+      seenNumbers.add(dedupKey);
+
+      const items = (ord.items || []).map((it: any) => ({
+        title: it.title || it.product?.title || 'Qatify Tech Gadget',
+        quantity: it.quantity || 1,
+        priceQAR: it.priceQAR || it.product?.priceQAR || 0,
+        slug: it.slug || it.product?.slug || 'porodo-7-in-1-electronic-earbud-cleaning-kit',
+        image: it.image || it.product?.images?.[0] || '/placeholder.svg',
+        selectedColor: it.selectedColor,
+        selectedOption: it.selectedOption,
+      }));
+
+      const deliveryEstimate =
+        ord.estimatedDeliveryWindow ||
+        (ord.status === 'In Transit - Doha' || ord.status === 'In Transit'
+          ? 'Arriving Tomorrow, Nov 20'
+          : ord.status === 'Delivered'
+          ? 'Delivered'
+          : 'Arriving Nov 20 – Nov 24, 2026');
+
+      list.push({
+        ...ord,
+        id: ord.id || ord._id || num,
+        orderNumber: num,
+        trackingNumber: ord.trackingNumber || `QA-EXP-${num.replace(/[^0-9]/g, '') || '896533'}`,
+        date: ord.date || (ord._creationTime ? new Date(ord._creationTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Nov 14, 2026'),
+        status: ord.status || 'Order Confirmed',
+        totalQAR: ord.totalQAR || 55,
+        estimatedDeliveryWindow: deliveryEstimate,
+        carrier: ord.carrier || 'Direct Air Express',
+        paymentStatus: ord.paymentStatus || 'paid',
+        paymentMethod: ord.paymentMethod || 'apple_pay',
+        shippingMethod: ord.shippingMethod || 'Direct Air Express (5–9 Business Days)',
+        items: items.length > 0 ? items : (DEFAULT_RETAIL_ORDERS[0]?.items || []),
+        address: ord.address || {
+          fullName: 'Qatar Guest',
+          municipality: 'Doha, Qatar',
+          zoneNumber: 'Zone 24',
+          streetAddress: 'Al Corniche Street',
+          buildingNumber: 'Building 12',
+          phone: '+974 4437 4646',
+        },
+      });
+    };
+
+    // 1. Single order lookup from Convex (e.g. QA-896533 passed via URL or last checkout)
+    if (singleConvexOrder) {
+      addOrder(singleConvexOrder);
+    }
+
+    // 2. Customer live orders matching email
+    if (customerLiveOrders && customerLiveOrders.length > 0) {
+      customerLiveOrders.forEach(addOrder);
+    }
+
+    // 3. Local orders from ShopContext
+    if (orders && orders.length > 0) {
+      orders.forEach(addOrder);
+    }
+
+    // 4. Fallback default retail showcase orders (Order 1 is QA-896533)
+    DEFAULT_RETAIL_ORDERS.forEach(addOrder);
+
+    return list;
+  }, [singleConvexOrder, customerLiveOrders, orders]);
+
+  // Auto-sync activeTrackingOrder if order param is in URL
+  useEffect(() => {
+    if (orderFromUrl && retailOrders.length > 0) {
+      const match = retailOrders.find(
+        (o: any) =>
+          o.orderNumber?.toLowerCase() === orderFromUrl.toLowerCase() ||
+          o.trackingNumber?.toLowerCase() === orderFromUrl.toLowerCase()
+      );
+      if (match) {
+        setActiveTrackingOrder(match);
+      }
+    }
+  }, [orderFromUrl, retailOrders]);
+
+  const filteredOrders = useMemo(() => {
+    let list = retailOrders;
+    const q = orderSearchInput.trim().toLowerCase();
+    if (q) {
+      list = list.filter((ord: any) => {
+        const numMatch = ord.orderNumber?.toLowerCase().includes(q);
+        const trackMatch = ord.trackingNumber?.toLowerCase().includes(q);
+        const itemMatch = ord.items?.some((it: any) => it.title?.toLowerCase().includes(q));
+        return numMatch || trackMatch || itemMatch;
+      });
+    }
+
+    if (orderFilterTab === 'to_ship') {
+      list = list.filter((ord: any) => {
+        const s = (ord.status || '').toLowerCase();
+        return s.includes('confirmed') || s.includes('processing') || s.includes('packed');
+      });
+    } else if (orderFilterTab === 'in_transit') {
+      list = list.filter((ord: any) => {
+        const s = (ord.status || '').toLowerCase();
+        return s.includes('transit') || s.includes('customs') || s.includes('shipped') || s.includes('air') || s.includes('out for delivery');
+      });
+    } else if (orderFilterTab === 'delivered') {
+      list = list.filter((ord: any) => (ord.status || '').toLowerCase().includes('delivered'));
+    }
+
+    return list;
+  }, [retailOrders, orderSearchInput, orderFilterTab]);
+
+  const allCount = retailOrders.length;
+  const toShipCount = retailOrders.filter((ord: any) => {
+    const s = (ord.status || '').toLowerCase();
+    return s.includes('confirmed') || s.includes('processing') || s.includes('packed');
+  }).length;
+  const inTransitCount = retailOrders.filter((ord: any) => {
+    const s = (ord.status || '').toLowerCase();
+    return s.includes('transit') || s.includes('customs') || s.includes('shipped') || s.includes('air') || s.includes('out for delivery');
+  }).length;
+  const retailDeliveredCount = retailOrders.filter((ord: any) => (ord.status || '').toLowerCase().includes('delivered')).length;
 
   // Tracking search input
   const [trackingSearch, setTrackingSearch] = useState(orderFromUrl);
@@ -360,10 +1073,13 @@ function DashboardContent() {
 
   // Support / Return Claim Form State
   const [returnForm, setReturnForm] = useState({
-    orderNumber: orders[0]?.orderNumber || '',
-    reason: 'Damaged or defective item',
+    orderNumber: '',
+    reason: 'Where is my package?',
     comments: '',
   });
+  const [supportFile, setSupportFile] = useState<File | null>(null);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleSearchTracking = (e: React.FormEvent) => {
     e.preventDefault();
@@ -432,1515 +1148,855 @@ function DashboardContent() {
 
   const handleReturnSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    showToast('Return Request Logged! 🔄', 'Qatar customer care will contact you via WhatsApp in 2 hours.');
+    showToast('Support Request Submitted! 📨', 'Our Qatar customer care desk will contact you via WhatsApp / Email shortly.');
     setReturnForm({
-      orderNumber: orders[0]?.orderNumber || '',
-      reason: 'Damaged or defective item',
+      orderNumber: retailOrders[0]?.orderNumber || '',
+      reason: 'Where is my package?',
       comments: '',
     });
+    setSupportFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
-  return (
-    <div className={styles.dashboardPage}>
-      <div className="container">
-        {/* Top Header & Role Switcher Bar */}
-        <div className={styles.topControlBar}>
-          <div className={styles.dashboardTitleBlock}>
-            <h1 className={styles.dashboardHeading}>
-              {role === 'customer'
-                ? 'Qatar Customer Hub & Air Tracking'
-                : 'Qatify Dropship Operations & Admin'}
-            </h1>
-            <p className={styles.dashboardSubheading}>
-              {role === 'customer'
-                ? 'Monitor live international air shipments, manage your Qatar addresses, and view order receipts.'
-                : 'Real-time fulfillment metrics, airport customs throughput, and Qatar cross-border sales.'}
-            </p>
-          </div>
+  // =============================================================================
+  // 1. HIGH-TRUST CONSUMER RETAIL STOREFRONT (AMAZON / ALIEXPRESS / DARAZ STYLE)
+  // Strict Retail Aesthetics: Pure White Cards, #F5F6F8 Canvas, #FFB800 Brand Accent
+  // =============================================================================
+  const renderStatusBadge = (statusStr: string) => {
+    const s = (statusStr || 'Order Confirmed').toLowerCase();
+    if (s.includes('transit') || s.includes('air') || s.includes('customs')) {
+      return (
+        <span className={styles.statusBadgeTransit}>
+          <Plane size={11} strokeWidth={2.4} />
+          <span>{statusStr}</span>
+        </span>
+      );
+    }
+    if (s.includes('delivered')) {
+      return (
+        <span className={styles.statusBadgeDelivered}>
+          <CheckCircle2 size={11} strokeWidth={2.4} />
+          <span>Delivered</span>
+        </span>
+      );
+    }
+    // Default & Order Confirmed (Small badge with shield check icon)
+    return (
+      <span className={styles.statusBadgeConfirmed}>
+        <ShieldCheck size={11} strokeWidth={2.4} />
+        <span>Order Confirmed</span>
+      </span>
+    );
+  };
 
-          {/* Role Switcher Pill */}
-          <div className={styles.roleSwitcherWrap}>
-            <span className={styles.switcherLabel}>View Mode:</span>
-            <div className={styles.rolePillsGroup}>
-              <button
-                type="button"
-                onClick={() => setRole('customer')}
-                className={`${styles.rolePill} ${role === 'customer' ? styles.active : ''}`}
-                aria-pressed={role === 'customer'}
-              >
-                Customer Account
-              </button>
-              <button
-                type="button"
-                onClick={handleSwitchToAdmin}
-                className={`${styles.rolePill} ${role === 'admin' ? styles.active : ''}`}
-                aria-pressed={role === 'admin'}
-              >
-                {isAdmin
-                  ? `🛡️ Store Admin (${adminRole === 'owner' ? 'Owner' : 'Admin'})`
-                  : '🔒 Store Admin'}
-              </button>
-            </div>
-          </div>
-        </div>
+  if (role === 'customer') {
+    return (
+      <div className={styles.retailPage}>
+        <div className={styles.retailContainer}>
+          {/* Breadcrumb Navigation */}
+          <nav className={styles.retailBreadcrumbs} aria-label="Breadcrumb">
+            <Link href="/" className={styles.crumbLink}>Home</Link>
+            <span className={styles.crumbDivider}>/</span>
+            <Link href="/dashboard" className={styles.crumbLink}>Your Account</Link>
+            <span className={styles.crumbDivider}>/</span>
+            <span className={styles.crumbActive}>
+              {customerTab === 'orders' ? 'My Orders' : 'Help & Support'}
+            </span>
+          </nav>
 
-        {/* Dashboard Shell: Dark Sidebar + Clean Canvas */}
-        <div className={styles.dashboardShell}>
-          {/* =================================================================
-              COLLAPSIBLE DARK SIDEBAR (#0A0A0C)
-          ================================================================== */}
-          <aside className={styles.darkSidebar}>
-            {role === 'customer' ? (
-              <>
-                <div className={styles.userProfileMini}>
-                  <div className={styles.userProfileLeft}>
-                    <div className={styles.avatarCircle}>
-                      {viewer?.name ? viewer.name.slice(0, 2).toUpperCase() : (userEmail ? userEmail.slice(0, 2).toUpperCase() : 'QA')}
-                    </div>
-                    <div className={styles.userInfo}>
-                      <span className={styles.userName}>
-                        {isAdmin
-                          ? (adminName || 'Store Admin')
-                          : (viewer?.name || (userEmail ? 'Qatar Customer' : 'Qatar Guest'))}
-                      </span>
-                      <span className={styles.userLocation} title={userEmail || 'Guest Session'}>
-                        {userEmail || 'Guest Account'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className={styles.userStatusPill}>
-                    <span className={styles.statusDot} />
-                    <span>
-                      {isAdmin
-                        ? (adminRole === 'owner' ? 'Store Owner' : 'Admin Authorized')
-                        : (viewer ? 'Verified Convex Account' : (userEmail ? 'Verified Account' : 'Guest Account'))}
-                    </span>
-                  </div>
+          {/* Top Account Profile & Sub-Nav Card (Screenshot 2) */}
+          <div className={styles.retailAccountCard}>
+            <div className={styles.profileTopRow}>
+              <div className={styles.profileUserGroup}>
+                <div className={styles.profileAvatar}>
+                  {viewer?.name
+                    ? viewer.name.slice(0, 2).toUpperCase()
+                    : (userEmail ? userEmail.slice(0, 2).toUpperCase() : 'QG')}
                 </div>
+                <div className={styles.profileInfo}>
+                  <span className={styles.profileName}>
+                    {viewer?.name || (userEmail ? 'Qatar Customer' : 'Qatar Guest')}
+                  </span>
+                  <span className={styles.profileLocation}>
+                    {savedAddresses[0]?.municipality || 'Doha, Qatar'}
+                  </span>
+                </div>
+              </div>
 
-                {/* Account Action: Sign In or Switch/Sign Out */}
-                <div style={{ padding: '0 16px 12px' }}>
-                  {userEmail ? (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px' }}>
-                      <button
-                        type="button"
-                        onClick={handleOpenEmailModal}
-                        style={{
-                          background: 'transparent',
-                          border: 'none',
-                          color: '#a1a1aa',
-                          cursor: 'pointer',
-                          padding: 0,
-                          textDecoration: 'underline',
-                          fontSize: '11px',
-                        }}
-                      >
-                        Switch Account
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleSignOut}
-                        style={{
-                          background: 'transparent',
-                          border: 'none',
-                          color: '#ef4444',
-                          cursor: 'pointer',
-                          padding: 0,
-                          fontSize: '11px',
-                        }}
-                      >
-                        Sign Out
-                      </button>
-                    </div>
-                  ) : (
+              <div>
+                {userEmail ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontSize: '12px', color: '#6b7280' }}>{userEmail}</span>
                     <button
                       type="button"
-                      onClick={handleOpenEmailModal}
-                      style={{
-                        width: '100%',
-                        padding: '6px 10px',
-                        background: '#18181b',
-                        color: '#facc15',
-                        border: '1px solid #27272a',
-                        borderRadius: '6px',
-                        fontSize: '11.5px',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '6px',
-                      }}
+                      onClick={handleSignOut}
+                      className={styles.authBtn}
                     >
-                      <Users size={13} />
-                      <span>Sign In with Email</span>
+                      Sign Out
                     </button>
-                  )}
-                </div>
-
-                <div className={styles.sidebarNav}>
-                  <div className={styles.navGroupTitle}>Order Tracking</div>
-                  <button
-                    type="button"
-                    onClick={() => setCustomerTab('tracking')}
-                    className={`${styles.navItem} ${customerTab === 'tracking' ? styles.active : ''}`}
-                  >
-                    <Plane size={16} />
-                    <span>5-Stage Air Tracker</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setCustomerTab('orders')}
-                    className={`${styles.navItem} ${customerTab === 'orders' ? styles.active : ''}`}
-                  >
-                    <Package size={16} />
-                    <span>My Orders ({orders.length})</span>
-                  </button>
-
-                  <div className={styles.navGroupTitle}>Preferences</div>
-                  <button
-                    type="button"
-                    onClick={() => setCustomerTab('addresses')}
-                    className={`${styles.navItem} ${customerTab === 'addresses' ? styles.active : ''}`}
-                  >
-                    <MapPin size={16} />
-                    <span>Saved Qatar Addresses</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setCustomerTab('wishlist')}
-                    className={`${styles.navItem} ${customerTab === 'wishlist' ? styles.active : ''}`}
-                  >
-                    <Heart size={16} />
-                    <span>Saved Wishlist ({wishlist.length})</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setCustomerTab('support')}
-                    className={`${styles.navItem} ${customerTab === 'support' ? styles.active : ''}`}
-                  >
-                    <Headphones size={16} />
-                    <span>Support & Help Desk</span>
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className={styles.adminBadgeBlock}>
-                  <div className={styles.adminBadgeLeft}>
-                    <span className={styles.adminPill}>
-                      {adminRole === 'owner' ? 'STORE OWNER' : 'DROPSHIP ADMIN'}
-                    </span>
-                    <span className={styles.adminStoreName}>Qatify Qatar Hub</span>
                   </div>
-                  <div className={styles.adminLiveStatus}>
-                    <span className={styles.pulseGreenDot} />
-                    <span>Live Operations</span>
-                  </div>
-                </div>
-
-                <div className={styles.sidebarNav}>
-                  <div className={styles.navGroupTitle}>Operations</div>
-                  <button
-                    type="button"
-                    onClick={() => setAdminTab('all')}
-                    className={`${styles.navItem} ${adminTab === 'all' ? styles.active : ''}`}
+                ) : (
+                  <Link
+                    href="/login"
+                    className={styles.authBtn}
                   >
-                    <SlidersHorizontal size={16} />
-                    <span>All Operations</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setAdminTab('analytics')}
-                    className={`${styles.navItem} ${adminTab === 'analytics' ? styles.active : ''}`}
-                  >
-                    <BarChart3 size={16} />
-                    <span>Store Analytics & KPI</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setAdminTab('pipeline')}
-                    className={`${styles.navItem} ${adminTab === 'pipeline' ? styles.active : ''}`}
-                  >
-                    <Truck size={16} />
-                    <span>Fulfillment Pipeline</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setAdminTab('orders')}
-                    className={`${styles.navItem} ${adminTab === 'orders' ? styles.active : ''}`}
-                  >
-                    <FileText size={16} />
-                    <span>Recent Orders (Qatar)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setAdminTab('telegram')}
-                    className={`${styles.navItem} ${adminTab === 'telegram' ? styles.active : ''}`}
-                  >
-                    <Send size={16} />
-                    <span>Telegram Order Alerts</span>
-                  </button>
-                </div>
-
-                <div className={styles.adminSessionBar}>
-                  <div className={styles.adminSessionText}>
-                    <span className={styles.adminSessionEmail} title={userEmail}>
-                      {userEmail}
-                    </span>
-                    <span className={styles.adminSessionRole}>
-                      {adminRole === 'owner' ? 'Store Owner' : 'Store Admin'}
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setRole('customer')}
-                    className={styles.adminLogoutBtn}
-                    title="Switch to Customer Account view"
-                  >
-                    Customer Hub
-                  </button>
-                </div>
-              </>
-            )}
-
-            <div className={styles.sidebarFooter}>
-              <span className={styles.supportTag}>✈️ Qatar Direct Air Express</span>
-              <span className={styles.hubId}>Hub: DOH-EXP-01</span>
-            </div>
-          </aside>
-
-          {/* =================================================================
-              CLEAN WORKSPACE (#F8F9FA)
-          ================================================================== */}
-          <main className={styles.workspace}>
-            {/* ===============================================================
-                CUSTOMER VIEW
-            ================================================================ */}
-            {role === 'customer' && (
-              <>
-                {/* 3 KPI Summary Cards */}
-                <div className={styles.kpiCardsRow}>
-                  <div
-                    className={`${styles.kpiCard} ${styles.kpiCardClickable}`}
-                    onClick={() => setCustomerTab('tracking')}
-                    role="button"
-                    tabIndex={0}
-                    title="View 5-Stage Air Tracker"
-                  >
-                    <div className={styles.kpiIconWrapYellow}>
-                      <Plane size={20} />
-                    </div>
-                    <div className={styles.kpiContent}>
-                      <span className={styles.kpiLabel}>In-Transit Orders</span>
-                      <strong className={styles.kpiValue}>1 Package</strong>
-                      <span className={styles.kpiSub}>Arriving in 3 days</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.kpiCard}>
-                    <div className={styles.kpiIconWrapRed}>
-                      <Sparkles size={20} />
-                    </div>
-                    <div className={styles.kpiContent}>
-                      <span className={styles.kpiLabel}>Qatify Rewards</span>
-                      <strong className={styles.kpiValue}>420 Points</strong>
-                      <span className={styles.kpiSub}>= QAR 42 Store Credit</span>
-                    </div>
-                  </div>
-
-                  <div
-                    className={`${styles.kpiCard} ${styles.kpiCardClickable}`}
-                    onClick={() => setCustomerTab('wishlist')}
-                    role="button"
-                    tabIndex={0}
-                    title="View Saved Wishlist"
-                  >
-                    <div className={styles.kpiIconWrapDark}>
-                      <Heart size={20} />
-                    </div>
-                    <div className={styles.kpiContent}>
-                      <span className={styles.kpiLabel}>Saved Wishlist</span>
-                      <strong className={styles.kpiValue}>
-                        {wishlist.length} {wishlist.length === 1 ? 'Item' : 'Items'}
-                      </strong>
-                      <span className={styles.kpiSub}>Price drop alerts on</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* TAB 1: 5-STAGE INTERNATIONAL SHIPMENT TRACKER */}
-                {customerTab === 'tracking' && (
-                  <div className={styles.tabContentCard}>
-                    <div className={styles.trackerSearchHeader}>
-                      <div>
-                        <h2 className={styles.cardHeading}>5-Stage International Shipment Tracker</h2>
-                        <p className={styles.cardSub}>
-                          Track air cargo from global export centers to customs clearance at Hamad International Airport (DOH).
-                        </p>
-                      </div>
-
-                      {/* Package Code Search */}
-                      <form onSubmit={handleSearchTracking} className={styles.trackerSearchForm}>
-                        <input
-                          type="text"
-                          placeholder="Search QA-EXP-8849201..."
-                          value={trackingSearch}
-                          onChange={(e) => setTrackingSearch(e.target.value)}
-                          className={styles.trackerSearchInput}
-                        />
-                        <button type="submit" className={styles.trackerSearchBtn}>
-                          <Search size={15} />
-                          <span>Track</span>
-                        </button>
-                      </form>
-                    </div>
-
-                    {selectedOrder ? (
-                      <TrackingTimeline order={selectedOrder} />
-                    ) : (
-                      <div className={styles.activeShipmentBanner} style={{ textAlign: 'center', padding: '40px 20px' }}>
-                        <p>No active shipment selected. Search by your order reference (QA-XXXXXX) or tracking code above.</p>
-                      </div>
-                    )}
-                  </div>
+                    Sign In / Register
+                  </Link>
                 )}
+              </div>
+            </div>
 
-                {/* TAB 2: MY ORDERS & INVOICES */}
-                {customerTab === 'orders' && (
-                  <div className={styles.tabContentCard}>
-                    <h2 className={styles.cardHeading}>Order History & Invoices</h2>
-                    <p className={styles.cardSub}>
-                      All past orders placed with tracked delivery in Qatar.
+            <div className={styles.subNavBar}>
+              <button
+                type="button"
+                onClick={() => {
+                  setCustomerTab('orders');
+                  setActiveTrackingOrder(null);
+                }}
+                className={`${styles.subNavItem} ${customerTab === 'orders' && !activeTrackingOrder ? styles.activeSubNav : ''}`}
+              >
+                <Package size={16} />
+                <span>My Orders</span>
+                <span className={styles.subNavCountBadge}>{retailOrders.length}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCustomerTab('orders');
+                  setActiveTrackingOrder(retailOrders[0] || null);
+                }}
+                className={`${styles.subNavItem} ${activeTrackingOrder ? styles.activeSubNav : ''}`}
+              >
+                <Truck size={16} />
+                <span>Track Latest Package</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCustomerTab('support');
+                  setActiveTrackingOrder(null);
+                }}
+                className={`${styles.subNavItem} ${customerTab === 'support' ? styles.activeSubNav : ''}`}
+              >
+                <HelpCircle size={16} />
+                <span>Help &amp; Support</span>
+              </button>
+            </div>
+          </div>
+
+          {/* TAB 1: MY ORDERS & TRACKING */}
+          {customerTab === 'orders' && (
+            activeTrackingOrder ? (
+              /* VIEW 2 — PACKAGE TRACKING DETAIL VIEW (SCREENSHOT 4) */
+              <TrackingTimeline
+                order={activeTrackingOrder}
+                onBackToOrders={() => setActiveTrackingOrder(null)}
+                onViewInvoice={() => {
+                  setInvoiceModalOrder(activeTrackingOrder);
+                  setIsInvoiceModalOpen(true);
+                }}
+              />
+            ) : (
+              /* VIEW 1 — MY ORDERS LIST (SCREENSHOT 2 & 3) */
+              <div>
+                {/* Search Orders Bar */}
+                <div className={styles.searchRow}>
+                  <div className={styles.searchInputWrapper}>
+                    <Search size={16} className={styles.searchIcon} />
+                    <input
+                      type="text"
+                      placeholder="Order ID or product name..."
+                      value={orderSearchInput}
+                      onChange={(e) => setOrderSearchInput(e.target.value)}
+                      className={styles.searchInput}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {}}
+                    className={styles.searchBtn}
+                  >
+                    Search Orders
+                  </button>
+                </div>
+
+                {/* Filter Tabs */}
+                <div className={styles.filterTabsBar}>
+                  <button
+                    type="button"
+                    onClick={() => setOrderFilterTab('all')}
+                    className={`${styles.filterTabBtn} ${orderFilterTab === 'all' ? styles.activeFilterTab : ''}`}
+                  >
+                    All Orders ({allCount})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOrderFilterTab('to_ship')}
+                    className={`${styles.filterTabBtn} ${orderFilterTab === 'to_ship' ? styles.activeFilterTab : ''}`}
+                  >
+                    To Ship ({toShipCount})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOrderFilterTab('in_transit')}
+                    className={`${styles.filterTabBtn} ${orderFilterTab === 'in_transit' ? styles.activeFilterTab : ''}`}
+                  >
+                    In Transit ({inTransitCount})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOrderFilterTab('delivered')}
+                    className={`${styles.filterTabBtn} ${orderFilterTab === 'delivered' ? styles.activeFilterTab : ''}`}
+                  >
+                    Delivered ({retailDeliveredCount})
+                  </button>
+                </div>
+
+                {/* Orders Cards List */}
+                {filteredOrders.length === 0 ? (
+                  <div className={styles.emptyOrdersCard}>
+                    <Package size={40} color="#9ca3af" style={{ margin: '0 auto 12px auto' }} />
+                    <h3 className={styles.emptyTitle}>No matching orders found</h3>
+                    <p className={styles.emptySubtitle}>
+                      {orderSearchInput
+                        ? `We couldn't find any orders matching "${orderSearchInput}". Try another search term or clear the filter.`
+                        : 'You do not have any orders in this category yet.'}
                     </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOrderSearchInput('');
+                        setOrderFilterTab('all');
+                      }}
+                      className={styles.clearFilterBtn}
+                    >
+                      View All Orders
+                    </button>
+                  </div>
+                ) : (
+                  <div className={styles.orderCardList}>
+                    {filteredOrders.map((ord: any) => {
+                      const firstItem = ord.items?.[0] || {};
+                      const itemTitle = firstItem.title || 'Qatify Tech Item';
+                      const itemQty = firstItem.quantity || 1;
+                      const itemUnitPrice = firstItem.priceQAR || 0;
+                      const itemImage = firstItem.image || '/placeholder.svg';
+                      const itemSlug = firstItem.slug || 'porodo-7-in-1-electronic-earbud-cleaning-kit';
 
-                    <div className={styles.ordersList}>
-                      {displayOrders.map((ord) => (
-                        <div key={ord.id || ord.orderNumber} className={styles.orderListItem}>
-                          <div className={styles.orderHeaderStrip}>
-                            <div className={styles.orderNumberWrap}>
-                              <strong>{ord.orderNumber}</strong>
-                              <span className={styles.orderDate}>{ord.date}</span>
+                      return (
+                        <div key={ord.id || ord.orderNumber} className={styles.retailOrderCard}>
+                          {/* Card Header Bar (#F9FAFB) */}
+                          <div className={styles.cardHeaderBar}>
+                            <div className={styles.cardHeaderLeft}>
+                              <div className={styles.metaCol}>
+                                <span className={styles.metaLabel}>ORDER PLACED</span>
+                                <span className={styles.metaVal}>{ord.date}</span>
+                              </div>
+                              <div className={styles.metaCol}>
+                                <span className={styles.metaLabel}>TOTAL</span>
+                                <span className={styles.metaValBold}>
+                                  QAR {Number(ord.totalQAR || 0).toFixed(2)}
+                                </span>
+                              </div>
+                              <div className={styles.metaCol}>
+                                <span className={styles.metaLabel}>SHIP TO</span>
+                                <span className={styles.metaVal}>
+                                  {ord.address?.municipality || 'Doha, Qatar'}
+                                </span>
+                              </div>
                             </div>
-                            <span
-                              className={`${styles.orderStatusBadge} ${
-                                ord.status === 'Delivered'
-                                  ? styles.delivered
-                                  : styles.inTransit
-                              }`}
-                            >
-                              {ord.status}
-                            </span>
+
+                            <div className={styles.cardHeaderRight}>
+                              <span className={styles.orderNumText}>
+                                <strong>{ord.orderNumber}</strong>
+                              </span>
+                              {renderStatusBadge(ord.status)}
+                            </div>
                           </div>
 
-                          <div className={styles.orderItemsPreview}>
-                            {ord.items.map((item: any, idx: number) => {
-                              const imgUrl = item.image || item.product?.images?.[0] || '/placeholder.svg';
-                              const itemTitle = item.title || item.product?.title || 'Qatar Tech Item';
-                              const itemPrice = item.priceQAR || item.product?.priceQAR || 0;
-                              return (
-                                <div key={idx} className={styles.orderThumbWrap}>
-                                  <img
-                                    src={imgUrl}
-                                    alt={itemTitle}
-                                    className={styles.orderThumbImg}
-                                    onError={(e) => {
-                                      const target = e.currentTarget;
-                                      if (!target.src.endsWith('/placeholder.svg')) {
-                                        target.src = '/placeholder.svg';
-                                      }
-                                    }}
-                                  />
-                                  <div className={styles.orderItemInfo}>
-                                    <span className={styles.orderItemTitle}>
-                                      {itemTitle}
-                                    </span>
-                                    <span className={styles.orderItemQty}>
-                                      Qty: {item.quantity} • QAR {itemPrice}
-                                    </span>
-                                  </div>
+                          {/* Card Body */}
+                          <div className={styles.cardBodyBar}>
+                            <div className={styles.bodyProductLeft}>
+                              <div className={styles.productThumbBox}>
+                                <img
+                                  src={itemImage}
+                                  alt={itemTitle}
+                                  className={styles.productThumbImg}
+                                  onError={(e) => {
+                                    const target = e.currentTarget;
+                                    if (!target.src.endsWith('/placeholder.svg')) {
+                                      target.src = '/placeholder.svg';
+                                    }
+                                  }}
+                                />
+                              </div>
+
+                              <div className={styles.productInfoCol}>
+                                <div className={styles.arrivalDateHeading}>
+                                  {ord.estimatedDeliveryWindow}
                                 </div>
-                              );
-                            })}
-                          </div>
-
-                          {ord.customerNote && (
-                            <div
-                              style={{
-                                marginTop: '10px',
-                                padding: '8px 12px',
-                                background: '#fffbeb',
-                                border: '1px solid #fef3c7',
-                                borderRadius: '6px',
-                                fontSize: '12px',
-                                color: '#92400e',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                              }}
-                            >
-                              <strong>Your Note:</strong>
-                              <span>{ord.customerNote}</span>
-                            </div>
-                          )}
-
-                          <div className={styles.orderFooterStrip}>
-                            <div className={styles.orderTotalWrap}>
-                              <span>Total: </span>
-                              <strong className="price-qar">
-                                QAR {ord.totalQAR.toLocaleString()}
-                              </strong>
+                                <Link
+                                  href={`/products/${itemSlug}`}
+                                  className={styles.productTitleLink}
+                                  title={itemTitle}
+                                >
+                                  {itemTitle}
+                                </Link>
+                                <div className={styles.productSubMeta}>
+                                  Qty: {itemQty} • Unit Price: QAR {itemUnitPrice}.00 • Tracking: {ord.trackingNumber}
+                                </div>
+                              </div>
                             </div>
 
-                            <div className={styles.orderActions}>
+                            {/* Action Button: Track Package */}
+                            <div className={styles.bodyButtonStack}>
                               <button
                                 type="button"
                                 onClick={() => {
-                                  setSelectedOrder(ord);
-                                  setCustomerTab('tracking');
+                                  setActiveTrackingOrder(ord);
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
                                 }}
-                                className={styles.trackOrderAction}
+                                className={styles.trackPkgBtn}
                               >
-                                <Plane size={14} />
-                                <span>Track ({ord.trackingNumber})</span>
+                                Track Package
                               </button>
                             </div>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
                 )}
+              </div>
+            )
+          )}
 
-                {/* TAB 3: SAVED QATAR ADDRESSES */}
-                {customerTab === 'addresses' && (
-                  <div className={styles.tabContentCard}>
-                    <div className={styles.addressHeader}>
-                      <div>
-                        <h2 className={styles.cardHeading}>Saved Qatar Addresses</h2>
-                        <p className={styles.cardSub}>
-                          Qatar National Address standard (Zone, Street, Building) for rapid doorstep shipping.
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setIsAddAddressOpen(true)}
-                        className={styles.addNewAddrBtn}
+          {/* TAB 2: HELP & SUPPORT */}
+          {customerTab === 'support' && (
+            <div className={styles.helpCenterContainer}>
+              <div className={styles.helpCenterGrid}>
+                {/* LEFT COLUMN (62%): Clean Order Support Form */}
+                <div className={styles.helpFormCard}>
+                  <div className={styles.helpCardHeader}>
+                    <h2 className={styles.helpCardTitle}>Submit a Support Request</h2>
+                    <p className={styles.helpCardDesc}>
+                      Have an inquiry regarding delivery, item condition, or returns? Fill out the details below and our Doha customer care team will assist you.
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleReturnSubmit} className={styles.supportForm}>
+                    {/* Order Number / Reference */}
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>
+                        Order Number / Reference <span className={styles.requiredStar}>*</span>
+                      </label>
+                      <select
+                        className={styles.formSelect}
+                        value={returnForm.orderNumber || (retailOrders[0]?.orderNumber ?? '')}
+                        onChange={(e) =>
+                          setReturnForm({ ...returnForm, orderNumber: e.target.value })
+                        }
+                        required
                       >
-                        <Plus size={15} />
-                        <span>Add New Address</span>
-                      </button>
+                        {retailOrders.map((ord: any) => (
+                          <option key={ord.id} value={ord.orderNumber}>
+                            {ord.orderNumber} — {ord.items[0]?.name ? ord.items[0].name.slice(0, 36) + '...' : 'Air Shipment'}
+                          </option>
+                        ))}
+                        <option value="GENERAL">Other / General Order Inquiry</option>
+                      </select>
                     </div>
 
-                    <div className={styles.addressesGrid}>
-                      {savedAddresses.map((addr, idx) => (
-                        <div key={idx} className={styles.addressCard}>
-                          <div className={styles.addressCardTop}>
-                            <strong className={styles.addrRecipient}>
-                              {addr.firstName && addr.lastName ? `${addr.firstName} ${addr.lastName}` : addr.fullName}
-                            </strong>
-                            {addr.isDefault && (
-                              <span className={styles.defaultPill}>DEFAULT</span>
-                            )}
-                          </div>
-                          <div className={styles.addrPhone}>
-                            <Phone size={13} />
-                            <span>{addr.phoneCountryCode ? `+${addr.phoneCountryCode} ${addr.phoneNumber}` : addr.phone}</span>
-                          </div>
-                          {addr.email && (
-                            <div className={styles.addrPhone} style={{ marginTop: '2px', color: '#6b7280' }}>
-                              <span style={{ fontSize: '12px' }}>✉ {addr.email}</span>
-                            </div>
-                          )}
-                          <div className={styles.addrDetails}>
-                            <p><strong>Street:</strong> {addr.streetAddress || addr.streetNumber}</p>
-                            <p><strong>Apt / Building:</strong> {addr.apartmentSuite || addr.buildingNumber}</p>
-                            <p><strong>Municipality:</strong> {addr.municipality}</p>
-                            <p><strong>Zone:</strong> {addr.zoneNumber}</p>
-                            <p><strong>Postal Code:</strong> {addr.postalCode || '00974'}</p>
-                            <p><strong>Country:</strong> {addr.country || 'Qatar'}</p>
+                    {/* Issue Type */}
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>
+                        Issue Type <span className={styles.requiredStar}>*</span>
+                      </label>
+                      <select
+                        className={styles.formSelect}
+                        value={returnForm.reason}
+                        onChange={(e) =>
+                          setReturnForm({ ...returnForm, reason: e.target.value })
+                        }
+                        required
+                      >
+                        <option value="Where is my package?">Where is my package?</option>
+                        <option value="Damaged or defective item">Damaged or defective item</option>
+                        <option value="Missing item or quantity">Missing item or quantity</option>
+                        <option value="Return or refund request">Return or refund request</option>
+                        <option value="Other inquiry">Other inquiry</option>
+                      </select>
+                    </div>
+
+                    {/* Message / Details */}
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>
+                        Message / Details <span className={styles.requiredStar}>*</span>
+                      </label>
+                      <textarea
+                        rows={4}
+                        className={styles.formTextarea}
+                        value={returnForm.comments}
+                        onChange={(e) =>
+                          setReturnForm({ ...returnForm, comments: e.target.value })
+                        }
+                        placeholder="Describe any issues observed or how we can help..."
+                        required
+                      />
+                    </div>
+
+                    {/* Attachment Option */}
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>
+                        Attachment (Optional)
+                      </label>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        accept="image/png,image/jpeg,image/webp,application/pdf"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setSupportFile(e.target.files[0]);
+                          }
+                        }}
+                      />
+                      {!supportFile ? (
+                        <div
+                          className={styles.uploadDropzone}
+                          onClick={() => fileInputRef.current?.click()}
+                          role="button"
+                          tabIndex={0}
+                        >
+                          <UploadCloud size={24} className={styles.uploadIcon} />
+                          <div className={styles.uploadTextWrap}>
+                            <span className={styles.uploadMainText}>
+                              Attach photo or receipt (optional — JPG, PNG up to 5MB)
+                            </span>
+                            <span className={styles.uploadSubText}>
+                              Click to browse or drag file here
+                            </span>
                           </div>
                         </div>
-                      ))}
-                    </div>
-
-                    {/* Add Address Modal (AliExpress Format) */}
-                    {isAddAddressOpen && (
-                      <div
-                        className={styles.modalOverlay}
-                        onClick={() => setIsAddAddressOpen(false)}
-                      >
-                        <div
-                          className={styles.aliModalCard}
-                          style={{ maxWidth: '580px', width: '100%', position: 'relative' }}
-                          onClick={(e) => e.stopPropagation()}
-                        >
+                      ) : (
+                        <div className={styles.filePreviewRow}>
+                          <div className={styles.fileInfo}>
+                            <FileText size={18} className={styles.fileIcon} />
+                            <span className={styles.fileName}>{supportFile.name}</span>
+                            <span className={styles.fileSize}>
+                              ({(supportFile.size / 1024).toFixed(0)} KB)
+                            </span>
+                          </div>
                           <button
                             type="button"
-                            onClick={() => setIsAddAddressOpen(false)}
-                            style={{
-                              position: 'absolute',
-                              top: '20px',
-                              right: '20px',
-                              background: 'transparent',
-                              border: 'none',
-                              color: '#6b7280',
-                              cursor: 'pointer',
+                            className={styles.fileRemoveBtn}
+                            onClick={() => {
+                              setSupportFile(null);
+                              if (fileInputRef.current) fileInputRef.current.value = '';
                             }}
                           >
-                            <X size={20} />
+                            <X size={16} />
                           </button>
-
-                          <div className={styles.aliModalHeader}>
-                            <h3 className={styles.aliModalTitle}>Add new address</h3>
-                          </div>
-
-                          <form onSubmit={handleSaveNewAddress} className={styles.aliAddressForm}>
-                            {/* 1. Country/region */}
-                            <div className={styles.aliSection}>
-                              <label className={styles.aliSectionTitle}>Country/region</label>
-                              <div
-                                ref={dashboardCountryRef}
-                                className={`${styles.customSelectWrapper} ${dashboardCountryOpen ? styles.wrapperOpen : ''}`}
-                                style={{ maxWidth: '320px' }}
-                              >
-                                <div
-                                  className={`${styles.aliCountrySelector} ${dashboardCountryOpen ? styles.dropdownActiveTrigger : ''}`}
-                                  onClick={() => {
-                                    setDashboardCountryOpen(!dashboardCountryOpen);
-                                    setDashboardMunicipalityOpen(false);
-                                    setDashboardZoneOpen(false);
-                                  }}
-                                >
-                                  <div className={styles.aliCountryInfo}>
-                                    <CountryFlag code={dashboardCountryConfig.code} size={22} />
-                                    <span className={styles.aliCountryCodeBadge}>{dashboardCountryConfig.code}</span>
-                                    <span className={styles.aliCountryName}>{dashboardCountryConfig.name}</span>
-                                  </div>
-                                  <ChevronDown
-                                    size={18}
-                                    className={`${styles.dropdownChevron} ${dashboardCountryOpen ? styles.chevronOpen : ''}`}
-                                  />
-                                </div>
-
-                                {dashboardCountryOpen && (
-                                  <div className={styles.customDropdownMenu}>
-                                    {SUPPORTED_COUNTRIES.map((c) => {
-                                      const isSelected = dashboardCountryConfig.code === c.code;
-                                      return (
-                                        <div
-                                          key={c.code}
-                                          className={`${styles.customDropdownItem} ${isSelected ? styles.itemSelected : ''}`}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDashboardCountryChange(c.name);
-                                            setDashboardCountryOpen(false);
-                                          }}
-                                        >
-                                          <div className={styles.itemLeft}>
-                                            <CountryFlag code={c.code} size={20} />
-                                            <span className={styles.aliCountryCodeBadge}>{c.code}</span>
-                                            <span className={styles.itemTitle}>{c.name}</span>
-                                          </div>
-                                          <div className={styles.itemRight}>
-                                            <span className={styles.itemPhoneCode}>+{c.phoneCode}</span>
-                                            {isSelected && <Check size={16} className={styles.itemCheckIcon} />}
-                                          </div>
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* 2. Contact information */}
-                            <div className={styles.aliSection}>
-                              <label className={styles.aliSectionTitle}>Contact information</label>
-                              <div className={styles.aliContactGrid}>
-                                {/* Row 1: First name & Last name */}
-                                <div className={styles.aliContactRow}>
-                                  <div className={styles.aliInputCol}>
-                                    <input
-                                      type="text"
-                                      required
-                                      value={newAddress.firstName}
-                                      onChange={(e) => setNewAddress({ ...newAddress, firstName: e.target.value })}
-                                      placeholder="First name"
-                                      className={styles.aliTextInput}
-                                    />
-                                  </div>
-                                  <div className={styles.aliInputCol}>
-                                    <input
-                                      type="text"
-                                      required
-                                      value={newAddress.lastName}
-                                      onChange={(e) => setNewAddress({ ...newAddress, lastName: e.target.value })}
-                                      placeholder="Last name"
-                                      className={styles.aliTextInput}
-                                    />
-                                  </div>
-                                </div>
-
-                                {/* Row 2: Email address & Mobile phone number */}
-                                <div className={styles.aliContactRow}>
-                                  <div className={styles.aliInputCol}>
-                                    <input
-                                      type="email"
-                                      required
-                                      value={newAddress.email || ''}
-                                      onChange={(e) => setNewAddress({ ...newAddress, email: e.target.value })}
-                                      placeholder="Email address"
-                                      className={styles.aliTextInput}
-                                    />
-                                  </div>
-                                  <div className={styles.aliPhoneGroup}>
-                                    <div className={styles.aliPhonePrefix}>{dashboardCountryConfig.phoneCode}</div>
-                                    <input
-                                      type="tel"
-                                      required
-                                      value={newAddress.phoneNumber}
-                                      onChange={(e) => {
-                                        const val = e.target.value.replace(/[^0-9]/g, '');
-                                        setNewAddress({ ...newAddress, phoneNumber: val });
-                                      }}
-                                      placeholder="Mobile phone number"
-                                      className={styles.aliPhoneInput}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* 3. Address */}
-                            <div className={styles.aliSection}>
-                              <label className={styles.aliSectionTitle}>Address</label>
-
-                              {/* Row 1: Street address & Apt/Suite/Building */}
-                              <div className={styles.aliAddressRow1}>
-                                <input
-                                  type="text"
-                                  required
-                                  value={newAddress.streetAddress}
-                                  onChange={(e) => setNewAddress({ ...newAddress, streetAddress: e.target.value })}
-                                  placeholder="Street address, road or house number"
-                                  className={styles.aliTextInput}
-                                />
-                                <input
-                                  type="text"
-                                  value={newAddress.apartmentSuite || ''}
-                                  onChange={(e) => setNewAddress({ ...newAddress, apartmentSuite: e.target.value })}
-                                  placeholder="Building, Apt, Suite, Unit (Optional)"
-                                  className={styles.aliTextInput}
-                                />
-                              </div>
-
-                              {/* Row 2: Municipality/Province, Zone/District, Postal code */}
-                              <div className={styles.aliAddressRow2}>
-                                {/* Custom Municipality Dropdown */}
-                                <div
-                                  ref={dashboardMunicipalityRef}
-                                  className={`${styles.customSelectWrapper} ${dashboardMunicipalityOpen ? styles.wrapperOpen : ''}`}
-                                >
-                                  <div
-                                    className={`${styles.customSelectTrigger} ${dashboardMunicipalityOpen ? styles.dropdownActiveTrigger : ''}`}
-                                    onClick={() => {
-                                      setDashboardMunicipalityOpen(!dashboardMunicipalityOpen);
-                                      setDashboardCountryOpen(false);
-                                      setDashboardZoneOpen(false);
-                                    }}
-                                  >
-                                    <span className={newAddress.municipality ? styles.selectValueText : styles.selectPlaceholderText}>
-                                      {newAddress.municipality ||
-                                        (dashboardCountryConfig.code === 'QA'
-                                          ? 'Select Municipality'
-                                          : dashboardCountryConfig.code === 'SA'
-                                            ? 'Select Province / City'
-                                            : 'Select Emirate / City')}
-                                    </span>
-                                    <ChevronDown
-                                      size={16}
-                                      className={`${styles.dropdownChevron} ${dashboardMunicipalityOpen ? styles.chevronOpen : ''}`}
-                                    />
-                                  </div>
-
-                                  {dashboardMunicipalityOpen && (
-                                    <div className={styles.customDropdownMenu}>
-                                      {dashboardCountryConfig.provinces.map((prov) => {
-                                        const isSelected = newAddress.municipality === prov;
-                                        return (
-                                          <div
-                                            key={prov}
-                                            className={`${styles.customDropdownItem} ${isSelected ? styles.itemSelected : ''}`}
-                                            onClick={() => {
-                                              setNewAddress({ ...newAddress, municipality: prov, zoneNumber: '' });
-                                              setDashboardMunicipalityOpen(false);
-                                            }}
-                                          >
-                                            <span className={styles.itemTitle}>{prov}</span>
-                                            {isSelected && <Check size={15} className={styles.itemCheckIcon} />}
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* Custom Zone Dropdown */}
-                                <div
-                                  ref={dashboardZoneRef}
-                                  className={`${styles.customSelectWrapper} ${dashboardZoneOpen ? styles.wrapperOpen : ''}`}
-                                >
-                                  <div
-                                    className={`${styles.customSelectTrigger} ${dashboardZoneOpen ? styles.dropdownActiveTrigger : ''}`}
-                                    onClick={() => {
-                                      if (!newAddress.municipality) {
-                                        showToast(
-                                          'Select City First',
-                                          'Please choose a municipality or city first to view its zones.',
-                                          'info'
-                                        );
-                                        return;
-                                      }
-                                      setDashboardZoneOpen(!dashboardZoneOpen);
-                                      setDashboardCountryOpen(false);
-                                      setDashboardMunicipalityOpen(false);
-                                    }}
-                                  >
-                                    <span className={newAddress.zoneNumber ? styles.selectValueText : styles.selectPlaceholderText}>
-                                      {newAddress.zoneNumber ||
-                                        (dashboardCountryConfig.code === 'QA'
-                                          ? 'Select Zone'
-                                          : dashboardCountryConfig.code === 'SA'
-                                            ? 'Select District'
-                                            : 'Select Area / Zone')}
-                                    </span>
-                                    <ChevronDown
-                                      size={16}
-                                      className={`${styles.dropdownChevron} ${dashboardZoneOpen ? styles.chevronOpen : ''}`}
-                                    />
-                                  </div>
-
-                                  {dashboardZoneOpen && (
-                                    <div className={styles.customDropdownMenu}>
-                                      {(dashboardCountryConfig.zones[newAddress.municipality] || []).length > 0 ? (
-                                        (dashboardCountryConfig.zones[newAddress.municipality] || []).map((z) => {
-                                          const isSelected = newAddress.zoneNumber === z;
-                                          return (
-                                            <div
-                                              key={z}
-                                              className={`${styles.customDropdownItem} ${isSelected ? styles.itemSelected : ''}`}
-                                              onClick={() => {
-                                                setNewAddress({ ...newAddress, zoneNumber: z });
-                                                setDashboardZoneOpen(false);
-                                              }}
-                                            >
-                                              <span className={styles.itemTitle}>{z}</span>
-                                              {isSelected && <Check size={15} className={styles.itemCheckIcon} />}
-                                            </div>
-                                          );
-                                        })
-                                      ) : (
-                                        <div className={styles.noItemsMsg}>No zones available for this city</div>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* ZIP / Postal code (Starts empty, placeholder shows clean text) */}
-                                <input
-                                  type="text"
-                                  value={newAddress.postalCode || ''}
-                                  onChange={(e) => setNewAddress({ ...newAddress, postalCode: e.target.value })}
-                                  placeholder="ZIP / Postal code"
-                                  className={styles.aliTextInput}
-                                />
-                              </div>
-                            </div>
-
-                            {/* Checkbox: Set as default shipping address */}
-                            <div className={styles.aliCheckboxRow}>
-                              <label className={styles.aliCheckLabel}>
-                                <input
-                                  type="checkbox"
-                                  checked={newAddress.isDefault}
-                                  onChange={(e) => setNewAddress({ ...newAddress, isDefault: e.target.checked })}
-                                  className={styles.aliHiddenCheck}
-                                />
-                                <span className={`${styles.aliCustomBox} ${newAddress.isDefault ? styles.checked : ''}`}>
-                                  {newAddress.isDefault && <Check size={13} strokeWidth={3} color="#ffffff" />}
-                                </span>
-                                <span className={styles.aliCheckText}>Set as default shipping address</span>
-                              </label>
-                            </div>
-
-                            {/* Button: Confirm */}
-                            <div className={styles.aliBtnRow}>
-                              <button type="submit" className={styles.aliConfirmBtn}>
-                                Confirm
-                              </button>
-                            </div>
-                          </form>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* TAB 4: SAVED WISHLIST */}
-                {customerTab === 'wishlist' && (
-                  <div className={styles.tabContentCard}>
-                    <div className={styles.wishlistHeader}>
-                      <div>
-                        <h2 className={styles.cardHeading}>Your Saved Wishlist</h2>
-                        <p className={styles.cardSub}>
-                          Items you saved for future Qatar air express shipments.
-                        </p>
-                      </div>
-                      {wishlist.length > 0 && (
-                        <span className={styles.wishlistCountBadge}>
-                          {wishlist.length} {wishlist.length === 1 ? 'Item' : 'Items'}
-                        </span>
                       )}
                     </div>
 
-                    {wishlist.length === 0 ? (
-                      <div className={styles.emptyWishlistState}>
-                        <div className={styles.emptyWishlistIconWrap}>
-                          <Heart size={28} />
-                        </div>
-                        <h3>Your wishlist is empty</h3>
-                        <p>
-                          No items in your wishlist. Browse our Qatar express catalog and tap the heart icon to save products.
-                        </p>
-                        <Link href="/shop" className={styles.emptyWishlistBtn}>
-                          Explore Catalog
-                        </Link>
+                    {/* Submit Button */}
+                    <div className={styles.formSubmitRow}>
+                      <button type="submit" className={styles.submitSupportBtn}>
+                        Submit Support Request
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                {/* RIGHT COLUMN (38%): Direct Contact Channels & Quick Help */}
+                <div className={styles.helpSidebarColumn}>
+                  {/* Card 1 — Direct Customer Care */}
+                  <div className={styles.helpContactCard}>
+                    <div className={styles.contactCardHeader}>
+                      <div className={styles.contactTitleWrap}>
+                        <h3 className={styles.contactCardTitle}>Direct Customer Care</h3>
+                        <span className={styles.onlineBadge}>
+                          <span className={styles.onlineDot} />
+                          Active Now
+                        </span>
                       </div>
-                    ) : (
-                      <div className={styles.wishlistGrid}>
-                        {wishlist.map((prod) => (
-                          <div key={prod.id} className={styles.wishlistItemCard}>
-                            <Link href={`/products/${prod.slug}`} className={styles.wishlistImgLink}>
-                              <img
-                                src={prod.images[0] || '/placeholder.svg'}
-                                alt={prod.title}
-                                className={styles.wishlistImg}
-                                onError={(e) => {
-                                  const target = e.currentTarget;
-                                  if (!target.src.endsWith('/placeholder.svg')) {
-                                    target.src = '/placeholder.svg';
-                                  }
-                                }}
-                              />
-                            </Link>
-                            <div className={styles.wishlistBody}>
-                              <div className={styles.wishlistTitleRow}>
-                                <Link
-                                  href={`/products/${prod.slug}`}
-                                  className={styles.wishlistTitle}
-                                  title={prod.title}
-                                >
-                                  {prod.title}
-                                </Link>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    removeFromWishlist(prod.id);
-                                  }}
-                                  className={styles.removeWishlistBtn}
-                                  title="Remove from Wishlist"
-                                  aria-label={`Remove ${prod.title} from wishlist`}
-                                >
-                                  <Trash2 size={14} />
-                                </button>
-                              </div>
-                              <span className={styles.wishlistPrice}>
-                                QAR {prod.priceQAR}
-                              </span>
-                              <div className={styles.wishlistBottomActions}>
-                                <button
-                                  type="button"
-                                  onClick={() => addToCart(prod, 1)}
-                                  className={styles.moveToCartBtn}
-                                >
-                                  Move to Cart
-                                </button>
-                              </div>
-                            </div>
+                      <p className={styles.contactCardSubtitle}>
+                        Direct one-on-one assistance for Doha &amp; Qatar orders.
+                      </p>
+                    </div>
+
+                    <div className={styles.contactChannelsList}>
+                      {/* WhatsApp Channel */}
+                      <div className={styles.contactChannelItem}>
+                        <div className={styles.channelMeta}>
+                          <div className={styles.channelIconBoxWhatsApp}>
+                            <Phone size={18} />
                           </div>
-                        ))}
+                          <div className={styles.channelDetails}>
+                            <div className={styles.channelLabel}>WhatsApp Support</div>
+                            <div className={styles.channelContactValue}>01304564836</div>
+                            <div className={styles.channelTiming}>Fastest reply (10 AM – 10 PM)</div>
+                          </div>
+                        </div>
+                        <a
+                          href="https://wa.me/8801304564836?text=Hi%20Qatify%2C%20I%20need%20assistance%20with%20my%20order"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.channelWhatsAppBtn}
+                        >
+                          Chat on WhatsApp →
+                        </a>
                       </div>
-                    )}
+
+                      <div className={styles.channelDivider} />
+
+                      {/* Email Channel */}
+                      <div className={styles.contactChannelItem}>
+                        <div className={styles.channelMeta}>
+                          <div className={styles.channelIconBoxEmail}>
+                            <Mail size={18} />
+                          </div>
+                          <div className={styles.channelDetails}>
+                            <div className={styles.channelLabel}>Email Support</div>
+                            <div className={styles.channelContactValue}>support@shopqatify.com</div>
+                            <div className={styles.channelTiming}>Replies within 6–12 hours</div>
+                          </div>
+                        </div>
+                        <a
+                          href="mailto:support@shopqatify.com"
+                          className={styles.channelEmailBtn}
+                        >
+                          Send Email →
+                        </a>
+                      </div>
+                    </div>
                   </div>
-                )}
 
-                {/* TAB 5: SUPPORT & CUSTOMER CARE */}
-                {customerTab === 'support' && (
-                  <div className={styles.tabContentCard}>
-                    <h2 className={styles.cardHeading}>Qatar Customer Support & Care</h2>
-                    <p className={styles.cardSub}>
-                      Direct assistance in Doha and Lusail with our dedicated support concierge.
-                    </p>
-
-                    <div className={styles.supportChannelsGrid}>
-                      <a href="mailto:support@shopqatify.com" className={styles.channelCard}>
-                        <Mail size={22} className={styles.channelIcon} />
-                        <h4>Official Support Email</h4>
-                        <p>support@shopqatify.com</p>
-                        <span>Response within 6–12h • Tap to Email</span>
-                      </a>
-
-                      <a
-                        href="https://wa.me/8801304564836?text=Hi%20Qatify%2C%20I%20need%20assistance%20with%20my%20order"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.channelCard}
-                      >
-                        <Headphones size={22} className={styles.channelIcon} />
-                        <h4>WhatsApp Concierge</h4>
-                        <p>01304564836</p>
-                        <span>Instant order tracking updates • Tap to Chat</span>
-                      </a>
+                  {/* Card 2 — Quick Self-Service FAQs */}
+                  <div className={styles.helpFaqCard}>
+                    <div className={styles.faqCardHeader}>
+                      <h3 className={styles.faqCardTitle}>Quick Self-Service FAQs</h3>
+                      <p className={styles.faqCardSubtitle}>
+                        Common questions about delivery and customs in Qatar.
+                      </p>
                     </div>
 
-                    <div className={styles.returnFormSection}>
-                      <h3 className={styles.returnFormTitle}>Submit Order Assistance Request</h3>
-                      <form onSubmit={handleReturnSubmit} className={styles.returnForm}>
-                        <div className={styles.modalField}>
-                          <label>Order Reference</label>
-                          <input
-                            type="text"
-                            required
-                            value={returnForm.orderNumber}
-                            onChange={(e) =>
-                              setReturnForm({ ...returnForm, orderNumber: e.target.value })
-                            }
-                          />
-                        </div>
-                        <div className={styles.modalField}>
-                          <label>Reason for Claim</label>
-                          <select
-                            value={returnForm.reason}
-                            onChange={(e) =>
-                              setReturnForm({ ...returnForm, reason: e.target.value })
-                            }
+                    <div className={styles.faqAccordionList}>
+                      {SUPPORT_FAQS.map((faq, idx) => {
+                        const isOpen = openFaqIndex === idx;
+                        return (
+                          <div
+                            key={idx}
+                            className={`${styles.faqAccordionItem} ${isOpen ? styles.faqOpen : ''}`}
                           >
-                            <option value="Damaged or defective item">Damaged or defective item</option>
-                            <option value="Different item received">Different item received</option>
-                            <option value="Missing parts/accessories">Missing parts/accessories</option>
-                          </select>
-                        </div>
-                        <div className={styles.modalField}>
-                          <label>Details & Comments</label>
-                          <textarea
-                            rows={3}
-                            value={returnForm.comments}
-                            onChange={(e) =>
-                              setReturnForm({ ...returnForm, comments: e.target.value })
-                            }
-                            placeholder="Describe any issues observed..."
-                          />
-                        </div>
-                        <button type="submit" className={styles.submitClaimBtn}>
-                          Submit Support Request
-                        </button>
-                      </form>
+                            <button
+                              type="button"
+                              className={styles.faqQuestionBtn}
+                              onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                            >
+                              <span>{faq.q}</span>
+                              <ChevronDown
+                                size={16}
+                                className={`${styles.faqChevron} ${isOpen ? styles.faqChevronRotated : ''}`}
+                              />
+                            </button>
+                            {isOpen && (
+                              <div className={styles.faqAnswer}>
+                                <p>{faq.a}</p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
-                )}
-              </>
-            )}
-
-            {/* ===============================================================
-                ADMIN VIEW (DROPSHIP STORE ADMIN & PIPELINE OVERVIEW)
-                Only rendered if role is admin AND user is verified in Convex
-            ================================================================ */}
-            {role === 'admin' && isAdmin && (
-              <div className={styles.adminWorkspace}>
-                {/* 4 Analytics KPI Cards */}
-                {(adminTab === 'all' || adminTab === 'analytics') && (
-                  <div className={styles.adminKpiGrid}>
-                    <div className={styles.adminKpiCard}>
-                      <div className={styles.adminKpiTop}>
-                        <span className={styles.adminKpiTitle}>30-Day Gross Revenue</span>
-                        <DollarSign size={18} className={styles.greenIcon} />
-                      </div>
-                      <strong className={styles.adminKpiValue}>QAR {totalRevenue.toLocaleString()}</strong>
-                      <span className={styles.adminGrowthPill}>Live Database Volume</span>
-                    </div>
-
-                    <div className={styles.adminKpiCard}>
-                      <div className={styles.adminKpiTop}>
-                        <span className={styles.adminKpiTitle}>Net Dropship Margin</span>
-                        <TrendingUp size={18} className={styles.yellowIcon} />
-                      </div>
-                      <strong className={styles.adminKpiValue}>38.4% (Est. QAR {Math.round(totalRevenue * 0.384).toLocaleString()})</strong>
-                      <span className={styles.adminKpiSub}>Direct Factory Costing</span>
-                    </div>
-
-                    <div className={styles.adminKpiCard}>
-                      <div className={styles.adminKpiTop}>
-                        <span className={styles.adminKpiTitle}>Daily Volume (Qatar)</span>
-                        <Package size={18} className={styles.redIcon} />
-                      </div>
-                      <strong className={styles.adminKpiValue}>{displayOrders.length} Orders In System</strong>
-                      <span className={styles.adminKpiSub}>Avg QAR 176.5 per basket</span>
-                    </div>
-
-                    <div className={styles.adminKpiCard}>
-                      <div className={styles.adminKpiTop}>
-                        <span className={styles.adminKpiTitle}>Avg Air Transit Time</span>
-                        <Plane size={18} className={styles.blueIcon} />
-                      </div>
-                      <strong className={styles.adminKpiValue}>7.4 Days</strong>
-                      <span className={styles.adminKpiSub}>Hamad Airport Hub (DOH)</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Fulfillment Pipeline Breakdown */}
-                {(adminTab === 'all' || adminTab === 'pipeline') && (
-                  <div className={styles.pipelineCard}>
-                    <h3 className={styles.pipelineTitle}>Qatar Dropship Fulfillment Pipeline</h3>
-                    <div className={styles.pipelineStagesRow}>
-                      <div className={styles.pipelineStage}>
-                        <div className={styles.pipelineCount}>{pendingDispatchCount}</div>
-                        <div className={styles.pipelineStageName}>Pending Dispatch</div>
-                        <span className={styles.pipelineStatusPill}>Supplier Pack</span>
-                      </div>
-                      <div className={styles.pipelineStage}>
-                        <div className={styles.pipelineCount}>{inAirTransitCount}</div>
-                        <div className={styles.pipelineStageName}>In Air Transit</div>
-                        <span className={styles.pipelineStatusYellow}>Flight to DOH</span>
-                      </div>
-                      <div className={styles.pipelineStage}>
-                        <div className={styles.pipelineCount}>{customsCount}</div>
-                        <div className={styles.pipelineStageName}>Qatar Customs</div>
-                        <span className={styles.pipelineStatusOrange}>Hamad Airport</span>
-                      </div>
-                      <div className={styles.pipelineStage}>
-                        <div className={styles.pipelineCount}>{deliveredCount}</div>
-                        <div className={styles.pipelineStageName}>Delivered</div>
-                        <span className={styles.pipelineStatusGreen}>Doorstep Drops</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Recent Store Orders Table */}
-                {(adminTab === 'all' || adminTab === 'orders') && (
-                  <div className={styles.adminTableCard}>
-                    <div className={styles.adminTableHeadRow}>
-                      <div>
-                        <h3 className={styles.adminTableTitle}>Recent Cross-Border Orders (Qatar)</h3>
-                        <span className={styles.mobileSwipeHint}>👉 Swipe table horizontally to inspect</span>
-                      </div>
-                      <span className={styles.liveOrdersPill}>Live Feed</span>
-                    </div>
-
-                    <div className={styles.tableResponsiveWrap}>
-                      <table className={styles.adminOrdersTable}>
-                        <thead>
-                          <tr>
-                            <th>Order Ref</th>
-                            <th>Customer & Zone</th>
-                            <th>Items</th>
-                            <th>Total QAR</th>
-                            <th>Carrier Tracking</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {displayOrders.map((ord: any) => {
-                            const isLive = Boolean(ord._id);
-                            const customerName = ord.address?.fullName || 'Qatar Customer';
-                            const municipality = ord.address?.municipality || 'Qatar';
-                            const itemsText = ord.items?.[0]?.title
-                              ? ord.items[0].title.slice(0, 20) + '...'
-                              : ord.items?.[0]?.product?.title?.slice(0, 20) + '...';
-
-                            return (
-                              <tr key={ord._id || ord.id || ord.orderNumber}>
-                                <td><strong>{ord.orderNumber}</strong></td>
-                                <td>
-                                  <div>{customerName} ({municipality})</div>
-                                  {ord.customerNote && (
-                                    <div
-                                      style={{
-                                        marginTop: '4px',
-                                        fontSize: '11px',
-                                        color: '#92400e',
-                                        backgroundColor: '#fef3c7',
-                                        border: '1px solid #fde68a',
-                                        borderRadius: '4px',
-                                        padding: '2px 6px',
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                        maxWidth: '240px',
-                                        wordBreak: 'break-word',
-                                        lineHeight: 1.3,
-                                      }}
-                                      title={`Customer Note: ${ord.customerNote}`}
-                                    >
-                                      <span>📝 Note: {ord.customerNote}</span>
-                                    </div>
-                                  )}
-                                </td>
-                                <td>{ord.items?.length || 1} items ({itemsText})</td>
-                                <td className="price-qar">QAR {ord.totalQAR?.toLocaleString()}</td>
-                                <td>
-                                  <div><code>{ord.trackingNumber}</code></div>
-                                  {isLive && (
-                                    ord.aliexpressTrackingNumber ? (
-                                      <div style={{ marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                                        <span
-                                          style={{
-                                            fontSize: '11px',
-                                            color: '#facc15',
-                                            backgroundColor: '#1c1917',
-                                            padding: '2px 6px',
-                                            borderRadius: '4px',
-                                            border: '1px solid #44403c',
-                                            fontFamily: 'monospace',
-                                          }}
-                                          title={`Carrier: ${ord.aliexpressCarrier || 'cainiao'}`}
-                                        >
-                                          AliExpress: {ord.aliexpressTrackingNumber}
-                                        </span>
-                                        <button
-                                          type="button"
-                                          title="Sync Live AliExpress Status"
-                                          onClick={async () => {
-                                            try {
-                                              await refreshTracking({ orderNumber: ord.orderNumber });
-                                              showToast('Syncing AliExpress ✈️', `Live checkpoints fetching for ${ord.orderNumber}...`, 'info');
-                                            } catch (err) {
-                                              console.error(err);
-                                              showToast('Sync Failed', 'Could not sync live checkpoints.', 'error');
-                                            }
-                                          }}
-                                          style={{
-                                            background: 'transparent',
-                                            border: 'none',
-                                            color: '#ffb800',
-                                            cursor: 'pointer',
-                                            padding: '2px',
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                          }}
-                                        >
-                                          <RotateCw size={12} />
-                                        </button>
-                                        <button
-                                          type="button"
-                                          title="Edit AliExpress Tracking Code"
-                                          onClick={() => setLinkingOrder(ord)}
-                                          style={{
-                                            background: 'transparent',
-                                            border: 'none',
-                                            color: '#a1a1aa',
-                                            cursor: 'pointer',
-                                            padding: '2px',
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                          }}
-                                        >
-                                          <Edit3 size={12} />
-                                        </button>
-                                      </div>
-                                    ) : (
-                                      <div style={{ marginTop: '4px' }}>
-                                        <button
-                                          type="button"
-                                          onClick={() => setLinkingOrder(ord)}
-                                          style={{
-                                            background: 'rgba(255, 184, 0, 0.1)',
-                                            color: '#ffb800',
-                                            border: '1px solid rgba(255, 184, 0, 0.3)',
-                                            padding: '2px 8px',
-                                            borderRadius: '4px',
-                                            fontSize: '11px',
-                                            fontWeight: 600,
-                                            cursor: 'pointer',
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            gap: '4px',
-                                          }}
-                                        >
-                                          <Plane size={11} />
-                                          <span>+ Link AliExpress</span>
-                                        </button>
-                                      </div>
-                                    )
-                                  )}
-                                </td>
-                                <td>
-                                  <span className={
-                                    ord.status === 'Delivered'
-                                      ? styles.statusPillGreen
-                                      : ord.status === 'Qatar Customs (DOH)'
-                                      ? styles.statusPillYellow
-                                      : styles.statusPillBlue
-                                  }>
-                                    {ord.status}
-                                  </span>
-                                </td>
-                                <td>
-                                  {isLive ? (
-                                    <select
-                                      value={ord.status}
-                                      onChange={async (e) => {
-                                        const newStatus = e.target.value as any;
-                                        try {
-                                          await updateStatus({
-                                            adminKey: adminKey || undefined,
-                                            orderId: ord._id,
-                                            status: newStatus,
-                                          });
-                                          showToast('Status Updated! ✈️', `${ord.orderNumber} is now: ${newStatus}`, 'success');
-                                        } catch (err) {
-                                          console.error(err);
-                                          showToast('Update Failed', 'Could not update status.', 'error');
-                                        }
-                                      }}
-                                      className={styles.tableActionSelect}
-                                    >
-                                      <option value="Order Confirmed">Order Confirmed</option>
-                                      <option value="Air Hub Transit">Air Hub Transit</option>
-                                      <option value="Qatar Customs (DOH)">Customs (DOH)</option>
-                                      <option value="Out for Delivery">Out for Delivery</option>
-                                      <option value="Delivered">Delivered</option>
-                                      <option value="Cancelled">Cancelled</option>
-                                    </select>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setSelectedOrder(ord);
-                                        setRole('customer');
-                                        setCustomerTab('tracking');
-                                      }}
-                                      className={styles.tableActionBtn}
-                                    >
-                                      Track
-                                    </button>
-                                  )}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                )}
-
-                {/* Telegram Order Alerts Manager */}
-                {(adminTab === 'all' || adminTab === 'telegram') && (
-                  <TelegramAlertsManager />
-                )}
+                </div>
               </div>
-            )}
-          </main>
+            </div>
+          )}
+
+          {/* Subtle Admin Footer Switcher (unobtrusive, allows admin authorized switch) */}
+          <div style={{ marginTop: '36px', textAlign: 'center', padding: '16px 0', borderTop: '1px solid #e5e7eb' }}>
+            <button
+              type="button"
+              onClick={handleSwitchToAdmin}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#9ca3af',
+                fontSize: '11.5px',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+              }}
+            >
+              <ShieldCheck size={12} />
+              <span>Store Operations Portal</span>
+            </button>
+          </div>
         </div>
 
-        {/* Convex Auth Sign-In & Sign-Up Modal */}
+        {/* Official Qatar Order Invoice Modal */}
+        <InvoiceModal
+          order={invoiceModalOrder || activeTrackingOrder || retailOrders[0]}
+          isOpen={isInvoiceModalOpen}
+          onClose={() => {
+            setIsInvoiceModalOpen(false);
+            setInvoiceModalOrder(null);
+          }}
+        />
+
+        {/* Auth / Email Sign-In Modal */}
         <AuthModal
           isOpen={isEmailModalOpen}
           onClose={() => setIsEmailModalOpen(false)}
           onSuccess={() => setIsEmailModalOpen(false)}
         />
 
-        {/* Dropshipping AliExpress Link & Sync Modal */}
-        <AliExpressLinkModal
-          isOpen={Boolean(linkingOrder)}
-          onClose={() => setLinkingOrder(null)}
-          order={linkingOrder}
-          adminEmail={userEmail}
-          adminKey={adminKey}
-          onSuccess={() => {
-            showToast('Tracking Linked! ✈️', 'AliExpress logistics synced into Qatify timeline', 'success');
-          }}
-        />
-
-        {/* Master Admin Secret Key Unlock Modal */}
-        {isAdminKeyModalOpen && (
+        {/* Add Address Modal (AliExpress standard) */}
+        {isAddAddressOpen && (
           <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              backgroundColor: 'rgba(10, 10, 12, 0.75)',
-              backdropFilter: 'blur(6px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 99999,
-              padding: '16px',
-            }}
+            className={styles.modalOverlay}
+            onClick={() => setIsAddAddressOpen(false)}
           >
             <div
-              style={{
-                backgroundColor: '#ffffff',
-                borderRadius: '16px',
-                width: '100%',
-                maxWidth: '460px',
-                padding: '28px',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
-                border: '1px solid #e4e4e7',
-                position: 'relative',
-              }}
+              className={styles.aliModalCard}
+              style={{ maxWidth: '580px', width: '100%', position: 'relative' }}
+              onClick={(e) => e.stopPropagation()}
             >
               <button
                 type="button"
-                onClick={() => {
-                  setIsAdminKeyModalOpen(false);
-                  setAdminKeyError('');
-                }}
+                onClick={() => setIsAddAddressOpen(false)}
                 style={{
                   position: 'absolute',
-                  top: '18px',
-                  right: '18px',
-                  background: 'none',
+                  top: '20px',
+                  right: '20px',
+                  background: 'transparent',
                   border: 'none',
+                  color: '#6b7280',
                   cursor: 'pointer',
-                  color: '#71717a',
                 }}
               >
                 <X size={20} />
               </button>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                <div
-                  style={{
-                    width: '38px',
-                    height: '38px',
-                    borderRadius: '10px',
-                    backgroundColor: '#fffbeb',
-                    color: '#ffb800',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Lock size={20} />
-                </div>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0a0a0c' }}>
-                    Store Admin Access 🛡️
-                  </h3>
-                  <p style={{ margin: 0, fontSize: '12px', color: '#71717a' }}>
-                    Authorized personnel only
-                  </p>
-                </div>
+              <div className={styles.aliModalHeader}>
+                <h3 className={styles.aliModalTitle}>Add new address</h3>
               </div>
 
-              <p style={{ fontSize: '13px', color: '#52525b', lineHeight: 1.5, margin: '14px 0 18px 0' }}>
-                Enter your <strong>Master Admin Secret Key</strong> to unlock dropship fulfillment, real-time analytics, and customer logistics management.
-              </p>
-
-              <form onSubmit={handleUnlockWithAdminKey}>
-                <div style={{ marginBottom: '14px' }}>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      color: '#0a0a0c',
-                      marginBottom: '6px',
-                    }}
+              <form onSubmit={handleSaveNewAddress} className={styles.aliAddressForm}>
+                {/* 1. Country/region */}
+                <div className={styles.aliSection}>
+                  <label className={styles.aliSectionTitle}>Country/region</label>
+                  <div
+                    ref={dashboardCountryRef}
+                    className={`${styles.customSelectWrapper} ${dashboardCountryOpen ? styles.wrapperOpen : ''}`}
+                    style={{ maxWidth: '320px' }}
                   >
-                    Admin Secret Key
-                  </label>
-                  <input
-                    type="password"
-                    value={adminKeyInput}
-                    onChange={(e) => {
-                      setAdminKeyInput(e.target.value);
-                      setAdminKeyError('');
-                    }}
-                    placeholder="Enter ADMIN_SECRET_KEY..."
-                    style={{
-                      width: '100%',
-                      padding: '12px 14px',
-                      borderRadius: '8px',
-                      border: adminKeyError ? '1px solid #ef4444' : '1px solid #cbd5e1',
-                      fontSize: '14px',
-                      fontFamily: 'monospace',
-                      boxSizing: 'border-box',
-                      outline: 'none',
-                    }}
-                  />
-                  {adminKeyError && (
                     <div
-                      style={{
-                        color: '#ef4444',
-                        fontSize: '12px',
-                        marginTop: '6px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
+                      className={`${styles.aliCountrySelector} ${dashboardCountryOpen ? styles.dropdownActiveTrigger : ''}`}
+                      onClick={() => {
+                        setDashboardCountryOpen(!dashboardCountryOpen);
+                        setDashboardMunicipalityOpen(false);
+                        setDashboardZoneOpen(false);
                       }}
                     >
-                      <AlertCircle size={14} />
-                      <span>{adminKeyError}</span>
+                      <div className={styles.selectorLeft}>
+                        <CountryFlag code={dashboardCountryConfig.code} size={20} />
+                        <span className={styles.selectorCountryName}>{newAddress.country}</span>
+                      </div>
+                      <ChevronDown size={16} className={`${styles.dropdownChevron} ${dashboardCountryOpen ? styles.chevronRotated : ''}`} />
                     </div>
-                  )}
+
+                    {dashboardCountryOpen && (
+                      <div className={styles.customDropdownMenu}>
+                        {SUPPORTED_COUNTRIES.map((c) => {
+                          const isSelected = newAddress.country === c.name || newAddress.country === c.code;
+                          return (
+                            <div
+                              key={c.code}
+                              className={`${styles.customDropdownItem} ${isSelected ? styles.itemSelected : ''}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDashboardCountryChange(c.name);
+                                setDashboardCountryOpen(false);
+                              }}
+                            >
+                              <div className={styles.itemLeft}>
+                                <CountryFlag code={c.code} size={20} />
+                                <span className={styles.aliCountryCodeBadge}>{c.code}</span>
+                                <span className={styles.itemTitle}>{c.name}</span>
+                              </div>
+                              <div className={styles.itemRight}>
+                                <span className={styles.itemPhoneCode}>+{c.phoneCode}</span>
+                                {isSelected && <Check size={16} className={styles.itemCheckIcon} />}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                {/* 2. Contact information */}
+                <div className={styles.aliSection}>
+                  <label className={styles.aliSectionTitle}>Contact information</label>
+                  <div className={styles.aliContactGrid}>
+                    <div className={styles.aliContactRow}>
+                      <div className={styles.aliInputCol}>
+                        <input
+                          type="text"
+                          required
+                          value={newAddress.firstName}
+                          onChange={(e) => setNewAddress({ ...newAddress, firstName: e.target.value })}
+                          placeholder="First name"
+                          className={styles.aliTextInput}
+                        />
+                      </div>
+                      <div className={styles.aliInputCol}>
+                        <input
+                          type="text"
+                          required
+                          value={newAddress.lastName}
+                          onChange={(e) => setNewAddress({ ...newAddress, lastName: e.target.value })}
+                          placeholder="Last name"
+                          className={styles.aliTextInput}
+                        />
+                      </div>
+                    </div>
+
+                    <div className={styles.aliContactRow}>
+                      <div className={styles.aliInputCol}>
+                        <input
+                          type="email"
+                          required
+                          value={newAddress.email || ''}
+                          onChange={(e) => setNewAddress({ ...newAddress, email: e.target.value })}
+                          placeholder="Email address"
+                          className={styles.aliTextInput}
+                        />
+                      </div>
+                      <div className={styles.aliInputCol}>
+                        <div className={styles.aliPhoneInputWrap}>
+                          <span className={styles.aliPhonePrefix}>+{dashboardCountryConfig.phoneCode}</span>
+                          <input
+                            type="tel"
+                            required
+                            value={newAddress.phoneNumber}
+                            onChange={(e) => setNewAddress({ ...newAddress, phoneNumber: e.target.value })}
+                            placeholder="Mobile phone number"
+                            className={styles.aliPhoneInput}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Address details */}
+                <div className={styles.aliSection}>
+                  <label className={styles.aliSectionTitle}>Address</label>
+                  <div className={styles.aliAddressFields}>
+                    <input
+                      type="text"
+                      required
+                      value={newAddress.streetAddress}
+                      onChange={(e) => setNewAddress({ ...newAddress, streetAddress: e.target.value })}
+                      placeholder="Street, house/apartment/unit"
+                      className={styles.aliTextInput}
+                    />
+
+                    <div className={styles.aliContactRow}>
+                      <div className={styles.aliInputCol}>
+                        <input
+                          type="text"
+                          value={newAddress.apartmentSuite}
+                          onChange={(e) => setNewAddress({ ...newAddress, apartmentSuite: e.target.value })}
+                          placeholder="Apt, suite, unit (optional)"
+                          className={styles.aliTextInput}
+                        />
+                      </div>
+                      <div className={styles.aliInputCol}>
+                        <input
+                          type="text"
+                          value={newAddress.zoneNumber}
+                          onChange={(e) => setNewAddress({ ...newAddress, zoneNumber: e.target.value })}
+                          placeholder="Zone number (e.g. Zone 24)"
+                          className={styles.aliTextInput}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Checkbox Default Address */}
+                <label className={styles.aliCheckboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={newAddress.isDefault}
+                    onChange={(e) => setNewAddress({ ...newAddress, isDefault: e.target.checked })}
+                    className={styles.aliCheckbox}
+                  />
+                  <span>Set as default shipping address</span>
+                </label>
+
+                {/* Submit button */}
+                <div className={styles.aliFormActions}>
+                  <button type="submit" className={styles.aliSaveBtn}>
+                    Save
+                  </button>
                   <button
                     type="button"
-                    onClick={() => {
-                      setIsAdminKeyModalOpen(false);
-                      setIsEmailModalOpen(true);
-                    }}
-                    style={{
-                      flex: 1,
-                      padding: '12px',
-                      borderRadius: '8px',
-                      border: '1px solid #e4e4e7',
-                      backgroundColor: '#f4f4f5',
-                      color: '#0a0a0c',
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                    }}
+                    onClick={() => setIsAddAddressOpen(false)}
+                    className={styles.aliCancelBtn}
                   >
-                    Sign In with Email
+                    Cancel
                   </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
+        {/* Admin Key Modal */}
+        {isAdminKeyModalOpen && (
+          <div className={styles.modalOverlay} onClick={() => setIsAdminKeyModalOpen(false)}>
+            <div className={styles.modalCard} onClick={(e) => e.stopPropagation()}>
+              <h3 className={styles.modalTitle}>Authenticate Store Operations</h3>
+              <p className={styles.modalSub}>
+                Enter the master admin key to access Qatify Dropship operations.
+              </p>
+              <form onSubmit={handleUnlockWithAdminKey} style={{ marginTop: '16px' }}>
+                <input
+                  type="password"
+                  placeholder="Master Admin Secret Key..."
+                  value={adminKeyInput}
+                  onChange={(e) => setAdminKeyInput(e.target.value)}
+                  className={styles.emailInput}
+                />
+                {adminKeyError && (
+                  <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '6px' }}>
+                    {adminKeyError}
+                  </p>
+                )}
+                <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+                  <button type="submit" className={styles.saveEmailBtn}>
+                    Verify &amp; Enter
+                  </button>
                   <button
-                    type="submit"
-                    style={{
-                      flex: 1,
-                      padding: '12px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      backgroundColor: '#ffb800',
-                      color: '#ffffff',
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px',
-                    }}
+                    type="button"
+                    onClick={() => setIsAdminKeyModalOpen(false)}
+                    className={styles.cancelModalBtn}
                   >
-                    <Key size={15} />
-                    <span>Unlock Admin</span>
+                    Cancel
                   </button>
                 </div>
               </form>
@@ -1948,6 +2004,1499 @@ function DashboardContent() {
           </div>
         )}
       </div>
+    );
+  }
+
+  return (
+    <div className={styles.adminOpsShell}>
+      {/* 1. TOP STICKY HEADER (#131921) */}
+      <header className={styles.opsHeader}>
+        <div className={styles.opsHeaderLeft}>
+          <button
+            type="button"
+            onClick={() => setIsOpsSidebarOpen((prev) => !prev)}
+            className={styles.opsHamburgerBtn}
+            title="Toggle Sidebar Menu"
+            aria-label="Toggle Sidebar Menu"
+          >
+            <Menu size={18} />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setOpsAdminTab('all')}
+            className={styles.opsLogoWrap}
+          >
+            <div className={styles.opsLogoBadge}>Q</div>
+            <span className={styles.opsLogoText}>Qatify Seller &amp; Ops Central</span>
+          </button>
+
+          <div className={styles.opsHubPill}>
+            <span className={styles.pulseDotGreen} />
+            <span>HUB: DOH-EXP-01</span>
+          </div>
+        </div>
+
+        {/* Global Search Bar (⌘K) */}
+        <div className={styles.opsHeaderCenter}>
+          <Search size={14} className={styles.opsSearchIcon} />
+          <input
+            ref={opsSearchInputRef}
+            type="text"
+            placeholder="Search Order ID (QA...), Customer, AWB..."
+            value={opsSearch}
+            onChange={(e) => setOpsSearch(e.target.value)}
+            className={styles.opsGlobalSearchInput}
+          />
+          <kbd className={styles.opsSearchKbd}>⌘K</kbd>
+        </div>
+
+        {/* Right Navigation Controls */}
+        <div className={styles.opsHeaderRight}>
+          <button
+            type="button"
+            onClick={() => setOpsAdminTab('telegram')}
+            className={styles.opsTelegramBtn}
+            title="Open Telegram Live Alert Dispatcher"
+          >
+            <Send size={13} />
+            <span>Telegram Live</span>
+          </button>
+
+          {/* Mode Switcher Toggle */}
+          <div className={styles.opsModeToggle}>
+            <Link
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.opsModeBtn}
+              title="Open Customer Storefront in New Tab"
+            >
+              Customer View ↗
+            </Link>
+            <button
+              type="button"
+              className={`${styles.opsModeBtn} ${styles.active}`}
+            >
+              Admin Ops
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* 2. BODY LAYOUT: FIXED 220PX DARK SIDEBAR + CLEAN WORKSPACE */}
+      <div className={styles.opsBody}>
+        {/* Fixed 220px Dark Left Sidebar */}
+        <aside className={`${styles.opsSidebar} ${!isOpsSidebarOpen ? styles.collapsed : ''}`}>
+          <div className={styles.opsSidebarNav}>
+            <button
+              type="button"
+              onClick={() => {
+                setOpsAdminTab('all');
+                if (typeof window !== 'undefined' && window.innerWidth < 1024) setIsOpsSidebarOpen(false);
+              }}
+              className={`${styles.opsNavItem} ${opsAdminTab === 'all' ? styles.active : ''}`}
+            >
+              <SlidersHorizontal size={15} />
+              <span>All Operations</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setOpsAdminTab('pipeline');
+                if (typeof window !== 'undefined' && window.innerWidth < 1024) setIsOpsSidebarOpen(false);
+              }}
+              className={`${styles.opsNavItem} ${opsAdminTab === 'pipeline' ? styles.active : ''}`}
+            >
+              <Truck size={15} />
+              <span>Fulfillment Pipeline</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setOpsAdminTab('orders');
+                if (typeof window !== 'undefined' && window.innerWidth < 1024) setIsOpsSidebarOpen(false);
+              }}
+              className={`${styles.opsNavItem} ${opsAdminTab === 'orders' ? styles.active : ''}`}
+            >
+              <FileText size={15} />
+              <span>Recent Orders (Qatar)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setOpsAdminTab('live_feed');
+                if (typeof window !== 'undefined' && window.innerWidth < 1024) setIsOpsSidebarOpen(false);
+              }}
+              className={`${styles.opsNavItem} ${opsAdminTab === 'live_feed' ? styles.active : ''}`}
+            >
+              <Terminal size={15} />
+              <span>Live Action Feed</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setOpsAdminTab('analytics');
+                if (typeof window !== 'undefined' && window.innerWidth < 1024) setIsOpsSidebarOpen(false);
+              }}
+              className={`${styles.opsNavItem} ${opsAdminTab === 'analytics' ? styles.active : ''}`}
+            >
+              <BarChart3 size={15} />
+              <span>Store Analytics &amp; KPI</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setOpsAdminTab('telegram');
+                if (typeof window !== 'undefined' && window.innerWidth < 1024) setIsOpsSidebarOpen(false);
+              }}
+              className={`${styles.opsNavItem} ${opsAdminTab === 'telegram' ? styles.active : ''}`}
+            >
+              <Send size={15} />
+              <span>Telegram Order Alerts</span>
+            </button>
+          </div>
+
+          <div className={styles.opsSidebarBottom}>
+            <span className={styles.opsAirExpressTag}>✈️ Qatar Direct Air Express</span>
+            <span className={styles.opsHubCodeText}>Hub: DOH-EXP-01</span>
+            <div className={styles.opsOperatorSession}>
+              <span>{userEmail ? userEmail.split('@')[0] : 'ops-admin'}</span>
+              <button
+                type="button"
+                onClick={() => setRole('customer')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#94a3b8',
+                  cursor: 'pointer',
+                  fontSize: '11px',
+                  textDecoration: 'underline',
+                  padding: 0,
+                }}
+              >
+                Exit Ops
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {isOpsSidebarOpen && (
+          <div
+            className={styles.opsSidebarBackdrop}
+            onClick={() => setIsOpsSidebarOpen(false)}
+            aria-label="Close Sidebar"
+          />
+        )}
+
+        {/* Main Workspace */}
+        <main className={styles.opsMainWorkspace}>
+          {/* Subheader Bar */}
+          <div className={styles.opsSubHeader}>
+            <div className={styles.opsSubHeaderTitleWrap}>
+              <div className={styles.opsTitleRow}>
+                <h1 className={styles.opsMainTitle}>Cross-Border Order &amp; Logistics Console</h1>
+                <span className={styles.liveSyncPill}>
+                  <span className={styles.pulseDotGreen} />
+                  <span>Live Sync</span>
+                </span>
+              </div>
+              <p className={styles.opsSubTitleDesc}>
+                Manage supplier dispatch, AliExpress/Cainiao AWB linking, and Qatar customs clearance.
+              </p>
+            </div>
+
+            <div className={styles.opsSubHeaderActions}>
+              <button
+                type="button"
+                onClick={handleExportManifest}
+                className={styles.btnExportCsv}
+              >
+                <Download size={13} />
+                <span>Export Manifest CSV</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsManualOrderModalOpen(true)}
+                className={styles.btnNewOrder}
+              >
+                <Plus size={14} />
+                <span>+ New Manual Order</span>
+              </button>
+            </div>
+          </div>
+
+          {/* 3. KPI HEADER STRIP (Single bordered 4-column metrics bar) */}
+          {(opsAdminTab === 'all' || opsAdminTab === 'analytics') && (
+            <div className={styles.kpiStrip}>
+              {/* Column 1: Gross Revenue */}
+              <div className={styles.kpiCell}>
+                <div className={styles.kpiTopRow}>
+                  <span className={styles.kpiLabel}>30-Day Gross Revenue</span>
+                  <span className={styles.kpiPillGreen}>+12.4%</span>
+                </div>
+                <div className={styles.kpiValueRow}>
+                  <span className={styles.kpiValueMain}>
+                    QAR {opsKpi.grossRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div className={styles.kpiBottomRow}>
+                  {opsKpi.totalOrders} settled transactions · QAR 1,519.50 prev
+                </div>
+              </div>
+
+              {/* Column 2: Net Dropship Margin */}
+              <div className={styles.kpiCell}>
+                <div className={styles.kpiTopRow}>
+                  <span className={styles.kpiLabel}>Net Dropship Margin</span>
+                  <span className={styles.kpiTarget}>TARGET ≥35%</span>
+                </div>
+                <div className={styles.kpiValueRow}>
+                  <span className={styles.kpiValueMain}>
+                    38.4%
+                  </span>
+                  <span className={styles.kpiValueSub}>
+                    (Est. QAR {opsKpi.estMarginQAR.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})
+                  </span>
+                </div>
+                <div className={styles.kpiBottomRow}>
+                  After CN supplier &amp; DOH air freight cost
+                </div>
+              </div>
+
+              {/* Column 3: Active Orders in Pipeline */}
+              <div className={styles.kpiCell}>
+                <div className={styles.kpiTopRow}>
+                  <span className={styles.kpiLabel}>Active Orders in Pipeline</span>
+                  <span className={styles.kpiPillAmber}>
+                    {opsKpi.unlinkedCount} UNLINKED
+                  </span>
+                </div>
+                <div className={styles.kpiValueRow}>
+                  <span className={styles.kpiValueMain}>
+                    {opsKpi.totalOrders} Orders
+                  </span>
+                  <span className={styles.kpiValueSub}>
+                    Avg QAR {opsKpi.avgBasket}
+                  </span>
+                </div>
+                <div className={styles.kpiBottomRow}>
+                  Doha ({opsKpi.dohaCount}) · Lusail City ({opsKpi.lusailCount})
+                </div>
+              </div>
+
+              {/* Column 4: Avg Transit */}
+              <div className={styles.kpiCell}>
+                <div className={styles.kpiTopRow}>
+                  <span className={styles.kpiLabel}>Avg Transit (CN → DOH)</span>
+                  <span className={styles.kpiSla}>SLA: 9.0D</span>
+                </div>
+                <div className={styles.kpiValueRow}>
+                  <span className={styles.kpiValueMain}>7.4 Days</span>
+                  <span className={styles.kpiOnSchedule}>On Schedule</span>
+                </div>
+                <div className={styles.kpiBottomRow}>
+                  Hamad Intl Cargo Terminal (DOH)
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 4. ORDERS & OPERATIONS VIEW (Pipeline Stage Tabs + Filters + Table) */}
+          {(opsAdminTab === 'all' || opsAdminTab === 'pipeline' || opsAdminTab === 'orders') && (
+            <>
+              {/* Horizontal Pipeline Stages Tabs */}
+              <div className={styles.pipelineTabsStrip}>
+                <button
+                  type="button"
+                  onClick={() => setOpsPipelineStage('all')}
+                  className={`${styles.pipelineTabBtn} ${opsPipelineStage === 'all' ? styles.active : ''}`}
+                >
+                  <span>All Orders</span>
+                  <span className={styles.tabCountBadge}>{crossBorderOrders.length}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setOpsPipelineStage('pending')}
+                  className={`${styles.pipelineTabBtn} ${opsPipelineStage === 'pending' ? styles.active : ''}`}
+                >
+                  <span>Pending Dispatch</span>
+                  <span className={`${styles.tabCountBadge} ${styles.amber}`}>{pendingDispatchCount}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setOpsPipelineStage('in_transit')}
+                  className={`${styles.pipelineTabBtn} ${opsPipelineStage === 'in_transit' ? styles.active : ''}`}
+                >
+                  <span>In Air Transit</span>
+                  <span className={`${styles.tabCountBadge} ${styles.gray}`}>{inAirTransitCount}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setOpsPipelineStage('customs')}
+                  className={`${styles.pipelineTabBtn} ${opsPipelineStage === 'customs' ? styles.active : ''}`}
+                >
+                  <span>Qatar Customs (DOH)</span>
+                  <span className={`${styles.tabCountBadge} ${styles.blue}`}>{customsCount}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setOpsPipelineStage('delivered')}
+                  className={`${styles.pipelineTabBtn} ${opsPipelineStage === 'delivered' ? styles.active : ''}`}
+                >
+                  <span>Delivered</span>
+                  <span className={`${styles.tabCountBadge} ${styles.gray}`}>{deliveredCount}</span>
+                </button>
+              </div>
+
+              {/* Filter Row */}
+              <div className={styles.filterRow}>
+                <div className={styles.filterSearchBox}>
+                  <Search size={13} className={styles.filterSearchIcon} />
+                  <input
+                    type="text"
+                    placeholder="Filter Order Ref, Customer, AWB..."
+                    value={opsSearch}
+                    onChange={(e) => setOpsSearch(e.target.value)}
+                    className={styles.filterSearchInput}
+                  />
+                </div>
+
+                <select
+                  value={opsZoneFilter}
+                  onChange={(e) => setOpsZoneFilter(e.target.value)}
+                  className={styles.filterSelectControl}
+                >
+                  <option value="all">All Qatar Zones ({crossBorderOrders.length})</option>
+                  <option value="doha">Doha ({opsKpi.dohaCount})</option>
+                  <option value="lusail">Lusail City ({opsKpi.lusailCount})</option>
+                </select>
+
+                <select
+                  value={opsAwbFilter}
+                  onChange={(e) => setOpsAwbFilter(e.target.value as any)}
+                  className={styles.filterSelectControl}
+                >
+                  <option value="all">AWB Status: All</option>
+                  <option value="linked">Linked ({opsKpi.linkedCount})</option>
+                  <option value="unlinked">Unlinked ({opsKpi.unlinkedCount})</option>
+                </select>
+              </div>
+
+              {/* High-Density Order Table */}
+              <div className={styles.opsTableCard}>
+                <div className={styles.opsTableWrap}>
+                  <table className={styles.opsTable}>
+                    <thead>
+                      <tr>
+                        <th style={{ width: '38px', textAlign: 'center' }}>
+                          <input
+                            type="checkbox"
+                            checked={filteredOpsOrders.length > 0 && selectedOrderIds.length === filteredOpsOrders.length}
+                            onChange={toggleSelectAll}
+                            className={styles.tableCheckbox}
+                            title="Select All Orders"
+                          />
+                        </th>
+                        <th>ORDER ID &amp; DATE</th>
+                        <th>CUSTOMER &amp; DELIVERY ZONE</th>
+                        <th>LINE ITEM(S)</th>
+                        <th>TOTAL (QAR)</th>
+                        <th>LOGISTICS &amp; CARRIER AWB</th>
+                        <th>FULFILLMENT STAGE</th>
+                        <th>ACTIONS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredOpsOrders.map((ord) => {
+                        const isLinked = Boolean(ord.aliexpressTrackingNumber);
+                        const isSelected = selectedOrderIds.includes(ord.orderNumber);
+                        return (
+                          <tr key={ord.id || ord.orderNumber} className={isSelected ? styles.selectedRow : ''}>
+                            {/* Checkbox */}
+                            <td style={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => toggleSelectOrder(ord.orderNumber)}
+                                className={styles.tableCheckbox}
+                              />
+                            </td>
+
+                            {/* ORDER ID & DATE */}
+                            <td>
+                              <button
+                                type="button"
+                                className={styles.orderIdText}
+                                onClick={() => openTrackingDrawer(ord)}
+                                title="Open Live Shipment Drawer"
+                              >
+                                {ord.orderNumber}
+                              </button>
+                              <div className={styles.orderDateText}>
+                                {ord.timeFormatted || ord.date}
+                              </div>
+                            </td>
+
+                            {/* Customer & Delivery Zone with Bilingual Badge */}
+                            <td>
+                              <div className={styles.customerNameText}>{ord.customerName}</div>
+                              <div className={styles.customerZoneSub}>
+                                {ord.streetAddress}, {ord.zoneNumber}
+                              </div>
+                              <div className={styles.bilingualLocationBadge}>
+                                <span>{ord.municipality}</span>
+                                <span>·</span>
+                                <span dir="rtl">{ord.municipalityAr}</span>
+                              </div>
+                              {ord.customerNote && (
+                                <div style={{ fontSize: '10.5px', color: '#b45309', marginTop: '3px' }}>
+                                  📝 {ord.customerNote}
+                                </div>
+                              )}
+                            </td>
+
+                            {/* Line Item(s) */}
+                            <td>
+                              <div className={styles.itemSummaryText} title={ord.itemsSummary}>
+                                {ord.itemsSummary}
+                              </div>
+                            </td>
+
+                            {/* Total QAR */}
+                            <td>
+                              <div className={styles.priceQarText}>
+                                QAR {ord.totalQAR.toFixed(2)}
+                              </div>
+                              <div className={styles.paidSubtext}>{ord.paymentStatus}</div>
+                            </td>
+
+                            {/* Carrier Tracking AWB */}
+                            <td>
+                              <div className={styles.qatAirRefText}>{ord.trackingNumber}</div>
+                              {isLinked ? (
+                                <div className={styles.linkedAwbPill}>
+                                  <span>AE: {ord.aliexpressTrackingNumber}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleCopyAwb(ord.aliexpressTrackingNumber!, ord.trackingNumber)}
+                                    className={styles.awbActionIconBtn}
+                                    title="Copy AliExpress AWB Tracking Code"
+                                  >
+                                    {copiedAwb === ord.aliexpressTrackingNumber ? (
+                                      <Check size={11} style={{ color: '#22c55e' }} />
+                                    ) : (
+                                      <Copy size={11} />
+                                    )}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setLinkingOrder(ord)}
+                                    className={styles.awbActionIconBtn}
+                                    title="Edit AliExpress Tracking Code"
+                                  >
+                                    <Edit3 size={11} />
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => setLinkingOrder(ord)}
+                                  className={styles.btnLinkAliexpress}
+                                >
+                                  <span>+ Link AliExpress AWB</span>
+                                </button>
+                              )}
+                            </td>
+
+                            {/* Fulfillment Stage & Quick Action Dropdown */}
+                            <td>
+                              <div className={styles.stageCellWrap}>
+                                <span
+                                  className={
+                                    ord.status === 'Delivered'
+                                      ? styles.stageStatusPillDelivered
+                                      : ord.status === 'Qatar Customs (DOH)'
+                                      ? styles.stageStatusPillCustoms
+                                      : ord.status === 'Air Hub Transit'
+                                      ? styles.stageStatusPillTransit
+                                      : styles.stageStatusPillPending
+                                  }
+                                >
+                                  • {ord.stageLabel || ord.status}
+                                </span>
+                                <span className={styles.stageSubtitleText}>{ord.stageSubtitle}</span>
+
+                                {/* Interactive Action Dropdown Select */}
+                                <select
+                                  value={ord.status}
+                                  onChange={(e) => handleStatusChange(ord, e.target.value)}
+                                  className={styles.stageActionSelect}
+                                  title="Change Order Status"
+                                >
+                                  <option value="Order Confirmed">Order Confirmed (Supplier Pack)</option>
+                                  <option value="Air Hub Transit">In Air Transit (Flight to DOH)</option>
+                                  <option value="Qatar Customs (DOH)">Qatar Customs (Hamad Cargo DOH)</option>
+                                  <option value="Out for Delivery">Out for Delivery (Doorstep)</option>
+                                  <option value="Delivered">Delivered (Completed)</option>
+                                  <option value="Cancelled">Cancelled</option>
+                                </select>
+                              </div>
+                            </td>
+
+                            {/* Actions */}
+                            <td>
+                              <div className={styles.rowActionsGroup}>
+                                <button
+                                  type="button"
+                                  onClick={() => openTrackingDrawer(ord)}
+                                  className={styles.btnRowTrack}
+                                  title="Track Order in Slide-Over Drawer"
+                                >
+                                  <Search size={12} />
+                                  <span>Track</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => openTrackingDrawer(ord)}
+                                  className={styles.btnRowInspect}
+                                  title="Inspect Order Details"
+                                >
+                                  <ChevronRight size={14} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Table Footer */}
+                <div className={styles.opsTableFooter}>
+                  <span>
+                    Showing {filteredOpsOrders.length} of {crossBorderOrders.length} cross-border orders
+                  </span>
+                  <span>Currency: QAR (Qatari Riyal)</span>
+                  <div className={styles.paginationBtns}>
+                    <button
+                      type="button"
+                      disabled={opsCurrentPage <= 1}
+                      onClick={() => setOpsCurrentPage((p) => Math.max(1, p - 1))}
+                      className={styles.paginationBtn}
+                    >
+                      Previous
+                    </button>
+                    <button type="button" className={`${styles.paginationBtn} ${styles.active}`}>
+                      {opsCurrentPage}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={true}
+                      className={styles.paginationBtn}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Compact Collapsible 3-Line Live Activity Ticker Bar for All Operations */}
+              {opsAdminTab === 'all' && (
+                <div className={styles.compactTickerBar}>
+                  <div className={styles.compactTickerLeft}>
+                    <span className={styles.pulseDotGreen} />
+                    <span className={styles.compactTickerLabel}>LIVE TELEMETRY:</span>
+                    <span className={styles.compactTickerText}>
+                      {liveActionEvents[0]
+                        ? `[${liveActionEvents[0].timestamp}] ${liveActionEvents[0].orderRef ? liveActionEvents[0].orderRef + ': ' : ''}${liveActionEvents[0].detail}`
+                        : 'All Hamad DOH customs lines running normally on AST (UTC+3).'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setOpsAdminTab('live_feed')}
+                    className={styles.compactTickerBtn}
+                  >
+                    <span>View Full Feed</span>
+                    <ChevronRight size={13} />
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* 5. REAL-TIME LIVE ACTION FEED TERMINAL (DEDICATED VIEW) */}
+          {opsAdminTab === 'live_feed' && (
+            <div className={styles.liveTerminalCard}>
+              <div className={styles.liveTerminalTop}>
+                <div className={styles.liveTerminalTitle}>
+                  <span className={styles.pulseDotGreen} />
+                  <span>REAL-TIME LIVE ACTION FEED &amp; TELEMETRY AUDIT</span>
+                </div>
+                <div className={styles.terminalControls}>
+                  <button
+                    type="button"
+                    onClick={handleSimulateEvent}
+                    className={styles.terminalBtn}
+                    title="Simulate incoming Cainiao / Customs checkpoint event"
+                  >
+                    <RotateCw size={11} style={{ display: 'inline', marginRight: '4px' }} />
+                    <span>Simulate Checkpoint</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLiveActionEvents([])}
+                    className={styles.terminalBtn}
+                  >
+                    Clear Log
+                  </button>
+                </div>
+              </div>
+
+              <div className={styles.terminalFeedList}>
+                {liveActionEvents.map((evt) => (
+                  <div key={evt.id} className={styles.terminalLine}>
+                    <span className={styles.terminalTimestamp}>[{evt.timestamp}]</span>
+                    <span className={`${styles.terminalBadge} ${styles[evt.badgeColor]}`}>
+                      [{evt.badge}]
+                    </span>
+                    <span className={styles.terminalMsg}>
+                      {evt.orderRef && (
+                        <strong style={{ color: '#f59e0b', marginRight: '6px' }}>
+                          {evt.orderRef}:
+                        </strong>
+                      )}
+                      {evt.detail}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 6. TELEGRAM ALERT DISPATCHER (DEDICATED VIEW) */}
+          {opsAdminTab === 'telegram' && (
+            <TelegramAlertsManager />
+          )}
+        </main>
+      </div>
+
+      {/* MODALS */}
+      {/* Slide-Over Shipment Tracking Drawer (Matching User Images 3 & 4) */}
+      {isTrackingDrawerOpen && activeDrawerOrder && (
+        <>
+          <div
+            className={styles.trackingDrawerBackdrop}
+            onClick={() => setIsTrackingDrawerOpen(false)}
+            aria-label="Close Tracking Drawer Backdrop"
+          />
+          <aside className={styles.trackingDrawerPanel} aria-label="Shipment Tracking Details">
+            {/* Drawer Header */}
+            <div className={styles.drawerHeader}>
+              <div className={styles.drawerHeaderTitleRow}>
+                <div className={styles.drawerHeaderLeftPills}>
+                  <span className={styles.drawerOrderNum}>{activeDrawerOrder.orderNumber}</span>
+                  <span className={styles.drawerRefPill}>{activeDrawerOrder.trackingNumber}</span>
+                  <span className={styles.drawerStagePill}>
+                    {activeDrawerOrder.stageLabel || activeDrawerOrder.status}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className={styles.drawerCloseBtn}
+                  onClick={() => setIsTrackingDrawerOpen(false)}
+                  aria-label="Close Drawer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <p className={styles.drawerSubtext}>
+                Placed {activeDrawerOrder.timeFormatted || activeDrawerOrder.date}, 2026 · {activeDrawerOrder.paymentStatus} · {activeDrawerOrder.paymentMethod || 'Apple Pay'}
+              </p>
+            </div>
+
+            {/* Drawer Body */}
+            <div className={styles.drawerBody}>
+              {/* Card 1: Milestone Progress */}
+              <div className={styles.drawerCard}>
+                <div className={styles.drawerCardHeader}>
+                  <span className={styles.drawerCardTitle}>CROSS-BORDER MILESTONE PROGRESS</span>
+                  <span className={styles.drawerCardSub}>
+                    Est. Delivery: {activeDrawerOrder.estDelivery || 'Nov 18, 2026'}
+                  </span>
+                </div>
+                <div className={styles.milestoneTrack}>
+                  {[
+                    { idx: 1, label: 'Confirmed' },
+                    { idx: 2, label: 'Dispatched' },
+                    { idx: 3, label: 'Air CN→DOH' },
+                    { idx: 4, label: 'DOH Customs' },
+                    { idx: 5, label: 'Delivered' },
+                  ].map((st) => {
+                    const currentMilestone = activeDrawerOrder.milestoneIndex || 1;
+                    const isCompleted = currentMilestone > st.idx;
+                    const isCurrent = currentMilestone === st.idx;
+                    return (
+                      <div key={st.idx} className={styles.milestoneStep}>
+                        <div
+                          className={`${styles.milestoneCircle} ${
+                            isCompleted ? styles.completed : isCurrent ? styles.current : ''
+                          }`}
+                        >
+                          {isCompleted || isCurrent ? <Check size={13} /> : st.idx}
+                        </div>
+                        <span className={styles.milestoneLabel}>{st.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Card 2: Consignee & Package (2-Col) */}
+              <div className={styles.drawerCard}>
+                <div className={styles.drawerTwoCol}>
+                  <div className={styles.drawerCol}>
+                    <span className={styles.drawerFieldLabel}>CONSIGNEE &amp; QATAR ADDRESS</span>
+                    <span className={styles.drawerFieldValue}>{activeDrawerOrder.customerName}</span>
+                    <span className={styles.drawerFieldSub}>
+                      {activeDrawerOrder.municipality}{' '}
+                      <span dir="rtl">{activeDrawerOrder.municipalityAr}</span> ({activeDrawerOrder.streetAddress}, {activeDrawerOrder.zoneNumber})
+                    </span>
+                    <span className={styles.drawerFieldSub}>
+                      {activeDrawerOrder.phone} · {activeDrawerOrder.paymentStatus} · {activeDrawerOrder.paymentMethod || 'Apple Pay'}
+                    </span>
+                  </div>
+
+                  <div className={styles.drawerCol}>
+                    <span className={styles.drawerFieldLabel}>PACKAGE &amp; VALUATION</span>
+                    <span className={styles.drawerFieldValue}>{activeDrawerOrder.itemsSummary}</span>
+                    <span className={styles.drawerFieldSub}>
+                      Order Total:{' '}
+                      <strong style={{ fontFamily: 'var(--font-mono)' }}>
+                        QAR {activeDrawerOrder.totalQAR.toFixed(2)}
+                      </strong>
+                    </span>
+                    <span className={styles.drawerMarginText}>
+                      Est. Net Profit: +QAR {activeDrawerOrder.netProfitQAR.toFixed(2)} ({activeDrawerOrder.marginPercent || '38.4%'})
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 3: Upstream Carrier Tracking */}
+              <div className={styles.drawerCard}>
+                <div className={styles.drawerCardHeader}>
+                  <span className={styles.drawerCardTitle}>Upstream Carrier Tracking (AliExpress / Cainiao)</span>
+                  <span className={styles.drawerCardSub} style={{ color: '#6b7280' }}>
+                    Auto-syncs customs scans
+                  </span>
+                </div>
+
+                <div className={styles.drawerCarrierRow}>
+                  <input
+                    type="text"
+                    value={drawerAwbInput}
+                    onChange={(e) => setDrawerAwbInput(e.target.value)}
+                    placeholder="Enter AliExpress Cainiao AWB (e.g. LP006849...)"
+                    className={styles.drawerAwbInput}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSaveDrawerAwb}
+                    className={styles.btnSaveSyncAwb}
+                  >
+                    Save &amp; Sync AWB
+                  </button>
+                </div>
+
+                <div className={styles.drawerStageRow}>
+                  <label style={{ fontSize: '11px', fontWeight: 700, color: '#4b5563' }}>
+                    Fulfillment Stage:
+                  </label>
+                  <select
+                    value={activeDrawerOrder.status}
+                    onChange={(e) => handleStatusChange(activeDrawerOrder, e.target.value)}
+                    className={styles.drawerStageSelect}
+                  >
+                    <option value="Order Confirmed">Order Confirmed (Supplier Pack)</option>
+                    <option value="Air Hub Transit">In Air Transit (Flight to DOH)</option>
+                    <option value="Qatar Customs (DOH)">Qatar Customs (Hamad Cargo DOH)</option>
+                    <option value="Out for Delivery">Out for Delivery (Doorstep)</option>
+                    <option value="Delivered">Delivered (Completed)</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+
+                  <button
+                    type="button"
+                    onClick={handlePushDrawerTelegram}
+                    className={styles.btnPushTelegram}
+                  >
+                    <Send size={12} />
+                    <span>Push Telegram Update</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Card 4: Detailed Logistics Scan History */}
+              <div className={styles.drawerCard}>
+                <div className={styles.drawerCardHeader}>
+                  <span className={styles.drawerCardTitle}>DETAILED LOGISTICS SCAN HISTORY</span>
+                  <span className={styles.drawerCardSub} style={{ color: '#6b7280' }}>
+                    Timezone: AST (UTC+3)
+                  </span>
+                </div>
+
+                <div className={styles.scanHistoryList}>
+                  {activeDrawerOrder.scanHistory && activeDrawerOrder.scanHistory.length > 0 ? (
+                    activeDrawerOrder.scanHistory.map((scan) => (
+                      <div key={scan.id} className={styles.scanItem}>
+                        <div
+                          className={`${styles.scanDot} ${scan.isLatest ? styles.green : ''}`}
+                        />
+                        <div className={styles.scanContent}>
+                          <div className={styles.scanTopRow}>
+                            <span className={styles.scanTitle}>{scan.title}</span>
+                            <span className={styles.scanTime}>{scan.time}</span>
+                          </div>
+                          <div className={styles.scanLoc}>{scan.location}</div>
+                          <div className={styles.scanDesc}>{scan.description}</div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p style={{ fontSize: '12px', color: '#6b7280', margin: 0 }}>
+                      No external checkpoint telemetry recorded yet.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Drawer Footer */}
+            <div className={styles.drawerFooter}>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                    const url = `${window.location.origin}/dashboard?tab=tracking&order=${activeDrawerOrder.orderNumber}`;
+                    navigator.clipboard.writeText(url);
+                    showToast('Tracking Link Copied! 📋', url, 'success');
+                  }
+                }}
+                className={styles.btnCopyLink}
+              >
+                <Copy size={13} />
+                <span>Copy Tracking Link</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsTrackingDrawerOpen(false)}
+                className={styles.btnDone}
+              >
+                Done
+              </button>
+            </div>
+          </aside>
+        </>
+      )}
+
+      {/* AliExpress Link Modal */}
+      <AliExpressLinkModal
+        isOpen={Boolean(linkingOrder)}
+        onClose={() => setLinkingOrder(null)}
+        order={linkingOrder}
+        adminEmail={userEmail}
+        adminKey={adminKey}
+        onSuccess={(code, carrier) => {
+          if (linkingOrder && code) {
+            setCrossBorderOrders((prev) =>
+              prev.map((o) =>
+                o.orderNumber === linkingOrder.orderNumber
+                  ? { ...o, aliexpressTrackingNumber: code, aliexpressCarrier: carrier || 'cainiao' }
+                  : o
+              )
+            );
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
+            setLiveActionEvents((prev) => [
+              {
+                id: `act-${Date.now()}`,
+                timestamp: timeStr,
+                type: 'AWB_LINK',
+                orderRef: linkingOrder.trackingNumber || linkingOrder.orderNumber,
+                title: 'AWB Attached',
+                detail: `Attached AliExpress Cainiao tracking ${code} to ${linkingOrder.orderNumber}.`,
+                badge: 'AWB LINK',
+                badgeColor: 'teal',
+              },
+              ...prev,
+            ]);
+          }
+          showToast('Tracking Linked! ✈️', 'AliExpress logistics synced into Qatify timeline', 'success');
+        }}
+      />
+
+      {/* Manual Order Creation Modal */}
+      {isManualOrderModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: '16px',
+          }}
+          onClick={() => setIsManualOrderModalOpen(false)}
+        >
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '8px',
+              width: '100%',
+              maxWidth: '520px',
+              padding: '24px',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+              border: '1px solid #e5e7eb',
+              position: 'relative',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 800, color: '#111827' }}>
+                Create Cross-Border Manual Order
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsManualOrderModalOpen(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateManualOrder}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>
+                    Customer Full Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Nasser Al-Kuwari"
+                    value={manualOrderData.customerName}
+                    onChange={(e) => setManualOrderData({ ...manualOrderData, customerName: e.target.value })}
+                    style={{ width: '100%', padding: '8px 10px', fontSize: '12px', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>
+                    Qatar Phone
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="+974 5500 1234"
+                    value={manualOrderData.phone}
+                    onChange={(e) => setManualOrderData({ ...manualOrderData, phone: e.target.value })}
+                    style={{ width: '100%', padding: '8px 10px', fontSize: '12px', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>
+                    Municipality
+                  </label>
+                  <select
+                    value={manualOrderData.municipality}
+                    onChange={(e) => setManualOrderData({ ...manualOrderData, municipality: e.target.value })}
+                    style={{ width: '100%', padding: '8px 10px', fontSize: '12px', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                  >
+                    <option value="Doha">Doha (العاصمة)</option>
+                    <option value="Lusail City">Lusail City (مدينة لوسيل)</option>
+                    <option value="Al Rayyan">Al Rayyan (الريان)</option>
+                    <option value="Al Wakrah">Al Wakrah (الوكرة)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>
+                    Zone Number
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Zone 38"
+                    value={manualOrderData.zoneNumber}
+                    onChange={(e) => setManualOrderData({ ...manualOrderData, zoneNumber: e.target.value })}
+                    style={{ width: '100%', padding: '8px 10px', fontSize: '12px', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>
+                  Street / Area
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Al Sadd Street, Bldg 14"
+                  value={manualOrderData.streetAddress}
+                  onChange={(e) => setManualOrderData({ ...manualOrderData, streetAddress: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', fontSize: '12px', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>
+                  Product / Items Summary
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 1× Porodo MagSafe Power Bank"
+                  value={manualOrderData.productTitle}
+                  onChange={(e) => setManualOrderData({ ...manualOrderData, productTitle: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', fontSize: '12px', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>
+                    Total (QAR)
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={manualOrderData.priceQAR}
+                    onChange={(e) => setManualOrderData({ ...manualOrderData, priceQAR: Number(e.target.value) || 0 })}
+                    style={{ width: '100%', padding: '8px 10px', fontSize: '12px', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>
+                    AliExpress Cainiao AWB (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. LP006849..."
+                    value={manualOrderData.cainiaoAwb}
+                    onChange={(e) => setManualOrderData({ ...manualOrderData, cainiaoAwb: e.target.value })}
+                    style={{ width: '100%', padding: '8px 10px', fontSize: '12px', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsManualOrderModalOpen(false)}
+                  style={{
+                    flex: 1,
+                    padding: '9px',
+                    borderRadius: '4px',
+                    border: '1px solid #d1d5db',
+                    background: '#ffffff',
+                    color: '#374151',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    flex: 1,
+                    padding: '9px',
+                    borderRadius: '4px',
+                    border: 'none',
+                    background: '#111827',
+                    color: '#ffffff',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Create Order
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Order Inspection Modal */}
+      {isInspectDrawerOpen && selectedInspectionOrder && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: '16px',
+          }}
+          onClick={() => setIsInspectDrawerOpen(false)}
+        >
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '8px',
+              width: '100%',
+              maxWidth: '560px',
+              padding: '24px',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+              border: '1px solid #e5e7eb',
+              position: 'relative',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase' }}>
+                  Cross-Border Order Inspector
+                </span>
+                <h3 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 800, color: '#111827' }}>
+                  {selectedInspectionOrder.orderNumber}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsInspectDrawerOpen(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', background: '#f9fafb', padding: '12px', borderRadius: '4px', marginBottom: '16px', border: '1px solid #e5e7eb' }}>
+              <div>
+                <div style={{ fontSize: '11px', color: '#6b7280' }}>Customer</div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#111827' }}>{selectedInspectionOrder.customerName}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#6b7280' }}>Zone / City</div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#111827' }}>
+                  {selectedInspectionOrder.municipality} ({selectedInspectionOrder.zoneNumber})
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#6b7280' }}>Tracking Ref</div>
+                <div style={{ fontSize: '12px', fontFamily: 'monospace', fontWeight: 700, color: '#111827' }}>
+                  {selectedInspectionOrder.trackingNumber}
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#6b7280' }}>Cainiao AWB</div>
+                <div style={{ fontSize: '12px', fontFamily: 'monospace', fontWeight: 700, color: selectedInspectionOrder.aliexpressTrackingNumber ? '#059669' : '#b45309' }}>
+                  {selectedInspectionOrder.aliexpressTrackingNumber || 'UNLINKED'}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', marginBottom: '6px' }}>
+                Line Items
+              </div>
+              <div style={{ padding: '10px 12px', background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '4px', fontSize: '13px', fontWeight: 600 }}>
+                {selectedInspectionOrder.itemsSummary}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #e5e7eb', paddingTop: '16px' }}>
+              <div>
+                <span style={{ fontSize: '12px', color: '#6b7280' }}>Total Declared: </span>
+                <strong style={{ fontSize: '15px', fontFamily: 'monospace', color: '#111827' }}>
+                  QAR {selectedInspectionOrder.totalQAR.toFixed(2)}
+                </strong>
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsInspectDrawerOpen(false);
+                    setActiveTrackingOrder(selectedInspectionOrder);
+                    setIsTrackingModalOpen(true);
+                  }}
+                  style={{
+                    padding: '7px 14px',
+                    borderRadius: '4px',
+                    background: '#111827',
+                    color: '#ffffff',
+                    border: 'none',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Open 5-Stage Tracker
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5-Stage Live Timeline Modal for Admins */}
+      {isTrackingModalOpen && activeTrackingOrder && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: '16px',
+          }}
+          onClick={() => setIsTrackingModalOpen(false)}
+        >
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '8px',
+              width: '100%',
+              maxWidth: '820px',
+              padding: '24px',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+              border: '1px solid #e5e7eb',
+              position: 'relative',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase' }}>
+                  Customer Experience Verification
+                </span>
+                <h3 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 800, color: '#111827' }}>
+                  Live 5-Stage Shipment Tracker: {activeTrackingOrder.orderNumber}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsTrackingModalOpen(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <TrackingTimeline order={activeTrackingOrder} />
+          </div>
+        </div>
+      )}
+
+      {/* Convex Auth Sign-In & Sign-Up Modal */}
+      <AuthModal
+        isOpen={isEmailModalOpen}
+        onClose={() => setIsEmailModalOpen(false)}
+        onSuccess={() => setIsEmailModalOpen(false)}
+      />
+
+      {/* Master Admin Secret Key Unlock Modal */}
+      {isAdminKeyModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(10, 10, 12, 0.75)',
+            backdropFilter: 'blur(6px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: '16px',
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: '460px',
+              padding: '28px',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+              border: '1px solid #e4e4e7',
+              position: 'relative',
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => {
+                setIsAdminKeyModalOpen(false);
+                setAdminKeyError('');
+              }}
+              style={{
+                position: 'absolute',
+                top: '18px',
+                right: '18px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#71717a',
+              }}
+            >
+              <X size={20} />
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+              <div
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '10px',
+                  backgroundColor: '#fffbeb',
+                  color: '#ffb800',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Lock size={20} />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0a0a0c' }}>
+                  Store Admin Access 🛡️
+                </h3>
+                <p style={{ margin: 0, fontSize: '12px', color: '#71717a' }}>
+                  Authorized personnel only
+                </p>
+              </div>
+            </div>
+
+            <p style={{ fontSize: '13px', color: '#52525b', lineHeight: 1.5, margin: '14px 0 18px 0' }}>
+              Enter your <strong>Master Admin Secret Key</strong> to authenticate operations and customer logistics.
+            </p>
+
+            <form onSubmit={handleUnlockWithAdminKey}>
+              <div style={{ marginBottom: '14px' }}>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    color: '#0a0a0c',
+                    marginBottom: '6px',
+                  }}
+                >
+                  Admin Secret Key
+                </label>
+                <input
+                  type="password"
+                  value={adminKeyInput}
+                  onChange={(e) => {
+                    setAdminKeyInput(e.target.value);
+                    setAdminKeyError('');
+                  }}
+                  placeholder="Enter ADMIN_SECRET_KEY..."
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: '8px',
+                    border: adminKeyError ? '1px solid #ef4444' : '1px solid #cbd5e1',
+                    fontSize: '14px',
+                    fontFamily: 'monospace',
+                    boxSizing: 'border-box',
+                    outline: 'none',
+                  }}
+                />
+                {adminKeyError && (
+                  <div
+                    style={{
+                      color: '#ef4444',
+                      fontSize: '12px',
+                      marginTop: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}
+                  >
+                    <AlertCircle size={14} />
+                    <span>{adminKeyError}</span>
+                  </div>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsAdminKeyModalOpen(false);
+                    setIsEmailModalOpen(true);
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    borderRadius: '8px',
+                    border: '1px solid #e4e4e7',
+                    backgroundColor: '#f4f4f5',
+                    color: '#0a0a0c',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Sign In with Email
+                </button>
+
+                <button
+                  type="submit"
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    backgroundColor: '#ffb800',
+                    color: '#ffffff',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <Key size={15} />
+                  <span>Unlock Admin</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

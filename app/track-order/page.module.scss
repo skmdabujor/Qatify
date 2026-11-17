@@ -1,76 +1,88 @@
-@use '../../styles/variables' as *;
+// =============================================================================
+// Qatify — Track Order Page SCSS
+// Authentic e-commerce visual system: Soft neutral retail gray (#F5F6F8)
+// =============================================================================
+
 @use '../../styles/mixins' as *;
 
 .pageWrapper {
   min-height: calc(100vh - 160px);
-  background-color: $color-bg-canvas;
-  padding: 40px 0 80px;
+  background-color: #f5f6f8;
+  padding: 32px 16px 80px;
 
   @include mobile {
-    padding: 24px 0 60px;
+    padding: 20px 12px 60px;
   }
+}
+
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+// -----------------------------------------------------------------------------
+// SEARCH HERO SECTION (IMAGE 1)
+// -----------------------------------------------------------------------------
+.searchHeroWrapper {
+  max-width: 760px;
+  margin: 20px auto 0;
 }
 
 .searchHero {
   text-align: center;
-  max-width: 680px;
-  margin: 0 auto 36px;
-  padding: 0 16px;
-}
-
-.heroTag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #fffbeb;
-  color: #ffb800;
-  font-size: 11.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 4px 12px;
-  border-radius: 20px;
-  border: 1px solid #fef08a;
-  margin-bottom: 12px;
+  margin-bottom: 28px;
 }
 
 .pageTitle {
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 800;
-  color: $color-ink-black;
+  color: #111827;
   margin: 0 0 10px;
   letter-spacing: -0.02em;
 
   @include mobile {
-    font-size: 24px;
+    font-size: 22px;
   }
 }
 
 .pageSub {
-  font-size: 14.5px;
-  color: $color-text-secondary;
+  font-size: 14px;
+  color: #4b5563;
   margin: 0 0 24px;
   line-height: 1.5;
+
+  code {
+    background: #e5e7eb;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12.5px;
+    color: #111827;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+  }
 }
 
 .searchBoxWrap {
   display: flex;
   background: #ffffff;
-  border: 1px solid $color-border-medium;
-  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
   padding: 6px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
 
   &:focus-within {
     border-color: #ffb800;
-    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.15);
+    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.2);
   }
 
   @include mobile {
     flex-direction: column;
     gap: 8px;
-    padding: 10px;
+    padding: 8px;
   }
 }
 
@@ -82,7 +94,7 @@
   padding: 0 12px;
 
   @include mobile {
-    padding: 4px 0;
+    padding: 6px 4px;
   }
 }
 
@@ -90,35 +102,33 @@
   width: 100%;
   border: none;
   background: transparent;
-  font-size: 15px;
-  font-weight: 500;
-  color: $color-ink-black;
+  font-size: 14.5px;
+  color: #111827;
   outline: none;
 
   &::placeholder {
-    color: #a1a1aa;
+    color: #9ca3af;
     font-size: 13.5px;
   }
 }
 
 .searchSubmitBtn {
-  background: $color-accent-orange;
+  background: #ffb800;
   color: #000000;
   border: none;
-  border-radius: 8px;
+  border-radius: 7px;
   padding: 12px 24px;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 
   &:hover {
-    background: $color-accent-orange-hover;
-    color: #000000;
+    background: #eab308;
   }
 
   @include mobile {
@@ -127,60 +137,173 @@
   }
 }
 
-.hintsRow {
+.sampleChipsRow {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   margin-top: 12px;
   font-size: 12px;
-  color: #71717a;
+  color: #6b7280;
   flex-wrap: wrap;
 }
 
-.hintPill {
-  background: #f4f4f5;
-  padding: 2px 8px;
+.sampleChipLabel {
+  color: #6b7280;
+}
+
+.sampleChipBtn {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
   border-radius: 4px;
-  font-family: $font-mono;
-  color: #27272a;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  color: #111827;
   cursor: pointer;
-  border: 1px solid #e4e4e7;
+  transition: all 0.15s ease;
 
   &:hover {
-    background: #e4e4e7;
+    background: #fffbeb;
+    border-color: #ffb800;
+    color: #b45309;
   }
 }
 
-.resultsArea {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 16px;
+// -----------------------------------------------------------------------------
+// AWAITING TRACKING CARD (IMAGE 1)
+// -----------------------------------------------------------------------------
+.awaitingCard {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  padding: 44px 24px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  margin-bottom: 24px;
 }
 
-.notFoundCard {
+.awaitingIconWrap {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.awaitingTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 6px;
+}
+
+.awaitingSub {
+  font-size: 13.5px;
+  color: #6b7280;
+  margin: 0 auto;
+  max-width: 440px;
+  line-height: 1.5;
+}
+
+.supportHelpRow {
+  text-align: center;
+  font-size: 13px;
+  color: #6b7280;
+
+  a {
+    color: #b45309;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: #92400e;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// STATUS / LOADING / NOT FOUND CARDS
+// -----------------------------------------------------------------------------
+.statusStateCard {
   background: #ffffff;
-  border: 1px solid $color-border-subtle;
-  border-radius: $radius-lg;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
   padding: 48px 24px;
   text-align: center;
-  color: #52525b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-bottom: 32px;
 }
 
-.supportHelpRow {
-  margin-top: 40px;
-  text-align: center;
-  font-size: 13px;
-  color: #71717a;
+.stateTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #111827;
+  margin: 10px 0 6px;
+}
 
-  a {
-    color: $color-accent-orange;
-    font-weight: 600;
-    text-decoration: underline;
+.stateSubtitle {
+  font-size: 13.5px;
+  color: #6b7280;
+  margin: 0;
+  max-width: 440px;
+  line-height: 1.5;
+}
+
+.notFoundActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.viewSampleBtn {
+  background: #ffb800;
+  border: 1px solid #eab308;
+  border-radius: 6px;
+  color: #000000;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: #eab308;
   }
 }
 
+.tryAnotherBtn {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  color: #111827;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: #f9fafb;
+    border-color: #111827;
+  }
+}
+
+.spinIcon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

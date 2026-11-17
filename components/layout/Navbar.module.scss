@@ -83,6 +83,38 @@
   }
 }
 
+.topAdminLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 184, 0, 0.12);
+  border: 1px solid rgba(255, 184, 0, 0.4);
+  color: #ffb800;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 1.5px 8px;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: #ffb800;
+    color: #0a0a0c;
+    border-color: #ffb800;
+
+    .topAdminIcon {
+      color: #0a0a0c;
+    }
+  }
+}
+
+.topAdminIcon {
+  color: #ffb800;
+  transition: color $transition-fast;
+}
+
 // 2. MAIN NAV
 .mainNav {
   background-color: #ffffff;
@@ -216,8 +248,8 @@
   min-width: 0;
 
   &::placeholder {
-    color: #a1a1aa;
-    font-size: 12.5px;
+    color: #94a3b8;
+    font-size: 13.5px;
   }
 }
 
@@ -239,7 +271,9 @@
 
 .mobileSearchSubmitBtn {
   width: 44px;
+  min-width: 44px;
   height: 100%;
+  padding: 0;
   background-color: $color-ink-black;
   color: #ffffff;
   border: none;
@@ -677,7 +711,8 @@
 
   &.mobileDropdown {
     top: calc(100% + 4px);
-    max-height: 420px;
+    max-height: min(420px, calc(75dvh - 60px));
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -1856,6 +1891,29 @@
     text-align: left;
     font-family: inherit;
   }
+
+  &.adminDrawerLink {
+    background-color: rgba(255, 184, 0, 0.12);
+    color: #92400e;
+    border: 1px solid rgba(255, 184, 0, 0.45);
+    font-weight: 700;
+
+    &:hover {
+      background-color: rgba(255, 184, 0, 0.2);
+    }
+  }
+}
+
+.adminDrawerBadge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: #ffb800;
+  color: #0a0a0c;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
 }
 
 .mobileCategoryHeading {

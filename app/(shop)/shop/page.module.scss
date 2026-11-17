@@ -1,4 +1,4 @@
-﻿@use '@/styles/variables' as *;
+@use '@/styles/variables' as *;
 @use '@/styles/mixins' as *;
 
 .shopPage {
@@ -166,8 +166,8 @@
   }
 
   @include mobile {
-    width: 100vw;
-    max-width: 100vw;
+    width: 100%;
+    max-width: 100%;
   }
 }
 
@@ -413,6 +413,7 @@
 
   @include laptop {
     display: block;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   }
 }
 
