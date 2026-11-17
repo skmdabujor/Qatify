@@ -6,6 +6,6 @@
 // =============================================================================
 
 export const MAINTENANCE_CONFIG = {
-  enabled: true, // Currently ON (Temporary break for 7-8 days)
+  enabled: false, // Site is LIVE
 };
 

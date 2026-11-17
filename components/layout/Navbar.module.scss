@@ -213,10 +213,13 @@
 
 .mobileSearchForm {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   border: 2px solid $color-ink-black;
   border-radius: $radius-md;
   background-color: #ffffff;
+  background: linear-gradient(to right, #ffffff calc(100% - 46px), #{$color-ink-black} calc(100% - 46px));
+  background-origin: border-box;
+  background-clip: border-box;
   height: 40px;
   position: relative;
   overflow: hidden;
@@ -270,13 +273,18 @@
 }
 
 .mobileSearchSubmitBtn {
+  -webkit-appearance: none;
+  appearance: none;
   width: 44px;
   min-width: 44px;
   height: 100%;
+  align-self: stretch;
   padding: 0;
+  margin: 0;
   background-color: $color-ink-black;
   color: #ffffff;
   border: none;
+  border-radius: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -284,12 +292,14 @@
   flex-shrink: 0;
   transition: background-color $transition-fast;
 
-  &:hover {
-    background-color: $color-accent-red;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: $color-accent-red;
+    }
   }
 
   &:active {
-    transform: scale(0.96);
+    background-color: $color-accent-red;
   }
 }
 
