@@ -5,16 +5,17 @@
 
 .bannerWrapper {
   position: fixed;
-  top: 76px;
+  top: 110px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1010;
+  z-index: 10000;
   width: calc(100% - 32px);
   max-width: 470px;
   pointer-events: auto;
   animation: slideDownFade 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   @media (min-width: 769px) {
+    top: 176px;
     left: 24px;
     transform: none;
   }
