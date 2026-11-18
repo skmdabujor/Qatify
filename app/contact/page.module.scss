@@ -134,9 +134,14 @@
   width: 40px;
   height: 40px;
   border-radius: $radius-md;
-  background-color: #fff4ec;
-  color: $color-accent-orange;
+  background-color: #f4f4f5;
+  color: $color-ink-black;
   margin-bottom: 4px;
+
+  svg {
+    color: $color-ink-black !important;
+    stroke: $color-ink-black !important;
+  }
 }
 
 .channelTitle {
@@ -199,10 +204,10 @@
 .hubDetails {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  font-size: 13px;
+  gap: 12px;
+  font-size: 13.5px;
   color: $color-text-secondary;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .hubRow {

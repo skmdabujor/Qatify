@@ -55,6 +55,7 @@ import {
   QarCurrencyIcon,
 } from '@/components/ui/PaymentIcons';
 import { CountryFlag } from '@/components/ui/CountryFlags';
+import { CheckoutSkeleton } from '@/components/ui/skeleton';
 import styles from './page.module.scss';
 
 // Feature Flag: Cash on Delivery status (Explicitly disabled as requested)
@@ -1475,13 +1476,7 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense
-      fallback={
-        <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <p>Loading checkout...</p>
-        </div>
-      }
-    >
+    <Suspense fallback={<CheckoutSkeleton />}>
       <CheckoutContent />
     </Suspense>
   );

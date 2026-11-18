@@ -133,10 +133,6 @@ export const ContactClient: React.FC = () => {
           </nav>
 
           <div className={styles.heroContent}>
-            <span className={styles.badgePill}>
-              <ShieldCheck size={14} />
-              Online Customer Support Desk • 7 Days a Week
-            </span>
             <h1 className={styles.title}>Contact Qatify</h1>
             <p className={styles.subtitle}>
               Have a question about an order, tracking your air shipment, or product details? Our dedicated customer care desk is always here to assist you promptly.
@@ -215,24 +211,20 @@ export const ContactClient: React.FC = () => {
             {/* Online Store Model Details */}
             <div className={styles.hubCard}>
               <div className={styles.hubHeader}>
-                <Plane size={20} color="#ffb800" />
                 <h3 className={styles.hubTitle}>100% Online Cross-Border Store for Qatar</h3>
               </div>
               <div className={styles.hubDetails}>
                 <div className={styles.hubRow}>
-                  <ShieldCheck size={16} />
                   <span>
                     <strong>Direct Sourcing:</strong> We operate exclusively as an online store to eliminate retail showroom markups, delivering authentic electronics directly to your doorstep in Qatar via express air cargo.
                   </span>
                 </div>
                 <div className={styles.hubRow}>
-                  <Clock size={16} />
                   <span>
                     <strong>Support Hours:</strong> Online team available daily from 8:00 AM – 11:00 PM (GMT+3 Doha Time) to handle order inquiries, tracking, and warranty claims.
                   </span>
                 </div>
                 <div className={styles.hubRow}>
-                  <Plane size={16} />
                   <span>
                     <strong>Tracked Delivery:</strong> Doorstep delivery across Doha, Lusail, Al Rayyan, Al Wakrah, and all Qatar municipalities in 6–10 business days.
                   </span>

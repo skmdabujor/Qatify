@@ -3,18 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import {
-  Plane,
-  RotateCcw,
-  FileText,
-  Lock,
-  Phone,
   Mail,
   MessageCircle,
   Clock,
   ArrowRight,
   CheckCircle2,
   ListOrdered,
-  HelpCircle,
 } from 'lucide-react';
 import { useShop } from '@/context/ShopContext';
 import styles from './PolicyShell.module.scss';
@@ -36,11 +30,11 @@ export interface PolicyShellProps {
 }
 
 const POLICY_TABS = [
-  { slug: 'refund-policy', label: 'Refund & Return Policy', icon: RotateCcw, href: '/refund-policy' },
-  { slug: 'shipping-policy', label: 'Shipping & Delivery', icon: Plane, href: '/shipping-policy' },
-  { slug: 'privacy', label: 'Privacy Policy', icon: Lock, href: '/privacy' },
-  { slug: 'terms', label: 'Terms & Conditions', icon: FileText, href: '/terms' },
-  { slug: 'contact', label: 'Contact Us', icon: MessageCircle, href: '/contact' },
+  { slug: 'refund-policy', label: 'Refund & Return Policy', href: '/refund-policy' },
+  { slug: 'shipping-policy', label: 'Shipping & Delivery', href: '/shipping-policy' },
+  { slug: 'privacy', label: 'Privacy Policy', href: '/privacy' },
+  { slug: 'terms', label: 'Terms & Conditions', href: '/terms' },
+  { slug: 'contact', label: 'Contact Us', href: '/contact' },
 ];
 
 export const PolicyShell: React.FC<PolicyShellProps> = ({
@@ -90,7 +84,6 @@ export const PolicyShell: React.FC<PolicyShellProps> = ({
         <div className="container">
           <div className={styles.tabsScroll}>
             {POLICY_TABS.map((tab) => {
-              const Icon = tab.icon;
               const isActive = tab.slug === activeSlug;
               return (
                 <Link
@@ -98,7 +91,6 @@ export const PolicyShell: React.FC<PolicyShellProps> = ({
                   href={tab.href}
                   className={`${styles.tabLink} ${isActive ? styles.activeTab : ''}`}
                 >
-                  <Icon size={14} />
                   <span>{tab.label}</span>
                 </Link>
               );

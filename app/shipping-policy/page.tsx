@@ -3,18 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PolicyShell, TocItem } from '@/components/policy/PolicyShell';
 import styles from '@/components/policy/PolicyShell.module.scss';
-import {
-  Plane,
-  Truck,
-  Clock,
-  MapPin,
-  ShieldCheck,
-  Search,
-  PackageCheck,
-  AlertCircle,
-  HelpCircle,
-  Sparkles,
-} from 'lucide-react';
+import { Search } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Shipping & Delivery Policy — 6-10 Days Direct Air Express | Qatify Qatar',
@@ -45,7 +34,6 @@ export default function ShippingPolicyPage() {
   return (
     <PolicyShell
       title="Shipping & Delivery Policy"
-      badge="Direct Air Express Logistics"
       subtitle="Transparent, reliable, and trackable 6–10 business day delivery straight to your doorstep across Qatar."
       lastUpdated="November 2026"
       readTime="6 min read"
@@ -54,10 +42,7 @@ export default function ShippingPolicyPage() {
     >
       {/* 1. DIRECT GLOBAL AIR EXPRESS MODEL */}
       <section id="air-model">
-        <h2>
-          <Plane size={22} color="#18181b" />
-          1. How Direct Global Air Express Works
-        </h2>
+        <h2>1. How Direct Global Air Express Works</h2>
         <p>
           At Qatify, we operate on a modern cross-border air logistics model designed specifically for Qatar. Unlike traditional retail stores in Doha that mark up electronics by 40% to 70% to cover expensive mall rent and domestic warehousing overhead, <strong>Qatify connects you directly with top-tier verified global manufacturers</strong> (specializing in Anker, Baseus, Green Lion, Porodo, Soundcore, and trending viral gadgets).
         </p>
@@ -66,7 +51,6 @@ export default function ShippingPolicyPage() {
         </p>
         <div className={styles.calloutHighlight}>
           <div className={styles.calloutHeader}>
-            <Sparkles size={18} />
             <span>Why 6–10 Days Is the Sweet Spot</span>
           </div>
           <p>
@@ -77,10 +61,7 @@ export default function ShippingPolicyPage() {
 
       {/* 2. 6-10 DAYS TIMELINE BREAKDOWN */}
       <section id="timeline-breakdown">
-        <h2>
-          <Clock size={22} color="#18181b" />
-          2. The 6–10 Business Days Timeline: Day by Day
-        </h2>
+        <h2>2. The 6–10 Business Days Timeline: Day by Day</h2>
         <p>
           We believe in total transparency. Here is the realistic journey your parcel takes from the moment you click checkout until it reaches your hands in Qatar:
         </p>
@@ -140,10 +121,7 @@ export default function ShippingPolicyPage() {
 
       {/* 3. COVERAGE ACROSS QATAR */}
       <section id="coverage-zones">
-        <h2>
-          <MapPin size={22} color="#18181b" />
-          3. Complete Coverage Across All Qatar Municipalities
-        </h2>
+        <h2>3. Complete Coverage Across All Qatar Municipalities</h2>
         <p>
           Qatify delivers to every residential, commercial, and compound address across the State of Qatar. Whether you reside in high-rise towers or suburban communities, our couriers reach you:
         </p>
@@ -158,10 +136,7 @@ export default function ShippingPolicyPage() {
 
       {/* 4. RATES & FREE SHIPPING */}
       <section id="rates-thresholds">
-        <h2>
-          <Truck size={22} color="#18181b" />
-          4. Shipping Rates & Free Delivery Threshold
-        </h2>
+        <h2>4. Shipping Rates & Free Delivery Threshold</h2>
         <p>We keep our delivery pricing clear and straightforward with no hidden handling or airport fees:</p>
 
         <div className={styles.tableWrapper}>
@@ -194,10 +169,7 @@ export default function ShippingPolicyPage() {
 
       {/* 5. REALTIME TRACKING */}
       <section id="realtime-tracking">
-        <h2>
-          <Search size={22} color="#18181b" />
-          5. Live Tracking Your Air Shipment
-        </h2>
+        <h2>5. Live Tracking Your Air Shipment</h2>
         <p>
           You are never in the dark about your shipment. Within 24 to 48 hours of completing your order, we generate your personalized tracking reference (e.g., <code>QA-89421</code>) and send you the tracking link via email.
         </p>
@@ -221,10 +193,7 @@ export default function ShippingPolicyPage() {
 
       {/* 6. CUSTOMS & IMPORT CLEARANCE */}
       <section id="customs-handling">
-        <h2>
-          <ShieldCheck size={22} color="#18181b" />
-          6. Customs & Import Clearance (Hamad International Airport)
-        </h2>
+        <h2>6. Customs & Import Clearance (Hamad International Airport)</h2>
         <p>
           All consumer items sold on Qatify comply with import rules set by the Qatar General Authority of Customs and the Communications Regulatory Authority (CRA) for consumer electronics and mobile accessories.
         </p>
@@ -235,13 +204,9 @@ export default function ShippingPolicyPage() {
 
       {/* 7. LOST COURIER PARCEL GUARANTEE */}
       <section id="lost-transit-pledge">
-        <h2>
-          <ShieldCheck size={22} color="#18181b" />
-          7. Missing or Lost in Courier Transit Guarantee (Insha’Allah)
-        </h2>
+        <h2>7. Missing or Lost in Courier Transit Guarantee (Insha’Allah)</h2>
         <div className={styles.calloutGuarantee}>
           <div className={styles.calloutHeader}>
-            <ShieldCheck size={20} />
             <span>Our Zero-Risk Guarantee for Every Qatify Shopper</span>
           </div>
           <p>
@@ -259,7 +224,6 @@ export default function ShippingPolicyPage() {
       {/* NEED ASSISTANCE */}
       <div className={styles.calloutHighlight}>
         <div className={styles.calloutHeader}>
-          <HelpCircle size={18} />
           <span>Have a Delivery Question or Need Special Timing?</span>
         </div>
         <p>

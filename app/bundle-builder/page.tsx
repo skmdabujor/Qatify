@@ -42,6 +42,7 @@ import {
 import { useShop } from '@/context/ShopContext';
 import { PRODUCTS } from '@/data/products';
 import { Product } from '@/types/product';
+import { BundleBuilderSkeleton } from '@/components/ui/skeleton';
 import styles from './page.module.scss';
 
 // Helper to reliably extract product ID (handles both Convex productId / _id and standard id)
@@ -1180,13 +1181,7 @@ function BundleBuilderContent() {
 
 export default function BundleBuilderPage() {
   return (
-    <Suspense
-      fallback={
-        <div style={{ padding: '80px 20px', textAlign: 'center' }}>
-          Loading Qatify Bundle Studio...
-        </div>
-      }
-    >
+    <Suspense fallback={<BundleBuilderSkeleton />}>
       <BundleBuilderContent />
     </Suspense>
   );

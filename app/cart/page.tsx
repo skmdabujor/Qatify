@@ -6,7 +6,7 @@
 // Styled with Qatify Brand Identity (Qatify Yellow #ffb800, Black #18181b, Nunito Sans fonts)
 // =============================================================================
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -24,11 +24,13 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { useShop } from '@/context/ShopContext';
+import { CartSkeleton } from '@/components/ui/skeleton';
 import { PRODUCTS } from '@/data/products';
 import styles from './page.module.scss';
 
 export default function CartPage() {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const {
     cart,
     cartSubtotal,
@@ -40,6 +42,10 @@ export default function CartPage() {
     appliedDiscountQAR,
     setCoupon,
   } = useShop();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const convex = useConvex();
   const [couponCode, setCouponCode] = useState('');
@@ -89,6 +95,10 @@ export default function CartPage() {
     const inCartIds = new Set(cart.map((item) => item.product.id));
     return PRODUCTS.filter((p) => !inCartIds.has(p.id)).slice(0, 6);
   }, [cart]);
+
+  if (!mounted) {
+    return <CartSkeleton />;
+  }
 
   return (
     <div className={styles.cartPage}>

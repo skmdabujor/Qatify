@@ -67,6 +67,7 @@ import { TelegramAlertsManager } from '@/components/admin/TelegramAlertsManager'
 import { TrackingTimeline } from '@/components/tracking/TrackingTimeline';
 import { InvoiceModal } from '@/components/orders/InvoiceModal';
 import { AliExpressLinkModal } from '@/components/admin/AliExpressLinkModal';
+import { DashboardSkeleton } from '@/components/ui/skeleton';
 import { DEFAULT_RETAIL_ORDERS } from '@/data/retailOrders';
 import { useAuthActions } from '@convex-dev/auth/react';
 import { AuthModal } from '@/components/auth/AuthModal';
@@ -3503,7 +3504,7 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div className="container" style={{ padding: '40px 0' }}>Loading Dashboard...</div>}>
+    <Suspense fallback={<DashboardSkeleton />}>
       <DashboardContent />
     </Suspense>
   );

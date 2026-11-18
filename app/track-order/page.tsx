@@ -19,6 +19,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { TrackingTimeline } from '@/components/tracking/TrackingTimeline';
+import { TrackOrderSkeleton } from '@/components/ui/skeleton';
 import styles from './page.module.scss';
 
 function TrackOrderContent() {
@@ -188,20 +189,7 @@ function TrackOrderContent() {
 
 export default function TrackOrderPage() {
   return (
-    <Suspense
-      fallback={
-        <div className={styles.pageWrapper}>
-          <div className={styles.container}>
-            <div className={styles.statusStateCard}>
-              <RotateCw size={24} className={styles.spinIcon} color="#059669" />
-              <p style={{ margin: '12px 0 0', color: '#6b7280', fontSize: '14px' }}>
-                Loading tracking console...
-              </p>
-            </div>
-          </div>
-        </div>
-      }
-    >
+    <Suspense fallback={<TrackOrderSkeleton />}>
       <TrackOrderContent />
     </Suspense>
   );

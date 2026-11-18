@@ -36,6 +36,7 @@ import {
   QarCurrencyIcon,
 } from '@/components/ui/PaymentIcons';
 import { useShop } from '@/context/ShopContext';
+import { CartSkeleton } from '@/components/ui/skeleton';
 import styles from './page.module.scss';
 
 function BundleCartContent() {
@@ -450,7 +451,7 @@ function BundleCartContent() {
 
 export default function BundleCartPage() {
   return (
-    <Suspense fallback={<div style={{ padding: '80px 20px', textAlign: 'center' }}>Loading Bundle Cart...</div>}>
+    <Suspense fallback={<CartSkeleton />}>
       <BundleCartContent />
     </Suspense>
   );

@@ -3,17 +3,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PolicyShell, TocItem } from '@/components/policy/PolicyShell';
 import styles from '@/components/policy/PolicyShell.module.scss';
-import {
-  ShieldCheck,
-  RotateCcw,
-  PackageX,
-  CreditCard,
-  HeartHandshake,
-  CheckCircle2,
-  AlertTriangle,
-  ArrowRight,
-  Sparkles,
-} from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Refund & Return Policy — 100% Transit Guarantee | Qatify Qatar',
@@ -45,7 +34,6 @@ export default function RefundPolicyPage() {
   return (
     <PolicyShell
       title="Refund & Return Policy"
-      badge="100% Customer Protection Pledge"
       subtitle="At Qatify, your trust and hard-earned money are sacred. If something goes wrong with your shipment or product, we make things right without hurdles."
       lastUpdated="November 2026"
       readTime="5 min read"
@@ -54,10 +42,7 @@ export default function RefundPolicyPage() {
     >
       {/* 1. LOST IN TRANSIT PLEDGE */}
       <section id="lost-transit-guarantee">
-        <h2>
-          <ShieldCheck size={22} color="#18181b" />
-          1. Our Core Promise: 100% Lost in Courier Transit Guarantee
-        </h2>
+        <h2>1. Our Core Promise: 100% Lost in Courier Transit Guarantee</h2>
         <p>
           Online shopping should always feel reassuring, not stressful. When you place an order with Qatify, you place your trust in our care. We recognize that international air transit and local courier logistics across Qatar involve multiple handoffs.
         </p>
@@ -65,7 +50,6 @@ export default function RefundPolicyPage() {
         {/* Highlighted Guarantee Banner */}
         <div className={styles.calloutGuarantee}>
           <div className={styles.calloutHeader}>
-            <HeartHandshake size={20} />
             <span>Our Core Promise — 100% Lost Parcel Money-Back Guarantee</span>
           </div>
           <p>
@@ -86,10 +70,7 @@ export default function RefundPolicyPage() {
 
       {/* 2. 14-DAY RETURN WINDOW */}
       <section id="14-day-returns">
-        <h2>
-          <RotateCcw size={22} color="#18181b" />
-          2. 14-Day Return Window
-        </h2>
+        <h2>2. 14-Day Return Window</h2>
         <p>
           We want you to feel completely confident about every gadget you unpack. That is why Qatify offers a <strong>14-day inspection and return policy</strong> starting from the exact calendar day your order is marked as delivered at your doorstep anywhere in Qatar.
         </p>
@@ -100,10 +81,7 @@ export default function RefundPolicyPage() {
 
       {/* 3. ELIGIBILITY */}
       <section id="eligibility">
-        <h2>
-          <CheckCircle2 size={22} color="#18181b" />
-          3. What Is Eligible for Return?
-        </h2>
+        <h2>3. What Is Eligible for Return?</h2>
         <p>To ensure a smooth and fair inspection for everyone, returned items must satisfy the following conditions:</p>
         <ul>
           <li>
@@ -123,10 +101,7 @@ export default function RefundPolicyPage() {
 
       {/* 4. NON-RETURNABLE ITEMS */}
       <section id="non-returnable">
-        <h2>
-          <PackageX size={22} color="#18181b" />
-          4. Non-Returnable Items
-        </h2>
+        <h2>4. Non-Returnable Items</h2>
         <p>For hygiene, safety, and operational reasons, the following scenarios cannot be accepted for refund:</p>
         <ul>
           <li>Products returned past the 14-day delivery window without prior written notice.</li>
@@ -138,10 +113,7 @@ export default function RefundPolicyPage() {
 
       {/* 5. HOW TO CLAIM */}
       <section id="how-to-claim">
-        <h2>
-          <Sparkles size={22} color="#18181b" />
-          5. How to Initiate a Return or Refund (3 Simple Steps)
-        </h2>
+        <h2>5. How to Initiate a Return or Refund (3 Simple Steps)</h2>
         <p>
           We do not believe in complicated bureaucracy or endless automated phone menus. Returning or claiming a refund at Qatify is simple and direct:
         </p>
@@ -175,10 +147,7 @@ export default function RefundPolicyPage() {
 
       {/* 6. REFUND TIMELINE & PAYMENT METHODS */}
       <section id="refund-timeline">
-        <h2>
-          <CreditCard size={22} color="#18181b" />
-          6. Refund Processing Times & Methods
-        </h2>
+        <h2>6. Refund Processing Times & Methods</h2>
         <p>
           All refunds are issued in <strong>Qatari Riyal (QAR)</strong>. Once your refund is approved by our care team, here is how you will receive your funds:
         </p>
@@ -223,10 +192,7 @@ export default function RefundPolicyPage() {
 
       {/* 7. DAMAGED OR WRONG ITEM RECEIVED */}
       <section id="damaged-defective">
-        <h2>
-          <AlertTriangle size={22} color="#18181b" />
-          7. Damaged or Wrong Item Received
-        </h2>
+        <h2>7. Damaged or Wrong Item Received</h2>
         <p>
           Every item leaving our international warehouse undergoes a thorough visual and functional quality inspection. However, rough turbulence during air cargo flight or transit bumps can occasionally cause cosmetic damage.
         </p>
@@ -242,10 +208,7 @@ export default function RefundPolicyPage() {
 
       {/* 8. ORDER CANCELLATIONS */}
       <section id="order-cancellation">
-        <h2>
-          <RotateCcw size={22} color="#18181b" />
-          8. Order Cancellations
-        </h2>
+        <h2>8. Order Cancellations</h2>
         <p>
           Because we strive to deliver within 6 to 10 business days across Qatar, our logistics team begins preparing and batching air shipments within 2 to 4 hours of order placement.
         </p>
@@ -262,7 +225,6 @@ export default function RefundPolicyPage() {
       {/* CONTACT BOX */}
       <div className={styles.calloutHighlight}>
         <div className={styles.calloutHeader}>
-          <HeartHandshake size={20} />
           <span>Need Help With a Return or Missing Shipment?</span>
         </div>
         <p>
