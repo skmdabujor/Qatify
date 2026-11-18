@@ -16,7 +16,7 @@ import {
   Eye,
   EyeOff,
   Package,
-  Heart,
+  Zap,
   Bell,
   AlertCircle,
   CheckCircle2,
@@ -523,7 +523,7 @@ export function AuthPage({ defaultMode = 'signIn' }: AuthPageProps) {
               <>
                 <h1 className={styles.mainHeading}>Already a member? Sign in!</h1>
                 <p className={styles.subHeading}>
-                  Get access to your orders, wishlist and recommendations to products you are interested in!
+                  Get access to your orders, exclusive deals and recommendations to products you are interested in!
                 </p>
 
                 <form onSubmit={handleSubmit} className={styles.formBody} noValidate autoComplete="off">
@@ -1099,10 +1099,10 @@ export function AuthPage({ defaultMode = 'signIn' }: AuthPageProps) {
 
                 <div className={styles.benefitItem}>
                   <div className={styles.benefitIconBox}>
-                    <Heart size={14} />
+                    <Zap size={14} />
                   </div>
                   <span className={styles.benefitText}>
-                    Access to wishlist, save the items you like!
+                    Fast express checkout with saved addresses!
                   </span>
                 </div>
 
@@ -1152,7 +1152,7 @@ export function AuthPage({ defaultMode = 'signIn' }: AuthPageProps) {
                   <div className={styles.sidebarSubSection}>
                     <h3 className={styles.sidebarHeading}>Already a member? Sign in!</h3>
                     <p className={styles.sidebarSubDesc}>
-                      Get access to your orders, wishlist and recommendations to products you are interested in!
+                      Get access to your orders, exclusive deals and recommendations to products you are interested in!
                     </p>
                     <button
                       type="button"

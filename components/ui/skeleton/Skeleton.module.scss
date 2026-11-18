@@ -1,0 +1,412 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+// =============================================================================
+// Qatify — High-Fidelity Loading Skeleton Styles
+// Smooth 60fps shimmer animation tailored to 60/30/10 design tokens
+// =============================================================================
+
+@keyframes shimmerPulse {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f4f4f5 0%,
+    #e4e4e7 50%,
+    #f4f4f5 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmerPulse 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  border-radius: $radius-sm;
+  display: block;
+}
+
+// -----------------------------------------------------------------------------
+// PRODUCT CARD SKELETON
+// Exact 1:1 match with ProductCard layout
+// -----------------------------------------------------------------------------
+.cardSkeleton {
+  background-color: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+}
+
+.cardImageStage {
+  width: 100%;
+  padding-top: 100%; // 1:1 Square
+  position: relative;
+}
+
+.cardImageShimmer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+.cardBadgePlaceholder {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 52px;
+  height: 18px;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.cardContent {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+
+  @include mobile {
+    padding: 8px 6px;
+    gap: 6px;
+  }
+}
+
+.cardTitleLine1 {
+  width: 92%;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.cardTitleLine2 {
+  width: 65%;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.cardMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.cardStarsPlaceholder {
+  width: 72px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.cardSoldPlaceholder {
+  width: 48px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.cardPriceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.cardPriceMain {
+  width: 64px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.cardPriceOriginal {
+  width: 40px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.cardButtonPlaceholder {
+  width: 100%;
+  height: 34px;
+  border-radius: 6px;
+  margin-top: auto;
+
+  @include mobile {
+    height: 30px;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// PRODUCT DETAIL SKELETON
+// Exact match with ProductDetailClient layout
+// -----------------------------------------------------------------------------
+.detailContainer {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 16px;
+  width: 100%;
+}
+
+.detailBreadcrumb {
+  width: 260px;
+  height: 14px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  align-items: start;
+
+  @include laptop {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+.detailGalleryColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detailMainImage {
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e4e4e7;
+}
+
+.detailThumbnailsRow {
+  display: flex;
+  gap: 10px;
+}
+
+.detailThumbnailItem {
+  width: 68px;
+  height: 68px;
+  border-radius: 8px;
+  flex-shrink: 0;
+
+  @include mobile {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+.detailInfoColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detailBrandPill {
+  width: 90px;
+  height: 20px;
+  border-radius: 9999px;
+}
+
+.detailTitle1 {
+  width: 100%;
+  height: 26px;
+  border-radius: 6px;
+}
+
+.detailTitle2 {
+  width: 75%;
+  height: 26px;
+  border-radius: 6px;
+}
+
+.detailRatingRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.detailStars {
+  width: 86px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.detailReviews {
+  width: 70px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.detailPriceBox {
+  width: 100%;
+  height: 72px;
+  border-radius: 10px;
+}
+
+.detailAirExpressPill {
+  width: 220px;
+  height: 28px;
+  border-radius: 9999px;
+}
+
+.detailActionsRow {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+.detailButton {
+  flex: 1;
+  height: 48px;
+  border-radius: 8px;
+}
+
+.detailTrustGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.detailTrustItem {
+  height: 44px;
+  border-radius: 8px;
+}
+
+// -----------------------------------------------------------------------------
+// HOME / SHOP PAGE SKELETON
+// -----------------------------------------------------------------------------
+.homeContainer {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.heroBentoGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  height: 380px;
+
+  @include tablet {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+}
+
+.heroMain {
+  width: 100%;
+  height: 380px;
+  border-radius: 14px;
+
+  @include tablet {
+    height: 220px;
+  }
+}
+
+.heroSideCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @include tablet {
+    display: none;
+  }
+}
+
+.heroSideItem {
+  width: 100%;
+  height: 182px;
+  border-radius: 14px;
+}
+
+.categoryCirclesRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  overflow-x: hidden;
+  padding: 8px 0;
+}
+
+.categoryCircleItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.categoryCircle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+
+  @include mobile {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+.categoryLabel {
+  width: 56px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.sectionHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.sectionTitle {
+  width: 160px;
+  height: 22px;
+  border-radius: 5px;
+}
+
+.sectionAction {
+  width: 80px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.productCardsGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+
+  @include desktop {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  @include laptop {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @include tablet {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  @include mobile {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}

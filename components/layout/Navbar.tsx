@@ -14,7 +14,6 @@ import {
   Search,
   ShoppingCart,
   ShoppingBag,
-  Heart,
   User,
   Shield,
   Zap,
@@ -113,9 +112,9 @@ export const Navbar: React.FC = () => {
   const {
     cartCount,
     cartSubtotal,
+    isCartOpen,
     openCart,
     openChat,
-    wishlist,
     searchQuery,
     setSearchQuery,
     selectedCategory,
@@ -680,106 +679,91 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. MAIN HEADER BAR (Ecobazar Style: Logo, Wide Search, Wishlist, Cart) */}
+      {/* 2. MAIN HEADER BAR (Al Anees / Qatify Style: Logo, Wide Search, Wishlist, Cart) */}
       <div className={styles.mainNav}>
         <div className="container">
           <div className={styles.mainNavInner}>
-            {/* Mobile Menu Toggle */}
+            {/* Mobile Menu Toggle with Animated 3-Bar Hamburger */}
             <button
-              className={styles.mobileMenuToggle}
+              className={`${styles.mobileMenuToggle} ${isMobileMenuOpen ? styles.menuOpen : ''}`}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle navigation menu"
+              aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             >
-              {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              <div className={styles.hamburgerIconWrap}>
+                <span className={styles.hamburgerBar} />
+                <span className={styles.hamburgerBar} />
+                <span className={styles.hamburgerBar} />
+              </div>
             </button>
 
             {/* Qatify Brand Logo */}
             <div className={styles.logoWrap}>
-              <QatifyLogo variant="dark" size="md" showTagline={false} />
+              <QatifyLogo variant="dark" size="lg" showTagline={false} />
             </div>
 
-            {/* Search Box (Ecobazar Style: Rounded input with search icon & "Search" button) - ONLY on HomePage */}
-            {isHomePage && (
-              <div className={styles.searchContainer} ref={searchContainerRef}>
-                <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
-                  <div className={styles.searchInputGroup}>
-                    <Search size={18} className={styles.searchInnerIcon} />
-                    <input
-                      id="catalog-search-input"
-                      type="text"
-                      value={localSearch}
-                      onChange={(e) => {
-                        setLocalSearch(e.target.value);
-                        setIsSearchFocused(true);
-                      }}
-                      onFocus={() => setIsSearchFocused(true)}
-                      onKeyDown={handleSearchKeyDown}
-                      placeholder="Search for products, brands and more..."
-                      className={styles.searchInput}
-                      aria-label="Search catalog"
-                      autoComplete="off"
-                    />
-                    {localSearch && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setLocalSearch('');
-                          setSearchQuery('');
-                          setSelectedIndex(-1);
-                        }}
-                        className={styles.clearSearchBtn}
-                        aria-label="Clear search input"
-                        title="Clear search text"
-                      >
-                        <X size={14} />
-                      </button>
-                    )}
-                  </div>
-
-                  <button
-                    type="submit"
-                    className={styles.searchSubmitBtn}
+            {/* Desktop Search Box */}
+            <div className={styles.searchContainer} ref={searchContainerRef}>
+              <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
+                <div className={styles.searchInputGroup}>
+                  <Search size={18} className={styles.searchInnerIcon} />
+                  <input
+                    id="catalog-search-input"
+                    type="text"
+                    value={localSearch}
+                    onChange={(e) => {
+                      setLocalSearch(e.target.value);
+                      setIsSearchFocused(true);
+                    }}
+                    onFocus={() => setIsSearchFocused(true)}
+                    onKeyDown={handleSearchKeyDown}
+                    placeholder="What are you looking for ?"
+                    className={styles.searchInput}
                     aria-label="Search catalog"
-                    title="Search catalog"
-                  >
-                    <span>Search</span>
-                  </button>
-                </form>
-
-                {/* Real-time Predictive Suggestions Dropdown */}
-                {isSearchFocused && renderSuggestionsDropdown(false)}
-              </div>
-            )}
-
-            {/* Right Action Items: Wishlist + Divider + Cart with text stack */}
-            <div className={styles.actionItems}>
-              {/* Wishlist Icon */}
-              <Link
-                href="/dashboard?tab=wishlist"
-                className={styles.wishlistBtn}
-                title="Saved Wishlist"
-                aria-label={`Wishlist items (${wishlist.length})`}
-              >
-                <div className={styles.iconWithBadge}>
-                  <Heart size={24} strokeWidth={1.75} />
-                  {wishlist.length > 0 && (
-                    <span className={styles.badge}>{wishlist.length}</span>
+                    autoComplete="off"
+                  />
+                  {localSearch && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLocalSearch('');
+                        setSearchQuery('');
+                        setSelectedIndex(-1);
+                      }}
+                      className={styles.clearSearchBtn}
+                      aria-label="Clear search input"
+                      title="Clear search text"
+                    >
+                      <X size={14} />
+                    </button>
                   )}
                 </div>
-              </Link>
 
-              {/* Separator Line */}
-              <span className={styles.actionDivider} />
+                <button
+                  type="submit"
+                  className={styles.searchSubmitBtn}
+                  aria-label="Search catalog"
+                  title="Search catalog"
+                >
+                  <Search size={16} strokeWidth={2.2} />
+                  <span>Search</span>
+                </button>
+              </form>
 
+              {/* Real-time Predictive Suggestions Dropdown */}
+              {isSearchFocused && renderSuggestionsDropdown(false)}
+            </div>
+
+            {/* Right Action Items: Cart */}
+            <div className={styles.actionItems}>
               {/* Shopping Cart Button */}
               <button
                 type="button"
                 onClick={openCart}
-                className={styles.cartGroupBtn}
+                className={`${styles.cartGroupBtn} ${isCartOpen ? styles.cartActive : ''}`}
                 aria-label={`Open shopping cart (${cartCount} items)`}
               >
                 <div className={styles.cartIconWrapper}>
-                  <ShoppingBag size={24} strokeWidth={1.75} />
+                  <ShoppingBag size={25} strokeWidth={1.6} />
                   <span className={styles.cartCountBadge}>{cartCount}</span>
                 </div>
                 <div className={styles.cartPriceCol}>
@@ -792,56 +776,54 @@ export const Navbar: React.FC = () => {
             </div>
           </div>
 
-          {/* Dedicated Mobile & Tablet Quick Search Bar (< 768px) - ONLY on HomePage */}
-          {isHomePage && (
-            <div className={styles.mobileSearchRow} ref={mobileSearchContainerRef}>
-              <form onSubmit={handleSearchSubmit} className={styles.mobileSearchForm}>
-                <div className={styles.mobileSearchIconWrap}>
-                  <Search size={16} />
-                </div>
-                <input
-                  id="mobile-catalog-search-input"
-                  type="text"
-                  value={localSearch}
-                  onChange={(e) => {
-                    setLocalSearch(e.target.value);
-                    setIsMobileSearchFocused(true);
-                  }}
-                  onFocus={() => setIsMobileSearchFocused(true)}
-                  onKeyDown={handleSearchKeyDown}
-                  placeholder="Search for products, brands and more..."
-                  className={styles.mobileSearchInput}
-                  aria-label="Search catalog"
-                  autoComplete="off"
-                />
-                {localSearch && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLocalSearch('');
-                      setSearchQuery('');
-                      setSelectedIndex(-1);
-                    }}
-                    className={styles.mobileClearBtn}
-                    aria-label="Clear search text"
-                  >
-                    <X size={14} />
-                  </button>
-                )}
+          {/* Dedicated Mobile & Tablet Quick Search Bar (< 768px) */}
+          <div className={styles.mobileSearchRow} ref={mobileSearchContainerRef}>
+            <form onSubmit={handleSearchSubmit} className={styles.mobileSearchForm}>
+              <div className={styles.mobileSearchIconWrap}>
+                <Search size={17} strokeWidth={1.8} />
+              </div>
+              <input
+                id="mobile-catalog-search-input"
+                type="text"
+                value={localSearch}
+                onChange={(e) => {
+                  setLocalSearch(e.target.value);
+                  setIsMobileSearchFocused(true);
+                }}
+                onFocus={() => setIsMobileSearchFocused(true)}
+                onKeyDown={handleSearchKeyDown}
+                placeholder="What are you looking for ?"
+                className={styles.mobileSearchInput}
+                aria-label="Search catalog"
+                autoComplete="off"
+              />
+              {localSearch && (
                 <button
-                  type="submit"
-                  className={styles.mobileSearchSubmitBtn}
-                  aria-label="Submit search"
-                  title="Submit search"
+                  type="button"
+                  onClick={() => {
+                    setLocalSearch('');
+                    setSearchQuery('');
+                    setSelectedIndex(-1);
+                  }}
+                  className={styles.mobileClearBtn}
+                  aria-label="Clear search text"
                 >
-                  <Search size={18} />
+                  <X size={14} />
                 </button>
-              </form>
+              )}
+              <button
+                type="submit"
+                className={styles.mobileSearchSubmitBtn}
+                aria-label="Submit search"
+                title="Submit search"
+              >
+                <Search size={19} strokeWidth={2.2} />
+              </button>
+            </form>
 
-              {/* Mobile Predictive Suggestions Dropdown */}
-              {isMobileSearchFocused && renderSuggestionsDropdown(true)}
-            </div>
-          )}
+            {/* Mobile Predictive Suggestions Dropdown */}
+            {isMobileSearchFocused && renderSuggestionsDropdown(true)}
+          </div>
         </div>
       </div>
 
@@ -915,20 +897,26 @@ export const Navbar: React.FC = () => {
         </div>
       </nav>
 
-      {/* Mobile Drawer Navigation (When hamburger open) */}
-      {isMobileMenuOpen && (
-        <div className={styles.mobileDrawerBackdrop} onClick={() => setIsMobileMenuOpen(false)}>
-          <div className={styles.mobileDrawer} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.mobileDrawerHeader}>
-              <QatifyLogo variant="dark" size="sm" />
-              <button
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={styles.closeDrawerBtn}
-                aria-label="Close menu drawer"
-              >
-                <X size={20} />
-              </button>
-            </div>
+      {/* Mobile Drawer Navigation (Smooth CSS Slide & Fade) */}
+      <div
+        className={`${styles.mobileDrawerBackdrop} ${isMobileMenuOpen ? styles.drawerOpen : ''}`}
+        onClick={() => setIsMobileMenuOpen(false)}
+        aria-hidden={!isMobileMenuOpen}
+      >
+        <div
+          className={`${styles.mobileDrawer} ${isMobileMenuOpen ? styles.drawerOpen : ''}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className={styles.mobileDrawerHeader}>
+            <QatifyLogo variant="dark" size="sm" />
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={styles.closeDrawerBtn}
+              aria-label="Close menu drawer"
+            >
+              <X size={20} strokeWidth={2} />
+            </button>
+          </div>
 
             <div className={styles.mobileDrawerBody}>
               {/* Account, Track Order & Admin (Matching Desktop Top Bar) */}
@@ -1005,7 +993,6 @@ export const Navbar: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
     </header>
   );
 };

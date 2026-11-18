@@ -11,9 +11,9 @@ import { useRouter, useParams } from 'next/navigation';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Product, toProduct } from '@/types/product';
+import { ProductDetailSkeleton } from '@/components/ui/skeleton';
 import {
   Star,
-  Heart,
   Share2,
   Minus,
   Plus,
@@ -57,14 +57,23 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
     addToCart,
     initiateBuyNow,
     closeCart,
-    toggleWishlist,
-    isInWishlist,
     showToast,
   } = useShop();
 
   const liveProduct = useQuery(api.products.getBySlug, slug ? { slug } : 'skip');
   const fallbackProduct = initialProduct || PRODUCTS.find((p) => p.slug === slug);
   const product = liveProduct ? toProduct(liveProduct) : fallbackProduct;
+
+  // Instant Skeleton Loading Feedback
+  const [isClientLoading, setIsClientLoading] = useState(true);
+
+  useEffect(() => {
+    setIsClientLoading(true);
+    const timer = setTimeout(() => {
+      setIsClientLoading(false);
+    }, 280);
+    return () => clearTimeout(timer);
+  }, [slug]);
 
   // Gallery active image
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -268,6 +277,10 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
       : PRODUCTS.filter((p) => product && p.id !== product.id && p.categorySlug === product.categorySlug)
   ).slice(0, 5);
 
+  if (isClientLoading) {
+    return <ProductDetailSkeleton />;
+  }
+
   if (!product) {
     return (
       <div className={styles.notFoundContainer}>
@@ -280,7 +293,6 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
     );
   }
 
-  const isFavorited = isInWishlist(product.id);
   const unitPrice = product.priceQAR;
   const totalPriceQAR = unitPrice * quantity;
 
@@ -614,21 +626,8 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
               100% Secure Online Payment (Apple Pay, Google Pay & Cards). Fast express delivery across Qatar.
             </p>
 
-            {/* Wishlist & Share Aux Links */}
+            {/* Share Aux Link */}
             <div className={styles.auxLinksRow}>
-              <button
-                type="button"
-                onClick={() => toggleWishlist(product)}
-                className={`${styles.auxLinkBtn} ${isFavorited ? styles.activeWish : ''}`}
-              >
-                <Heart
-                  size={15}
-                  fill={isFavorited ? '#E11D48' : 'none'}
-                  color={isFavorited ? '#E11D48' : 'currentColor'}
-                />
-                <span>{isFavorited ? 'Saved in Wishlist' : 'Add to Wishlist'}</span>
-              </button>
-              <span className={styles.auxDivider}>•</span>
               <button
                 type="button"
                 onClick={handleShare}

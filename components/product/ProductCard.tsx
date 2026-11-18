@@ -9,7 +9,6 @@ import React from 'react';
 import Link from 'next/link';
 import {
   Star,
-  Heart,
   ShoppingCart,
   Flame,
   Check,
@@ -69,10 +68,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   variant = 'grid',
   showStockBar = false,
 }) => {
-  const { addToCart, toggleWishlist, isInWishlist } = useShop();
+  const { addToCart } = useShop();
   const [isAdded, setIsAdded] = React.useState(false);
-
-  const isFavorited = isInWishlist(product.id);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -82,12 +79,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     setTimeout(() => {
       setIsAdded(false);
     }, 1500);
-  };
-
-  const handleToggleWishlist = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleWishlist(product);
   };
 
   const savings =
@@ -123,7 +114,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div className={`${styles.card} ${styles[variant]}`}>
-      {/* Top Badges & Actions Overlay */}
+      {/* Top Badges Overlay */}
       <div className={styles.topBar}>
         <div className={styles.badgesCol}>
           {hasDiscount && discountPercent > 0 && (
@@ -134,22 +125,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {product.badge && (
             <span className={styles.customBadge}>{product.badge}</span>
           )}
-        </div>
-
-        <div className={styles.quickActions}>
-          <button
-            type="button"
-            onClick={handleToggleWishlist}
-            className={`${styles.actionBtn} ${isFavorited ? styles.activeWish : ''}`}
-            aria-label={isFavorited ? 'Remove from wishlist' : 'Add to wishlist'}
-            title={isFavorited ? 'Remove from wishlist' : 'Save to wishlist'}
-          >
-            <Heart
-              size={13}
-              fill={isFavorited ? '#ffb800' : 'none'}
-              color={isFavorited ? '#ffb800' : 'currentColor'}
-            />
-          </button>
         </div>
       </div>
 

@@ -3,12 +3,18 @@
   inset: 0;
   background-color: rgba(17, 24, 39, 0.6);
   backdrop-filter: blur(4px);
-  z-index: 9999;
+  z-index: 100000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  @media (max-width: 640px) {
+    align-items: flex-start;
+    padding: 16px 10px;
+  }
 }
 
 .invoiceSheet {
@@ -23,6 +29,7 @@
   max-height: 90vh;
   border: 1px solid #e5e7eb;
   animation: modalEnter 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  margin: auto 0;
 }
 
 @keyframes modalEnter {

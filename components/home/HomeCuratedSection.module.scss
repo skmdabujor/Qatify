@@ -675,9 +675,9 @@
 }
 
 .productTitle {
-  font-family: $font-heading;
+  font-family: var(--font-body);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 400;
   color: $color-ink-black;
   line-height: 1.35;
   height: 35px; // Fixed 2-line height for 100% horizontal synchronization across all cards!

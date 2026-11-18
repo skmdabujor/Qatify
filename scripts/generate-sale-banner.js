@@ -146,7 +146,7 @@ async function generateBanner() {
       </text>
 
       <!-- Subtitle Description -->
-      <text x="0" y="168" fill="#94A3B8" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="500">
+      <text x="0" y="168" fill="#94A3B8" font-family="'Nunito Sans', system-ui, sans-serif" font-size="13" font-weight="500">
         Premium ANC Earbuds, Smartwatches, GaN Fast Chargers &amp; MagSafe Essentials
       </text>
 
@@ -162,7 +162,7 @@ async function generateBanner() {
 
         <!-- Guarantee Pill next to button -->
         <g transform="translate(202, 7)">
-          <text x="0" y="18" fill="#CBD5E1" font-family="'Inter', system-ui, sans-serif" font-size="12" font-weight="600">
+          <text x="0" y="18" fill="#CBD5E1" font-family="'Nunito Sans', system-ui, sans-serif" font-size="12" font-weight="600">
             ✈️ Tracked Direct Air Express Delivery to Doha
           </text>
         </g>
@@ -187,8 +187,8 @@ async function generateBanner() {
         <text x="6" y="13" fill="#FFFFFF" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="800">-45%</text>
       </g>
       <!-- Title -->
-      <text x="12" y="134" fill="#F1F5F9" font-family="'Inter', system-ui, sans-serif" font-size="11.5" font-weight="700">Studio ANC Pro</text>
-      <text x="12" y="148" fill="#94A3B8" font-family="'Inter', system-ui, sans-serif" font-size="9.5" font-weight="500">Spatial Hi-Res Audio</text>
+      <text x="12" y="134" fill="#F1F5F9" font-family="'Nunito Sans', system-ui, sans-serif" font-size="11.5" font-weight="700">Studio ANC Pro</text>
+      <text x="12" y="148" fill="#94A3B8" font-family="'Nunito Sans', system-ui, sans-serif" font-size="9.5" font-weight="500">Spatial Hi-Res Audio</text>
       <!-- Price -->
       <text x="12" y="172" fill="#FACC15" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="800">QAR 189</text>
       <text x="82" y="171" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="500" text-decoration="line-through">349</text>
@@ -211,7 +211,7 @@ async function generateBanner() {
       </g>
       <!-- Title -->
       <text x="14" y="148" fill="#FFFFFF" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="13" font-weight="800">Apex Ultra Watch</text>
-      <text x="14" y="164" fill="#CBD5E1" font-family="'Inter', system-ui, sans-serif" font-size="10" font-weight="500">AMOLED • ECG &amp; Titanium</text>
+      <text x="14" y="164" fill="#CBD5E1" font-family="'Nunito Sans', system-ui, sans-serif" font-size="10" font-weight="500">AMOLED • ECG &amp; Titanium</text>
       <!-- Price -->
       <text x="14" y="196" fill="#FACC15" font-family="'JetBrains Mono', monospace" font-size="17" font-weight="900">QAR 169</text>
       <text x="96" y="194" fill="#94A3B8" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="600" text-decoration="line-through">339</text>
@@ -231,8 +231,8 @@ async function generateBanner() {
         <text x="6" y="13" fill="#FFFFFF" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="800">-40%</text>
       </g>
       <!-- Title -->
-      <text x="12" y="134" fill="#F1F5F9" font-family="'Inter', system-ui, sans-serif" font-size="11.5" font-weight="700">PulsePro Earbuds</text>
-      <text x="12" y="148" fill="#94A3B8" font-family="'Inter', system-ui, sans-serif" font-size="9.5" font-weight="500">48dB Hybrid ANC</text>
+      <text x="12" y="134" fill="#F1F5F9" font-family="'Nunito Sans', system-ui, sans-serif" font-size="11.5" font-weight="700">PulsePro Earbuds</text>
+      <text x="12" y="148" fill="#94A3B8" font-family="'Nunito Sans', system-ui, sans-serif" font-size="9.5" font-weight="500">48dB Hybrid ANC</text>
       <!-- Price -->
       <text x="12" y="172" fill="#FACC15" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="800">QAR 149</text>
       <text x="82" y="171" fill="#64748B" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="500" text-decoration="line-through">249</text>

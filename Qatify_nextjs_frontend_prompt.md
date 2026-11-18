@@ -34,13 +34,13 @@ Maintain a vibrant, premium, and clean aesthetic governed strictly by the **60/3
 ### 3. Qatify Logo Concept & Brand Mark
 Create a scalable, reusable inline SVG `<QatifyLogo />` component (`components/brand/QatifyLogo.tsx`) with both light and dark variants:
 - **Iconography**: A geometric, forward-leaning **"Q"** monogram where the tail of the "Q" forms a dynamic lightning bolt / fast-forward spark in **Electric Yellow (`#FACC15`)** nested inside a bold **Qatify Red (`#E11D48`)** rounded squircle badge.
-- **Wordmark**: Bold geometric sans-serif typography (`Plus Jakarta Sans` or `Inter`, 800 weight, tight `-0.03em` tracking) reading **QATIFY**, with a subtle yellow dot on the "i" and a `.qa` pill badge.
+- **Wordmark**: Bold geometric sans-serif typography (`Plus Jakarta Sans` or `Nunito Sans`, 800 weight, tight `-0.03em` tracking) reading **QATIFY**, with a subtle yellow dot on the "i" and a `.qa` pill badge.
 
 ### 4. Tech Stack & Architecture Constraints (Phase 1)
 - **Framework**: Next.js (App Router) with TypeScript (`strict: true`).
 - **Styling**: Modular SCSS (`sass`) using CSS custom properties + SCSS variables, mixins, responsive breakpoint helpers, and BEM-clean module classes (`*.module.scss`). Do NOT use Tailwind CSS.
 - **State Management (Frontend Mock State)**: React Context + `localStorage` persistence for Cart Drawer, Wishlist, Product Comparison, Filter/Sort state, and Dashboard view switching, backed by rich, realistic Qatari dropshipping e-commerce mock data (`data/products.ts` with prices in `QAR` and estimated 6–10 day delivery windows).
-- **Icons & Fonts**: `lucide-react` for crisp iconography; `Plus Jakarta Sans` (headings), `Inter` (body), and `JetBrains Mono` (SKUs, QAR prices, countdown timers, tracking numbers).
+- **Icons & Fonts**: `lucide-react` for crisp iconography; `Plus Jakarta Sans` (headings), `Nunito Sans` (body), and `JetBrains Mono` (SKUs, QAR prices, countdown timers, tracking numbers).
 
 ### 5. App Router Directory Structure
 Implement the exact Next.js App Router hierarchy below:

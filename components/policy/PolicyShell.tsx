@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import {
-  ShieldCheck,
   Plane,
   RotateCcw,
   FileText,
@@ -27,7 +26,7 @@ export interface TocItem {
 
 export interface PolicyShellProps {
   title: string;
-  badge: string;
+  badge?: string;
   subtitle: string;
   lastUpdated?: string;
   readTime?: string;
@@ -68,10 +67,6 @@ export const PolicyShell: React.FC<PolicyShellProps> = ({
           </nav>
 
           <div className={styles.heroContent}>
-            <span className={styles.badgePill}>
-              <ShieldCheck size={14} />
-              {badge}
-            </span>
             <h1 className={styles.title}>{title}</h1>
             <p className={styles.subtitle}>{subtitle}</p>
 
@@ -137,7 +132,7 @@ export const PolicyShell: React.FC<PolicyShellProps> = ({
             {/* Missing Package Guarantee Card */}
             <div className={styles.guaranteeCard}>
               <span className={styles.guaranteeBadge}>
-                🛡️ 100% Protection Pledge
+                100% Protection Pledge
               </span>
               <h3 className={styles.guaranteeTitle}>
                 Lost Parcel? Full Money-Back Guaranteed.

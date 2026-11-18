@@ -3,7 +3,7 @@
 // =============================================================================
 // Qatify — Shopping Cart Page (`/cart`)
 // Exact visual reproduction of the user-provided layout
-// Styled with Qatify Brand Identity (Qatify Yellow #ffb800, Black #18181b, Inter fonts)
+// Styled with Qatify Brand Identity (Qatify Yellow #ffb800, Black #18181b, Nunito Sans fonts)
 // =============================================================================
 
 import React, { useState, useMemo } from 'react';
@@ -321,8 +321,8 @@ export default function CartPage() {
                       type="text"
                       placeholder={
                         activeTab === 'coupon'
-                          ? 'Promo / Coupon Code'
-                          : 'Enter Gift Voucher Code'
+                          ? 'Enter promo code'
+                          : 'Enter voucher code'
                       }
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}

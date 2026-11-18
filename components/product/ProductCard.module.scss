@@ -217,7 +217,23 @@
   position: relative;
   width: 100%;
   padding-top: 100%; // 1:1 Aspect ratio
-  background-color: #fafafa;
+  background: linear-gradient(
+    90deg,
+    #f4f4f5 0%,
+    #e4e4e7 50%,
+    #f4f4f5 100%
+  );
+  background-size: 200% 100%;
+  animation: qatifyImgShimmer 1.8s ease-in-out infinite;
+}
+
+@keyframes qatifyImgShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .productImage {
@@ -267,8 +283,9 @@
 }
 
 .title {
-  font-size: 12.5px;
-  font-weight: 500;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
   color: #27272a;
   line-height: 1.35;
   height: 34px;

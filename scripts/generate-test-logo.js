@@ -72,7 +72,7 @@ function createSignatureLogoSvg({
     <text 
       x="180" 
       y="142" 
-      font-family="'Plus Jakarta Sans', 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif" 
+      font-family="'Plus Jakarta Sans', 'Nunito Sans', 'Segoe UI', system-ui, -apple-system, sans-serif" 
       font-size="82" 
       font-weight="900" 
       letter-spacing="-1.5" 
@@ -112,7 +112,7 @@ function createSignatureLogoSvg({
       <text 
         x="147" 
         y="16.5" 
-        font-family="'Plus Jakarta Sans', 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif" 
+        font-family="'Plus Jakarta Sans', 'Nunito Sans', 'Segoe UI', system-ui, -apple-system, sans-serif" 
         font-size="11.5" 
         font-weight="900" 
         letter-spacing="1.8" 

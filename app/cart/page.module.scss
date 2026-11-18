@@ -107,10 +107,10 @@
 
   @include mobile {
     display: grid;
-    grid-template-columns: 60px 1fr auto;
+    grid-template-columns: auto 1fr auto;
     grid-template-rows: auto auto;
-    gap: 8px 12px;
-    align-items: start;
+    gap: 10px 14px;
+    align-items: center;
     padding: 12px 0;
   }
 }
@@ -129,6 +129,8 @@
   @include mobile {
     width: 60px;
     height: 60px;
+    grid-column: 1;
+    grid-row: 1;
   }
 }
 
@@ -147,6 +149,7 @@
 
   @include mobile {
     grid-column: 2 / 4;
+    grid-row: 1;
   }
 }
 
@@ -160,8 +163,9 @@
 }
 
 .productTitle {
+  font-family: var(--font-body);
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 400;
   color: #1e293b;
   line-height: 1.35;
   margin: 0;
@@ -203,37 +207,56 @@
   }
 }
 
-// Segmented Stepper [ - | 1 | + ] (0 radius)
+// Segmented Stepper [ - | 1 | + ]
 .segmentedStepper {
   display: inline-flex;
   align-items: center;
-  border: 1px solid #e2e8f0;
-  border-radius: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
   background-color: #ffffff;
-  height: 32px;
+  height: 34px;
   overflow: hidden;
+  position: relative;
+  z-index: 5;
 
   @include mobile {
-    grid-column: 1 / 2;
+    grid-column: 1;
     grid-row: 2;
+    justify-self: start;
+    height: 36px;
   }
 }
 
 .stepperActionBtn {
-  width: 32px;
+  width: 36px;
   height: 100%;
   border: none;
   background: transparent;
-  color: #64748b;
+  color: #334155;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  position: relative;
+  z-index: 2;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255, 184, 0, 0.2);
   transition: all 0.15s ease;
 
+  svg {
+    pointer-events: none;
+    flex-shrink: 0;
+  }
+
   &:hover {
-    background-color: #f8fafc;
+    background-color: #f1f5f9;
     color: #0f172a;
+  }
+
+  &:active {
+    background-color: #e2e8f0;
+    color: #000000;
   }
 }
 
@@ -241,15 +264,18 @@
   width: 1px;
   height: 100%;
   background-color: #e2e8f0;
+  flex-shrink: 0;
+  pointer-events: none;
 }
 
 .stepperNumber {
   min-width: 36px;
   text-align: center;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 13.5px;
+  font-weight: 700;
   color: #0f172a;
   user-select: none;
+  pointer-events: none;
 }
 
 // Price Area
@@ -259,13 +285,16 @@
   align-items: flex-end;
   min-width: 85px;
   text-align: right;
+  position: relative;
+  z-index: 2;
 
   @include mobile {
-    grid-column: 2 / 3;
+    grid-column: 2;
     grid-row: 2;
     align-items: flex-start;
     text-align: left;
     min-width: unset;
+    padding-left: 6px;
   }
 }
 
@@ -289,18 +318,27 @@
   border: none;
   color: #94a3b8;
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.15s ease;
+  position: relative;
+  z-index: 5;
+  touch-action: manipulation;
+  transition: all 0.15s ease;
+
+  svg {
+    pointer-events: none;
+  }
 
   &:hover {
     color: #ef4444;
+    background-color: #fef2f2;
   }
 
   @include mobile {
-    grid-column: 3 / 4;
+    grid-column: 3;
     grid-row: 2;
     justify-self: end;
   }

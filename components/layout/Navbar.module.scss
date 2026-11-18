@@ -2,8 +2,7 @@
 @use '@/styles/mixins' as *;
 
 .header {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: $z-sticky;
   background-color: $color-bg-primary;
   box-shadow: $shadow-sm;
@@ -136,8 +135,9 @@
   justify-content: space-between;
   gap: $space-4;
 
-  @include mobile {
+  @include tablet {
     gap: $space-2;
+    position: relative;
   }
 }
 
@@ -145,14 +145,66 @@
   display: none;
   background: none;
   border: none;
-  color: $color-ink-black;
-  padding: 6px;
+  color: #111827;
+  padding: 0;
   cursor: pointer;
+  border-radius: 6px;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
 
   @include laptop {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+  }
+
+  @include tablet {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: flex-start;
+    align-items: center;
+    flex-shrink: 0;
+  }
+}
+
+.hamburgerIconWrap {
+  width: 24px;
+  height: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  cursor: pointer;
+}
+
+.hamburgerBar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: #111827;
+  border-radius: 2px;
+  transform-origin: center;
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 240ms ease,
+              background-color 200ms ease;
+}
+
+.mobileMenuToggle.menuOpen {
+  .hamburgerBar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+
+  .hamburgerBar:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  .hamburgerBar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
   }
 }
 
@@ -161,16 +213,28 @@
   display: flex;
   align-items: center;
 
+  @include tablet {
+    flex: 1;
+    justify-content: center;
+    text-align: center;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
   img {
-    height: 52px !important;
+    height: 56px !important;
     width: auto !important;
 
     @include tablet {
-      height: 46px !important;
+      height: 50px !important;
     }
 
     @include mobile {
-      height: 38px !important;
+      height: 45px !important;
     }
   }
 }
@@ -200,13 +264,13 @@
 
   @include tablet {
     display: block;
-    margin-top: 6px;
+    margin-top: 10px;
     margin-bottom: 2px;
     width: 100%;
   }
 
   @include mobile {
-    margin-top: 4px;
+    margin-top: 8px;
     margin-bottom: 2px;
   }
 }
@@ -214,20 +278,17 @@
 .mobileSearchForm {
   display: flex;
   align-items: stretch;
-  border: 2px solid $color-ink-black;
-  border-radius: $radius-md;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
   background-color: #ffffff;
-  background: linear-gradient(to right, #ffffff calc(100% - 46px), #{$color-ink-black} calc(100% - 46px));
-  background-origin: border-box;
-  background-clip: border-box;
-  height: 40px;
+  height: 44px;
   position: relative;
   overflow: hidden;
   transition: border-color $transition-fast, box-shadow $transition-fast;
 
   &:focus-within {
-    border-color: $color-accent-red;
-    box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.15);
+    border-color: #062534;
+    box-shadow: 0 0 0 3px rgba(6, 37, 52, 0.08);
   }
 }
 
@@ -235,8 +296,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  color: $color-text-muted;
+  width: 38px;
+  color: #94a3b8;
   flex-shrink: 0;
 }
 
@@ -244,22 +305,23 @@
   flex: 1;
   border: none;
   outline: none;
-  font-size: 13.5px;
-  font-weight: 500;
-  color: $color-ink-black;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1e293b;
   background: transparent;
   min-width: 0;
 
   &::placeholder {
     color: #94a3b8;
-    font-size: 13.5px;
+    font-size: 14px;
+    font-weight: 400;
   }
 }
 
 .mobileClearBtn {
   background: none;
   border: none;
-  color: #a1a1aa;
+  color: #94a3b8;
   cursor: pointer;
   padding: 6px;
   display: flex;
@@ -268,20 +330,20 @@
   flex-shrink: 0;
 
   &:hover {
-    color: $color-ink-black;
+    color: #1e293b;
   }
 }
 
 .mobileSearchSubmitBtn {
   -webkit-appearance: none;
   appearance: none;
-  width: 44px;
-  min-width: 44px;
+  width: 48px;
+  min-width: 48px;
   height: 100%;
   align-self: stretch;
   padding: 0;
   margin: 0;
-  background-color: $color-ink-black;
+  background-color: #062534;
   color: #ffffff;
   border: none;
   border-radius: 0;
@@ -292,14 +354,9 @@
   flex-shrink: 0;
   transition: background-color $transition-fast;
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background-color: $color-accent-red;
-    }
-  }
-
+  &:hover,
   &:active {
-    background-color: $color-accent-red;
+    background-color: #031722;
   }
 }
 
@@ -307,7 +364,7 @@
   display: flex;
   align-items: stretch;
   border: 1.5px solid #e2e8f0;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: #ffffff;
   height: 44px;
   position: relative;
@@ -315,8 +372,8 @@
   transition: border-color $transition-fast, box-shadow $transition-fast;
 
   &:focus-within {
-    border-color: #ffb800;
-    box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.18);
+    border-color: #062534;
+    box-shadow: 0 0 0 3px rgba(6, 37, 52, 0.08);
   }
 }
 
@@ -623,25 +680,26 @@
 .searchSubmitBtn {
   flex-shrink: 0;
   height: 100%;
-  padding: 0 24px;
-  background-color: #ffb800;
-  color: #111111;
+  padding: 0 22px;
+  background-color: #062534;
+  color: #ffffff;
   border: none;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 7px;
   transition: background-color $transition-fast;
   white-space: nowrap;
 
   &:hover {
-    background-color: #e5a600;
+    background-color: #031722;
   }
 
   &:active {
-    background-color: #d99b00;
+    background-color: #020f17;
   }
 }
 
@@ -1164,6 +1222,11 @@
   align-items: center;
   gap: 0;
   flex-shrink: 0;
+
+  @include tablet {
+    width: 44px;
+    justify-content: flex-end;
+  }
 }
 
 .wishlistBtn {
@@ -1182,6 +1245,10 @@
 
   &:active {
     transform: scale(0.95);
+  }
+
+  @include tablet {
+    display: none !important;
   }
 }
 
@@ -1216,8 +1283,8 @@
   background-color: #e2e8f0;
   margin: 0 16px;
 
-  @include mobile {
-    margin: 0 8px;
+  @include tablet {
+    display: none !important;
   }
 }
 
@@ -1230,15 +1297,26 @@
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 8px;
-  transition: opacity $transition-fast;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), opacity $transition-fast;
 
   &:hover {
     opacity: 0.85;
   }
 
-  @include mobile {
-    gap: 6px;
-    padding: 4px;
+  &:active {
+    transform: scale(0.92);
+  }
+
+  &.cartActive {
+    .cartIconWrapper {
+      transform: scale(1.08);
+      color: #ffb800;
+    }
+  }
+
+  @include tablet {
+    padding: 0;
+    gap: 0;
   }
 }
 
@@ -1246,25 +1324,28 @@
   position: relative;
   display: flex;
   align-items: center;
-  color: #1e293b;
+  color: #111827;
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), color 200ms ease;
 }
 
 .cartCountBadge {
   position: absolute;
-  top: -6px;
-  right: -8px;
+  top: -7px;
+  right: -9px;
   background-color: #ffb800;
   color: #111111;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
-  min-width: 17px;
-  height: 17px;
+  min-width: 19px;
+  height: 19px;
   border-radius: $radius-full;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: $font-mono;
+  font-family: $font-heading;
+  line-height: 1;
   border: 1.5px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .cartPriceCol {
@@ -1273,8 +1354,8 @@
   text-align: left;
   line-height: 1.2;
 
-  @include mobile {
-    display: none;
+  @include tablet {
+    display: none !important;
   }
 }
 
@@ -1822,23 +1903,42 @@
   line-height: 1.3;
 }
 
-// Mobile Drawer
+// Mobile Drawer (Smooth Slide & Fade Animation)
 .mobileDrawerBackdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  z-index: $z-drawer;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 100000;
   display: flex;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 320ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.drawerOpen {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
 }
 
 .mobileDrawer {
-  width: 310px;
+  width: 320px;
   max-width: 85%;
   height: 100%;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  box-shadow: $shadow-xl;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+  transform: translateX(-100%);
+  transition: transform 340ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+
+  &.drawerOpen {
+    transform: translateX(0);
+  }
 }
 
 .mobileDrawerHeader {
@@ -1852,9 +1952,19 @@
 .closeDrawerBtn {
   background: none;
   border: none;
-  color: $color-ink-black;
-  padding: 4px;
+  color: #475569;
+  padding: 6px;
   cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-fast;
+
+  &:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+  }
 }
 
 .mobileDrawerBody {

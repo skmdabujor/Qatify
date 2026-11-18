@@ -54,7 +54,16 @@ export const CartDrawer: React.FC = () => {
     };
   }, [isCartOpen]);
 
-  if (!isCartOpen) return null;
+  // Close cart drawer on ESC key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isCartOpen) {
+        closeCart();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isCartOpen, closeCart]);
 
   const couponDiscount = appliedDiscountQAR || 0;
   const totalDiscount = couponDiscount;
@@ -95,8 +104,18 @@ export const CartDrawer: React.FC = () => {
   };
 
   return (
-    <div className={styles.overlay} onClick={closeCart}>
-      <aside className={styles.drawer} onClick={(e) => e.stopPropagation()}>
+    <div
+      className={`${styles.overlay} ${isCartOpen ? styles.open : ''}`}
+      onClick={closeCart}
+      aria-hidden={!isCartOpen}
+    >
+      <aside
+        className={`${styles.drawer} ${isCartOpen ? styles.open : ''}`}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Shopping Cart"
+      >
         {/* Header */}
         <div className={styles.header}>
           <div className={styles.headerTitleWrap}>
@@ -194,19 +213,21 @@ export const CartDrawer: React.FC = () => {
 
                     <div className={styles.qtyStepper}>
                       <button
+                        type="button"
                         onClick={() => updateQuantity(item.id, -1)}
                         className={styles.qtyBtn}
                         aria-label="Decrease quantity"
                       >
-                        <Minus size={12} />
+                        <Minus size={12} strokeWidth={2.5} />
                       </button>
                       <span className={styles.qtyNumber}>{item.quantity}</span>
                       <button
+                        type="button"
                         onClick={() => updateQuantity(item.id, 1)}
                         className={styles.qtyBtn}
                         aria-label="Increase quantity"
                       >
-                        <Plus size={12} />
+                        <Plus size={12} strokeWidth={2.5} />
                       </button>
                     </div>
                   </div>
@@ -225,7 +246,7 @@ export const CartDrawer: React.FC = () => {
                 <Tag size={14} className={styles.tagIcon} />
                 <input
                   type="text"
-                  placeholder="Promo Code (Try WELCOME10)"
+                  placeholder="Enter promo code"
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
                   className={styles.promoInput}
