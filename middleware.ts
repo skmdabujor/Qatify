@@ -6,14 +6,15 @@ export function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
   const host = request.headers.get('host') || request.nextUrl.host || '';
 
-  // 1. NEVER block Localhost / Local Development
-  // You can always code, test, and develop freely on localhost without maintenance interruption!
-  const isLocalhost =
+  // 1. NEVER block Localhost or Vercel preview / deployment URLs (*.vercel.app)
+  // Maintenance mode ONLY applies to the official LIVE production domain!
+  const isLocalhostOrVercel =
     host.includes('localhost') ||
     host.includes('127.0.0.1') ||
+    host.includes('vercel.app') ||
     process.env.NODE_ENV !== 'production';
 
-  if (isLocalhost) {
+  if (isLocalhostOrVercel) {
     return NextResponse.next();
   }
 

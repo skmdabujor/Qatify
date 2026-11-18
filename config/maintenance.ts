@@ -6,6 +6,6 @@
 // =============================================================================
 
 export const MAINTENANCE_CONFIG = {
-  enabled: false, // Site is LIVE
+  enabled: true, // Maintenance mode activated for LIVE domain
 };
 
