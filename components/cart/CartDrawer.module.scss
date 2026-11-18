@@ -12,6 +12,8 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  overflow: hidden;
+  overscroll-behavior: contain;
   transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
               visibility 320ms cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -26,9 +28,13 @@
   width: 440px;
   max-width: 100%;
   height: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  overscroll-behavior: contain;
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
   transform: translateX(100%);
   transition: transform 340ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -41,11 +47,14 @@
   @include mobile {
     width: 100%;
     max-width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
   }
 }
 
 // Header
 .header {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -94,6 +103,7 @@
 
 // Free Delivery Progress
 .shippingBarWrap {
+  flex-shrink: 0;
   background-color: #fbfbfb;
   padding: 10px 16px;
   border-bottom: 1px solid $color-border-subtle;
@@ -126,6 +136,7 @@
 
 // 6-10 Days Delivery Preview Strip
 .deliveryEstimateStrip {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -154,13 +165,26 @@
 
 // Items List
 .itemsList {
-  flex: 1;
+  flex: 1 1 0%;
+  min-height: 0;
+  max-height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
   padding: $space-3 $space-4;
+  padding-bottom: 24px;
   display: flex;
   flex-direction: column;
   gap: $space-3;
   @include custom-scrollbar;
+
+  @include mobile {
+    padding: 12px;
+    padding-bottom: 24px;
+    gap: 10px;
+  }
 }
 
 .cartItemCard {
@@ -372,11 +396,17 @@
 
 // Footer
 .footer {
+  flex-shrink: 0;
   padding: $space-4;
   border-top: 1px solid $color-border-subtle;
   background-color: #ffffff;
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
   padding-bottom: calc(#{$space-4} + env(safe-area-inset-bottom, 0px));
+
+  @include mobile {
+    padding: 12px 14px;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 .promoForm {

@@ -170,6 +170,7 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
   const [isWarrantyOpen, setIsWarrantyOpen] = useState(false);
   const [isSpecsOpen, setIsSpecsOpen] = useState(false);
   const [isReviewsOpen, setIsReviewsOpen] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
 
   // Sync variants when live product arrives
   useEffect(() => {
@@ -298,7 +299,11 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
 
   // Add to cart with variant
   const handleAddToCart = () => {
-    addToCart(product, quantity, selectedColor, selectedOption, true, false);
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    addToCart(product, quantity, selectedColor, selectedOption, !isMobile, false);
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 1500);
+    showToast('Added to Cart! 🛍️', `${product.title} (${quantity}) added to cart.`, 'success');
   };
 
   // Immediate Buy Now - redirect directly to checkout with isolated item (regular cart stays untouched!)
@@ -614,10 +619,10 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className={styles.addToCartBtn}
+                className={`${styles.addToCartBtn} ${isAdded ? styles.added : ''}`}
               >
                 <ShoppingBag size={17} />
-                <span>Add to Cart</span>
+                <span>{isAdded ? 'Added! ✓' : 'Add to Cart'}</span>
               </button>
             </div>
 
@@ -1077,11 +1082,11 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className={styles.stickyAddBtn}
+                  className={`${styles.stickyAddBtn} ${isAdded ? styles.added : ''}`}
                   title="Add to Cart"
                 >
                   <ShoppingBag size={16} />
-                  <span>Add to Cart</span>
+                  <span>{isAdded ? 'Added! ✓' : 'Add to Cart'}</span>
                 </button>
               </div>
             </div>

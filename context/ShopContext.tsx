@@ -401,10 +401,14 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       }
     });
 
+    // On mobile devices (<= 768px), adding an item should NOT auto-open the cart drawer
+    // The user can continue adding items as much as they want; drawer only opens on explicit cart icon click.
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
     const shouldOpen =
-      openDrawer !== undefined
+      !isMobile &&
+      (openDrawer !== undefined
         ? openDrawer
-        : pathname !== '/cart' && pathname !== '/checkout' && pathname !== '/bundle-cart';
+        : pathname !== '/cart' && pathname !== '/checkout' && pathname !== '/bundle-cart');
 
     if (shouldOpen) {
       setIsCartOpen(true);
