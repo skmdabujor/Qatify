@@ -6,6 +6,7 @@
 // =============================================================================
 
 import React, { useState, Suspense, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -91,7 +92,12 @@ function CheckoutContent() {
   // Address Modal State
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [addressMissingError, setAddressMissingError] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const addressSectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Lock body scroll while address modal is open
   useEffect(() => {
@@ -1203,7 +1209,7 @@ function CheckoutContent() {
       {/* ===============================================================
           ADDRESS MODAL POPUP (Exact Match to Screenshot 2)
       ================================================================ */}
-      {isAddressModalOpen && (
+      {isAddressModalOpen && isMounted && createPortal(
         <div className={styles.modalBackdrop} onClick={() => setIsAddressModalOpen(false)}>
           <div
             className={styles.modalCardDialog}
@@ -1468,7 +1474,8 @@ function CheckoutContent() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

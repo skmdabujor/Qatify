@@ -146,10 +146,15 @@
 // Exact match with ProductDetailClient layout
 // -----------------------------------------------------------------------------
 .detailContainer {
-  max-width: 1240px;
+  max-width: 1380px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 16px 16px 48px;
   width: 100%;
+  box-sizing: border-box;
+
+  @include tablet {
+    padding: 12px 12px 60px;
+  }
 }
 
 .detailBreadcrumb {
@@ -289,12 +294,18 @@
 // HOME / SHOP PAGE SKELETON
 // -----------------------------------------------------------------------------
 .homeContainer {
-  max-width: 1360px;
+  max-width: 1380px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 10px 16px 24px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+
+  @include mobile {
+    padding: 6px 12px 16px;
+  }
 }
 
 .heroBentoGrid {
@@ -415,10 +426,15 @@
 // CART SKELETON
 // -----------------------------------------------------------------------------
 .cartContainer {
-  max-width: 1200px;
+  max-width: 1160px;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding: 32px 16px 80px;
   width: 100%;
+  box-sizing: border-box;
+
+  @include mobile {
+    padding: 16px 12px 60px;
+  }
 }
 
 .cartHeader {
@@ -585,10 +601,15 @@
 // CHECKOUT SKELETON
 // -----------------------------------------------------------------------------
 .checkoutContainer {
-  max-width: 1200px;
+  max-width: 1380px;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding: 32px 16px 64px;
   width: 100%;
+  box-sizing: border-box;
+
+  @include mobile {
+    padding: 16px 12px 40px;
+  }
 }
 
 .checkoutHeader {
@@ -793,11 +814,13 @@
 // -----------------------------------------------------------------------------
 .policyContainer {
   width: 100%;
+  box-sizing: border-box;
 }
 
 .policyHero {
-  background: #18181b;
-  padding: 44px 24px;
+  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+  border-bottom: 1px solid #e4e4e7;
+  padding: 32px 16px 40px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -923,12 +946,14 @@
 // TRACK ORDER SKELETON
 // -----------------------------------------------------------------------------
 .trackContainer {
-  max-width: 840px;
-  margin: 36px auto;
-  padding: 0 16px;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 32px 16px 80px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .trackHeader {
@@ -1062,12 +1087,14 @@
 // CONTACT SKELETON
 // -----------------------------------------------------------------------------
 .contactContainer {
-  max-width: 1040px;
-  margin: 36px auto;
-  padding: 0 16px;
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 32px 16px 80px;
   display: flex;
   flex-direction: column;
   gap: 28px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .contactCardsRow {
@@ -1104,12 +1131,14 @@
 // BUNDLE BUILDER SKELETON
 // -----------------------------------------------------------------------------
 .bundleContainer {
-  max-width: 1360px;
+  max-width: 1380px;
   margin: 0 auto;
   padding: 20px 16px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .bundleTierBanner {

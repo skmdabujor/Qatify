@@ -31,7 +31,6 @@ import {
   Puzzle,
 } from 'lucide-react';
 import { ProductCard } from '@/components/product/ProductCard';
-import { ProductCardSkeleton } from '@/components/ui/skeleton';
 import { CircularCategoryNav } from '@/components/category';
 import { FirstTimeDiscountPopup } from '@/components/popup/FirstTimeDiscountPopup';
 import { HomeCategoriesSection } from '@/components/home/HomeCategoriesSection';
@@ -80,13 +79,6 @@ export default function ShopHomePage() {
   const liveTrending = useQuery(api.products.getTrending, { limit: 12 });
   const liveUnder99 = useQuery(api.products.getUnder99, { limit: 12 });
   const liveBestSellers = useQuery(api.products.getBestSellers, { limit: 12 });
-
-  // Instant Skeleton Loading Feedback
-  const [isClientLoading, setIsClientLoading] = React.useState(true);
-  React.useEffect(() => {
-    const timer = setTimeout(() => setIsClientLoading(false), 280);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Use live data with fallback to mock data while hydrating/loading
   const categories = liveCategories && liveCategories.length > 0
@@ -189,11 +181,9 @@ export default function ShopHomePage() {
           </div>
 
           <div className={styles.shelfGrid6Col}>
-            {isClientLoading
-              ? [1, 2, 3, 4, 5, 6].map((i) => <ProductCardSkeleton key={i} />)
-              : trendingProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
+            {trendingProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         </section>
 
@@ -217,11 +207,9 @@ export default function ShopHomePage() {
           </div>
 
           <div className={styles.shelfGrid6Col}>
-            {isClientLoading
-              ? [1, 2, 3, 4, 5, 6].map((i) => <ProductCardSkeleton key={i} />)
-              : under99Products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
+            {under99Products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         </section>
 
@@ -240,11 +228,9 @@ export default function ShopHomePage() {
           </div>
 
           <div className={styles.shelfGrid6Col}>
-            {isClientLoading
-              ? [1, 2, 3, 4, 5, 6].map((i) => <ProductCardSkeleton key={i} />)
-              : bestSellerProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
+            {bestSellerProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         </section>
       </div>

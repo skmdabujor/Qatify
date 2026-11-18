@@ -64,17 +64,6 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
   const fallbackProduct = initialProduct || PRODUCTS.find((p) => p.slug === slug);
   const product = liveProduct ? toProduct(liveProduct) : fallbackProduct;
 
-  // Instant Skeleton Loading Feedback
-  const [isClientLoading, setIsClientLoading] = useState(true);
-
-  useEffect(() => {
-    setIsClientLoading(true);
-    const timer = setTimeout(() => {
-      setIsClientLoading(false);
-    }, 280);
-    return () => clearTimeout(timer);
-  }, [slug]);
-
   // Gallery active image
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -277,10 +266,6 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
       ? liveRelated.filter((p) => (p.productId || p._id) !== product?.id).map(toProduct)
       : PRODUCTS.filter((p) => product && p.id !== product.id && p.categorySlug === product.categorySlug)
   ).slice(0, 5);
-
-  if (isClientLoading) {
-    return <ProductDetailSkeleton />;
-  }
 
   if (!product) {
     return (

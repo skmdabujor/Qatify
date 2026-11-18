@@ -22,7 +22,7 @@ import {
   Check,
 } from 'lucide-react';
 import { ProductCard } from '@/components/product/ProductCard';
-import { ProductCardSkeleton } from '@/components/ui/skeleton';
+import { ProductCardSkeleton, ShopSkeleton } from '@/components/ui/skeleton';
 import { PRODUCTS, CATEGORIES } from '@/data/products';
 import { Product, SortOption, toProduct, toCategory } from '@/types/product';
 import styles from './page.module.scss';
@@ -58,15 +58,6 @@ function ShopContent() {
   const [sortBy, setSortBy] = useState<SortOption>(initialSort);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState<boolean>(false);
-
-  // Instant Skeleton Loading State on Filter / Route change
-  const [isClientLoading, setIsClientLoading] = useState(true);
-
-  React.useEffect(() => {
-    setIsClientLoading(true);
-    const timer = setTimeout(() => setIsClientLoading(false), 240);
-    return () => clearTimeout(timer);
-  }, [selectedCategory, selectedSubcategory, selectedPriceTier, sortBy, selectedBrands]);
 
   // Lock body scroll while mobile filters sheet is open
   React.useEffect(() => {
@@ -590,19 +581,7 @@ function ShopContent() {
             )}
 
             {/* Product Grid / List Showcase */}
-            {isClientLoading ? (
-              <div
-                className={
-                  viewMode === 'grid'
-                    ? styles.productsGrid4Col
-                    : styles.productsListCol
-                }
-              >
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                  <ProductCardSkeleton key={i} />
-                ))}
-              </div>
-            ) : filteredProducts.length === 0 ? (
+            {filteredProducts.length === 0 ? (
               <div className={styles.noResultsBox}>
                 <div className={styles.noResultsIcon}>🔍</div>
                 <h3 className={styles.noResultsTitle}>No matching products found</h3>
@@ -643,7 +622,7 @@ function ShopContent() {
 
 export default function ShopListingPage() {
   return (
-    <Suspense fallback={<div className="container" style={{ padding: '40px 0' }}>Loading Qatar Catalog...</div>}>
+    <Suspense fallback={<ShopSkeleton />}>
       <ShopContent />
     </Suspense>
   );

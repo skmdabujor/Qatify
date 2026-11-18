@@ -1175,16 +1175,24 @@
 .modalBackdrop {
   position: fixed;
   inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   background-color: rgba(15, 23, 42, 0.65);
   backdrop-filter: blur(4px);
-  z-index: 100000;
+  z-index: 999999;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px 16px;
+  padding: 24px 16px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  box-sizing: border-box;
 
   @include mobile {
     align-items: flex-start;
@@ -1198,20 +1206,20 @@
   width: 100%;
   max-width: 540px;
   padding: 24px 28px;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   position: relative;
-  max-height: min(92dvh, calc(100vh - 32px));
+  max-height: min(90dvh, calc(100vh - 48px));
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   animation: modalScaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
-  margin: auto 0;
+  margin: auto;
 
   @include mobile {
     padding: 16px 14px;
     border-radius: 14px;
     max-height: calc(100dvh - 24px);
-    margin: auto 0;
+    margin: 0 auto;
   }
 }
 

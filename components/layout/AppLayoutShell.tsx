@@ -15,6 +15,7 @@ import { ToastContainer } from '@/components/ui/Toast';
 import { ChatWidget } from '@/components/chat/ChatWidget';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { SubscribeNotificationBanner } from '@/components/popup/SubscribeNotificationBanner';
+import { RouteTransitionSkeleton } from '@/components/layout/RouteTransitionSkeleton';
 
 function LayoutShellInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -39,7 +40,9 @@ function LayoutShellInner({ children }: { children: React.ReactNode }) {
       <ToastContainer />
       <ChatWidget />
       <SubscribeNotificationBanner />
-      <main>{children}</main>
+      <main>
+        <RouteTransitionSkeleton>{children}</RouteTransitionSkeleton>
+      </main>
       <Footer />
       <MobileBottomNav />
     </>
@@ -52,7 +55,9 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
       fallback={
         <>
           <ToastContainer />
-          <main>{children}</main>
+          <main>
+            <RouteTransitionSkeleton>{children}</RouteTransitionSkeleton>
+          </main>
         </>
       }
     >
