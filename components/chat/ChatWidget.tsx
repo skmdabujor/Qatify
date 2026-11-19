@@ -627,8 +627,8 @@ export const ChatWidget: React.FC = () => {
             .join('\n\n');
 
           const intro = isBengali
-            ? `${greeting} Qatify-এর লাইভ ক্যাটালগ থেকে পাওয়া টপ-রেটেড জেনুইন প্রোডাক্টসমূহ (কাতারে ৬–১০ দিনে ডোরস্টেপ ডেলিভারি):\n\n${listText}`
-            : `${greeting} Here are our top-rated genuine products in this category available with 6–10 days delivery across Qatar:\n\n${listText}`;
+            ? `${greeting} এই ক্যাটাগরিতে বর্তমানে স্পেশাল সেল ও ডিসকাউন্ট অফারে থাকা আমাদের টপ-রেটেড জেনুইন প্রোডাক্টসমূহ:\n\n${listText}`
+            : `${greeting} Here are our top-rated genuine products and exclusive sale deals in this category:\n\n${listText}`;
 
           return {
             id,
@@ -1101,7 +1101,6 @@ export const ChatWidget: React.FC = () => {
                 <div className={styles.titleCol}>
                   <div className={styles.brandTitleRow}>
                     <h3 className={styles.supportTitle}>Qatify Support</h3>
-                    <span className={styles.qatarFlagBadge}>🇶🇦 Qatar</span>
                   </div>
                   <div className={styles.supportMeta}>
                     <span className={styles.greenDot} />

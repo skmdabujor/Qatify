@@ -423,18 +423,28 @@ export const createOrder = mutation({
       },
       shippingMethod: args.shippingMethod,
       paymentMethod: args.paymentMethod,
-      status: "Order Confirmed",
-      paymentStatus: "paid",
+      status: "Pending Confirmation",
+      paymentStatus: args.paymentMethod === "cash_on_delivery" ? "pending" : "paid",
+      confirmationEmailSent: false,
       trackingNumber,
       estimatedDeliveryWindow: estWindow,
       timeline: [
         {
-          stage: "Order Confirmed",
-          title: "Order Confirmed & Payment Verified",
-          description: `Authorized via ${args.paymentMethod === 'apple_pay' ? 'Apple Pay' : args.paymentMethod === 'google_pay' ? 'Google Pay' : 'Credit / Debit Card'}. Dispatched to air express logistics.`,
-          location: "Qatify Secured Checkout",
+          stage: "Pending Confirmation",
+          title: "Order Placed & Awaiting Confirmation",
+          description: `Order received via ${args.paymentMethod === 'cash_on_delivery' ? 'Cash on Delivery' : 'Online Gateway'}. Awaiting store admin review and confirmation.`,
+          location: "Qatify Operations Center",
           date: dateStr,
           completed: true,
+          current: true,
+        },
+        {
+          stage: "Order Confirmed",
+          title: "Order Confirmed & Packaged",
+          description: "Approved by store operations. Preparing for air express dispatch to Qatar.",
+          location: "Global Logistics Hub",
+          date: "Pending confirmation",
+          completed: false,
           current: false,
         },
         {
@@ -444,7 +454,6 @@ export const createOrder = mutation({
           location: "Global Logistics Hub",
           date: "In Transit",
           completed: false,
-          current: true,
         },
         {
           stage: "Qatar Customs (DOH)",
@@ -473,15 +482,12 @@ export const createOrder = mutation({
       ],
     });
 
-    // For Cash on Delivery, deduct stock and schedule email immediately upon placement
+    // For Cash on Delivery, deduct stock
     if (args.paymentMethod === "cash_on_delivery") {
       await deductStockForItems(ctx, verifiedItems);
-      await ctx.scheduler.runAfter(0, internal.emails.sendOrderConfirmationEmail, {
-        orderId,
-      });
     }
 
-    // Schedule instant Telegram alert to store owners / admins
+    // Schedule instant Telegram alert to store owners / admins immediately upon placement
     await ctx.scheduler.runAfter(0, internal.telegram.sendOrderNotificationTelegram, {
       orderId,
     });
@@ -591,13 +597,11 @@ export const markOrderAsPaid = internalMutation({
 
     await ctx.db.patch(order._id, {
       paymentStatus: "paid",
-      status: "Air Hub Transit",
       polarOrderId: args.polarOrderId || order.polarOrderId,
-      timeline: updatedTimeline,
     });
 
-    // Schedule order confirmation email
-    await ctx.scheduler.runAfter(0, internal.emails.sendOrderConfirmationEmail, {
+    // Notify admin on Telegram that payment is verified and order is ready for confirmation
+    await ctx.scheduler.runAfter(0, internal.telegram.sendOrderNotificationTelegram, {
       orderId: order._id,
     });
 
@@ -703,6 +707,7 @@ export const updateOrderStatus = mutation({
   args: {
     orderId: v.id("orders"),
     status: v.union(
+      v.literal("Pending Confirmation"),
       v.literal("Order Confirmed"),
       v.literal("Air Hub Transit"),
       v.literal("Qatar Customs (DOH)"),
@@ -719,6 +724,7 @@ export const updateOrderStatus = mutation({
     if (!order) throw new Error("Order not found");
 
     const stageOrder = [
+      "Pending Confirmation",
       "Order Confirmed",
       "Air Hub Transit",
       "Qatar Customs (DOH)",
@@ -742,12 +748,27 @@ export const updateOrderStatus = mutation({
       }
     });
 
+    // Check if this update confirms the order and should dispatch the confirmation email
+    const willSendEmail =
+      args.status === "Order Confirmed" && !order.confirmationEmailSent;
+
     await ctx.db.patch(args.orderId, {
       status: args.status,
       timeline: updatedTimeline,
+      ...(willSendEmail ? { confirmationEmailSent: true } : {}),
     });
 
-    return { success: true };
+    // DISPATCH CUSTOMER ORDER CONFIRMATION EMAIL WHEN ADMIN CONFIRMS!
+    if (willSendEmail) {
+      await ctx.scheduler.runAfter(0, internal.emails.sendOrderConfirmationEmail, {
+        orderId: args.orderId,
+      });
+      console.log(
+        `[Order Service] Dispatched Order Confirmation email upon Admin confirmation for Order #${order.orderNumber}`
+      );
+    }
+
+    return { success: true, emailDispatched: willSendEmail };
   },
 });
 

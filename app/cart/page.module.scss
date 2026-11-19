@@ -651,6 +651,19 @@
   border-radius: 0;
 }
 
+.couponErrorRow {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #b91c1c;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 6px 10px;
+}
+
 .removeCouponX {
   background: none;
   border: none;

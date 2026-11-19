@@ -130,7 +130,7 @@ export interface Order {
   address: QatarAddress;
   shippingMethod: ShippingMethod;
   paymentMethod: 'credit_card' | 'apple_pay' | 'google_pay' | 'cash_on_delivery';
-  status: 'Order Confirmed' | 'Air Hub Transit' | 'Qatar Customs (DOH)' | 'Out for Delivery' | 'Delivered';
+  status: 'Pending Confirmation' | 'Order Confirmed' | 'Air Hub Transit' | 'Qatar Customs (DOH)' | 'Out for Delivery' | 'Delivered' | 'Cancelled';
   trackingNumber: string;
   estimatedDeliveryWindow: string;
   timeline: OrderTimelineStep[];

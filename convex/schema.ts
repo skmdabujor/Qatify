@@ -212,6 +212,7 @@ export default defineSchema({
       v.literal("polar")
     ),
     status: v.union(
+      v.literal("Pending Confirmation"),
       v.literal("Order Confirmed"),
       v.literal("Air Hub Transit"),
       v.literal("Qatar Customs (DOH)"),
@@ -219,6 +220,7 @@ export default defineSchema({
       v.literal("Delivered"),
       v.literal("Cancelled")
     ),
+    confirmationEmailSent: v.optional(v.boolean()),
     paymentStatus: v.union(
       v.literal("pending"),
       v.literal("paid"),

@@ -552,13 +552,9 @@ export function NewsletterManager({ adminKey }: NewsletterManagerProps = {}) {
               lineHeight: 1.5,
             }}
           >
-            <strong>💡 Testing Delivery Note:</strong> Resend is currently using{' '}
-            <code style={{ color: '#0f172a', fontWeight: 700 }}>onboarding@resend.dev</code>. Live
-            tests deliver instantly to your verified admin email (
-            <code style={{ color: '#0f172a', fontWeight: 700 }}>
-              sheakmohammadabujor@gmail.com
-            </code>
-            ). To send to any customer domain, verify a custom domain at resend.com.
+            <strong>💡 Verified Delivery Note:</strong> Resend is configured to deliver from{' '}
+            <code style={{ color: '#0f172a', fontWeight: 700 }}>orders@shopqatify.com</code> with custom domain authentication. Live
+            VIP digests and order notifications are dispatched directly to your customers.
           </div>
         </div>
       </div>

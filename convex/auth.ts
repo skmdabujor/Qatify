@@ -141,7 +141,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
               Authorization: `Bearer ${resendApiKey}`,
             },
             body: JSON.stringify({
-              from: process.env.EMAIL_FROM || "Qatify Qatar <onboarding@resend.dev>",
+              from: process.env.EMAIL_FROM || "Qatify Qatar <orders@shopqatify.com>",
               to: [email],
               subject: "Reset Your Qatify Password 🇶🇦",
               html: emailHtml,

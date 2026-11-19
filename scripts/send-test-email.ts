@@ -24,8 +24,20 @@ async function main() {
     return;
   }
   const order = orders[0];
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shopqatify.com";
+  const siteUrl = "https://shopqatify.com";
   const emailHtml = generateOrderEmailHtml(order, siteUrl);
+
+  const customerFirstName =
+    order.address?.firstName?.trim() ||
+    order.address?.fullName?.trim().split(" ")[0] ||
+    "Mohammed";
+
+  // Exact Subject requested: "Thanks for your order, Mohammed! (#QA-896533)"
+  const emailSubject = `Thanks for your order, ${customerFirstName}! (#${order.orderNumber})`;
+
+  const recipientEmail = "sheakmohammadabujor@gmail.com";
+
+  console.log(`Sending email to ${recipientEmail} with subject: "${emailSubject}"...`);
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -34,11 +46,11 @@ async function main() {
       Authorization: `Bearer ${resendApiKey}`,
     },
     body: JSON.stringify({
-      from: "Qatify Qatar <onboarding@resend.dev>",
-      to: ["sheakmohammadabujor@gmail.com"],
-      subject: `Order Confirmed: ${order.orderNumber} | ShopQatify.com`,
+      from: process.env.EMAIL_FROM || "Qatify Qatar <orders@shopqatify.com>",
+      to: [recipientEmail],
+      subject: emailSubject,
       html: emailHtml,
-      text: `Shukran! Your Qatify order ${order.orderNumber} is confirmed. Total: QAR ${order.totalQAR}`,
+      text: `Shukran! Your Qatify order ${order.orderNumber} is confirmed. Total: QAR ${order.totalQAR}. Track your air shipment live at: ${siteUrl}/track/${order.orderNumber}`,
       reply_to: "support@shopqatify.com",
     }),
   });
@@ -48,4 +60,3 @@ async function main() {
 }
 
 main().catch(console.error);
-

@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   BadgeCheck,
   ArrowRight,
+  AlertCircle,
 } from 'lucide-react';
 import { useShop } from '@/context/ShopContext';
 import { CartSkeleton } from '@/components/ui/skeleton';
@@ -49,6 +50,7 @@ export default function CartPage() {
 
   const convex = useConvex();
   const [couponCode, setCouponCode] = useState('');
+  const [couponError, setCouponError] = useState<string | null>(null);
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [activeTab, setActiveTab] = useState<'coupon' | 'voucher'>('coupon');
 
@@ -60,7 +62,11 @@ export default function CartPage() {
   const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
     const code = couponCode.trim().toUpperCase();
-    if (!code) return;
+    if (!code) {
+      setCouponError('Please enter a promo code');
+      showToast('Enter Promo Code', 'Please enter a valid promo code before applying.', 'warning');
+      return;
+    }
 
     if (activeTab === 'voucher') {
       showToast('Gift Voucher', 'Please enter a valid Qatar gift voucher or coupon code.', 'info');
@@ -68,6 +74,7 @@ export default function CartPage() {
     }
 
     setIsValidatingCoupon(true);
+    setCouponError(null);
     try {
       const res = await convex.query(api.coupons.validateCoupon, {
         code,
@@ -77,14 +84,38 @@ export default function CartPage() {
 
       if (res.isValid && res.code) {
         setCoupon(res.code, res.discountQAR);
-        showToast('Promo Code Applied! 🏷️', res.message, 'success');
+        setCouponError(null);
         setCouponCode('');
       } else {
-        showToast('Coupon Not Applied', res.message, 'warning');
+        const errorMsg = res.message || 'Invalid promo code. Please check and try again.';
+        setCouponError(errorMsg);
       }
     } catch (err) {
-      console.error('Coupon validation error:', err);
-      showToast('Validation Error', 'Could not verify promo code.', 'error');
+      console.error('Coupon validation error, checking fallback:', err);
+      // Fallback check for standard coupons in case Convex is temporarily unreachable
+      const fallbackCoupons: Record<string, { type: 'percentage' | 'fixed'; val: number; min: number }> = {
+        WELCOME10: { type: 'percentage', val: 10, min: 100 },
+        QATAR25: { type: 'fixed', val: 25, min: 150 },
+        EID50: { type: 'fixed', val: 50, min: 300 },
+      };
+
+      const matched = fallbackCoupons[code];
+      if (matched) {
+        if (cartSubtotal < matched.min) {
+          const minMsg = `Minimum order subtotal of QAR ${matched.min} required for this coupon`;
+          setCouponError(minMsg);
+        } else {
+          const discount = matched.type === 'percentage'
+            ? Math.round((cartSubtotal * matched.val) / 100)
+            : Math.min(matched.val, cartSubtotal);
+          setCoupon(code, discount);
+          setCouponError(null);
+          setCouponCode('');
+        }
+      } else {
+        const errorMsg = `Code "${code}" is invalid or expired.`;
+        setCouponError(errorMsg);
+      }
     } finally {
       setIsValidatingCoupon(false);
     }
@@ -335,7 +366,10 @@ export default function CartPage() {
                           : 'Enter voucher code'
                       }
                       value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value)}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value);
+                        if (couponError) setCouponError(null);
+                      }}
                       className={styles.couponInputField}
                     />
                     <button
@@ -347,6 +381,14 @@ export default function CartPage() {
                     </button>
                   </form>
 
+                  {/* Coupon Validation Error */}
+                  {couponError && (
+                    <div className={styles.couponErrorRow}>
+                      <AlertCircle size={13} style={{ color: '#dc2626', flexShrink: 0 }} />
+                      <span>{couponError}</span>
+                    </div>
+                  )}
+
                   {/* Active Coupon Status */}
                   {appliedCoupon && (
                     <div className={styles.couponAppliedRow}>
@@ -355,7 +397,10 @@ export default function CartPage() {
                       </span>
                       <button
                         type="button"
-                        onClick={() => setCoupon(null, 0)}
+                        onClick={() => {
+                          setCoupon(null, 0);
+                          setCouponError(null);
+                        }}
                         className={styles.removeCouponX}
                         aria-label="Remove coupon"
                       >

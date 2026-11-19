@@ -37,6 +37,7 @@ export interface CrossBorderOrder {
   aliexpressTrackingNumber?: string; // e.g. LP00684928481234
   aliexpressCarrier?: string; // cainiao
   status:
+    | 'Pending Confirmation'
     | 'Order Confirmed'
     | 'Air Hub Transit'
     | 'Qatar Customs (DOH)'

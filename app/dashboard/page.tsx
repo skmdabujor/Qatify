@@ -8,7 +8,7 @@
 import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useQuery, useMutation, useConvex } from 'convex/react';
+import { useQuery, useMutation, useAction, useConvex } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import {
   Package,
@@ -346,6 +346,8 @@ function DashboardContent() {
 
   const updateStatus = useMutation(api.orders.updateOrderStatus);
   const refreshTracking = useMutation(api.tracking.refreshOrderTracking);
+  const resendConfirmationEmail = useAction(api.emails.resendOrderConfirmationEmailAction);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [linkingOrder, setLinkingOrder] = useState<any>(null);
 
   // Combine live orders strictly based on current authenticated role
@@ -525,7 +527,7 @@ function DashboardContent() {
     }
 
     if (opsPipelineStage === 'pending') {
-      list = list.filter((o) => o.status === 'Order Confirmed');
+      list = list.filter((o) => o.status === 'Pending Confirmation' || o.status === 'Order Confirmed');
     } else if (opsPipelineStage === 'in_transit') {
       list = list.filter((o) => o.status === 'Air Hub Transit');
     } else if (opsPipelineStage === 'customs') {
@@ -552,13 +554,23 @@ function DashboardContent() {
   const handleStatusChange = async (order: any, newStatus: string) => {
     if (order._id && !String(order._id).startsWith('ord-')) {
       try {
-        await updateStatus({
+        const res: any = await updateStatus({
           adminKey: adminKey || undefined,
           orderId: order._id,
           status: newStatus as any,
         });
+        if (newStatus === 'Order Confirmed') {
+          if (res?.emailDispatched) {
+            showToast('Order Confirmed & Email Sent! 🚀', `Confirmation email dispatched to customer!`, 'success');
+          } else {
+            showToast('Order Confirmed', `Order #${order.orderNumber} confirmed`, 'success');
+          }
+        } else {
+          showToast('Status Updated', `Order #${order.orderNumber} set to ${newStatus}`, 'info');
+        }
       } catch (err) {
         console.error(err);
+        showToast('Update Failed', String(err), 'error');
       }
     }
 
@@ -566,7 +578,9 @@ function DashboardContent() {
       prev.map((o) => {
         if (o.id === order.id || o.orderNumber === order.orderNumber) {
           const stageLabel =
-            newStatus === 'Order Confirmed'
+            newStatus === 'Pending Confirmation'
+              ? 'Pending Approval'
+              : newStatus === 'Order Confirmed'
               ? 'Pending Dispatch'
               : newStatus === 'Air Hub Transit'
               ? 'In Air Transit'
@@ -574,7 +588,9 @@ function DashboardContent() {
               ? 'Qatar Customs (DOH)'
               : newStatus;
           const stageSubtitle =
-            newStatus === 'Order Confirmed'
+            newStatus === 'Pending Confirmation'
+              ? 'Awaiting Confirmation'
+              : newStatus === 'Order Confirmed'
               ? 'Supplier Pack'
               : newStatus === 'Air Hub Transit'
               ? 'Flight to DOH'
@@ -2253,6 +2269,18 @@ function DashboardContent() {
 
         {/* Right Navigation Controls */}
         <div className={styles.opsHeaderRight}>
+          <Link
+            href="/email-preview"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.opsTelegramBtn}
+            style={{ background: '#0F172A', color: '#FFFFFF', borderColor: '#334155' }}
+            title="Open Order Confirmation Email Preview"
+          >
+            <Mail size={13} />
+            <span>Email Preview</span>
+          </Link>
+
           <button
             type="button"
             onClick={() => setOpsAdminTab('telegram')}
@@ -2733,9 +2761,11 @@ function DashboardContent() {
                                       : styles.stageStatusPillPending
                                   }
                                 >
-                                  • {ord.stageLabel || ord.status}
+                                  • {ord.status === 'Pending Confirmation' ? 'Pending Approval' : (ord.stageLabel || ord.status)}
                                 </span>
-                                <span className={styles.stageSubtitleText}>{ord.stageSubtitle}</span>
+                                <span className={styles.stageSubtitleText}>
+                                  {ord.status === 'Pending Confirmation' ? 'Awaiting Confirmation' : ord.stageSubtitle}
+                                </span>
 
                                 {/* Interactive Action Dropdown Select */}
                                 <select
@@ -2744,6 +2774,7 @@ function DashboardContent() {
                                   className={styles.stageActionSelect}
                                   title="Change Order Status"
                                 >
+                                  <option value="Pending Confirmation">Pending (Awaiting Confirmation)</option>
                                   <option value="Order Confirmed">Order Confirmed (Supplier Pack)</option>
                                   <option value="Air Hub Transit">In Air Transit (Flight to DOH)</option>
                                   <option value="Qatar Customs (DOH)">Qatar Customs (Hamad Cargo DOH)</option>
@@ -3086,6 +3117,36 @@ function DashboardContent() {
 
             {/* Drawer Footer */}
             <div className={styles.drawerFooter}>
+              <button
+                type="button"
+                disabled={isSendingEmail}
+                onClick={async () => {
+                  if (!activeDrawerOrder) return;
+                  setIsSendingEmail(true);
+                  showToast('Dispatching Email... ✉️', `Sending confirmation to customer`, 'info');
+                  try {
+                    const res = await resendConfirmationEmail({
+                      orderNumber: activeDrawerOrder.orderNumber,
+                    });
+                    if (res.success) {
+                      showToast('Email Sent! 🚀', `Delivered to ${res.recipient}`, 'success');
+                    } else {
+                      showToast('Email Failed', res.error || 'Resend error', 'error');
+                    }
+                  } catch (err: any) {
+                    showToast('Dispatch Error', err.message, 'error');
+                  } finally {
+                    setIsSendingEmail(false);
+                  }
+                }}
+                className={styles.btnCopyLink}
+                style={{ background: '#0F172A', color: '#FFFFFF', borderColor: '#1E293B' }}
+                title="Send or resend order confirmation email to customer"
+              >
+                <Mail size={13} />
+                <span>{isSendingEmail ? 'Sending...' : 'Send Confirmation Email'}</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => {

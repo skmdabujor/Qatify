@@ -493,7 +493,7 @@ export const sendTestNewsletter = action({
           Authorization: `Bearer ${resendApiKey}`,
         },
         body: JSON.stringify({
-          from: process.env.EMAIL_FROM || "Qatify Qatar VIP <onboarding@resend.dev>",
+          from: process.env.EMAIL_FROM || "Qatify Qatar VIP <orders@shopqatify.com>",
           to: [targetEmail],
           subject: emailSubject,
           html: emailHtml,
@@ -595,7 +595,7 @@ export const broadcastNewsletter = action({
             Authorization: `Bearer ${resendApiKey}`,
           },
           body: JSON.stringify({
-            from: process.env.EMAIL_FROM || "Qatify Qatar VIP <onboarding@resend.dev>",
+            from: process.env.EMAIL_FROM || "Qatify Qatar VIP <orders@shopqatify.com>",
             to: [sub.email],
             subject: emailSubject,
             html: emailHtml,

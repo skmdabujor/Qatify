@@ -44,15 +44,17 @@ export function formatOrderTelegramMessage(
     `📍 <b>Delivery Address:</b> ${addressLine}`,
     `💰 <b>Total Amount:</b> <b>QAR ${order.totalQAR.toLocaleString()}</b>`,
     `💳 <b>Payment Method:</b> ${order.paymentMethod.toUpperCase()} (${order.paymentStatus})`,
+    `⏳ <b>Fulfillment Status:</b> <b>${order.status}</b> (Awaiting Admin Confirmation)`,
     `🚚 <b>Tracking Number:</b> <code>${order.trackingNumber}</code>`,
     ...(order.customerNote ? [`📝 <b>Customer Note:</b> <i>${order.customerNote}</i>`] : []),
     `━━━━━━━━━━━━━━━━━━━━━━`,
     `🛒 <b>Ordered Items (${order.items.length}):</b>`,
     itemsList,
     `━━━━━━━━━━━━━━━━━━━━━━`,
+    `⚡ <i>Go to Admin Dashboard to confirm this order and dispatch customer email!</i>`,
     `🔗 <a href="${siteUrl}/dashboard?order=${encodeURIComponent(
       order.orderNumber
-    )}">View in Store Dashboard</a>`,
+    )}">Open Admin Dashboard</a>`,
   ].join("\n");
 }
 

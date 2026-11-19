@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Tag,
   ShoppingBag,
+  AlertCircle,
 } from 'lucide-react';
 import { useShop } from '@/context/ShopContext';
 import styles from './CartDrawer.module.scss';
@@ -40,6 +41,7 @@ export const CartDrawer: React.FC = () => {
 
   const convex = useConvex();
   const [couponCode, setCouponCode] = useState('');
+  const [couponError, setCouponError] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(false);
 
   // Lock body scroll while cart drawer is open
@@ -73,9 +75,13 @@ export const CartDrawer: React.FC = () => {
   const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
     const code = couponCode.trim().toUpperCase();
-    if (!code) return;
+    if (!code) {
+      setCouponError('Please enter a promo code');
+      return;
+    }
 
     setIsValidating(true);
+    setCouponError(null);
     try {
       const res = await convex.query(api.coupons.validateCoupon, {
         code,
@@ -85,14 +91,38 @@ export const CartDrawer: React.FC = () => {
 
       if (res.isValid && res.code) {
         setCoupon(res.code, res.discountQAR);
-        showToast('Promo Code Applied! 🏷️', res.message, 'success');
+        setCouponError(null);
         setCouponCode('');
       } else {
-        showToast('Coupon Not Applied', res.message, 'warning');
+        const errorMsg = res.message || 'Invalid promo code. Please check and try again.';
+        setCouponError(errorMsg);
       }
     } catch (err) {
-      console.error('Coupon validation error:', err);
-      showToast('Validation Error', 'Could not verify promo code.', 'error');
+      console.error('Coupon validation error, checking fallback:', err);
+      // Fallback check for standard coupons in case Convex is temporarily unreachable
+      const fallbackCoupons: Record<string, { type: 'percentage' | 'fixed'; val: number; min: number }> = {
+        WELCOME10: { type: 'percentage', val: 10, min: 100 },
+        QATAR25: { type: 'fixed', val: 25, min: 150 },
+        EID50: { type: 'fixed', val: 50, min: 300 },
+      };
+
+      const matched = fallbackCoupons[code];
+      if (matched) {
+        if (cartSubtotal < matched.min) {
+          const minMsg = `Minimum order subtotal of QAR ${matched.min} required for this coupon`;
+          setCouponError(minMsg);
+        } else {
+          const discount = matched.type === 'percentage'
+            ? Math.round((cartSubtotal * matched.val) / 100)
+            : Math.min(matched.val, cartSubtotal);
+          setCoupon(code, discount);
+          setCouponError(null);
+          setCouponCode('');
+        }
+      } else {
+        const errorMsg = `Code "${code}" is invalid or expired.`;
+        setCouponError(errorMsg);
+      }
     } finally {
       setIsValidating(false);
     }
@@ -242,27 +272,40 @@ export const CartDrawer: React.FC = () => {
           <div className={styles.footer}>
             {/* Promo Code Input */}
             <form onSubmit={handleApplyCoupon} className={styles.promoForm}>
-              <div className={styles.promoInputWrap}>
+              <div className={`${styles.promoInputWrap} ${couponError ? styles.wrapError : ''}`}>
                 <Tag size={14} className={styles.tagIcon} />
                 <input
                   type="text"
                   placeholder="Enter promo code"
                   value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
+                  onChange={(e) => {
+                    setCouponCode(e.target.value);
+                    if (couponError) setCouponError(null);
+                  }}
                   className={styles.promoInput}
                 />
               </div>
-              <button type="submit" className={styles.applyBtn}>
-                Apply
+              <button type="submit" disabled={isValidating} className={styles.applyBtn}>
+                {isValidating ? '...' : 'Apply'}
               </button>
             </form>
+
+            {couponError && (
+              <div className={styles.couponErrorPill}>
+                <AlertCircle size={13} className={styles.errorIcon} />
+                <span>{couponError}</span>
+              </div>
+            )}
 
             {appliedCoupon && (
               <div className={styles.couponSuccessPill}>
                 <span>Code <strong>{appliedCoupon}</strong> active (-QAR {couponDiscount})</span>
                 <button
                   type="button"
-                  onClick={() => setCoupon(null, 0)}
+                  onClick={() => {
+                    setCoupon(null, 0);
+                    setCouponError(null);
+                  }}
                   className={styles.removeCouponBtn}
                 >
                   Remove
