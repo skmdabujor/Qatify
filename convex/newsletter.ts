@@ -370,6 +370,22 @@ export const subscribe = mutation({
   },
 });
 
+// 2b. Check if an email is already subscribed to VIP newsletter
+export const isEmailSubscribed = query({
+  args: {
+    email: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const cleanEmail = args.email.trim().toLowerCase();
+    if (!cleanEmail) return false;
+    const existing = await ctx.db
+      .query("newsletter_subscribers")
+      .withIndex("by_email", (q) => q.eq("email", cleanEmail))
+      .first();
+    return !!existing;
+  },
+});
+
 // 3. Admin: List all newsletter subscribers (Protected)
 export const listSubscribers = query({
   args: {

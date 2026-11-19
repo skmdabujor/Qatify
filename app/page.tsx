@@ -32,7 +32,6 @@ import {
 } from 'lucide-react';
 import { ProductCard } from '@/components/product/ProductCard';
 import { CircularCategoryNav } from '@/components/category';
-import { FirstTimeDiscountPopup } from '@/components/popup/FirstTimeDiscountPopup';
 import { HomeCategoriesSection } from '@/components/home/HomeCategoriesSection';
 import { HeroBentoSlider } from '@/components/home/HeroBentoSlider';
 import { PRODUCTS, CATEGORIES } from '@/data/products';
@@ -234,9 +233,6 @@ export default function ShopHomePage() {
           </div>
         </section>
       </div>
-
-      {/* First-Time Visitor Signup 10% Discount Popup Modal */}
-      <FirstTimeDiscountPopup />
     </div>
   );
 }

@@ -1,68 +1,83 @@
 // =============================================================================
-// Qatify — Web Push & Deals Subscribe Notification Banner Styles
-// 100% Native Qatify Brand Aesthetic (Signature Sunset Orange #ffb800)
+// Qatify — Sticky Homepage Notification & Deals Subscribe Banner Styles
+// Sticky Bottom Bar (like Sticky Cart Bar) — 100% Brand Aesthetic
 // =============================================================================
 
-.bannerWrapper {
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.stickyBar {
   position: fixed;
-  top: 110px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10000;
-  width: calc(100% - 32px);
-  max-width: 470px;
-  pointer-events: auto;
-  animation: slideDownFade 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1025;
+  background-color: #ffffff;
+  border-top: 1px solid #e4e4e7;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(100%);
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 10px 0;
+  font-family: $font-body;
 
-  @media (min-width: 769px) {
-    top: 176px;
-    left: 24px;
-    transform: none;
-  }
-}
-
-@keyframes slideDownFade {
-  from {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
-  to {
-    opacity: 1;
+  &.visible {
     transform: translateY(0);
   }
+
+  // Desktop with Chat Widget: ensure right padding doesn't collide
+  @media (min-width: 1025px) {
+    padding: 10px 0;
+  }
+
+  // Tablet & Mobile: sits cleanly above MobileBottomNav (which has height 56px)
+  @include tablet {
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid #e4e4e7;
+    border-radius: 14px 14px 0 0;
+    box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.12);
+    padding: 9px 0;
+  }
 }
 
-.bannerCard {
-  background: #ffffff;
-  border-radius: 14px;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 16px 36px -6px rgba(15, 23, 42, 0.14), 0 4px 12px rgba(255, 184, 0, 0.06);
-  padding: 14px 16px;
+.stickyInner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 20px;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transition: all 200ms ease;
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  @include tablet {
+    padding: 0 12px;
+    gap: 8px;
+  }
 }
 
-.topRow {
+.infoSection {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 14px;
+  min-width: 0;
+  flex: 1;
+
+  @include tablet {
+    gap: 10px;
+  }
 }
 
-// Qatify Signature Brand App Icon Badge
-.logoIconBox {
+// Qatify Signature Brand App Icon Badge (like Screenshot 1)
+.logoBadge {
   flex-shrink: 0;
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
   background: linear-gradient(135deg, #ffb800 0%, #ff9e00 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(255, 184, 0, 0.35);
+  box-shadow: 0 3px 10px rgba(255, 184, 0, 0.32);
   color: #ffffff;
   position: relative;
   overflow: hidden;
@@ -83,151 +98,270 @@
   }
 
   .brandText {
-    font-size: 8.5px;
+    font-size: 8px;
     font-weight: 900;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #ffffff;
     margin-top: 1px;
+    font-family: $font-heading;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  @include mobile {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+
+    .bagIcon {
+      width: 16px;
+      height: 16px;
+    }
+
+    .brandText {
+      font-size: 6.5px;
+    }
   }
 }
 
-.messageContent {
+.textCol {
+  min-width: 0;
   flex: 1;
-  font-size: 13.5px;
-  line-height: 1.45;
-  color: #1e293b;
-  font-weight: 500;
-  margin: 0;
 }
 
-.actionRow {
+.mainTitle {
+  font-family: $font-heading;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #18181b;
+  margin: 0;
+  line-height: 1.35;
+
+  @include tablet {
+    font-size: 12px;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  @include mobile {
+    font-size: 11px;
+  }
+}
+
+.subTitle {
+  font-size: 12px;
+  color: #71717a;
+  margin: 2px 0 0 0;
+  line-height: 1.3;
+
+  @include tablet {
+    display: none; // Keep clean & compact on mobile screen
+  }
+}
+
+.actionSection {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  padding-top: 2px;
+  gap: 10px;
+  flex-shrink: 0;
+
+  @include tablet {
+    gap: 6px;
+  }
+}
+
+.buttonGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  @include tablet {
+    gap: 4px;
+  }
 }
 
 .laterBtn {
   background: transparent;
   border: none;
-  color: #64748b;
-  font-size: 13.5px;
+  color: #71717a;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  padding: 7px 12px;
+  padding: 8px 14px;
   border-radius: 8px;
   transition: all 150ms ease;
+  font-family: $font-heading;
 
   &:hover {
-    background-color: #f1f5f9;
-    color: #0f172a;
+    background-color: #f4f4f5;
+    color: #18181b;
+  }
+
+  @include tablet {
+    font-size: 11.5px;
+    padding: 6px 8px;
+  }
+
+  @include mobile {
+    padding: 5px 6px;
+    font-size: 11px;
   }
 }
 
-// Qatify Signature Orange CTA Button
 .subscribeBtn {
-  background: linear-gradient(135deg, #ffb800 0%, #ff8500 100%);
-  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #ffb800 0%, #ff9e00 100%);
+  color: #18181b;
   border: none;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 700;
-  padding: 8px 22px;
+  padding: 8px 20px;
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 3px 12px rgba(255, 184, 0, 0.3);
+  box-shadow: 0 2px 8px rgba(255, 184, 0, 0.3);
   transition: all 180ms ease;
+  font-family: $font-heading;
+  white-space: nowrap;
+
+  .btnIcon {
+    color: #18181b;
+  }
 
   &:hover {
     background: #eab308;
-    box-shadow: 0 6px 18px rgba(255, 184, 0, 0.45);
+    box-shadow: 0 4px 14px rgba(255, 184, 0, 0.45);
     transform: translateY(-1px);
   }
 
   &:active {
     transform: translateY(0);
   }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  @include tablet {
+    font-size: 11.5px;
+    padding: 6px 12px;
+    gap: 4px;
+  }
+
+  @include mobile {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
 }
 
-// Inline Email Input Form
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: #a1a1aa;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms ease;
+
+  &:hover {
+    color: #18181b;
+    background-color: #f4f4f5;
+  }
+
+  @include tablet {
+    padding: 4px;
+  }
+}
+
+// Inline Form for Guest Email Capture
 .inlineForm {
   display: flex;
+  align-items: center;
   gap: 8px;
-  width: 100%;
-  animation: fadeIn 200ms ease forwards;
 
-  input {
-    flex: 1;
-    background: #f8fafc;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 7px 12px;
-    font-size: 13px;
-    color: #0f172a;
-    outline: none;
-    transition: border-color 150ms ease;
-
-    &:focus {
-      border-color: #ffb800;
-      box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.12);
-      background: #ffffff;
-    }
-  }
-
-  .confirmBtn {
-    background: #ffb800;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    padding: 7px 16px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background-color 150ms ease;
-
-    &:hover {
-      background: #eab308;
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-  }
-
-  .cancelFormBtn {
-    background: transparent;
-    border: none;
-    color: #64748b;
-    font-size: 13px;
-    cursor: pointer;
-    padding: 7px 8px;
-    &:hover {
-      color: #0f172a;
-    }
+  @include tablet {
+    gap: 4px;
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
+.emailInput {
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #18181b;
+  background-color: #fafafa;
+  outline: none;
+  width: 220px;
+  transition: all 150ms ease;
+
+  &:focus {
+    border-color: #ffb800;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 2px rgba(255, 184, 0, 0.2);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  @include tablet {
+    width: 140px;
+    height: 32px;
+    font-size: 11.5px;
+    padding: 0 8px;
+  }
+
+  @include mobile {
+    width: 110px;
+  }
+}
+
+.cancelBtn {
+  background: transparent;
+  border: none;
+  color: #71717a;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+
+  &:hover {
+    background-color: #f4f4f5;
+    color: #18181b;
+  }
+
+  @include tablet {
+    padding: 4px 6px;
+    font-size: 11px;
   }
 }
 
 .successNotice {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #16a34a;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
   font-size: 13px;
   font-weight: 600;
-  padding: 6px 0;
+  padding: 6px 14px;
+  border-radius: 8px;
+
+  .checkIcon {
+    color: #16a34a;
+  }
+
+  @include tablet {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
 }

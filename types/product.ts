@@ -169,6 +169,8 @@ export interface Category {
   icon: string;
   count: number;
   image?: string | null;
+  description?: string | null;
+  seoSubtitle?: string | null;
   liveProductCount?: number;
   featuredProductTitle?: string | null;
   featuredProductSlug?: string | null;
@@ -185,6 +187,8 @@ export function toCategory(doc: any): Category {
     icon: doc.icon,
     count: doc.count,
     image: doc.image ?? null,
+    description: doc.description ?? null,
+    seoSubtitle: doc.seoSubtitle ?? null,
     liveProductCount: doc.liveProductCount,
     featuredProductTitle: doc.featuredProductTitle ?? null,
     featuredProductSlug: doc.featuredProductSlug ?? null,

@@ -68,7 +68,6 @@ import { TrackingTimeline } from '@/components/tracking/TrackingTimeline';
 import { InvoiceModal } from '@/components/orders/InvoiceModal';
 import { AliExpressLinkModal } from '@/components/admin/AliExpressLinkModal';
 import { DashboardSkeleton } from '@/components/ui/skeleton';
-import { DEFAULT_RETAIL_ORDERS } from '@/data/retailOrders';
 import { useAuthActions } from '@convex-dev/auth/react';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { useShop } from '@/context/ShopContext';
@@ -173,13 +172,7 @@ function DashboardContent() {
   // Server-side Dynamic Admin Access Check against Convex `admins` table
   const adminCheck = useQuery(
     api.admins.checkIsAdmin,
-    adminKey
-      ? { adminKey }
-      : viewer?.email
-      ? { email: viewer.email }
-      : userEmail
-      ? { email: userEmail }
-      : {}
+    adminKey ? { adminKey } : {}
   );
   const isAdmin = Boolean(adminCheck?.isAdmin || viewer?.isAdmin);
   const adminRole = adminCheck?.role || viewer?.adminRole || null;
@@ -301,20 +294,43 @@ function DashboardContent() {
     }
   }, []);
 
-  const activeCustomerEmail = userEmail || guestEmail;
-
-  // Customer-scoped orders: fetch orders matching the user's email
+  // Customer-scoped orders: strictly fetch orders for authenticated accounts from Convex
   const customerLiveOrders = useQuery(
     api.orders.getOrdersByCustomer,
-    activeCustomerEmail ? { email: activeCustomerEmail, limit: 30 } : 'skip'
+    viewer?.email ? { email: viewer.email, limit: 50 } : 'skip'
   );
 
-  // Single order lookup from Convex (e.g. QA-896533 passed via URL or last checkout)
-  const targetLookupNumber = orderFromUrl || lastOrderNum || '';
+  // Guest order search state
+  const [guestInputVal, setGuestInputVal] = useState<string>(orderFromUrl || '');
+  const [searchedOrderCode, setSearchedOrderCode] = useState<string>(orderFromUrl || '');
+  const [guestSearchError, setGuestSearchError] = useState<string>('');
+  const [isGuestSearching, setIsGuestSearching] = useState<boolean>(false);
+
+  // Single order lookup from Convex (e.g. QA-89421 passed via URL or searched by guest)
   const singleConvexOrder = useQuery(
-    api.orders.getByOrderNumber,
-    targetLookupNumber ? { orderNumber: targetLookupNumber } : 'skip'
+    api.tracking.getFullTracking,
+    searchedOrderCode ? { code: searchedOrderCode } : 'skip'
   );
+
+  useEffect(() => {
+    if (orderFromUrl) {
+      setSearchedOrderCode(orderFromUrl);
+      setGuestInputVal(orderFromUrl);
+    }
+  }, [orderFromUrl]);
+
+  const handleGuestTrackSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const clean = guestInputVal.trim().toUpperCase();
+    if (!clean) {
+      setGuestSearchError('Please enter an Order Number or Tracking Number.');
+      return;
+    }
+    setGuestSearchError('');
+    setIsGuestSearching(true);
+    setSearchedOrderCode(clean);
+    setTimeout(() => setIsGuestSearching(false), 500);
+  };
 
   // Admin-scoped live orders: strictly fetched only when user is verified in Convex
   const adminLiveOrders = useQuery(
@@ -891,9 +907,9 @@ function DashboardContent() {
         paymentStatus: ord.paymentStatus || 'paid',
         paymentMethod: ord.paymentMethod || 'apple_pay',
         shippingMethod: ord.shippingMethod || 'Direct Air Express (5–9 Business Days)',
-        items: items.length > 0 ? items : (DEFAULT_RETAIL_ORDERS[0]?.items || []),
+        items: items.length > 0 ? items : [],
         address: ord.address || {
-          fullName: 'Qatar Guest',
+          fullName: viewer?.name || 'Customer',
           municipality: 'Doha, Qatar',
           zoneNumber: 'Zone 24',
           streetAddress: 'Al Corniche Street',
@@ -903,26 +919,39 @@ function DashboardContent() {
       });
     };
 
-    // 1. Single order lookup from Convex (e.g. QA-896533 passed via URL or last checkout)
+    // Authenticated customer: show live orders belonging to their account from Convex
+    if (viewer) {
+      if (customerLiveOrders && customerLiveOrders.length > 0) {
+        customerLiveOrders.forEach(addOrder);
+      }
+      return list;
+    }
+
+    // Guest visitor: only return single tracked order if active or searched
+    if (activeTrackingOrder) {
+      addOrder(activeTrackingOrder);
+      return list;
+    }
+
     if (singleConvexOrder) {
       addOrder(singleConvexOrder);
+      return list;
     }
 
-    // 2. Customer live orders matching email
-    if (customerLiveOrders && customerLiveOrders.length > 0) {
-      customerLiveOrders.forEach(addOrder);
+    return [];
+  }, [viewer, customerLiveOrders, singleConvexOrder, activeTrackingOrder]);
+
+  // Auto-sync activeTrackingOrder if singleConvexOrder is loaded
+  useEffect(() => {
+    if (singleConvexOrder) {
+      setActiveTrackingOrder(singleConvexOrder);
+      setGuestSearchError('');
+    } else if (singleConvexOrder === null && searchedOrderCode) {
+      setGuestSearchError(
+        `No shipment record found for "${searchedOrderCode}". Please verify your order number on your confirmation receipt.`
+      );
     }
-
-    // 3. Local orders from ShopContext
-    if (orders && orders.length > 0) {
-      orders.forEach(addOrder);
-    }
-
-    // 4. Fallback default retail showcase orders (Order 1 is QA-896533)
-    DEFAULT_RETAIL_ORDERS.forEach(addOrder);
-
-    return list;
-  }, [singleConvexOrder, customerLiveOrders, orders]);
+  }, [singleConvexOrder, searchedOrderCode]);
 
   // Auto-sync activeTrackingOrder if order param is in URL
   useEffect(() => {
@@ -1212,24 +1241,24 @@ function DashboardContent() {
             <div className={styles.profileTopRow}>
               <div className={styles.profileUserGroup}>
                 <div className={styles.profileAvatar}>
-                  {viewer?.name
-                    ? viewer.name.slice(0, 2).toUpperCase()
-                    : (userEmail ? userEmail.slice(0, 2).toUpperCase() : 'QG')}
+                  {viewer
+                    ? (viewer.name ? viewer.name.slice(0, 2).toUpperCase() : viewer.email.slice(0, 2).toUpperCase())
+                    : 'QG'}
                 </div>
                 <div className={styles.profileInfo}>
                   <span className={styles.profileName}>
-                    {viewer?.name || (userEmail ? 'Qatar Customer' : 'Qatar Guest')}
+                    {viewer ? (viewer.name || viewer.email.split('@')[0]) : 'Qatar Guest'}
                   </span>
                   <span className={styles.profileLocation}>
-                    {savedAddresses[0]?.municipality || 'Doha, Qatar'}
+                    {viewer ? viewer.email : 'Guest Session • Doha, Qatar'}
                   </span>
                 </div>
               </div>
 
               <div>
-                {userEmail ? (
+                {viewer ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ fontSize: '12px', color: '#6b7280' }}>{userEmail}</span>
+                    <span style={{ fontSize: '12px', color: '#6b7280' }}>{viewer.email}</span>
                     <button
                       type="button"
                       onClick={handleSignOut}
@@ -1240,7 +1269,7 @@ function DashboardContent() {
                   </div>
                 ) : (
                   <Link
-                    href="/login"
+                    href="/login?redirect=/dashboard"
                     className={styles.authBtn}
                   >
                     Sign In / Register
@@ -1250,30 +1279,47 @@ function DashboardContent() {
             </div>
 
             <div className={styles.subNavBar}>
-              <button
-                type="button"
-                onClick={() => {
-                  setCustomerTab('orders');
-                  setActiveTrackingOrder(null);
-                }}
-                className={`${styles.subNavItem} ${customerTab === 'orders' && !activeTrackingOrder ? styles.activeSubNav : ''}`}
-              >
-                <Package size={16} />
-                <span>My Orders</span>
-                <span className={styles.subNavCountBadge}>{retailOrders.length}</span>
-              </button>
+              {viewer ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCustomerTab('orders');
+                      setActiveTrackingOrder(null);
+                    }}
+                    className={`${styles.subNavItem} ${customerTab === 'orders' && !activeTrackingOrder ? styles.activeSubNav : ''}`}
+                  >
+                    <Package size={16} />
+                    <span>My Orders</span>
+                    <span className={styles.subNavCountBadge}>{retailOrders.length}</span>
+                  </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setCustomerTab('orders');
-                  setActiveTrackingOrder(retailOrders[0] || null);
-                }}
-                className={`${styles.subNavItem} ${activeTrackingOrder ? styles.activeSubNav : ''}`}
-              >
-                <Truck size={16} />
-                <span>Track Latest Package</span>
-              </button>
+                  {retailOrders.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCustomerTab('orders');
+                        setActiveTrackingOrder(retailOrders[0] || null);
+                      }}
+                      className={`${styles.subNavItem} ${activeTrackingOrder ? styles.activeSubNav : ''}`}
+                    >
+                      <Truck size={16} />
+                      <span>Track Latest Package</span>
+                    </button>
+                  )}
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCustomerTab('orders');
+                  }}
+                  className={`${styles.subNavItem} ${customerTab === 'orders' ? styles.activeSubNav : ''}`}
+                >
+                  <Truck size={16} />
+                  <span>Track Package</span>
+                </button>
+              )}
 
               <button
                 type="button"
@@ -1291,188 +1337,341 @@ function DashboardContent() {
 
           {/* TAB 1: MY ORDERS & TRACKING */}
           {customerTab === 'orders' && (
-            activeTrackingOrder ? (
-              /* VIEW 2 — PACKAGE TRACKING DETAIL VIEW (SCREENSHOT 4) */
-              <TrackingTimeline
-                order={activeTrackingOrder}
-                onBackToOrders={() => setActiveTrackingOrder(null)}
-                onViewInvoice={() => {
-                  setInvoiceModalOrder(activeTrackingOrder);
-                  setIsInvoiceModalOpen(true);
-                }}
-              />
-            ) : (
-              /* VIEW 1 — MY ORDERS LIST (SCREENSHOT 2 & 3) */
-              <div>
-                {/* Search Orders Bar */}
-                <div className={styles.searchRow}>
-                  <div className={styles.searchInputWrapper}>
-                    <Search size={16} className={styles.searchIcon} />
-                    <input
-                      type="text"
-                      placeholder="Order ID or product name..."
-                      value={orderSearchInput}
-                      onChange={(e) => setOrderSearchInput(e.target.value)}
-                      className={styles.searchInput}
-                    />
+            viewer ? (
+              /* ============================================================= */
+              /* REGISTERED CUSTOMER VIEW: FULL ORDER HISTORY & ACTIVE TRACKER  */
+              /* ============================================================= */
+              activeTrackingOrder ? (
+                /* VIEW A — PACKAGE TRACKING DETAIL VIEW FOR REGISTERED USER */
+                <TrackingTimeline
+                  order={activeTrackingOrder}
+                  onBackToOrders={() => setActiveTrackingOrder(null)}
+                  onViewInvoice={() => {
+                    setInvoiceModalOrder(activeTrackingOrder);
+                    setIsInvoiceModalOpen(true);
+                  }}
+                />
+              ) : (
+                /* VIEW B — FULL MY ORDERS LIST */
+                <div>
+                  {/* Search Orders Bar */}
+                  <div className={styles.searchRow}>
+                    <div className={styles.searchInputWrapper}>
+                      <Search size={16} className={styles.searchIcon} />
+                      <input
+                        type="text"
+                        placeholder="Search by Order ID or product name..."
+                        value={orderSearchInput}
+                        onChange={(e) => setOrderSearchInput(e.target.value)}
+                        className={styles.searchInput}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {}}
+                      className={styles.searchBtn}
+                    >
+                      Search Orders
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {}}
-                    className={styles.searchBtn}
-                  >
-                    Search Orders
-                  </button>
-                </div>
 
-                {/* Filter Tabs */}
-                <div className={styles.filterTabsBar}>
-                  <button
-                    type="button"
-                    onClick={() => setOrderFilterTab('all')}
-                    className={`${styles.filterTabBtn} ${orderFilterTab === 'all' ? styles.activeFilterTab : ''}`}
-                  >
-                    All Orders ({allCount})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setOrderFilterTab('to_ship')}
-                    className={`${styles.filterTabBtn} ${orderFilterTab === 'to_ship' ? styles.activeFilterTab : ''}`}
-                  >
-                    To Ship ({toShipCount})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setOrderFilterTab('in_transit')}
-                    className={`${styles.filterTabBtn} ${orderFilterTab === 'in_transit' ? styles.activeFilterTab : ''}`}
-                  >
-                    In Transit ({inTransitCount})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setOrderFilterTab('delivered')}
-                    className={`${styles.filterTabBtn} ${orderFilterTab === 'delivered' ? styles.activeFilterTab : ''}`}
-                  >
-                    Delivered ({retailDeliveredCount})
-                  </button>
-                </div>
+                  {/* Filter Tabs */}
+                  <div className={styles.filterTabsBar}>
+                    <button
+                      type="button"
+                      onClick={() => setOrderFilterTab('all')}
+                      className={`${styles.filterTabBtn} ${orderFilterTab === 'all' ? styles.activeFilterTab : ''}`}
+                    >
+                      All Orders ({allCount})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOrderFilterTab('to_ship')}
+                      className={`${styles.filterTabBtn} ${orderFilterTab === 'to_ship' ? styles.activeFilterTab : ''}`}
+                    >
+                      To Ship ({toShipCount})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOrderFilterTab('in_transit')}
+                      className={`${styles.filterTabBtn} ${orderFilterTab === 'in_transit' ? styles.activeFilterTab : ''}`}
+                    >
+                      In Transit ({inTransitCount})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOrderFilterTab('delivered')}
+                      className={`${styles.filterTabBtn} ${orderFilterTab === 'delivered' ? styles.activeFilterTab : ''}`}
+                    >
+                      Delivered ({retailDeliveredCount})
+                    </button>
+                  </div>
 
-                {/* Orders Cards List */}
-                {filteredOrders.length === 0 ? (
-                  <div className={styles.emptyOrdersCard}>
-                    <Package size={40} color="#9ca3af" style={{ margin: '0 auto 12px auto' }} />
-                    <h3 className={styles.emptyTitle}>No matching orders found</h3>
-                    <p className={styles.emptySubtitle}>
-                      {orderSearchInput
-                        ? `We couldn't find any orders matching "${orderSearchInput}". Try another search term or clear the filter.`
-                        : 'You do not have any orders in this category yet.'}
-                    </p>
+                  {/* Orders Cards List */}
+                  {filteredOrders.length === 0 ? (
+                    <div className={styles.emptyOrdersCard}>
+                      <Package size={44} color="#9ca3af" style={{ margin: '0 auto 12px auto' }} />
+                      <h3 className={styles.emptyTitle}>
+                        {orderSearchInput ? 'No matching orders found' : 'No Orders Yet'}
+                      </h3>
+                      <p className={styles.emptySubtitle}>
+                        {orderSearchInput
+                          ? `We couldn't find any orders matching "${orderSearchInput}". Try another search term or clear the filter.`
+                          : `You haven't placed any orders yet with your account (${viewer.email}). Start shopping our authentic tech gadgets & accessories in Qatar!`}
+                      </p>
+                      {orderSearchInput ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setOrderSearchInput('');
+                            setOrderFilterTab('all');
+                          }}
+                          className={styles.clearFilterBtn}
+                        >
+                          View All Orders
+                        </button>
+                      ) : (
+                        <Link
+                          href="/shop"
+                          className={styles.clearFilterBtn}
+                          style={{ textDecoration: 'none', display: 'inline-block' }}
+                        >
+                          Start Shopping →
+                        </Link>
+                      )}
+                    </div>
+                  ) : (
+                    <div className={styles.orderCardList}>
+                      {filteredOrders.map((ord: any) => {
+                        const firstItem = ord.items?.[0] || {};
+                        const itemTitle = firstItem.title || 'Qatify Tech Item';
+                        const itemQty = firstItem.quantity || 1;
+                        const itemUnitPrice = firstItem.priceQAR || 0;
+                        const itemImage = firstItem.image || '/placeholder.svg';
+                        const itemSlug = firstItem.slug || '';
+
+                        return (
+                          <div key={ord.id || ord.orderNumber} className={styles.retailOrderCard}>
+                            {/* Card Header Bar */}
+                            <div className={styles.cardHeaderBar}>
+                              <div className={styles.cardHeaderLeft}>
+                                <div className={styles.metaCol}>
+                                  <span className={styles.metaLabel}>ORDER PLACED</span>
+                                  <span className={styles.metaVal}>{ord.date}</span>
+                                </div>
+                                <div className={styles.metaCol}>
+                                  <span className={styles.metaLabel}>TOTAL</span>
+                                  <span className={styles.metaValBold}>
+                                    QAR {Number(ord.totalQAR || 0).toFixed(2)}
+                                  </span>
+                                </div>
+                                <div className={styles.metaCol}>
+                                  <span className={styles.metaLabel}>SHIP TO</span>
+                                  <span className={styles.metaVal}>
+                                    {ord.address?.municipality || 'Doha, Qatar'}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className={styles.cardHeaderRight}>
+                                <span className={styles.orderNumText}>
+                                  <strong>{ord.orderNumber}</strong>
+                                </span>
+                                {renderStatusBadge(ord.status)}
+                              </div>
+                            </div>
+
+                            {/* Card Body */}
+                            <div className={styles.cardBodyBar}>
+                              <div className={styles.bodyProductLeft}>
+                                <div className={styles.productThumbBox}>
+                                  <img
+                                    src={itemImage}
+                                    alt={itemTitle}
+                                    className={styles.productThumbImg}
+                                    onError={(e) => {
+                                      const target = e.currentTarget;
+                                      if (!target.src.endsWith('/placeholder.svg')) {
+                                        target.src = '/placeholder.svg';
+                                      }
+                                    }}
+                                  />
+                                </div>
+
+                                <div className={styles.productInfoCol}>
+                                  <div className={styles.arrivalDateHeading}>
+                                    {ord.estimatedDeliveryWindow}
+                                  </div>
+                                  <Link
+                                    href={itemSlug ? `/products/${itemSlug}` : '/shop'}
+                                    className={styles.productTitleLink}
+                                    title={itemTitle}
+                                  >
+                                    {itemTitle}
+                                  </Link>
+                                  <div className={styles.productSubMeta}>
+                                    Qty: {itemQty} • Unit Price: QAR {itemUnitPrice}.00 • Tracking: {ord.trackingNumber}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Action Button: Track Package */}
+                              <div className={styles.bodyButtonStack}>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setActiveTrackingOrder(ord);
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                  }}
+                                  className={styles.trackPkgBtn}
+                                >
+                                  Track Package
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )
+            ) : (
+              /* ============================================================= */
+              /* GUEST VISITOR VIEW: SEARCH ONLY SPECIFIC TRACKED ORDER         */
+              /* ============================================================= */
+              activeTrackingOrder ? (
+                <div>
+                  <div className={styles.guestTrackingTopBanner}>
                     <button
                       type="button"
                       onClick={() => {
-                        setOrderSearchInput('');
-                        setOrderFilterTab('all');
+                        setActiveTrackingOrder(null);
+                        setSearchedOrderCode('');
                       }}
-                      className={styles.clearFilterBtn}
+                      className={styles.guestBackSearchBtn}
                     >
-                      View All Orders
+                      ← Track Another Package
                     </button>
+                    <span>
+                      Viewing package details as Guest. Want all your orders saved in one place?{' '}
+                      <Link href="/login?redirect=/dashboard">Sign In</Link> or{' '}
+                      <Link href="/register?redirect=/dashboard">Create Account</Link>.
+                    </span>
                   </div>
-                ) : (
-                  <div className={styles.orderCardList}>
-                    {filteredOrders.map((ord: any) => {
-                      const firstItem = ord.items?.[0] || {};
-                      const itemTitle = firstItem.title || 'Qatify Tech Item';
-                      const itemQty = firstItem.quantity || 1;
-                      const itemUnitPrice = firstItem.priceQAR || 0;
-                      const itemImage = firstItem.image || '/placeholder.svg';
-                      const itemSlug = firstItem.slug || 'porodo-7-in-1-electronic-earbud-cleaning-kit';
 
-                      return (
-                        <div key={ord.id || ord.orderNumber} className={styles.retailOrderCard}>
-                          {/* Card Header Bar (#F9FAFB) */}
-                          <div className={styles.cardHeaderBar}>
-                            <div className={styles.cardHeaderLeft}>
-                              <div className={styles.metaCol}>
-                                <span className={styles.metaLabel}>ORDER PLACED</span>
-                                <span className={styles.metaVal}>{ord.date}</span>
-                              </div>
-                              <div className={styles.metaCol}>
-                                <span className={styles.metaLabel}>TOTAL</span>
-                                <span className={styles.metaValBold}>
-                                  QAR {Number(ord.totalQAR || 0).toFixed(2)}
-                                </span>
-                              </div>
-                              <div className={styles.metaCol}>
-                                <span className={styles.metaLabel}>SHIP TO</span>
-                                <span className={styles.metaVal}>
-                                  {ord.address?.municipality || 'Doha, Qatar'}
-                                </span>
-                              </div>
-                            </div>
+                  <TrackingTimeline
+                    order={activeTrackingOrder}
+                    onBackToOrders={() => {
+                      setActiveTrackingOrder(null);
+                      setSearchedOrderCode('');
+                    }}
+                    onViewInvoice={() => {
+                      setInvoiceModalOrder(activeTrackingOrder);
+                      setIsInvoiceModalOpen(true);
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className={styles.guestTrackingPortal}>
+                  {/* Guest Order Search Card */}
+                  <div className={styles.guestSearchCard}>
+                    <div className={styles.guestSearchHeader}>
+                      <div className={styles.guestSearchIconBox}>
+                        <Package size={22} color="#18181b" />
+                      </div>
+                      <div>
+                        <h2 className={styles.guestSearchTitle}>Direct Air Express Package Tracking</h2>
+                        <p className={styles.guestSearchSubtitle}>
+                          Enter your Order Number (e.g. QA-89421) or Tracking Code to track your shipment checkpoints to Qatar.
+                        </p>
+                      </div>
+                    </div>
 
-                            <div className={styles.cardHeaderRight}>
-                              <span className={styles.orderNumText}>
-                                <strong>{ord.orderNumber}</strong>
-                              </span>
-                              {renderStatusBadge(ord.status)}
-                            </div>
-                          </div>
+                    <form onSubmit={handleGuestTrackSearch} className={styles.guestSearchForm}>
+                      <div className={styles.guestInputWrapper}>
+                        <Search size={18} className={styles.guestInputIcon} />
+                        <input
+                          type="text"
+                          placeholder="Enter Order or Tracking Number..."
+                          value={guestInputVal}
+                          onChange={(e) => {
+                            setGuestInputVal(e.target.value);
+                            setGuestSearchError('');
+                          }}
+                          className={styles.guestSearchInput}
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={isGuestSearching}
+                        className={styles.guestSubmitBtn}
+                      >
+                        {isGuestSearching ? 'Searching...' : 'Track Package'}
+                      </button>
+                    </form>
 
-                          {/* Card Body */}
-                          <div className={styles.cardBodyBar}>
-                            <div className={styles.bodyProductLeft}>
-                              <div className={styles.productThumbBox}>
-                                <img
-                                  src={itemImage}
-                                  alt={itemTitle}
-                                  className={styles.productThumbImg}
-                                  onError={(e) => {
-                                    const target = e.currentTarget;
-                                    if (!target.src.endsWith('/placeholder.svg')) {
-                                      target.src = '/placeholder.svg';
-                                    }
-                                  }}
-                                />
-                              </div>
+                    {guestSearchError && (
+                      <div className={styles.guestErrorBanner}>
+                        <AlertCircle size={16} />
+                        <span>{guestSearchError}</span>
+                      </div>
+                    )}
 
-                              <div className={styles.productInfoCol}>
-                                <div className={styles.arrivalDateHeading}>
-                                  {ord.estimatedDeliveryWindow}
-                                </div>
-                                <Link
-                                  href={`/products/${itemSlug}`}
-                                  className={styles.productTitleLink}
-                                  title={itemTitle}
-                                >
-                                  {itemTitle}
-                                </Link>
-                                <div className={styles.productSubMeta}>
-                                  Qty: {itemQty} • Unit Price: QAR {itemUnitPrice}.00 • Tracking: {ord.trackingNumber}
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Action Button: Track Package */}
-                            <div className={styles.bodyButtonStack}>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActiveTrackingOrder(ord);
-                                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                                }}
-                                className={styles.trackPkgBtn}
-                              >
-                                Track Package
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                    {lastOrderNum && (
+                      <div className={styles.guestRecentOrderHint}>
+                        <span>Recently Placed Order:</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setGuestInputVal(lastOrderNum);
+                            setSearchedOrderCode(lastOrderNum);
+                          }}
+                          className={styles.guestRecentOrderBtn}
+                        >
+                          Track {lastOrderNum} →
+                        </button>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+
+                  {/* Registered Account Value Proposition Card */}
+                  <div className={styles.guestAccountBenefitsCard}>
+                    <div className={styles.benefitsHeader}>
+                      <h3>Complete Order History is Exclusive to Registered Accounts</h3>
+                    </div>
+                    <p className={styles.benefitsSub}>
+                      Create a free Qatify account or sign in to access your complete personal orders dashboard:
+                    </p>
+                    <div className={styles.benefitsGrid}>
+                      <div className={styles.benefitItem}>
+                        <CheckCircle2 size={15} color="#18181b" />
+                        <span><strong>Full Order Archive:</strong> Save and track all your past &amp; ongoing purchases in one place.</span>
+                      </div>
+                      <div className={styles.benefitItem}>
+                        <CheckCircle2 size={15} color="#18181b" />
+                        <span><strong>Express 1-Click Checkout:</strong> Save delivery addresses across Doha, Lusail &amp; Al Rayyan.</span>
+                      </div>
+                      <div className={styles.benefitItem}>
+                        <CheckCircle2 size={15} color="#18181b" />
+                        <span><strong>Official PDF Tax Invoices:</strong> Instantly view and download detailed invoices anytime.</span>
+                      </div>
+                      <div className={styles.benefitItem}>
+                        <CheckCircle2 size={15} color="#18181b" />
+                        <span><strong>VIP Bundle Discounts:</strong> Earn exclusive loyalty perks, cash rewards &amp; promo codes.</span>
+                      </div>
+                    </div>
+                    <div className={styles.benefitsCtaRow}>
+                      <Link href="/register?redirect=/dashboard" className={styles.benefitRegisterBtn}>
+                        Create Account / Register
+                      </Link>
+                      <Link href="/login?redirect=/dashboard" className={styles.benefitLoginBtn}>
+                        Sign In to Your Account
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )
             )
           )}
 

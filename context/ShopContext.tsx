@@ -8,7 +8,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { Product, CartItem, QatarAddress, Order, ShippingMethod } from '@/types/product';
-import { PRODUCTS, MOCK_ORDERS, SHIPPING_METHODS } from '@/data/products';
+import { PRODUCTS, SHIPPING_METHODS } from '@/data/products';
 
 export interface ToastMessage {
   id: string;
@@ -18,6 +18,7 @@ export interface ToastMessage {
 }
 
 interface ShopContextType {
+  isHydrated: boolean;
   // Cart
   cart: CartItem[];
   cartCount: number;
@@ -150,8 +151,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
 
-  // Orders & Addresses
-  const [orders, setOrders] = useState<Order[]>(MOCK_ORDERS);
+  // Orders & Addresses (Real customer orders only, no mock data)
+  const [orders, setOrders] = useState<Order[]>([]);
   const [savedAddresses, setSavedAddresses] = useState<QatarAddress[]>(INITIAL_ADDRESSES);
 
   // Toasts
@@ -218,19 +219,29 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         try {
           const parsed = JSON.parse(storedOrders);
           if (Array.isArray(parsed)) {
-            // Clean up legacy QTF- orders to QA- standard
-            const cleanedOrders = parsed.map((ord: any) => {
-              let num = String(ord.orderNumber || '');
-              if (num.startsWith('QTF-')) {
-                const digits = num.replace(/[^0-9]/g, '');
-                num = digits === '73411' ? 'QA-896533' : `QA-${digits}`;
-              }
-              return {
-                ...ord,
-                orderNumber: num || 'QA-896533',
-                trackingNumber: ord.trackingNumber || `QA-EXP-${num.replace(/[^0-9]/g, '') || '896533'}`,
-              };
-            });
+            // Clean up legacy orders and filter out mock development orders
+            const cleanedOrders = parsed
+              .filter(
+                (ord: any) =>
+                  ord &&
+                  ord.id !== 'ord-9021' &&
+                  ord.id !== 'ord-9022' &&
+                  ord.id !== 'ord-896533' &&
+                  ord.orderNumber !== 'QTF-78291-QA' &&
+                  ord.orderNumber !== 'QTF-78290-QA'
+              )
+              .map((ord: any) => {
+                let num = String(ord.orderNumber || '');
+                if (num.startsWith('QTF-')) {
+                  const digits = num.replace(/[^0-9]/g, '');
+                  num = digits ? `QA-${digits}` : num;
+                }
+                return {
+                  ...ord,
+                  orderNumber: num,
+                  trackingNumber: ord.trackingNumber || `QA-EXP-${num.replace(/[^0-9]/g, '')}`,
+                };
+              });
             setOrders(cleanedOrders);
             localStorage.setItem('qatify_orders', JSON.stringify(cleanedOrders));
           }
@@ -665,6 +676,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   return (
     <ShopContext.Provider
       value={{
+        isHydrated,
         cart,
         cartCount,
         cartSubtotal,

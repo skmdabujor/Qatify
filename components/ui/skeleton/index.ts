@@ -11,3 +11,4 @@ export { TrackOrderSkeleton } from './TrackOrderSkeleton';
 export { AuthSkeleton } from './AuthSkeleton';
 export { ContactSkeleton } from './ContactSkeleton';
 export { BundleBuilderSkeleton } from './BundleBuilderSkeleton';
+export { NavbarSkeleton } from './NavbarSkeleton';

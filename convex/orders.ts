@@ -3,6 +3,7 @@ import { query, mutation, internalMutation, internalQuery, MutationCtx } from ".
 import { Id } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
 import { assertAdminAccess } from "./adminAuth";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 // Helper: Deduct stock percentage and increment sold count for purchased items
 async function deductStockForItems(
@@ -370,6 +371,20 @@ export const createOrder = mutation({
     const estEnd = new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000);
     const estWindow = `${estStart.toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${estEnd.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
 
+    // Auto-link to authenticated customer profile if session active
+    let resolvedCustomerEmail = args.address.email?.trim().toLowerCase();
+    try {
+      const authUserId = await getAuthUserId(ctx);
+      if (authUserId) {
+        const authUser = await ctx.db.get(authUserId);
+        if (authUser?.email) {
+          resolvedCustomerEmail = authUser.email.trim().toLowerCase();
+        }
+      }
+    } catch {
+      // Fallback to provided checkout address email
+    }
+
     const orderId = await ctx.db.insert("orders", {
       orderNumber,
       date: dateStr,
@@ -383,7 +398,7 @@ export const createOrder = mutation({
       bundleTierPercent: bundleTierPercent > 0 ? bundleTierPercent : undefined,
       bundleItemCount: qualifyingBundleCount > 0 ? qualifyingBundleCount : undefined,
       vipRewardCoupon,
-      customerEmail: args.address.email?.toLowerCase(),
+      customerEmail: resolvedCustomerEmail,
       customerPhone: resolvedPhone,
       customerNote: args.customerNote?.trim() || undefined,
       address: {
@@ -746,20 +761,37 @@ export const getOrdersByCustomer = query({
   handler: async (ctx, args) => {
     const takeCount = args.limit ?? 20;
 
-    if (args.email) {
-      const cleanEmail = args.email.trim().toLowerCase();
+    let targetEmail = args.email?.trim().toLowerCase();
+    let targetPhone = args.phone?.trim();
+
+    // If caller has an active Convex Auth session, enforce their authenticated profile
+    try {
+      const authUserId = await getAuthUserId(ctx);
+      if (authUserId) {
+        const authUser = await ctx.db.get(authUserId);
+        if (authUser?.email) {
+          targetEmail = authUser.email.trim().toLowerCase();
+        }
+        if (authUser?.phone) {
+          targetPhone = authUser.phone.trim();
+        }
+      }
+    } catch {
+      // Guest session lookup fallback
+    }
+
+    if (targetEmail) {
       return await ctx.db
         .query("orders")
-        .withIndex("by_customerEmail", (q) => q.eq("customerEmail", cleanEmail))
+        .withIndex("by_customerEmail", (q) => q.eq("customerEmail", targetEmail))
         .order("desc")
         .take(takeCount);
     }
 
-    if (args.phone) {
-      const cleanPhone = args.phone.trim();
+    if (targetPhone) {
       return await ctx.db
         .query("orders")
-        .withIndex("by_customerPhone", (q) => q.eq("customerPhone", cleanPhone))
+        .withIndex("by_customerPhone", (q) => q.eq("customerPhone", targetPhone))
         .order("desc")
         .take(takeCount);
     }

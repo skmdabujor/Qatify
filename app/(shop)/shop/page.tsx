@@ -6,6 +6,7 @@
 // =============================================================================
 
 import React, { useState, useMemo, Suspense } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
@@ -29,6 +30,80 @@ import styles from './page.module.scss';
 
 // Top brands available in Qatar electronics retail
 const ALL_BRANDS = ['Anker', 'Baseus', 'Soundcore', 'Green Lion', 'Porodo', 'Joyroom', 'Wanbo', 'VGN', 'SJRC'];
+
+// Curated e-commerce SEO titles & subtitles (AliExpress / Daraz / Startech practice — zero place/city names)
+const CATEGORY_SEO_MAP: Record<string, { title: string; subtitle: string }> = {
+  'mobile-accessories': {
+    title: 'Mobile Accessories',
+    subtitle:
+      'Shop genuine mobile accessories from top-rated global brands. Explore premium wireless earbuds, durable protective cases, high-speed charging cables, and tempered screen protectors at competitive prices.',
+  },
+  'smartwatches': {
+    title: 'Smartwatches & Wearables',
+    subtitle:
+      'Discover feature-packed smartwatches and fitness trackers with brilliant AMOLED displays, 24/7 biometric health monitoring, Bluetooth calling, and extended battery endurance.',
+  },
+  'chargers-powerbanks': {
+    title: 'GaN Chargers & Power Banks',
+    subtitle:
+      'Power up faster with high-efficiency GaN wall chargers, multi-port USB-C fast charging adapters, and airline-approved high-capacity portable power banks with intelligent temperature control.',
+  },
+  'car-accessories': {
+    title: 'Car Tech & Smart Auto Accessories',
+    subtitle:
+      'Upgrade your driving experience with smart 4K dash cams, magnetic cooling car phone mounts, Bluetooth FM transmitters, and fast multi-port vehicle chargers.',
+  },
+  'gaming-gear': {
+    title: 'Gaming Gear & Esports Peripherals',
+    subtitle:
+      'Level up your gaming setup with ultra-lightweight optical gaming mice, mechanical keyboards, spatial surround sound headsets, and precision esports controllers.',
+  },
+  'smart-home': {
+    title: 'Smart Home Automation',
+    subtitle:
+      'Transform your living space with intelligent home automation devices. Shop smart WiFi security cameras, automated ambient lighting, smart plugs, and intelligent sensors.',
+  },
+  'laptop-gear': {
+    title: 'Laptop Gear & Productivity Accessories',
+    subtitle:
+      'Maximize workstation productivity with ergonomic aluminum laptop stands, multi-display USB-C docking hubs, high-speed adapters, and shockproof protective sleeves.',
+  },
+  'toys-kids-learning': {
+    title: 'Toys & Kids Learning Tech',
+    subtitle:
+      'Inspire creativity and developmental learning with educational STEM building kits, interactive talking flashcards, reusable LCD doodle boards, and creative playsets.',
+  },
+  'drones-cameras': {
+    title: 'Drones, Action Cameras & Vlogging Gear',
+    subtitle:
+      'Capture cinema-grade aerial shots and dynamic social media content with 4K camera drones, 3-axis motorized gimbal stabilizers, and studio vlogging kits.',
+  },
+  'cables-adapters': {
+    title: 'High-Speed Cables & OTG Adapters',
+    subtitle:
+      'Stay powered and connected with heavy-duty double-braided fast charging cables, high-speed USB-C data cords, and versatile OTG adapters built for extreme durability.',
+  },
+  'mobiles': {
+    title: 'Smartphones & Mobile Devices',
+    subtitle:
+      'Discover certified smartphones, unlocked handsets, and mobile devices featuring high-resolution displays, pro-grade camera systems, and long-lasting battery performance.',
+  },
+  'tablets': {
+    title: 'Tablets & Smart Pads',
+    subtitle:
+      'Browse high-performance tablets, digital drawing pads, and portable smart displays ideal for productivity, streaming, and creative work on the go.',
+  },
+  'bluetooth-speakers': {
+    title: 'Bluetooth Speakers & Wireless Audio',
+    subtitle:
+      'Experience immersive 360-degree sound with portable waterproof Bluetooth speakers, desktop acoustic monitors, and high-fidelity wireless audio systems.',
+  },
+  'electric-trimmers': {
+    title: 'Electric Grooming & Personal Tech',
+    subtitle:
+      'Shop precision electric hair trimmers, multi-grooming cordless shavers, and ergonomic personal care devices designed for smooth and effortless styling.',
+  },
+};
 
 function ShopContent() {
   const searchParams = useSearchParams();
@@ -201,23 +276,129 @@ function ShopContent() {
     (minDiscount > 0 ? 1 : 0) +
     (searchQuery ? 1 : 0);
 
+  // Dynamic SEO Header & Subtitle resolution (AliExpress / Daraz / Startech practice — zero place/city names)
+  const headerContent = useMemo(() => {
+    // 1. Search Query active
+    if (searchQuery.trim()) {
+      return {
+        breadcrumb: ['Home', 'Shop', `Search: "${searchQuery}"`],
+        heading: `Search Results: "${searchQuery}"`,
+        subtitle: `Showing verified products matching "${searchQuery}". Compare specifications, customer ratings, and competitive prices to find the perfect match.`,
+      };
+    }
+
+    // 2. Specific Category active
+    if (selectedCategory) {
+      const catObj = categories.find((c) => c.slug === selectedCategory);
+      const seoEntry = CATEGORY_SEO_MAP[selectedCategory];
+      const catName =
+        catObj?.name ||
+        seoEntry?.title ||
+        selectedCategory.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+
+      // If subcategory is also selected
+      if (selectedSubcategory) {
+        return {
+          breadcrumb: ['Home', 'Shop', catName, selectedSubcategory],
+          heading: `${catName} — ${selectedSubcategory}`,
+          subtitle: `Discover top-rated ${selectedSubcategory.toLowerCase()} from verified global brands. Engineered for superior performance, premium reliability, and exceptional value.`,
+        };
+      }
+
+      const subtitle =
+        catObj?.seoSubtitle ||
+        catObj?.description ||
+        seoEntry?.subtitle ||
+        `Explore authentic ${catName.toLowerCase()} from verified manufacturers. Certified build quality, competitive prices, and fast tracked delivery.`;
+
+      return {
+        breadcrumb: ['Home', 'Shop', catName],
+        heading: catName,
+        subtitle,
+      };
+    }
+
+    // 3. Price Tiers / Quick Filters
+    if (selectedPriceTier === 'under-50') {
+      return {
+        breadcrumb: ['Home', 'Shop', 'Under QAR 50'],
+        heading: 'Budget Tech Under QAR 50',
+        subtitle:
+          'High-value tech essentials and daily mobile accessories under QAR 50. Reliable performance and proven durability at factory-direct bargain prices.',
+      };
+    }
+
+    if (selectedPriceTier === 'under-100' || initialFilter === 'under-99') {
+      return {
+        breadcrumb: ['Home', 'Shop', 'Super Deals'],
+        heading: 'Super Deals Under QAR 100',
+        subtitle:
+          'Explore popular consumer electronics, fast charging gear, and trending smart accessories under QAR 100 with guaranteed genuine quality and high customer satisfaction.',
+      };
+    }
+
+    // 4. Sort: Newest
+    if (sortBy === 'newest') {
+      return {
+        breadcrumb: ['Home', 'Shop', 'New Arrivals'],
+        heading: 'New Arrivals & Fresh Tech Drops',
+        subtitle:
+          'Discover the newest cutting-edge tech gadgets, smart wearables, and gaming innovations freshly released with full manufacturer warranty.',
+      };
+    }
+
+    // 5. Default Catalog (All Products)
+    return {
+      breadcrumb: ['Home', 'Shop', 'All Products'],
+      heading: 'All Products',
+      subtitle:
+        'Browse our comprehensive collection of genuine consumer electronics, smart gadgets, and trending tech accessories. Enjoy certified manufacturer quality, competitive prices, and fast tracked delivery.',
+    };
+  }, [
+    selectedCategory,
+    selectedSubcategory,
+    searchQuery,
+    selectedPriceTier,
+    initialFilter,
+    sortBy,
+    categories,
+  ]);
+
   return (
     <div className={styles.shopPage}>
       <div className="container">
         {/* Breadcrumb & Catalog Title */}
         <div className={styles.headerBanner}>
           <div className={styles.headerInfo}>
-            <span className={styles.breadcrumb}>
-              Home / Qatar Dropship Catalog / {selectedCategory ? selectedCategory.replace('-', ' ') : 'All Products'}
-            </span>
-            <h1 className={styles.catalogHeading}>
-              {selectedCategory
-                ? CATEGORIES.find((c) => c.slug === selectedCategory)?.name || 'Catalog'
-                : 'Qatar Dropship Catalog'}
-            </h1>
-            <p className={styles.catalogDesc}>
-              Direct air freight fulfillment from certified export hubs to Hamad International Airport. 6–10 Days tracked delivery across Doha, Lusail, Al Rayyan, Al Wakrah, and Al Khor.
-            </p>
+            <nav className={styles.breadcrumb} aria-label="Breadcrumb">
+              {headerContent.breadcrumb.map((crumb, idx) => {
+                const isLast = idx === headerContent.breadcrumb.length - 1;
+                return (
+                  <span key={idx} className={styles.crumbItem}>
+                    {idx > 0 && <span className={styles.crumbDivider}>/</span>}
+                    {idx === 0 ? (
+                      <Link href="/" className={styles.crumbLink}>
+                        {crumb}
+                      </Link>
+                    ) : idx === 1 && !isLast ? (
+                      <button
+                        type="button"
+                        onClick={handleResetFilters}
+                        className={styles.crumbBtn}
+                      >
+                        {crumb}
+                      </button>
+                    ) : isLast ? (
+                      <span className={styles.activeCrumb}>{crumb}</span>
+                    ) : (
+                      <span className={styles.crumbText}>{crumb}</span>
+                    )}
+                  </span>
+                );
+              })}
+            </nav>
+            <h1 className={styles.catalogHeading}>{headerContent.heading}</h1>
+            <p className={styles.catalogDesc}>{headerContent.subtitle}</p>
           </div>
         </div>
 

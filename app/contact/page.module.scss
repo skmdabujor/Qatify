@@ -510,7 +510,8 @@
   gap: 8px;
 
   svg {
-    color: $color-accent-orange;
+    color: $color-ink-black !important;
+    stroke: $color-ink-black !important;
     flex-shrink: 0;
   }
 }

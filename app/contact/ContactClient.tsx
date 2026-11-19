@@ -25,38 +25,38 @@ import styles from './page.module.scss';
 
 const SUBJECT_OPTIONS = [
   'Order Status & Tracking Inquiry',
-  'Missing / Lost Courier Parcel Claim (100% Refund)',
-  'Return or Replacement (14-Day Warranty)',
-  'Product Specifications & Stock Question',
-  'Payment or Checkout Assistance (Apple Pay / Card / COD)',
-  'Bulk or Wholesale Order Inquiry',
-  'Other Inquiry',
+  'Transit Loss & Non-Delivery Claim (100% Refund)',
+  'Warranty Claim or Replacement (14-Day Policy)',
+  'Product Specifications & Device Compatibility',
+  'Payment & Billing Inquiries (Apple Pay / Card / COD)',
+  'Bulk or Corporate Procurement Inquiry',
+  'General Inquiry',
 ];
 
 const FAQS = [
   {
     q: 'How long does delivery take across Qatar?',
-    a: 'We deliver directly to your doorstep in 6 to 10 business days via direct air express into Hamad International Airport (DOH). Free delivery applies to orders QAR 150 and above.',
+    a: 'Orders are delivered directly to your doorstep within 6 to 10 business days via scheduled direct air express into Hamad International Airport (DOH). Free delivery applies automatically to orders QAR 150 and above.',
     link: '/shipping-policy',
     linkText: 'Read Shipping Policy →',
   },
   {
-    q: 'What if my parcel is lost or missing by the courier?',
-    a: 'We guarantee a 100% full refund or free immediate replacement Insha’Allah. You will never face financial loss for courier mistakes.',
+    q: 'What happens if a consignment is lost or delayed in transit?',
+    a: 'Under our Transit Protection Policy, Qatify assumes full commercial liability. If an order is confirmed missing by carrier logistics, we issue an immediate 100% full refund or arrange priority replacement dispatch at zero added cost.',
     link: '/refund-policy',
-    linkText: 'See Missing Parcel Guarantee →',
+    linkText: 'View Transit Guarantee →',
   },
   {
-    q: 'Can I track my international cargo in real time?',
-    a: 'Yes! Enter your order reference (e.g. QA-89421) on our dedicated tracking page to view flight status, Doha customs clearance, and delivery van dispatch.',
+    q: 'Can I monitor my international air shipment in real time?',
+    a: 'Yes. Enter your order reference (e.g., QA-89421) on our dedicated tracking portal to verify live flight departure, Doha customs clearance, and courier dispatch milestones.',
     link: '/track-order',
-    linkText: 'Track Your Order →',
+    linkText: 'Track Your Consignment →',
   },
   {
-    q: 'What payment methods do you accept in Qatar?',
-    a: 'We accept Apple Pay, Google Pay, Visa, Mastercard, American Express in Qatari Riyal (QAR) with zero conversion fees, as well as Cash on Delivery across Qatar.',
+    q: 'Which payment methods are supported in Qatar?',
+    a: 'We process native payments in Qatari Riyal (QAR) via Apple Pay, Google Pay, Visa, Mastercard, and American Express with zero foreign exchange fees, as well as Cash on Delivery across Qatar.',
     link: '/terms',
-    linkText: 'Review Payment Terms →',
+    linkText: 'Review Commercial Terms →',
   },
 ];
 
@@ -133,9 +133,9 @@ export const ContactClient: React.FC = () => {
           </nav>
 
           <div className={styles.heroContent}>
-            <h1 className={styles.title}>Contact Qatify</h1>
+            <h1 className={styles.title}>Contact Customer Support</h1>
             <p className={styles.subtitle}>
-              Have a question about an order, tracking your air shipment, or product details? Our dedicated customer care desk is always here to assist you promptly.
+              Official customer service desk for order inquiries, consignment tracking, warranty assistance, and technical device specifications.
             </p>
           </div>
         </div>
@@ -211,22 +211,22 @@ export const ContactClient: React.FC = () => {
             {/* Online Store Model Details */}
             <div className={styles.hubCard}>
               <div className={styles.hubHeader}>
-                <h3 className={styles.hubTitle}>100% Online Cross-Border Store for Qatar</h3>
+                <h3 className={styles.hubTitle}>Customer Service & Logistics Operations</h3>
               </div>
               <div className={styles.hubDetails}>
                 <div className={styles.hubRow}>
                   <span>
-                    <strong>Direct Sourcing:</strong> We operate exclusively as an online store to eliminate retail showroom markups, delivering authentic electronics directly to your doorstep in Qatar via express air cargo.
+                    <strong>Direct Sourcing:</strong> Operating as a dedicated digital commerce platform providing authentic electronic hardware fulfilled directly from certified international manufacturing hubs.
                   </span>
                 </div>
                 <div className={styles.hubRow}>
                   <span>
-                    <strong>Support Hours:</strong> Online team available daily from 8:00 AM – 11:00 PM (GMT+3 Doha Time) to handle order inquiries, tracking, and warranty claims.
+                    <strong>Support Hours:</strong> Active customer service available daily from 8:00 AM – 11:00 PM (GMT+3 Doha Time) for order tracking, technical inquiries, and warranty administration.
                   </span>
                 </div>
                 <div className={styles.hubRow}>
                   <span>
-                    <strong>Tracked Delivery:</strong> Doorstep delivery across Doha, Lusail, Al Rayyan, Al Wakrah, and all Qatar municipalities in 6–10 business days.
+                    <strong>Service Coverage:</strong> Tracked doorstep delivery across Doha, Lusail, Al Rayyan, Al Wakrah, and all Qatar municipalities within 6–10 business days.
                   </span>
                 </div>
               </div>
@@ -235,8 +235,8 @@ export const ContactClient: React.FC = () => {
             {/* Live Chat Banner */}
             <div className={styles.chatBanner}>
               <div className={styles.chatBannerText}>
-                <h4>Need an immediate answer right now?</h4>
-                <p>Our instant live chat is online and staffed by real support members.</p>
+                <h4>Need immediate assistance?</h4>
+                <p>Connect directly with an online support specialist via real-time Live Chat.</p>
               </div>
               <button
                 type="button"
@@ -383,7 +383,7 @@ export const ContactClient: React.FC = () => {
             {FAQS.map((faq, idx) => (
               <div key={idx} className={styles.faqCard}>
                 <div className={styles.faqQuestion}>
-                  <HelpCircle size={18} />
+                  <HelpCircle size={18} color="#18181b" />
                   <span>{faq.q}</span>
                 </div>
                 <p className={styles.faqAnswer}>{faq.a}</p>

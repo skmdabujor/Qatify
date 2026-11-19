@@ -5,36 +5,36 @@ import { PolicyShell, TocItem } from '@/components/policy/PolicyShell';
 import styles from '@/components/policy/PolicyShell.module.scss';
 
 export const metadata: Metadata = {
-  title: 'Refund & Return Policy — 100% Transit Guarantee | Qatify Qatar',
+  title: 'Refund & Return Policy — 14-Day Warranty & Transit Protection | Qatify Qatar',
   description:
-    'Our customer promise in Qatar: If your order is lost or missing in courier transit, we guarantee a 100% full refund Insha’Allah. Enjoy 14-day returns, authentic electronics, and prompt local support.',
+    'Official refund and return policy for Qatify Qatar. 14-day warranty for consumer electronics, 100% money-back guarantee for transit loss, and local bank processing.',
   alternates: {
     canonical: '/refund-policy',
   },
   openGraph: {
     title: 'Refund & Return Policy | Qatify Qatar',
     description:
-      'Transparent, zero-risk return and refund policy in Qatar. Lost in courier transit? 100% money-back guarantee Insha’Allah.',
+      'Transparent return and refund standards in Qatar. 14-day warranty, full transit loss protection, and local bank disbursement in Qatari Riyal.',
     url: 'https://shopqatify.com/refund-policy',
   },
 };
 
 const TOC: TocItem[] = [
-  { id: 'lost-transit-guarantee', label: '1. Lost in Transit Guarantee (Insha’Allah)' },
-  { id: '14-day-returns', label: '2. 14-Day Return Window' },
-  { id: 'eligibility', label: '3. What Is Eligible for Return?' },
-  { id: 'non-returnable', label: '4. Non-Returnable Items' },
-  { id: 'how-to-claim', label: '5. How to Initiate a Return or Refund' },
-  { id: 'refund-timeline', label: '6. Refund Processing & Payment Methods' },
-  { id: 'damaged-defective', label: '7. Damaged or Wrong Item Received' },
-  { id: 'order-cancellation', label: '8. Order Cancellations' },
+  { id: 'lost-transit-guarantee', label: '1. Transit Loss Protection & Non-Delivery Guarantee' },
+  { id: '14-day-returns', label: '2. 14-Day Return & Replacement Period' },
+  { id: 'eligibility', label: '3. Return Eligibility & Product Condition Standards' },
+  { id: 'non-returnable', label: '4. Non-Returnable Items & Exclusions' },
+  { id: 'how-to-claim', label: '5. Return & Exchange Authorization Procedure' },
+  { id: 'refund-timeline', label: '6. Refund Processing Timelines & Disbursement Methods' },
+  { id: 'damaged-defective', label: '7. Damaged, Defective, or Incorrect Deliveries' },
+  { id: 'order-cancellation', label: '8. Order Cancellation Guidelines' },
 ];
 
 export default function RefundPolicyPage() {
   return (
     <PolicyShell
       title="Refund & Return Policy"
-      subtitle="At Qatify, your trust and hard-earned money are sacred. If something goes wrong with your shipment or product, we make things right without hurdles."
+      subtitle="Official warranty standards, return authorization procedures, and refund disbursement guidelines across the State of Qatar."
       lastUpdated="November 2026"
       readTime="5 min read"
       activeSlug="refund-policy"
@@ -42,104 +42,104 @@ export default function RefundPolicyPage() {
     >
       {/* 1. LOST IN TRANSIT PLEDGE */}
       <section id="lost-transit-guarantee">
-        <h2>1. Our Core Promise: 100% Lost in Courier Transit Guarantee</h2>
+        <h2>1. Transit Loss Protection & Non-Delivery Guarantee</h2>
         <p>
-          Online shopping should always feel reassuring, not stressful. When you place an order with Qatify, you place your trust in our care. We recognize that international air transit and local courier logistics across Qatar involve multiple handoffs.
+          Qatify guarantees that every placed order is delivered intact to the designated address in Qatar. In the event that a consignment is declared lost by international air freight carriers, untraceable by local couriers, or delayed past seven (7) consecutive business days beyond the maximum estimated delivery window:
         </p>
 
         {/* Highlighted Guarantee Banner */}
         <div className={styles.calloutGuarantee}>
           <div className={styles.calloutHeader}>
-            <span>Our Core Promise — 100% Lost Parcel Money-Back Guarantee</span>
+            <span>Transit Loss Protection & Full Reimbursement Policy</span>
           </div>
           <p>
-            <strong>If you do not receive your parcel because it goes missing, becomes untraceable, or is lost during courier transit:</strong>
+            <strong>If an order is confirmed missing or lost during courier transit:</strong>
           </p>
           <p>
-            Qatify takes full, unconditional responsibility. <strong>We will refund 100% of your paid amount back to you, or dispatch an immediate express replacement free of charge — entirely according to your preference.</strong>
+            Qatify assumes full financial and logistics liability. <strong>We will process a 100% full refund to the original payment method or dispatch an immediate priority replacement consignment at zero additional expense—based entirely on the customer’s preference.</strong>
           </p>
           <p>
-            We stand firmly committed to this pledge, <strong>Insha&apos;Allah</strong>. You will never bear financial loss for courier mishandling.
+            Customers do not bear financial responsibility for carrier mishandling, cargo misrouting, or freight transit loss.
           </p>
         </div>
 
         <p>
-          If your tracking status shows no carrier update for more than 7 consecutive business days past the maximum estimated delivery window, simply notify our online customer support team. We investigate directly with the freight cargo line and Qatar courier team, and if the parcel cannot be found, your refund is approved on the spot.
+          If your tracking status displays no carrier milestone updates for more than seven (7) consecutive business days past the scheduled delivery window, submit a status inquiry to our customer support desk. We coordinate directly with the air freight line and local courier logistics to resolve the status or process immediate reimbursement.
         </p>
       </section>
 
       {/* 2. 14-DAY RETURN WINDOW */}
       <section id="14-day-returns">
-        <h2>2. 14-Day Return Window</h2>
+        <h2>2. 14-Day Return & Replacement Period</h2>
         <p>
-          We want you to feel completely confident about every gadget you unpack. That is why Qatify offers a <strong>14-day inspection and return policy</strong> starting from the exact calendar day your order is marked as delivered at your doorstep anywhere in Qatar.
+          In accordance with <strong>Qatar Consumer Protection Law No. 8 of 2008</strong>, Qatify provides a <strong>14-calendar-day inspection and return period</strong> commencing on the documented date of carrier delivery to your address in Qatar.
         </p>
         <p>
-          Within these 14 days, if your device shows any functional manufacturing defect, hardware malfunction, or differs from what was described on our store, you are entitled to a full replacement or a complete refund.
+          Within this 14-day window, if a product demonstrates any functional manufacturing defect, hardware irregularity, or material discrepancy from the technical specifications cataloged on our platform, customers are entitled to an authorized exchange or a full refund.
         </p>
       </section>
 
       {/* 3. ELIGIBILITY */}
       <section id="eligibility">
-        <h2>3. What Is Eligible for Return?</h2>
-        <p>To ensure a smooth and fair inspection for everyone, returned items must satisfy the following conditions:</p>
+        <h2>3. Return Eligibility & Product Condition Standards</h2>
+        <p>To qualify for return authorization, returned items must satisfy the following verification criteria:</p>
         <ul>
           <li>
-            <strong>Defective or Malfunctioning:</strong> The product exhibits technical, electrical, or structural defects out-of-the-box not caused by user mishandling.
+            <strong>Manufacturing Defects:</strong> The device exhibits verified electrical, audio, mechanical, or component defects not resulting from misuse, drops, or improper charging.
           </li>
           <li>
-            <strong>Incorrect Product Delivered:</strong> You received the wrong color, variant, model, or completely different item than what is stated on your order invoice.
+            <strong>Fulfillment Discrepancies:</strong> The product received differs in model, specification, color, or variant from the confirmed order invoice.
           </li>
           <li>
-            <strong>Cosmetic or Transit Damage:</strong> The item arrived with visible scratches, cracks, or dents incurred during air cargo flight or local Qatar courier handling.
+            <strong>Transit-Related Damage:</strong> The item arrived with visible external or internal damage sustained during international air transit or local courier delivery.
           </li>
           <li>
-            <strong>Original Packaging & Accessories:</strong> Please retain the original product box, instruction manuals, charging cables, and included adapters so the return can be processed.
+            <strong>Packaging & Accessories:</strong> The item must be returned with its original manufacturer packaging, user manuals, internal protective inserts, and all bundled accessories (cables, adapters, brackets).
           </li>
         </ul>
       </section>
 
       {/* 4. NON-RETURNABLE ITEMS */}
       <section id="non-returnable">
-        <h2>4. Non-Returnable Items</h2>
-        <p>For hygiene, safety, and operational reasons, the following scenarios cannot be accepted for refund:</p>
+        <h2>4. Non-Returnable Items & Exclusions</h2>
+        <p>To maintain health, safety, and operational standards, returns cannot be authorized under the following circumstances:</p>
         <ul>
-          <li>Products returned past the 14-day delivery window without prior written notice.</li>
-          <li>Physical damage caused by drops, liquid submersion (unless product is explicitly certified waterproof and failure happened under normal rated use), electrical surges from uncertified wall adapters, or third-party unauthorized repair attempts.</li>
-          <li>Hygiene-sensitive items such as in-ear silicone ear tips that have been unsealed and used, unless verified defective upon immediate initial arrival.</li>
-          <li>Items missing serial numbers, tamper seals, or original identification stickers.</li>
+          <li>Claims submitted beyond the 14-calendar-day return window following carrier delivery.</li>
+          <li>Physical, liquid, or electrical damage resulting from drops, liquid ingress (unless the product is certified waterproof and failure occurred under rated usage), electrical surges from non-standard adapters, or unauthorized third-party repairs.</li>
+          <li>Hygiene-sensitive components (such as unsealed in-ear silicone ear tips) that have been unpacked and used, unless verified defective upon immediate initial unboxing.</li>
+          <li>Items missing original serial numbers, manufacturer bar codes, or security warranty seals.</li>
         </ul>
       </section>
 
       {/* 5. HOW TO CLAIM */}
       <section id="how-to-claim">
-        <h2>5. How to Initiate a Return or Refund (3 Simple Steps)</h2>
+        <h2>5. Return & Exchange Authorization Procedure</h2>
         <p>
-          We do not believe in complicated bureaucracy or endless automated phone menus. Returning or claiming a refund at Qatify is simple and direct:
+          Return requests are processed through a structured 3-step authorization procedure:
         </p>
 
         <div className={styles.stepGrid}>
           <div className={styles.stepCard}>
             <span className={styles.stepNum}>1</span>
-            <h4 className={styles.stepTitle}>Reach Out With Order #</h4>
+            <h4 className={styles.stepTitle}>Submit Return Request</h4>
             <p className={styles.stepDesc}>
-              Reach out via Live Chat on our website, submit our Contact Form, or email <strong>support@shopqatify.com</strong>. Include your Order ID (e.g., <code>QA-89421</code>) and a brief description of the issue.
+              Contact our support desk via Live Chat, submit an inquiry through our Contact page, or email <strong>support@shopqatify.com</strong>. Include your Order ID (e.g., <code>QA-89421</code>) and an objective description of the defect or discrepancy.
             </p>
           </div>
 
           <div className={styles.stepCard}>
             <span className={styles.stepNum}>2</span>
-            <h4 className={styles.stepTitle}>Quick 24h Review</h4>
+            <h4 className={styles.stepTitle}>Technical Review (24h)</h4>
             <p className={styles.stepDesc}>
-              For damaged or defective goods, share a quick 10-second video or photo showing the issue. For missing courier parcels, we pull the airline/courier manifests directly. Our customer care team responds within 12–24 hours.
+              For defective or damaged hardware, submit clear photos or a short video demonstrating the functional failure. For logistics transit issues, we audit carrier manifests directly. Reviews are completed within 12 to 24 business hours.
             </p>
           </div>
 
           <div className={styles.stepCard}>
             <span className={styles.stepNum}>3</span>
-            <h4 className={styles.stepTitle}>Doorstep Pickup or Refund</h4>
+            <h4 className={styles.stepTitle}>Courier Collection & Settlement</h4>
             <p className={styles.stepDesc}>
-              If a physical return is needed, the local courier collects the item directly from your address in Qatar. Once verified, your full refund is credited or a brand-new replacement is dispatched.
+              When physical retrieval is required, our local courier partner collects the item directly from your address in Qatar. Upon warehouse inspection, your full refund is processed or replacement hardware is dispatched.
             </p>
           </div>
         </div>
@@ -147,9 +147,9 @@ export default function RefundPolicyPage() {
 
       {/* 6. REFUND TIMELINE & PAYMENT METHODS */}
       <section id="refund-timeline">
-        <h2>6. Refund Processing Times & Methods</h2>
+        <h2>6. Refund Processing Timelines & Disbursement Methods</h2>
         <p>
-          All refunds are issued in <strong>Qatari Riyal (QAR)</strong>. Once your refund is approved by our care team, here is how you will receive your funds:
+          All refunds are issued in <strong>Qatari Riyal (QAR)</strong>. Once return verification is completed, reimbursement is disbursed based on the original payment method:
         </p>
 
         <div className={styles.tableWrapper}>
@@ -157,67 +157,67 @@ export default function RefundPolicyPage() {
             <thead>
               <tr>
                 <th>Original Payment Method</th>
-                <th>Refund Channel</th>
-                <th>Estimated Processing Timeline</th>
+                <th>Disbursement Channel</th>
+                <th>Standard Settlement Timeline</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><strong>Apple Pay / Google Pay</strong></td>
-                <td>Directly to the linked debit/credit card</td>
-                <td><strong>2 to 5 business days</strong> (depending on your bank)</td>
+                <td>Reversed directly to linked card account</td>
+                <td><strong>2 to 5 business days</strong> (subject to card issuer)</td>
               </tr>
               <tr>
-                <td><strong>Credit or Debit Card (Visa, Mastercard, Amex)</strong></td>
-                <td>Original bank account credited</td>
-                <td><strong>3 to 7 business days</strong> (QNB, CBQ, QIB, Dukhan, etc.)</td>
+                <td><strong>Credit or Debit Card (Visa, Mastercard, AMEX)</strong></td>
+                <td>Original bank card balance credited</td>
+                <td><strong>3 to 7 business days</strong> (QNB, Commercial Bank, QIB, Doha Bank, Dukhan Bank)</td>
               </tr>
               <tr>
-                <td><strong>Cash on Delivery (COD)</strong></td>
-                <td>Local Qatar IBAN Bank Transfer or Instant Qatify Store Credit</td>
+                <td><strong>Cash on Delivery (COD) / Direct Transfer</strong></td>
+                <td>Local Qatar IBAN Bank Transfer or Store Credit</td>
                 <td><strong>Instant</strong> for store credit; <strong>24–48 hours</strong> for local Qatar bank transfer</td>
               </tr>
               <tr>
-                <td><strong>Lost in Courier Transit Claim</strong></td>
-                <td>100% full refund to original payment source</td>
-                <td>Initiated within <strong>24 hours</strong> of claim verification</td>
+                <td><strong>Approved Transit Loss Claim</strong></td>
+                <td>Full reimbursement to original payment channel</td>
+                <td>Initiated within <strong>24 hours</strong> of formal claim verification</td>
               </tr>
             </tbody>
           </table>
         </div>
         <p>
-          <em>Note: We do not deduct any restocking fee, administrative fee, or return shipping surcharge when an item is defective, wrong, or lost by the courier. You receive 100% of the money you paid.</em>
+          <em>*Note: Qatify assesses zero restocking fees, zero return handling deductions, and zero administrative surcharges on verified warranty returns or carrier losses. Customers receive 100% of the funds paid.</em>
         </p>
       </section>
 
       {/* 7. DAMAGED OR WRONG ITEM RECEIVED */}
       <section id="damaged-defective">
-        <h2>7. Damaged or Wrong Item Received</h2>
+        <h2>7. Damaged, Defective, or Incorrect Deliveries</h2>
         <p>
-          Every item leaving our international warehouse undergoes a thorough visual and functional quality inspection. However, rough turbulence during air cargo flight or transit bumps can occasionally cause cosmetic damage.
+          Consignments leaving manufacturer facilities undergo serialized visual and electrical inspections. However, rough transit conditions can occasionally result in packaging damage or cosmetic impact.
         </p>
         <p>
-          If your package arrives with an opened seal, crushed outer box, or incorrect contents:
+          If your delivery arrives with compromised outer packaging, tampered seals, or mismatched SKU contents:
         </p>
         <ol>
-          <li>Take clear pictures of the outer parcel box, the shipping label, and the product itself.</li>
-          <li>Contact our support team within <strong>48 hours of delivery</strong>.</li>
-          <li>We will immediately arrange a complimentary replacement air-shipped to your door, or process a full refund without making you wait weeks for manufacturer investigations.</li>
+          <li>Photograph the outer courier box, waybill label, and the unpacked product condition.</li>
+          <li>Notify our support team within <strong>48 hours of carrier delivery</strong>.</li>
+          <li>Our operations team will arrange priority replacement dispatch or authorize an immediate refund upon verification.</li>
         </ol>
       </section>
 
       {/* 8. ORDER CANCELLATIONS */}
       <section id="order-cancellation">
-        <h2>8. Order Cancellations</h2>
+        <h2>8. Order Cancellation Guidelines</h2>
         <p>
-          Because we strive to deliver within 6 to 10 business days across Qatar, our logistics team begins preparing and batching air shipments within 2 to 4 hours of order placement.
+          To maintain 6 to 10 business day delivery schedules across Qatar, orders are staged and prepared for air cargo consolidation within 2 to 4 hours of payment authorization:
         </p>
         <ul>
           <li>
-            <strong>Before Dispatch:</strong> If you change your mind shortly after ordering, reach out to us immediately via Live Chat or email support@shopqatify.com. If your order has not yet been processed for flight manifest, we will cancel it instantly and issue a 100% immediate refund.
+            <strong>Cancellations Prior to Flight Manifest:</strong> If an order cancellation request is received prior to air cargo allocation, the order is cancelled immediately with 100% full refund disbursement.
           </li>
           <li>
-            <strong>After Flight Dispatch:</strong> Once an international air waybill has been generated and your parcel is in mid-flight or at customs clearance, the shipment cannot be intercepted in mid-air. In this case, simply accept the package and notify us to coordinate a 14-day return upon arrival.
+            <strong>Cancellations Following Flight Manifest:</strong> Once an international air waybill is registered and cargo is in flight or pending customs clearance, shipments cannot be recalled in transit. Customers may receive the parcel and initiate a standard 14-day return upon arrival.
           </li>
         </ul>
       </section>
@@ -225,10 +225,10 @@ export default function RefundPolicyPage() {
       {/* CONTACT BOX */}
       <div className={styles.calloutHighlight}>
         <div className={styles.calloutHeader}>
-          <span>Need Help With a Return or Missing Shipment?</span>
+          <span>Warranty Claims & Return Assistance</span>
         </div>
         <p>
-          Our online customer care team is dedicated to resolving your issue personally and swiftly. Reach out via Live Chat, submit an inquiry on our <Link href="/contact" style={{ color: '#ffb800', textDecoration: 'underline' }}>Contact page</Link>, or email us anytime at <strong>support@shopqatify.com</strong>.
+          Our customer service desk handles all warranty claims, return authorizations, and delivery inquiries. Connect with our team via Live Chat, submit a ticket through our <Link href="/contact" style={{ color: '#ffb800', textDecoration: 'underline' }}>Contact portal</Link>, or email <strong>support@shopqatify.com</strong>.
         </p>
       </div>
     </PolicyShell>

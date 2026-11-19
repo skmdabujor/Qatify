@@ -112,6 +112,7 @@ export const Navbar: React.FC = () => {
   const {
     cartCount,
     cartSubtotal,
+    isHydrated,
     isCartOpen,
     openCart,
     openChat,
@@ -122,11 +123,7 @@ export const Navbar: React.FC = () => {
   } = useShop();
 
   const viewer = useQuery(api.users.viewer);
-  const adminCheck = useQuery(
-    api.admins.checkIsAdmin,
-    viewer?.email ? { email: viewer.email } : 'skip'
-  );
-  const isUserAdmin = Boolean(viewer?.isAdmin || adminCheck?.isAdmin);
+  const isUserAdmin = Boolean(viewer?.isAdmin);
 
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
@@ -647,7 +644,9 @@ export const Navbar: React.FC = () => {
 
             {/* Right Meta Links: Auth */}
             <div className={styles.topUtilityMeta}>
-              {viewer ? (
+              {viewer === undefined ? (
+                <span className={styles.topAuthSkeleton} />
+              ) : viewer ? (
                 <>
                   {isUserAdmin && (
                     <>
@@ -764,13 +763,21 @@ export const Navbar: React.FC = () => {
               >
                 <div className={styles.cartIconWrapper}>
                   <ShoppingBag size={25} strokeWidth={1.6} />
-                  <span className={styles.cartCountBadge}>{cartCount}</span>
+                  {!isHydrated ? (
+                    <span className={styles.cartCountSkeleton} />
+                  ) : (
+                    <span className={styles.cartCountBadge}>{cartCount}</span>
+                  )}
                 </div>
                 <div className={styles.cartPriceCol}>
                   <span className={styles.cartPriceLabel}>Shopping cart:</span>
-                  <span className={styles.cartPriceValue}>
-                    QAR {cartSubtotal.toLocaleString()}
-                  </span>
+                  {!isHydrated ? (
+                    <span className={styles.cartPriceSkeleton} />
+                  ) : (
+                    <span className={styles.cartPriceValue}>
+                      QAR {cartSubtotal.toLocaleString()}
+                    </span>
+                  )}
                 </div>
               </button>
             </div>
@@ -930,7 +937,11 @@ export const Navbar: React.FC = () => {
                   <span>Track Order</span>
                 </Link>
 
-                {viewer ? (
+                {viewer === undefined ? (
+                  <div className={styles.mobileDrawerSkeletonLink}>
+                    <span className={styles.mobileAuthSkeleton} />
+                  </div>
+                ) : viewer ? (
                   <Link
                     href="/dashboard"
                     onClick={() => setIsMobileMenuOpen(false)}

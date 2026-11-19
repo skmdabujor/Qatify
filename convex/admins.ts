@@ -19,14 +19,13 @@ export const checkIsAdmin = query({
     adminKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // 1. Check if caller has an active authenticated Convex Auth session
+    // 1. Authoritative check: Check if caller has an active authenticated Convex Auth session
     try {
       const userId = await getAuthUserId(ctx);
       if (userId) {
         const user = await ctx.db.get(userId);
-        const emailToCheck = user?.email || args.email;
-        if (emailToCheck) {
-          const normalized = emailToCheck.trim().toLowerCase();
+        if (user?.email) {
+          const normalized = user.email.trim().toLowerCase();
           const admin = await ctx.db
             .query("admins")
             .withIndex("by_email", (q) => q.eq("email", normalized))
@@ -46,25 +45,7 @@ export const checkIsAdmin = query({
       // Ignore auth extraction errors
     }
 
-    // 2. Direct check for provided email (e.g. from viewer.email or client)
-    if (args.email) {
-      const normalized = args.email.trim().toLowerCase();
-      const admin = await ctx.db
-        .query("admins")
-        .withIndex("by_email", (q) => q.eq("email", normalized))
-        .first();
-
-      if (admin) {
-        return {
-          isAdmin: true,
-          role: admin.role || ("admin" as const),
-          name: admin.name || null,
-          email: admin.email,
-        };
-      }
-    }
-
-    // 3. Fallback check for adminKey
+    // 2. Master Secret Key check (CLI scripts / dashboard master unlock)
     const expected = process.env.ADMIN_SECRET_KEY;
     if (expected && args.adminKey && args.adminKey.trim() === expected.trim()) {
       return {

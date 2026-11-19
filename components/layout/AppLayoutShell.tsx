@@ -54,6 +54,7 @@ export function AppLayoutShell({ children }: { children: React.ReactNode }) {
     <Suspense
       fallback={
         <>
+          <Navbar />
           <ToastContainer />
           <main>
             <RouteTransitionSkeleton>{children}</RouteTransitionSkeleton>

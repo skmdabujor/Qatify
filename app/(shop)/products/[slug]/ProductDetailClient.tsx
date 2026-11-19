@@ -462,6 +462,11 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
             {/* Product Title */}
             <h1 className={styles.productHeading}>{product.title}</h1>
 
+            {/* Product Subtitle / Feature Highlights (SEO & Conversion) */}
+            {product.shortDescription && (
+              <p className={styles.productSubtitle}>{product.shortDescription}</p>
+            )}
+
             {/* Rating Stars & Reviews Count & Total Sold */}
             <div className={styles.ratingRow}>
               <div className={styles.starsWrapper}>
@@ -717,17 +722,17 @@ export function ProductDetailClient({ slug: propSlug, initialProduct }: ProductD
                 {isShippingOpen && (
                   <div className={styles.accordionBody}>
                     <p>
-                      <strong>Direct Global Air Express to Qatar:</strong> Orders are dispatched from certified manufacturers directly into Hamad International Airport (DOH).
+                      <strong>Direct Global Express Delivery:</strong> Orders are dispatched directly from certified manufacturer hubs with priority air transit and full customs clearance.
                     </p>
                     <ul className={styles.accordionList}>
                       <li>
-                        Estimated delivery window: <strong>6–10 business days</strong> directly to your doorstep in Doha, Lusail, Al Rayyan, Al Wakrah, Al Khor, and all Qatar municipalities.
+                        Estimated delivery window: <strong>6–10 business days</strong> directly to your doorstep with guaranteed safe arrival.
                       </li>
                       <li>
                         <strong>Free shipping</strong> applies automatically on all orders QAR 150 and above.
                       </li>
                       <li>
-                        Real-time tracking notifications sent via WhatsApp & SMS from air departure to your door.
+                        Real-time tracking notifications sent via WhatsApp &amp; SMS from dispatch to your door.
                       </li>
                     </ul>
                   </div>

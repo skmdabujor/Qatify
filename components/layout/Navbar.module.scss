@@ -82,6 +82,26 @@
   }
 }
 
+@keyframes navShimmerPulse {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.topAuthSkeleton {
+  display: inline-block;
+  width: 82px;
+  height: 15px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #32363f 0%, #464b58 50%, #32363f 100%);
+  background-size: 200% 100%;
+  animation: navShimmerPulse 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  vertical-align: middle;
+}
+
 .topAdminLink {
   display: inline-flex;
   align-items: center;
@@ -1348,6 +1368,19 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
+.cartCountSkeleton {
+  position: absolute;
+  top: -7px;
+  right: -9px;
+  min-width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #ffb800 0%, #fde68a 50%, #ffb800 100%);
+  background-size: 200% 100%;
+  animation: navShimmerPulse 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  border: 1.5px solid #ffffff;
+}
+
 .cartPriceCol {
   display: flex;
   flex-direction: column;
@@ -1370,6 +1403,17 @@
   font-weight: 600;
   color: #0f172a;
   letter-spacing: -0.01em;
+}
+
+.cartPriceSkeleton {
+  display: inline-block;
+  width: 55px;
+  height: 14px;
+  border-radius: 3px;
+  margin-top: 2px;
+  background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+  background-size: 200% 100%;
+  animation: navShimmerPulse 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 // 3. SECONDARY CATEGORY STRIP (Ecobazar Style: Light Clean Bar with Gold Accent)
@@ -1978,6 +2022,24 @@
   flex-direction: column;
   gap: 8px;
   margin-bottom: 18px;
+}
+
+.mobileDrawerSkeletonLink {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  background-color: $color-surface-muted;
+  border-radius: $radius-sm;
+}
+
+.mobileAuthSkeleton {
+  display: inline-block;
+  width: 100px;
+  height: 16px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #e4e4e7 0%, #f4f4f5 50%, #e4e4e7 100%);
+  background-size: 200% 100%;
+  animation: navShimmerPulse 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .mobileDrawerLink {

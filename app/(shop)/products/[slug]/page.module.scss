@@ -332,6 +332,18 @@
   }
 }
 
+.productSubtitle {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #64748b;
+  margin: -4px 0 2px 0;
+  font-weight: 400;
+
+  @include mobile {
+    font-size: 13px;
+  }
+}
+
 // Rating & Reviews Row
 .ratingRow {
   display: flex;

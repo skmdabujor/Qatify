@@ -1,29 +1,29 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Buy Electronics & Smart Gadgets Online in Qatar | Qatify Shop',
+  title: 'Buy Electronics & Smart Gadgets Online | Qatify Shop',
   description:
-    'Browse Qatar’s best deals on authentic mobile accessories, GaN fast chargers, smartwatches, ANC earbuds, gaming gear & home tech. Fast doorstep delivery in Doha, Lusail & all Qatar with guaranteed safe & secure checkout.',
+    'Browse the best deals on authentic mobile accessories, GaN fast chargers, smartwatches, ANC earbuds, gaming gear & home tech. Fast doorstep delivery with guaranteed safe & secure checkout.',
   keywords: [
-    'buy electronics qatar',
-    'online shopping doha',
-    'alanees qatar alternative',
-    'mobile accessories qatar',
-    'anker qatar',
-    'baseus qatar',
-    'green lion qatar',
-    'porodo qatar',
-    'smartwatch price qatar',
+    'buy electronics online',
+    'mobile accessories',
+    'anker',
+    'baseus',
+    'green lion',
+    'porodo',
+    'smartwatch price',
+    'fast gan charger',
+    'gaming gear',
   ],
   alternates: {
     canonical: 'https://shopqatify.com/shop',
   },
   openGraph: {
-    title: 'Buy Electronics & Smart Gadgets Online in Qatar | Qatify Shop',
+    title: 'Buy Electronics & Smart Gadgets Online | Qatify Shop',
     description:
-      'Browse Qatar’s best deals on authentic mobile accessories, GaN fast chargers, smartwatches, ANC earbuds & gaming gear. Fast delivery in Doha & Lusail.',
+      'Browse the best deals on authentic mobile accessories, GaN fast chargers, smartwatches, ANC earbuds & gaming gear. Fast tracked delivery.',
     url: 'https://shopqatify.com/shop',
-    siteName: 'Qatify Qatar',
+    siteName: 'Qatify',
     locale: 'en_QA',
     type: 'website',
   },
