@@ -31,7 +31,7 @@
   flex-direction: column;
   gap: 12px;
 
-  @include respond-to('sm') {
+  @media (min-width: 640px) {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;

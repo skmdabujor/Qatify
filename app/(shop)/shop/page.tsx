@@ -5,10 +5,10 @@
 // Faceted Sidebar Filters + Quick QAR Pills + 4-Col Dense Grid vs List Toggle
 // =============================================================================
 
-import React, { useState, useMemo, Suspense } from 'react';
+import React, { useState, useMemo, useRef, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useQuery } from 'convex/react';
+import { useQuery, usePaginatedQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import {
   Filter,
@@ -166,16 +166,66 @@ function ShopContent() {
     setSortBy('trending');
   };
 
-  // Live Convex queries
-  const liveProducts = useQuery(api.products.list, {
-    categorySlug: selectedCategory || undefined,
-    limit: 100,
-  });
+  // Live Convex paginated query: loads initial 30 products, then 30 more per scroll
+  const {
+    results: liveProducts,
+    status: paginationStatus,
+    loadMore,
+    isLoading: isPaginationLoading,
+  } = usePaginatedQuery(
+    api.products.paginated,
+    {
+      categorySlug: selectedCategory || undefined,
+      brand: selectedBrands.length === 1 ? selectedBrands[0] : undefined,
+    },
+    { initialNumItems: 30 }
+  );
   const liveCategories = useQuery(api.categories.list, { limit: 20 });
 
-  const allProducts = liveProducts && liveProducts.length > 0
-    ? liveProducts.map(toProduct)
-    : PRODUCTS;
+  const isFirstPageLoading = paginationStatus === 'LoadingFirstPage';
+
+  // Infinite Scroll IntersectionObserver trigger
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (paginationStatus !== 'CanLoadMore') return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+        if (first.isIntersecting && paginationStatus === 'CanLoadMore') {
+          loadMore(30);
+        }
+      },
+      {
+        root: null,
+        rootMargin: '350px', // Trigger 350px before bottom so user rarely sees delay
+        threshold: 0.05,
+      }
+    );
+
+    const target = observerRef.current;
+    if (target) {
+      observer.observe(target);
+    }
+
+    return () => {
+      if (target) {
+        observer.unobserve(target);
+      }
+    };
+  }, [paginationStatus, loadMore]);
+
+  const allProducts = useMemo(() => {
+    if (liveProducts && liveProducts.length > 0) {
+      return liveProducts.map(toProduct);
+    }
+    // Fallback if query finished and database has no records (e.g. offline dev fallback)
+    if (paginationStatus === 'Exhausted' && (!liveProducts || liveProducts.length === 0)) {
+      return PRODUCTS.slice(0, 30);
+    }
+    return [];
+  }, [liveProducts, paginationStatus]);
 
   const categories = liveCategories && liveCategories.length > 0
     ? liveCategories.map(toCategory)
@@ -502,23 +552,34 @@ function ShopContent() {
                         setSelectedCategory('');
                         setSelectedSubcategory('');
                       }}
+                      className={styles.srOnly}
                     />
+                    <span className={`${styles.customRadio} ${selectedCategory === '' ? styles.radioSelected : ''}`}>
+                      <span className={styles.radioDot} />
+                    </span>
                     <span className={styles.radioLabel}>All Categories</span>
                   </label>
-                  {categories.map((cat) => (
-                    <label key={cat.id} className={styles.radioOption}>
-                      <input
-                        type="radio"
-                        name="category"
-                        checked={selectedCategory === cat.slug}
-                        onChange={() => {
-                          setSelectedCategory(cat.slug);
-                          setSelectedSubcategory('');
-                        }}
-                      />
-                      <span className={styles.radioLabel}>{cat.name}</span>
-                    </label>
-                  ))}
+                  {categories.map((cat) => {
+                    const isSelected = selectedCategory === cat.slug;
+                    return (
+                      <label key={cat.id} className={styles.radioOption}>
+                        <input
+                          type="radio"
+                          name="category"
+                          checked={isSelected}
+                          onChange={() => {
+                            setSelectedCategory(cat.slug);
+                            setSelectedSubcategory('');
+                          }}
+                          className={styles.srOnly}
+                        />
+                        <span className={`${styles.customRadio} ${isSelected ? styles.radioSelected : ''}`}>
+                          <span className={styles.radioDot} />
+                        </span>
+                        <span className={styles.radioLabel}>{cat.name}</span>
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -526,16 +587,23 @@ function ShopContent() {
               <div className={styles.filterGroup}>
                 <h3 className={styles.filterGroupTitle}>Brand & Ecosystem</h3>
                 <div className={styles.checkboxList}>
-                  {ALL_BRANDS.map((brand) => (
-                    <label key={brand} className={styles.checkboxOption}>
-                      <input
-                        type="checkbox"
-                        checked={selectedBrands.includes(brand)}
-                        onChange={() => handleToggleBrand(brand)}
-                      />
-                      <span className={styles.checkLabel}>{brand}</span>
-                    </label>
-                  ))}
+                  {ALL_BRANDS.map((brand) => {
+                    const isChecked = selectedBrands.includes(brand);
+                    return (
+                      <label key={brand} className={styles.checkboxOption}>
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => handleToggleBrand(brand)}
+                          className={styles.srOnly}
+                        />
+                        <span className={`${styles.customCheckbox} ${isChecked ? styles.checkboxSelected : ''}`}>
+                          {isChecked && <Check size={11} strokeWidth={3} className={styles.checkIcon} />}
+                        </span>
+                        <span className={styles.checkLabel}>{brand}</span>
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -762,7 +830,19 @@ function ShopContent() {
             )}
 
             {/* Product Grid / List Showcase */}
-            {filteredProducts.length === 0 ? (
+            {isFirstPageLoading ? (
+              <div
+                className={
+                  viewMode === 'grid'
+                    ? styles.productsGrid4Col
+                    : styles.productsListCol
+                }
+              >
+                {Array.from({ length: 15 }).map((_, idx) => (
+                  <ProductCardSkeleton key={`skeleton-${idx}`} />
+                ))}
+              </div>
+            ) : filteredProducts.length === 0 ? (
               <div className={styles.noResultsBox}>
                 <div className={styles.noResultsIcon}>🔍</div>
                 <h3 className={styles.noResultsTitle}>No matching products found</h3>
@@ -778,21 +858,42 @@ function ShopContent() {
                 </button>
               </div>
             ) : (
-              <div
-                className={
-                  viewMode === 'grid'
-                    ? styles.productsGrid4Col
-                    : styles.productsListCol
-                }
-              >
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    variant={viewMode}
-                  />
-                ))}
-              </div>
+              <>
+                <div
+                  className={
+                    viewMode === 'grid'
+                      ? styles.productsGrid4Col
+                      : styles.productsListCol
+                  }
+                >
+                  {filteredProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      variant={viewMode}
+                    />
+                  ))}
+                </div>
+
+                {/* Loading More Skeletons when fetching next batch of 30 */}
+                {paginationStatus === 'LoadingMore' && (
+                  <div
+                    className={
+                      viewMode === 'grid'
+                        ? styles.productsGrid4Col
+                        : styles.productsListCol
+                    }
+                    style={{ marginTop: '12px' }}
+                  >
+                    {Array.from({ length: 5 }).map((_, idx) => (
+                      <ProductCardSkeleton key={`loading-more-${idx}`} />
+                    ))}
+                  </div>
+                )}
+
+                {/* Invisible sentinel for scroll detection */}
+                <div ref={observerRef} style={{ height: '20px', width: '100%' }} />
+              </>
             )}
           </div>
         </div>

@@ -335,21 +335,11 @@
   font-size: 12px;
   color: $color-ink-black;
   cursor: pointer;
-
-  input {
-    cursor: pointer;
-    accent-color: $color-accent-red;
-  }
+  user-select: none;
 }
 
 .radioLabel {
   flex: 1;
-}
-
-.radioCount {
-  font-size: 10.5px;
-  font-family: $font-mono;
-  color: $color-text-muted;
 }
 
 .checkboxList {
@@ -365,15 +355,79 @@
   font-size: 12px;
   color: $color-ink-black;
   cursor: pointer;
-
-  input {
-    cursor: pointer;
-    accent-color: $color-accent-red;
-  }
+  user-select: none;
 }
 
 .checkLabel {
   font-weight: 500;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.customRadio {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  border-radius: 50%;
+  border: 1.5px solid #d4d4d8;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+
+  .radioDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: $color-accent-red;
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+
+  &.radioSelected {
+    border-color: $color-accent-red;
+
+    .radioDot {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+.customCheckbox {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  border-radius: 3px;
+  border: 1.5px solid #d4d4d8;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+
+  .checkIcon {
+    color: #ffffff;
+  }
+
+  &.checkboxSelected {
+    background-color: $color-accent-red;
+    border-color: $color-accent-red;
+  }
 }
 
 .ratingOptions {
@@ -743,4 +797,5 @@
   padding: 8px 18px;
   font-size: 12.5px;
 }
+
 

@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { paginationOptsValidator } from "convex/server";
 import { query, mutation } from "./_generated/server";
 import { assertAdminAccess } from "./adminAuth";
 
@@ -19,6 +20,37 @@ export const list = query({
     }
 
     return await ctx.db.query("products").take(takeCount);
+  },
+});
+
+// 1b. Fetch products with pagination (for infinite scroll & batch loading)
+export const paginated = query({
+  args: {
+    paginationOpts: paginationOptsValidator,
+    categorySlug: v.optional(v.string()),
+    brand: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    if (args.categorySlug) {
+      return await ctx.db
+        .query("products")
+        .withIndex("by_categorySlug", (q) => q.eq("categorySlug", args.categorySlug!))
+        .order("desc")
+        .paginate(args.paginationOpts);
+    }
+
+    if (args.brand) {
+      return await ctx.db
+        .query("products")
+        .withIndex("by_brand", (q) => q.eq("brand", args.brand!))
+        .order("desc")
+        .paginate(args.paginationOpts);
+    }
+
+    return await ctx.db
+      .query("products")
+      .order("desc")
+      .paginate(args.paginationOpts);
   },
 });
 
