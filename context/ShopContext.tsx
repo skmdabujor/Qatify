@@ -412,14 +412,14 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    // On mobile devices (<= 768px), adding an item should NOT auto-open the cart drawer
-    // The user can continue adding items as much as they want; drawer only opens on explicit cart icon click.
+    // Cart drawer open logic:
+    // When openDrawer is explicitly specified, honor it regardless of device.
+    // Otherwise, auto-open on desktop for normal shopping flow (except checkout/cart pages).
     const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
     const shouldOpen =
-      !isMobile &&
-      (openDrawer !== undefined
+      openDrawer !== undefined
         ? openDrawer
-        : pathname !== '/cart' && pathname !== '/checkout' && pathname !== '/bundle-cart');
+        : !isMobile && pathname !== '/cart' && pathname !== '/checkout' && pathname !== '/bundle-cart';
 
     if (shouldOpen) {
       setIsCartOpen(true);
@@ -442,7 +442,6 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
   const removeFromCart = (itemId: string) => {
     setCart((prev) => prev.filter((item) => item.id !== itemId));
-    showToast('Item Removed', 'The item was removed from your cart.', 'info');
   };
 
   const clearCart = () => {

@@ -64,6 +64,16 @@
   @include tablet {
     gap: 10px;
   }
+
+  &.inputMode {
+    @include tablet {
+      flex: 0 0 auto;
+
+      .textCol {
+        display: none;
+      }
+    }
+  }
 }
 
 // Qatify Signature Brand App Icon Badge (like Screenshot 1)
@@ -171,6 +181,13 @@
   @include tablet {
     gap: 6px;
   }
+
+  &.actionInputMode {
+    @include tablet {
+      flex: 1;
+      min-width: 0;
+    }
+  }
 }
 
 .buttonGroup {
@@ -228,6 +245,7 @@
   transition: all 180ms ease;
   font-family: $font-heading;
   white-space: nowrap;
+  flex-shrink: 0;
 
   .btnIcon {
     color: #18181b;
@@ -271,6 +289,7 @@
   align-items: center;
   justify-content: center;
   transition: all 150ms ease;
+  flex-shrink: 0;
 
   &:hover {
     color: #18181b;
@@ -289,7 +308,9 @@
   gap: 8px;
 
   @include tablet {
-    gap: 4px;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
   }
 }
 
@@ -298,11 +319,13 @@
   padding: 0 12px;
   border: 1px solid #d4d4d8;
   border-radius: 8px;
+  font-family: $font-heading;
   font-size: 13px;
+  font-weight: 500;
   color: #18181b;
   background-color: #fafafa;
   outline: none;
-  width: 220px;
+  width: 240px;
   transition: all 150ms ease;
 
   &:focus {
@@ -311,36 +334,35 @@
     box-shadow: 0 0 0 2px rgba(255, 184, 0, 0.2);
   }
 
-  @include tablet {
-    width: 140px;
-    height: 32px;
+  &::placeholder {
+    font-family: $font-heading;
     font-size: 11.5px;
-    padding: 0 8px;
+    font-weight: 400;
+    color: #a1a1aa;
+    opacity: 1;
+
+    @include tablet {
+      font-size: 11px;
+    }
+
+    @include mobile {
+      font-size: 10px;
+    }
+  }
+
+  @include tablet {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    height: 34px;
+    font-size: 11.5px;
+    padding: 0 10px;
   }
 
   @include mobile {
-    width: 110px;
-  }
-}
-
-.cancelBtn {
-  background: transparent;
-  border: none;
-  color: #71717a;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 6px;
-
-  &:hover {
-    background-color: #f4f4f5;
-    color: #18181b;
-  }
-
-  @include tablet {
-    padding: 4px 6px;
+    height: 32px;
     font-size: 11px;
+    padding: 0 8px;
   }
 }
 

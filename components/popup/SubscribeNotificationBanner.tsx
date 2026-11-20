@@ -89,6 +89,7 @@ export const SubscribeNotificationBanner: React.FC = () => {
 
   const handleLater = () => {
     setIsVisible(false);
+    setShowEmailInput(false);
     if (typeof window !== 'undefined') {
       localStorage.setItem('qatify_notif_later', Date.now().toString());
     }
@@ -206,7 +207,7 @@ export const SubscribeNotificationBanner: React.FC = () => {
     >
       <div className={styles.stickyInner}>
         {/* Left Side: Qatify App Badge & Message */}
-        <div className={styles.infoSection}>
+        <div className={`${styles.infoSection} ${showEmailInput ? styles.inputMode : ''}`}>
           <div className={styles.logoBadge} aria-hidden="true">
             <ShoppingBag size={20} className={styles.bagIcon} />
             <span className={styles.brandText}>QATIFY</span>
@@ -223,7 +224,7 @@ export const SubscribeNotificationBanner: React.FC = () => {
         </div>
 
         {/* Right Side: Actions (Success / Inline Input / Buttons) */}
-        <div className={styles.actionSection}>
+        <div className={`${styles.actionSection} ${showEmailInput ? styles.actionInputMode : ''}`}>
           {isSuccess ? (
             <div className={styles.successNotice}>
               <CheckCircle size={16} className={styles.checkIcon} />
@@ -239,11 +240,12 @@ export const SubscribeNotificationBanner: React.FC = () => {
                 type="email"
                 required
                 autoFocus
-                placeholder="Enter your email address..."
+                placeholder="Enter email..."
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isSubmitting}
                 className={styles.emailInput}
+                aria-label="Email address"
               />
               <button
                 type="submit"
@@ -251,14 +253,6 @@ export const SubscribeNotificationBanner: React.FC = () => {
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Saving...' : 'Subscribe'}
-              </button>
-              <button
-                type="button"
-                className={styles.cancelBtn}
-                onClick={() => setShowEmailInput(false)}
-                disabled={isSubmitting}
-              >
-                Back
               </button>
             </form>
           ) : (
